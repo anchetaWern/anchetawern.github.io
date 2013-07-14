@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>What I Learned From AppendTo Selector 101 - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Every call of jQuery returns a jQuery object
+Selectors: 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15 $(&#39;#something&#39;); //By ID $(&#39;.something&#39 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/portfolio">Portfolio</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">What I Learned From AppendTo Selector 101</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-19T18:15:00+08:00" pubdate data-updated="true">Aug 19<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>Every call of jQuery returns a jQuery object</li>
+<li>Selectors:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#something&#39;</span><span class="p">);</span> <span class="c1">//By ID</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.something&#39;</span><span class="p">);</span> <span class="c1">//By Class</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">);</span> <span class="c1">//By Element</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;table td&#39;</span><span class="p">);</span> <span class="c1">//Descendant Selector</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;p &gt; input&#39;</span><span class="p">);</span> <span class="c1">//Direct Children</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;p ~ input&#39;</span><span class="p">);</span>  <span class="c1">//Siblings</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;p.someclass&#39;</span><span class="p">);</span> <span class="c1">//Combined Selector</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input, select, textarea&#39;</span><span class="p">);</span>  <span class="c1">//Multiple Selections</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/DTURK/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><p>If possible use <code>addClass()</code> and <code>removeClass()</code> instead of <code>css()</code> method. Define specific styling on the css rather than JavaScript to separate application logic and markup.</p></li>
+<li><p>There is an implicit iteration in most of the jQuery methods which means that it automatically iterates through the elements that are matched by the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">id</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">Ash</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">Misty</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">Brock</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>When we select the list items using jQuery its already understood that its going to select all of the li that is a descendant of the element with an id of <code>list</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#list li&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/XxdEu/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p>When comparing it to regular expressions, in regular expressions you have to set if its global or not, if its not global then the expression is only
+going to select the first match.</p>
+
+<ul>
+<li><p>Every call to a jQuery method returns a jQuery object therefore the jQuery object holds a collection of element/s.</p></li>
+<li><p>Chaining is only possible because every call to a jQuery method returns a jQuery object. A selector like <code>$('input[type=button]')</code> returns a jQuery object.
+Calling <code>addClass</code> after the selector still returns a jQuery object so you can have as many chains as you want.</p></li>
+<li><p><code>find()</code> looks for the descendants of the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;yoh&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="k">this</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">p</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">abc</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">def</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">ghi</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="nx">I</span><span class="s1">&#39;m inner</span>
+</span><span class='line'><span class="s1">   &lt;/div&gt;</span>
+</span><span class='line'><span class="s1">   &lt;div class=&quot;inner&quot;&gt;</span>
+</span><span class='line'><span class="s1">     I&#39;</span><span class="nx">m</span> <span class="nx">also</span> <span class="nx">inner</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we want to select all the <code>li</code> that is a descendant of the <code>div</code> with the class of <code>yoh</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.yoh&#39;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/9RkJV/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p>In this case the <code>div</code> with the class of <code>yoh</code> is no longer the one that is selected.
+The one that is selected here is the <code>li</code> so if you call <code>css</code> on it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.yoh&#39;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span><span class="s1">&#39;red&#39;</span><span class="p">);</span>   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Each of the <code>li</code> will have a background color of red on it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;yoh&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="k">this</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">p</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">style</span><span class="o">=</span><span class="s2">&quot;background-color: red; &quot;</span><span class="o">&gt;</span><span class="nx">abc</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">style</span><span class="o">=</span><span class="s2">&quot;background-color: red; &quot;</span><span class="o">&gt;</span><span class="nx">def</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">style</span><span class="o">=</span><span class="s2">&quot;background-color: red; &quot;</span><span class="o">&gt;</span><span class="nx">ghi</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="nx">I</span><span class="s1">&#39;m inner</span>
+</span><span class='line'><span class="s1">   &lt;/div&gt;</span>
+</span><span class='line'><span class="s1">   &lt;div class=&quot;inner&quot;&gt;</span>
+</span><span class='line'><span class="s1">     I&#39;</span><span class="nx">m</span> <span class="nx">also</span> <span class="nx">inner</span>
+</span><span class='line'>   <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Yerd3/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>children()</code> selects the direct children of the specified selector. In the example below(were still using the same markup) were selecting the
+children of the first(were zero indexed remember?) <code>ul</code> on the page:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">children</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span> <span class="c1">//alternative: $(&#39;ul:first&#39;)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/vnsAC/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p>We could also do it this way but that&rsquo;s going to select all of the <code>ul</code> with a children of <code>li</code> on the page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul li&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>end()</code> goes back to the original element being selected. The selector below selects all the <code>li</code> that is a descendant of the first <code>ul</code>.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span> <span class="c1">//returns li</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>If we want to go back to the original selection we simply call <code>end</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">).</span><span class="nx">end</span><span class="p">();</span> <span class="c1">//returns ul with all its descendants</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is specifically useful if you want to do something with a specific selection and then do something with its children.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tBZdu/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>delay()</code> delays the execution of a function. For example you want to fade out some elements after 5 seconds(were speaking microseconds here so its 5000):</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">).</span><span class="nx">delay</span><span class="p">(</span><span class="mi">5000</span><span class="p">).</span><span class="nx">fadeOut</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/LkFK8/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>attr()</code> and <code>val()</code> can act as a setter or getter depending on the number of parameters specified. For example if we have this markup:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;iam_text&quot;</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&quot;yoohoo&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">something</span><span class="o">=</span><span class="s2">&quot;something&quot;</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>and we want to get its value we don&rsquo;t need to specify any parameters:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but if we want to set its value:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;another value&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>While <code>attr()</code> is slightly different since you have to specify at least one parameter if you are getting the value of a specific attribute.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-something&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can also be:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;something&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to set the value of an attribute:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;iam_unique&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/nVvB5/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>attr()</code> can also take in a map(collection of key value pairs) as its parameter.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>   <span class="s1">&#39;data-anime&#39;</span><span class="o">:</span> <span class="s1">&#39;pokemon&#39;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s1">&#39;data-id&#39;</span><span class="o">:</span> <span class="mi">11334</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#iam_text&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZkCgr/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li>Instead of a selector you can pass html as a string to create elements.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;awesome&lt;/strong&gt;&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li>You can also nest elements when creating new elements:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">html_string</span> <span class="o">=</span> <span class="s2">&quot;&lt;ul&gt;&lt;li&gt;abc&lt;/li&gt;&lt;li&gt;def&lt;/li&gt;&lt;/ul&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">html_string</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>appendTo()</code> can be used to append a newly created element to an existing element.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;yoh!&lt;/strong&gt;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>insertAfter()</code> is just like <code>appendTo</code> the only difference is that you can specify where you want to
+insert the newly created element. Note that in the example below were still using the markup that we used in <code>find()</code>.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;li&gt;Im inserted after def&lt;/li&gt;&quot;</span><span class="p">).</span><span class="nx">insertAfter</span><span class="p">(</span><span class="s1">&#39;ul:first li:eq(1)&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/wVDTp/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li>Its much less performant if you set attributes after appending a new element into the page.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">form</span><span class="o">&gt;&lt;</span><span class="err">/form&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">type</span> <span class="o">:</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;something&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">id</span> <span class="o">:</span> <span class="s1">&#39;nothing&#39;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//don&#39;t do this:</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input&gt;&#39;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="s1">&#39;form&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do this:</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">obj</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="s1">&#39;form&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li><code>html()</code> when used as a getter gets the first element from the set of matched elements while <code>text()</code>
+uses implicit iteration and gets all the text of the matched elements and append them together. As you can see
+in the example below(note: were still using the markup from <code>find()</code>) <code>html()</code> only returns <code>abc</code> when in fact
+it should be returning all the html/contents of the <code>li</code> in the first <code>ul</code> on the other hand <code>text</code> returns all
+of the text inside each of the <code>li</code> on the first <code>ul</code>.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first li&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">();</span> <span class="c1">//returns: &quot;abc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first li&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">();</span> <span class="c1">//returns: &quot;abcdefIm inserted after defghi&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mpvAw/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>html()</code> when used as a setter uses implicit iteration which means that all the matched elements shall
+have the html specified as a parameter. In the example below we replaced the html content inside each of the <code>li</code> on
+the first <code>ul</code> with the string <code>yo</code> in bold characters.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first li&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;&lt;strong&gt;yo&lt;/strong&gt;&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>after()</code> uses the select something then create something pattern while the <code>insertAfter()</code> uses the
+create something then select something pattern. This means that <code>insertAfter()</code> takes in a selector
+and <code>after()</code> takes in an element as its parameter.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first li:first&#39;</span><span class="p">).</span><span class="nx">after</span><span class="p">(</span><span class="s1">&#39;&lt;li&gt;Another List Item&lt;/li&gt;&#39;</span><span class="p">);</span> <span class="c1">//select where to insert after then specify what to insert</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;li&gt;Yet another List Item&lt;/li&gt;&#39;</span><span class="p">).</span><span class="nx">insertAfter</span><span class="p">(</span><span class="s1">&#39;ul:first li:first&#39;</span><span class="p">);</span> <span class="c1">//specify what to insert then select where to insert</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>remove()</code> removes the element from the page(and all of its children if it has children), it still returns a jQuery object though so you can still
+chain something after it or append the removed object somewhere else to recreate it. But <code>remove()</code> doesn&rsquo;t
+keep the events, data attached to the element. Only use <code>remove()</code> when you&rsquo;re entirely sure that
+you are not going to use the element later.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first&#39;</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span> <span class="c1">//the first ul and its child is removed from the DOM</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>empty()</code> empties the contents of the specified element but doesn&rsquo;t remove the selected element.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first&#39;</span><span class="p">).</span><span class="nx">empty</span><span class="p">();</span> <span class="c1">//the descendants of this element is removed from the DOM</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ShZVX/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<ul>
+<li><code>detach()</code> is similar to <code>remove()</code> but when an element is detached any data or events that are attached
+to that element is actually kept so you can still reuse them later on when you append it to another element.. In the example below we
+are detaching the first <code>ul</code> from the DOM and then inserting it again after the last <code>ul</code>.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first&#39;</span><span class="p">).</span><span class="nx">detach</span><span class="p">().</span><span class="nx">insertAfter</span><span class="p">(</span><span class="s1">&#39;ul:last&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/4zjxm/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p>You can always using caching if you plan to insert them later. This is also a best practice as you don&rsquo;t have to make the same selections over again:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">first_ul</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul:first&#39;</span><span class="p">).</span><span class="nx">detach</span><span class="p">().</span><span class="nx">insertAfter</span><span class="p">(</span><span class="s1">&#39;ul:last&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>clone()</code> clones the specified element children, data, events. Basically everything about it.</li>
+</ul>
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/BPQ2D/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p></p>
+
+<ul>
+<li>Tip: Utilize the jQuery documentation or the jQuery forum to find out the best way to do something in jQuery. The shortcut to remember when you&rsquo;re not sure what a specific jQuery function does is to access api.jquery.com/function_name. So if you want to know what the <code>hover</code> function does then you type in api.jquery.com/hover</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-19T18:15:00+08:00" pubdate data-updated="true">Aug 19<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/jquery/'>jquery</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/19/what-i-learned-from-appendto-javascript-103/" title="Previous Post: What I Learned From AppendTo JavaScript 103">&laquo; What I Learned From AppendTo JavaScript 103</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/08/21/what-i-learned-from-appendto-on-jquery-methods-and-events/" title="Next Post: What I learned From AppendTo on jQuery Methods and Events">What I learned From AppendTo on jQuery Methods and Events &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/13/my-linux-development-environment/">My Linux Development Environment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial search with Apache Solr and Google Maps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started with Apache Solr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/19/my-windows-development-environment/">My Windows Development Environment</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

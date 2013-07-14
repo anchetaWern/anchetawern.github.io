@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: jquery | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/jquery/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2013-07-14T19:53:51+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[What I learned From AppendTo on jQuery Methods and Events]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/21/what-i-learned-from-appendto-on-jquery-methods-and-events/"/>
+    <updated>2012-08-21T21:07:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/21/what-i-learned-from-appendto-on-jquery-methods-and-events</id>
+    <content type="html"><![CDATA[<ul>
+<li>You can specify an anonymous function as parameter to <code>text</code> method.</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/SMVQA/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>When calling named functions inside <code>each</code> you don&rsquo;t need the <code>()</code></li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/YcrU8/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>bind</code> can be used to bind multiple events to a selection</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/a3ybw/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>toggleClass</code> can be used to force the adding or removing of class.</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/zxadp/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>unbind</code> to unbind events from specific elements</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/wXDVC/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>one</code> executes the function only once</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/x4Qj4/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><p><code>event.preventDefault()</code> prevents the default behavior of an element from occuring. For example, links automatically brings you to the page that is linked. If you call this right after the click event of an anchor tag then the default behavior won&rsquo;t occur, <code>event.stopImmediatePropagation()</code> prevents the rest of the events from being executed and prevents it from bubbling up the DOM tree, <code>event.stopPropagation()</code> prevents the parent elements from catching the events binded to a child element. You might have noticed that when you just binded an event to a child element the event is also triggered by their parents. <code>event.stopPropagation()</code> prevents this from happening.</p></li>
+<li><p>namespacing events <code>event.namespace</code> this is used to separate other from each other. This is a nice way to organize
+code.</p></li>
+<li><p>You can actually specify a <code>title</code> attribute to a label or any element to act as a tooltip.</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What I Learned From AppendTo Selector 101]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101/"/>
+    <updated>2012-08-19T18:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101</id>
+    <content type="html"><![CDATA[<ul>
+<li>Every call of jQuery returns a jQuery object</li>
+<li>Selectors:</li>
+</ul>
+
+
+<p>```javascript
+ $(&lsquo;#something&rsquo;); //By ID</p>
+
+<p> $(&lsquo;.something&rsquo;); //By Class</p>
+
+<p> $(&lsquo;input&rsquo;); //By Element</p>
+
+<p> $(&lsquo;table td&rsquo;); //Descendant Selector</p>
+
+<p> $(&lsquo;p > input&rsquo;); //Direct Children</p>
+
+<p> $(&lsquo;p ~ input&rsquo;);  //Siblings</p>
+
+<p> $(&lsquo;p.someclass&rsquo;); //Combined Selector</p>
+
+<p> $(&lsquo;input, select, textarea&rsquo;);  //Multiple Selections
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/DTURK/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><p>If possible use <code>addClass()</code> and <code>removeClass()</code> instead of <code>css()</code> method. Define specific styling on the css rather than JavaScript to separate application logic and markup.</p></li>
+<li><p>There is an implicit iteration in most of the jQuery methods which means that it automatically iterates through the elements that are matched by the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<p>```</p>
+
+<ul id='list'>
+    <li>Ash</li>
+    <li>Misty</li>
+    <li>Brock</li>
+</ul>
+
+
+<p>```</p>
+
+<p>When we select the list items using jQuery its already understood that its going to select all of the li that is a descendant of the element with an id of <code>list</code>.</p>
+
+<p><code>
+$('#list li');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/XxdEu/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>When comparing it to regular expressions, in regular expressions you have to set if its global or not, if its not global then the expression is only
+going to select the first match.</p>
+
+<ul>
+<li><p>Every call to a jQuery method returns a jQuery object therefore the jQuery object holds a collection of element/s.</p></li>
+<li><p>Chaining is only possible because every call to a jQuery method returns a jQuery object. A selector like <code>$('input[type=button]')</code> returns a jQuery object.
+Calling <code>addClass</code> after the selector still returns a jQuery object so you can have as many chains as you want.</p></li>
+<li><p><code>find()</code> looks for the descendants of the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<p>```</p>
+
+<div class="yoh">
+   <p>this is a p</p>
+   <ul>
+        <li>abc</li>
+        <li>def</li>
+        <li>ghi</li>
+   </ul>
+   <div class="inner">
+        I'm inner
+   </div>
+   <div class="inner">
+        I'm also inner
+   </div>
+</div>
+
+
+<p>```</p>
+
+<p>And we want to select all the <code>li</code> that is a descendant of the <code>div</code> with the class of <code>yoh</code></p>
+
+<p><code>
+$('.yoh').find('li');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/9RkJV/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>In this case the <code>div</code> with the class of <code>yoh</code> is no longer the one that is selected.
+The one that is selected here is the <code>li</code> so if you call <code>css</code> on it.</p>
+
+<p><code>
+$('.yoh').find('li').css('background-color','red');
+</code></p>
+
+<p>Each of the <code>li</code> will have a background color of red on it:</p>
+
+<p>```</p>
+
+<div class="yoh">
+   <p>this is a p</p>
+   <ul>
+        <li style="background-color: red; ">abc</li>
+        <li style="background-color: red; ">def</li>
+        <li style="background-color: red; ">ghi</li>
+   </ul>
+   <div class="inner">
+        I'm inner
+   </div>
+   <div class="inner">
+        I'm also inner
+   </div>
+</div>
+
+
+<p>```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Yerd3/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>children()</code> selects the direct children of the specified selector. In the example below(were still using the same markup) were selecting the
+children of the first(were zero indexed remember?) <code>ul</code> on the page:</li>
+</ul>
+
+
+<p><code>
+$($('ul')[0]).children('li'); //alternative: $('ul:first')
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/vnsAC/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>We could also do it this way but that&rsquo;s going to select all of the <code>ul</code> with a children of <code>li</code> on the page:</p>
+
+<p><code>
+$('ul li');
+</code></p>
+
+<ul>
+<li><code>end()</code> goes back to the original element being selected. The selector below selects all the <code>li</code> that is a descendant of the first <code>ul</code>.</li>
+</ul>
+
+
+<p><code>
+$($('ul')[0]).find('li'); //returns li
+</code></p>
+
+<p>If we want to go back to the original selection we simply call <code>end</code>.</p>
+
+<p><code>
+$($('ul')[0]).find('li').end(); //returns ul with all its descendants
+</code></p>
+
+<p>This is specifically useful if you want to do something with a specific selection and then do something with its children.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tBZdu/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>delay()</code> delays the execution of a function. For example you want to fade out some elements after 5 seconds(were speaking microseconds here so its 5000):</li>
+</ul>
+
+
+<p><code>
+$('li').delay(5000).fadeOut();
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/LkFK8/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>attr()</code> and <code>val()</code> can act as a setter or getter depending on the number of parameters specified. For example if we have this markup:
+<code>
+&lt;input type="text" id="iam_text" value="yoohoo" data-something="something"/&gt;
+</code></li>
+</ul>
+
+
+<p>and we want to get its value we don&rsquo;t need to specify any parameters:</p>
+
+<p><code>
+$('#iam_text').val();
+</code></p>
+
+<p>but if we want to set its value:</p>
+
+<p><code>
+$('#iam_text').val('another value');
+</code></p>
+
+<p>While <code>attr()</code> is slightly different since you have to specify at least one parameter if you are getting the value of a specific attribute.</p>
+
+<p><code>
+$('#iam_text').attr('data-something');
+</code></p>
+
+<p>It can also be:</p>
+
+<p><code>
+$('#iam_text').data('something');
+</code></p>
+
+<p>If you want to set the value of an attribute:</p>
+
+<p><code>
+$('#iam_text').attr('id', 'iam_unique');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/nVvB5/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>attr()</code> can also take in a map(collection of key value pairs) as its parameter.</li>
+</ul>
+
+
+<p>```
+var obj = {
+   &lsquo;data-anime&rsquo;: &lsquo;pokemon&rsquo;,
+   &lsquo;data-id&rsquo;: 11334
+};</p>
+
+<p>$(&lsquo;#iam_text&rsquo;).attr(obj);
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZkCgr/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Instead of a selector you can pass html as a string to create elements.</li>
+</ul>
+
+
+<p><code>
+$('body').html("&lt;strong&gt;awesome&lt;/strong&gt;");
+</code></p>
+
+<ul>
+<li>You can also nest elements when creating new elements:</li>
+</ul>
+
+
+<p><code>
+var html_string = "&lt;ul&gt;&lt;li&gt;abc&lt;/li&gt;&lt;li&gt;def&lt;/li&gt;&lt;/ul&gt;";
+$('body').html(html_string);
+</code></p>
+
+<ul>
+<li><p><code>appendTo()</code> can be used to append a newly created element to an existing element.
+<code>
+var body = $('body');
+$("&lt;strong&gt;yoh!&lt;/strong&gt;").appendTo(body);
+</code></p></li>
+<li><p><code>insertAfter()</code> is just like <code>appendTo</code> the only difference is that you can specify where you want to
+insert the newly created element. Note that in the example below were still using the markup that we used in <code>find()</code>.</p></li>
+</ul>
+
+
+<p><code>
+$("&lt;li&gt;Im inserted after def&lt;/li&gt;").insertAfter('ul:first li:eq(1)');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/wVDTp/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Its much less performant if you set attributes after appending a new element into the page.</li>
+</ul>
+
+
+<p>```
+<form></form></p>
+
+<script>
+var obj = {
+  type : 'text',
+  value: 'something',
+  id : 'nothing'
+};
+
+//don't do this:
+$('<input>').appendTo('form').attr(obj);
+
+//do this:
+$('<input>').attr(obj).appendTo('form');
+</script>
+
+
+<p>```</p>
+
+<ul>
+<li><code>html()</code> when used as a getter gets the first element from the set of matched elements while <code>text()</code>
+uses implicit iteration and gets all the text of the matched elements and append them together. As you can see
+in the example below(note: were still using the markup from <code>find()</code>) <code>html()</code> only returns <code>abc</code> when in fact
+it should be returning all the html/contents of the <code>li</code> in the first <code>ul</code> on the other hand <code>text</code> returns all
+of the text inside each of the <code>li</code> on the first <code>ul</code>.</li>
+</ul>
+
+
+<p>```
+$(&lsquo;ul:first li&rsquo;).html(); //returns: &ldquo;abc&rdquo;</p>
+
+<p>$(&lsquo;ul:first li&rsquo;).text(); //returns: &ldquo;abcdefIm inserted after defghi&rdquo;
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mpvAw/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>html()</code> when used as a setter uses implicit iteration which means that all the matched elements shall
+have the html specified as a parameter. In the example below we replaced the html content inside each of the <code>li</code> on
+the first <code>ul</code> with the string <code>yo</code> in bold characters.</li>
+</ul>
+
+
+<p><code>
+$('ul:first li').html('&lt;strong&gt;yo&lt;/strong&gt;');
+</code></p>
+
+<ul>
+<li><code>after()</code> uses the select something then create something pattern while the <code>insertAfter()</code> uses the
+create something then select something pattern. This means that <code>insertAfter()</code> takes in a selector
+and <code>after()</code> takes in an element as its parameter.</li>
+</ul>
+
+
+<p>```
+$(&lsquo;ul:first li:first&rsquo;).after(&lsquo;<li>Another List Item</li>&rsquo;); //select where to insert after then specify what to insert</p>
+
+<p>$(&lsquo;<li>Yet another List Item</li>&rsquo;).insertAfter(&lsquo;ul:first li:first&rsquo;); //specify what to insert then select where to insert
+```</p>
+
+<ul>
+<li><code>remove()</code> removes the element from the page(and all of its children if it has children), it still returns a jQuery object though so you can still
+chain something after it or append the removed object somewhere else to recreate it. But <code>remove()</code> doesn&rsquo;t
+keep the events, data attached to the element. Only use <code>remove()</code> when you&rsquo;re entirely sure that
+you are not going to use the element later.</li>
+</ul>
+
+
+<p><code>
+$('ul:first').remove(); //the first ul and its child is removed from the DOM
+</code></p>
+
+<ul>
+<li><code>empty()</code> empties the contents of the specified element but doesn&rsquo;t remove the selected element.</li>
+</ul>
+
+
+<p><code>
+$('ul:first').empty(); //the descendants of this element is removed from the DOM
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ShZVX/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>detach()</code> is similar to <code>remove()</code> but when an element is detached any data or events that are attached
+to that element is actually kept so you can still reuse them later on when you append it to another element.. In the example below we
+are detaching the first <code>ul</code> from the DOM and then inserting it again after the last <code>ul</code>.
+<code>
+$('ul:first').detach().insertAfter('ul:last');
+</code></li>
+</ul>
+
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/4zjxm/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>You can always using caching if you plan to insert them later. This is also a best practice as you don&rsquo;t have to make the same selections over again:</p>
+
+<p><code>
+var first_ul = $('ul:first').detach().insertAfter('ul:last');
+</code></p>
+
+<ul>
+<li><code>clone()</code> clones the specified element children, data, events. Basically everything about it.</li>
+</ul>
+
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/BPQ2D/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Tip: Utilize the jQuery documentation or the jQuery forum to find out the best way to do something in jQuery. The shortcut to remember when you&rsquo;re not sure what a specific jQuery function does is to access api.jquery.com/function_name. So if you want to know what the <code>hover</code> function does then you type in api.jquery.com/hover</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

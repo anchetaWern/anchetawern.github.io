@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Facebook JavaScript SDK - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this article I&rsquo;m going share the things I learned about the Facebook JavaScript SDK. Create an App When were talking about the Facebook API &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/portfolio">Portfolio</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Facebook JavaScript SDK</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-28T22:02:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this article I&rsquo;m going share the things I learned about the Facebook JavaScript SDK.</p>
+
+<!--More-->
+
+
+<h4>Create an App</h4>
+
+<p>When were talking about the Facebook API or Facebook SDK we must first have a Facebook App.
+A Facebook App doesn&rsquo;t necessarily reside within Facebook just like the games that we play in Facebook.
+An app can be a login application that you only use to have your users login to your websites using their Facebook accounts.
+An app can be basically anything which you can use to connect your website or webapp to Facebook.</p>
+
+<p>To create an app go to <a href="https://developers.facebook.com/apps">developers.facebook.com/apps</a></p>
+
+<p>Click on <code>create new app</code>.</p>
+
+<p>Enter the name of your app.
+<img src="/images/posts/facebook_js_1/create_app.jpg" alt="create_app" /></p>
+
+<p>Enter the captcha.
+<img src="/images/posts/facebook_js_1/security_check.jpg" alt="enter_captcha" /></p>
+
+<p>After entering the captcha correctly an <code>app id</code> and <code>app secret</code> will be generated.
+The <code>app id</code> and <code>app secret</code> is what you will use on your website or webapp to connect to Facebook.
+They&rsquo;re like connection strings for databases.</p>
+
+<p>Enter your app info. What information you enter here will basically depend on the nature of your app.
+In this article I&rsquo;m only going to show you the basics so I&rsquo;m just going to select the <code>website with Facebook login</code> option.
+The <code>site url</code> is basically the address where you want to redirect once the user has successfully logged in.
+It doesn&rsquo;t necessarily have to be an existing website which can be access in the internet.
+For this reason I only used my <code>localhost</code> which is basically <code>127.0.0.1</code>. If you&rsquo;re not using the default port
+you can just enter something like <code>127.0.0.1:8090</code> where <code>8090</code> is the port where your web server is running.</p>
+
+<p><img src="/images/posts/facebook_js_1/app_info.jpg" alt="app_info" /></p>
+
+<h4>Setting up the API</h4>
+
+<p>Now were on the exciting part. Most of the information that I will mention here are basically based on the <a href="https://developers.facebook.com/docs/reference/javascript/">Official Documentation on JavaScript SDK</a>
+You might as well go there and read up the basics. But if you&rsquo;re like me and your eyes hurt a minute after going through the documentation then continue reading.
+The documentation is pretty good but they&rsquo;re not making things easy to find. Some things are basically hidden until you hit up Google or Stackoverflow.</p>
+
+<p>Here are some of the things that you have to remember when working with the Facebook JavaScript SDK:</p>
+
+<ul>
+<li><strong>fb-root</strong> &ndash; the fb root is a <code>div</code> with an id of <code>fb-root</code>. It is used by the JavaScript SDK to be able to load properly.
+The <code>fb-root</code> is where new elements are being attached. You might ask why not just append it to the <code>body</code> and be done with it. I don&rsquo;t really know how
+to answer that. Facebook has their own way of doing things.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;fb-root&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the screenshot below the <code>fb-root</code> is some sort of a container for all the things that has something to do with the Facebook SDK.
+<img src="/images/posts/facebook_js_1/fb_root.jpg" alt="fb_root" /></p>
+
+<ul>
+<li><strong>jQuery</strong> &ndash; Another thing that you have to remember is using jQuery. It will make your life easier in selecting elements from the DOM when working with Facebook.
+So go ahead and download and include it on your page.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;jquery.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>Facebook JavaScript SDK</strong> &ndash; next is the Facebook JavaScript SDK itself. Include it on your page immediately.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://connect.facebook.net/en_US/all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>In the documentation what they did was to load the JavaScript SDK asynchronously(grammar natzis forgive me if I didn&rsquo;t spell that right) like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">){</span>
+</span><span class='line'>     <span class="kd">var</span> <span class="nx">js</span><span class="p">,</span> <span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;facebook-jssdk&#39;</span><span class="p">,</span> <span class="nx">ref</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span><span class="k">return</span><span class="p">;}</span>
+</span><span class='line'>     <span class="nx">js</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">);</span> <span class="nx">js</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span> <span class="nx">js</span><span class="p">.</span><span class="nx">async</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>     <span class="nx">js</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&quot;//connect.facebook.net/en_US/all.js&quot;</span><span class="p">;</span>
+</span><span class='line'>     <span class="nx">ref</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">js</span><span class="p">,</span> <span class="nx">ref</span><span class="p">);</span>
+</span><span class='line'>   <span class="p">}(</span><span class="nb">document</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>They did this so that it doesn&rsquo;t block the loading of elements in the page.
+Its up for you to choose which method of loading Facebook SDK do you want.
+Its always recommended that you load it asynchronously if you&rsquo;re working on a real world website
+where every millisecond counts.</p>
+
+<ul>
+<li><strong>Channel File</strong> &ndash; next is the channel file which contains the code below. In the documentation it said something about cross-domain communication in certain browsers.
+Feel free to read that if you have lots of time but for now let&rsquo;s just say its important that we have that file as well.
+So go ahead and create a new file called <code>channel.php</code> and paste the code below.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'> <span class="nv">$cache_expire</span> <span class="o">=</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">365</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">header</span><span class="p">(</span><span class="s2">&quot;Pragma: public&quot;</span><span class="p">);</span>
+</span><span class='line'> <span class="nx">header</span><span class="p">(</span><span class="s2">&quot;Cache-Control: max-age=&quot;</span><span class="o">.</span><span class="nv">$cache_expire</span><span class="p">);</span>
+</span><span class='line'> <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Expires: &#39;</span> <span class="o">.</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s1">&#39;D, d M Y H:i:s&#39;</span><span class="p">,</span> <span class="nb">time</span><span class="p">()</span><span class="o">+</span><span class="nv">$cache_expire</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39; GMT&#39;</span><span class="p">);</span>
+</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;script src=&quot;http://connect.facebook.net/en_US/all.js&quot;&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>Initialization</strong> &ndash; next is the initialization. Just substitute the <code>YOUR_APP_ID</code> with your <code>app id</code>.
+Yes were not gonna need the <code>app secret</code> I don&rsquo;t really know why but when I used the PHP SDK its actually required.
+Might as well do some research on that but we won&rsquo;t die if we don&rsquo;t know it.
+The code below is a short version as I only used 3 key-value pairs. These are not the only options there are <a href="https://developers.facebook.com/docs/reference/javascript/FB.init/">more</a>
+but these are the only one&rsquo;s that we need right now.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">FB</span><span class="o">.</span><span class="nx">init</span><span class="p">({</span><span class="nx">appId</span><span class="o">:</span> <span class="s2">&quot;YOUR_APP_ID&quot;</span><span class="p">,</span> <span class="nx">status</span><span class="o">:</span> <span class="k">true</span><span class="p">,</span> <span class="nx">cookie</span><span class="o">:</span> <span class="k">true</span><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Logging In</h4>
+
+<p>Were done with the essentials now its time to play. Let&rsquo;s go ahead and <a href="https://developers.facebook.com/docs/reference/javascript/FB.login/">login with Facebook</a> using <code>FB.login</code>.
+As the name suggests <code>FB.login</code> is used to login to your website or webapp via Facebook. In the example below were logging in with 3 permissions that has to be approved
+by the user.</p>
+
+<ul>
+<li><strong>user_about_me</strong> &ndash; Provides access to the &ldquo;About Me&rdquo; section of the profile in the about property</li>
+<li><strong>user_activities</strong> &ndash; Provides access to the user&rsquo;s list of activities as the activities connection</li>
+<li><strong>user_birthday</strong> &ndash; Provides access to the birthday with year as the birthday property</li>
+</ul>
+
+
+<p>The strings that we specify on the <code>scope</code> are the user information that we have access to. Check out the <a href="https://developers.facebook.com/docs/authentication/permissions/">permissions reference</a> for some of
+the permissions that you can use on the <code>scope</code>. Each permission is separated by a comma <code>,</code> note that there are no spaces, just the comma.
+If you have scanned through the permissions you might have noticed that Facebook has broken it down into specific data and not groups like <code>user_information</code> or <code>friends_information</code>.</p>
+
+<p>You can also have access to your friends information. Note that this is not confidential information like passwords and email as Facebook won&rsquo;t give you those.
+You only have access to information that are allowed by your friends in their privacy settings. For example if your friend has an album where he has set that
+he is the only one who can view it then you won&rsquo;t have access to that.</p>
+
+<p>There are also extended permissions, these are actions in which the app can do like posting to the wall/timeline of your friends or publishing information
+into your own wall. These extended permissions has their own authentication box(the box that you see the first time you use an app) so if an app has an extended permission
+you will basically have an authentication box which has 2 pages. One for the basic permission and one for the extended permission.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">FB</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>   <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">authResponse</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//if the user has logged in successfully</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;You are now logged in&#39;</span><span class="p">);</span>
+</span><span class='line'>   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">//problem with logging in</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;User cancelled login or did not fully authorize.&#39;</span><span class="p">);</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'> <span class="p">},</span> <span class="p">{</span><span class="nx">scope</span><span class="o">:</span> <span class="err">&#39;</span><span class="nx">user_about_me</span><span class="p">,</span><span class="nx">user_activities</span><span class="p">,</span><span class="nx">user_birthday</span><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s what the basic permission might look like:
+<img src="/images/posts/facebook_js_1/basic_permission.jpg" alt="basic_permission" /></p>
+
+<p>And here&rsquo;s the extended permission:
+<img src="/images/posts/facebook_js_1/extended_permission.jpg" alt="extended_permission" /></p>
+
+<p>Yes you can actually deselect a specific permission if you don&rsquo;t want it like the
+posting in your behalf permission since its so evil.
+You&rsquo;re just watching something on Youtube and without you knowing it actually published a link to your timeline on the video that
+you&rsquo;re watching. That&rsquo;s why its always wise to review the permissions that you&rsquo;re allowing before you click on the allow button.</p>
+
+<h4>Accessing Data</h4>
+
+<p>I&rsquo;ll just give a simple introduction on accessing data. I want to make at least 3 posts out of this so forgive me if this post isn&rsquo;t
+long enough or in-depth enough for you. If you want some in-depth stuff that&rsquo;s the job of the official documentation on the Facebook JavaScript SDK.</p>
+
+<p>You can access information using <code>FB.api</code>. But the information that you can access depends on the permissions that you have set on the <code>scope</code> and
+the permissions that your users has allowed. For this reason its always nice to check whether a specific permission is allowed before trying
+to use it. You can check whether a specific permission is allowed using <code>fql</code> or the <code>Facebook Query Language</code>.
+All you have to do is set the <code>method</code> to <code>fql.query</code> and the <code>query</code> to the actual query.
+Remember that Facebook doesn&rsquo;t allow wildcards like <code>SELECT * FROM tbl</code> you have to explicitly specify what fields you need.
+In the example below were reading querying the permissions table for the permissions of the current user which is basically <code>me()</code>.
+You can also use the Facebook ID of the user.
+The list of tables which you can query are in the <a href="https://developers.facebook.com/docs/reference/fql">reference page for fql</a>
+What were doing in the code below is to loop through the response if the current key contains <code>1</code> it means that the permission is allowed if its <code>0</code> it means its not allowed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">FB</span><span class="p">.</span><span class="nx">api</span><span class="p">({</span> <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;fql.query&#39;</span><span class="p">,</span> <span class="nx">query</span><span class="o">:</span> <span class="s1">&#39;SELECT publish_stream, read_friendlists FROM permissions WHERE uid=me()&#39;</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nx">key</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;1&quot;</span><span class="p">){</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span><span class="s1">&#39; -available&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">key</span><span class="o">+</span> <span class="s1">&#39; not available&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the screenshot below the response is basically an object and the information that were interested in is at index 0.
+As you can see the 2 permissions are allowed by the user so were all good.</p>
+
+<p><img src="/images/posts/facebook_js_1/response.jpg" alt="basic_permission" /></p>
+
+<p>For the last example for this article were going to fetch a list of all the friends of the current user. These information are stored
+in <code>me/friends</code> which is some sort of a table in a database or a folder in a filesystem.
+Next we specify the fields that we need as Facebook doesn&rsquo;t automatically fetch the fields that you need. Facebook only fetches the default information
+like the <code>username</code> , <code>first_name</code>, <code>last_name</code> , and <code>id</code>. Yeah it turns out that we don&rsquo;t actually need to specify the fields if
+what we want to access are just the basic information. But its good practice to specify the fields so you&rsquo;ll know what to expect.
+Of course the fields that you can fetch still depends on the permissions that the user has allowed. So you will still get some <code>undefined</code> if the user didn&rsquo;t allow it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">FB</span><span class="p">.</span><span class="nx">api</span><span class="p">(</span><span class="s1">&#39;/me/friends&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">fields</span><span class="o">:</span> <span class="s1">&#39;id,first_name,last_name,username&#39;</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">field</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">x</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">field</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">firstname</span> <span class="o">=</span> <span class="nx">field</span><span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lastname</span> <span class="o">=</span> <span class="nx">field</span><span class="p">[</span><span class="s1">&#39;last_name&#39;</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">field</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;first_name: &quot;</span> <span class="o">+</span> <span class="nx">firstname</span> <span class="o">+</span> <span class="s2">&quot;\nlast_name: &quot;</span> <span class="o">+</span> <span class="nx">lastname</span> <span class="o">+</span> <span class="s2">&quot;\nid: &quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;\nusername: &quot;</span> <span class="o">+</span> <span class="nx">username</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook Developers</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-28T22:02:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/facebook-api/'>facebook-api</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/27/using-google-maps-with-mysql/" title="Previous Post: Using Google Maps with Mysql and PHP">&laquo; Using Google Maps with Mysql and PHP</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/09/03/start-a-side-project/" title="Next Post: Start a side project">Start a side project &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/13/my-linux-development-environment/">My Linux Development Environment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial search with Apache Solr and Google Maps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started with Apache Solr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/19/my-windows-development-environment/">My Windows Development Environment</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

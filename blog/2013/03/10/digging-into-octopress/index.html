@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Digging into Octopress - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this post I&rsquo;ll be sharing some of the things
+that I&rsquo;ve discovered while working with Octopress. Introduction As you all know Octopress &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/03/10/digging-into-octopress">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/portfolio">Portfolio</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Digging Into Octopress</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-10T13:01:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this post I&rsquo;ll be sharing some of the things
+that I&rsquo;ve discovered while working with Octopress.</p>
+
+<h3>Introduction</h3>
+
+<p>As you all know Octopress is a blogging framework much like Wordpress
+but only static and its powered by Jekyll which is a static site generator.
+Static means that it generates html and other assets whenever you generate the site.
+Every configuration are stored in files.
+Therefore there&rsquo;s no database involved.
+There&rsquo;s no login and other dynamic things that you might find in Wordpress and other CMS.</p>
+
+<!--More-->
+
+
+<p><strong>Pros</strong></p>
+
+<ul>
+<li><p>You own your content. Posts in octopress lives in your hard drive and then you just deploy them later on.</p></li>
+<li><p>Fully customizable and extensible. You get to write your own plugins and themes. And you can customize almost anything on your site.</p></li>
+<li><p>You can deploy anywhere. All you need are the files that were generated. No need for PHP, MySQL.</p></li>
+</ul>
+
+
+<p><strong>Cons</strong></p>
+
+<ul>
+<li><p>More difficult setup. You have to install a bunch of stuff from the command line before you get it to work. But the docs are great so there&rsquo;s no need to worry.</p></li>
+<li><p>It takes time to generate the whole site when you&rsquo;re publishing something, probably a minute or two but that&rsquo;s just my computer. It might be faster on more powerful computers.</p></li>
+</ul>
+
+
+<h2>Themes</h2>
+
+<p>There&rsquo;s a bunch of <a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">themes</a> available for Octopress. The one that I&rsquo;m using for my site is the <a href="http://zespia.tw/Octopress-Theme-Slash/">Slash theme</a> though I&rsquo;ve done a bit of customization so that it won&rsquo;t look too Slashy.</p>
+
+<p>The process for installing a theme is simply downloading the theme then extract it into the <code>.themes</code> directory and then execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd octopress
+</span><span class='line'>git clone GIT_URL .themes/THEME_NAME
+</span><span class='line'>rake install['THEME_NAME']
+</span><span class='line'>rake generate</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Plugins</h2>
+
+<p>There&rsquo;s also a bunch of <a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">plugins</a> that you can use for Octopress. You can install the plugins on the <code>plugins</code> directory inside <code>octopress</code>. I personally use the following plugins:</p>
+
+<ul>
+<li>blockquote</li>
+<li>gist_tag</li>
+<li>video_tag (vimeo, youtube)</li>
+<li>backtick code block</li>
+</ul>
+
+
+<h3>Customizing Octopress</h3>
+
+<p>Customizing Octopress is easy.
+All you have to do is to edit the files on the following directories:</p>
+
+<ul>
+<li>source &ndash; html templates, scripts, images and other site assets (E.g. fonts)</li>
+<li>sass &ndash; stylesheets</li>
+<li>plugins &ndash; plugin files which are mostly ruby files</li>
+<li>.themes &ndash; theme files</li>
+</ul>
+
+
+<p>Here&rsquo;s a screenshot of the source directory where most of the files that Octopress uses to generate a site are stored.</p>
+
+<p><img src="/images/posts/digging_into_octopress/source.jpg" alt="source" /></p>
+
+<h4>Layouts</h4>
+
+<p>In Octopress there are site layouts which are basically just html files with templating logic.
+Here&rsquo;s the default layout used in Octopress. Most of the time the default layout is the layout used in the index page of an Octopress blog.</p>
+
+<p><img src="/images/posts/digging_into_octopress/default_html.jpg" alt="default" /></p>
+
+<p>There&rsquo;s also the <code>post</code> layout which just inherits from the default layout.
+And then loads the actual post inside the <code>article</code> section.</p>
+
+<p><img src="/images/posts/digging_into_octopress/post_html.jpg" alt="post" /></p>
+
+<p>So where does Octopress know where to find the <code>article.html</code> that we are
+including inside the <code>article</code> section? It finds them inside the <code>_includes</code> directory.
+All the files that are included by doing <code>include file.html</code> are stored in the <code>_includes</code> directory.</p>
+
+<p>Opening up the <code>article.html</code> file we see something like this:</p>
+
+<p><img src="/images/posts/digging_into_octopress/article_html.jpg" alt="article" /></p>
+
+<p>Upon reading the code you will see that this actually does either of two things.
+First it checks if the current page is the <code>index</code> page.
+If its the <code>index</code> page then it doesn&rsquo;t load all the content of the blog post
+but only if you have specified it in your post.</p>
+
+<p>Going back to the Octopress documentation under the blogging basics section.
+You will see that in order to specify where your content will be cut in the index page
+you have to put the <code>&lt;!-- more --&gt;</code> comment right after the specific spot where you want
+the content to be cut. Someone might have written a plugin that automatically only loads a bit of the actual content in the index page but having a control on where the content will be cut is really good.</p>
+
+<p>On the other hand if the current page is something other than the <code>index</code> page then it simply loads the whole content.</p>
+
+<h3>Behaviors</h3>
+
+<p>Here are some of the behaviors that I noticed while I was using Octopress:</p>
+
+<ul>
+<li><p>If the source file (markdown) that you are trying to convert to html is not valid it will either return an error when you execute <code>rake generate</code> or it will simply fallback to the previously generated site without returning an error.</p></li>
+<li><p>Errors in plugins will return an error when executing <code>rake generate</code></p></li>
+<li><p>Posts that are not published (published: false) will show up on <code>rake preview</code> but does not show up on <code>rake deploy</code></p></li>
+</ul>
+
+
+<h3>Commands</h3>
+
+<p>Here are some of the commands that I frequently used when working with Octopress:</p>
+
+<ul>
+<li><p><strong>rake generate</strong> &ndash; used for generating the site</p></li>
+<li><p><strong>rake preview</strong> &ndash; used for previewing the whole site on your browser. The common port is <code>4000</code>. So to access your Octopress site offline you would have to type in <code>localhost:4000</code> that is if you haven&rsquo;t setup a virtual host on your machine.</p></li>
+<li><p><strong>rake gen_deploy</strong> &ndash; used for generating the whole site and then deploy it to your preferred hosting site (E.g Github pages, Heroku).</p></li>
+</ul>
+
+
+<h3>Extending Octopress</h3>
+
+<p>You can easily extend the default functionality offered by Octopress. With a bit of knowlege in Ruby, Sass, HTML, JavaScript and templating you can already create your own Octopress plugins.
+Like I said earlier Octopress is powered by Jekyll
+so anything that you have on Jekyll you also have on Octopress.
+Most of the default plugins that you have when Octopress is installed are actually Jekyll plugins.
+Here&rsquo;s a tutorial on <a href="https://github.com/mojombo/jekyll/wiki/Plugins">how to create Jekyll Plugins</a>.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://octopress.org/docs/">Octopress Documentation</a></li>
+<li><a href="http://anchetawern.github.com/blog/2012/11/29/customizing-octopress/">Customizing Octopress</a></li>
+<li><a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">Octopress Plugins</a></li>
+<li><a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">Octopress Themes</a></li>
+<li><a href="https://github.com/mojombo/jekyll/wiki/Plugins">Jekyll Plugins</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-10T13:01:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/03/10/digging-into-octopress/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/03/10/digging-into-octopress/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/10/what-i-like-in-a-company/" title="Previous Post: What I Like in a Company">&laquo; What I Like in a Company</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/24/playing-with-templating-libraries/" title="Next Post: Playing with Templating Libraries">Playing with Templating Libraries &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/13/my-linux-development-environment/">My Linux Development Environment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial search with Apache Solr and Google Maps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started with Apache Solr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/19/my-windows-development-environment/">My Windows Development Environment</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

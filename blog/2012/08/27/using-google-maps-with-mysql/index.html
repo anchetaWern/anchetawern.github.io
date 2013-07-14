@@ -1,0 +1,788 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using Google Maps with Mysql and PHP - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Introduction In this article were going to build a simple application that allows users to plot a specific place in Google Maps and save the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2012/08/27/using-google-maps-with-mysql">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/portfolio">Portfolio</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using Google Maps With Mysql and PHP</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-27T21:12:00+08:00" pubdate data-updated="true">Aug 27<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Introduction</h3>
+
+<p>In this article were going to build a simple application that allows users to plot a specific place in Google Maps and save the coordinates in a database. The application will also have a search feature that allows users to search the places that they have saved in the database. Once a place has been selected it will be plotted back into the map. This article won&rsquo;t serve as an introduction to using Google Maps so its required that you first go ahead and read up the Google Maps v3 API Documentation if its your first time using Google Maps API. But if you want a quick and dirty solution without understanding anything then feel free to go ahead and copy-paste all the things.
+Here&rsquo;s what the output would look like:</p>
+
+<p><img src="/images/posts/googlemaps_and_mysql/place1.jpg" alt="place" />
+<img src="/images/posts/googlemaps_and_mysql/search.jpg" alt="search" /></p>
+
+<p>If that has gotten you interested then let&rsquo;s get started.</p>
+
+<!--More-->
+
+
+<h4>Database</h4>
+
+<p>Let&rsquo;s start by creating the table that will store the coordinates of places in the map. Note that the code below will only create the table so go ahead and create the database which will serve as the home for this table.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">tbl_places</span><span class="o">`</span> <span class="p">(</span>
+</span><span class='line'><span class="o">`</span><span class="n">place_id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+</span><span class='line'><span class="o">`</span><span class="n">place</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">160</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'><span class="o">`</span><span class="n">description</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'><span class="o">`</span><span class="n">lat</span><span class="o">`</span> <span class="nb">float</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'><span class="o">`</span><span class="n">lng</span><span class="o">`</span> <span class="nb">float</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'><span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">place_id</span><span class="o">`</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">38</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">latin1</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the Google Maps API JavaScript and jQuery</p>
+
+<p>Next were going to include the Google Maps API JavaScript file and jQuery into the page. Jquery isn&rsquo;t actually required but its going to make our life easier in selecting the elements that we need and delegating events to specific elements. So if you want to use plain JavaScript or another JavaScript library then feel free to use them. In the options we have set the sensor equal to false since were not gonna detect the users location. We&rsquo;ve also set the libraries equal to places to make use of the places library which powers the search feature of the application that were going to make. This allows the user to search for places that are already in Google&rsquo;s database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;js/jquery172.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Setting Map Defaults</h4>
+
+<p>Next we set the default information to be used by the map like the coordinates where the map will be centered when the page is loaded, the marker, the map type. I&rsquo;m not a big fan of explaining everything in sentences when making this type of articles so be sure to read up the comments if you don&rsquo;t know what each line of code does.
+Set default coordinate information.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="mf">18.35827827454</span><span class="p">;</span> <span class="c1">//default latitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="mf">121.63744354248</span><span class="p">;</span> <span class="c1">//default longitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">homeLatlng</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">);</span> <span class="c1">//set default coordinates</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Set default settings for the marker.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">homeMarker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span> <span class="c1">//set marker</span>
+</span><span class='line'>  <span class="nx">position</span><span class="o">:</span> <span class="nx">homeLatlng</span><span class="p">,</span> <span class="c1">//set marker position equal to the default coordinates</span>
+</span><span class='line'>  <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span> <span class="c1">//set map to be used by the marker</span>
+</span><span class='line'>  <span class="nx">draggable</span><span class="o">:</span> <span class="kc">true</span> <span class="c1">//make the marker draggable</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Set the defaults settings to be used by the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">myOptions</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">center</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="mf">16.61096000671</span><span class="p">,</span> <span class="mf">120.31346130371</span><span class="p">),</span> <span class="c1">//set map center</span>
+</span><span class='line'>    <span class="nx">zoom</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="c1">//set zoom level to 17</span>
+</span><span class='line'>    <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span> <span class="c1">//set map type to road map</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#map_canvas&quot;</span><span class="p">),</span>
+</span><span class='line'>      <span class="nx">myOptions</span><span class="p">);</span> <span class="c1">//initialize the map</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Search Feature</h4>
+
+<p>Next lets build the search feature for new places. First create the text field in which the users will type his queries:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;search_new_places&quot;</span><span class="nt">&gt;</span>New Places<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;search_new_places&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Bind the search field into the Map</h4>
+
+<p>Next let&rsquo;s bind the search field to the autocomplete using the Autocomplete class. This allows us to store an instance of the text field for the auto-complete search field. And that is stored by the autocomplete variable which we will use later on as the argument for the event listener when the place selected on the auto-complete search field changes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>var input = $(&#39;#search_new_places&#39;); //get element to use as input for autocomplete
+</span><span class='line'>var autocomplete = new google.maps.places.Autocomplete(input); //set it as the input for autocomplete
+</span><span class='line'>autocomplete.bindTo(&#39;bounds&#39;, map); //bias the results to the maps viewport
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Also add the other html code that we will be using later on for searching existing places and saving new places into the database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;search_ex_places&quot;</span><span class="nt">&gt;</span>Saved Places<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;search_ex_places&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!--this will hold the place id of the selected existing place--&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;place_id&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name=</span><span class="s">&quot;place_id&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!--The following are used for holding the name of the place and its description--&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;place&quot;</span><span class="nt">&gt;</span>Name<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;n_place&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;n_place&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;description&quot;</span><span class="nt">&gt;</span>Description<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;n_description&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;n_description&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!--buttons used for executing functions for saving the place and plotting marker into the map--&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;btn_save&quot;</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">value=</span><span class="s">&quot;save place&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;plot_marker&quot;</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">value=</span><span class="s">&quot;plot marker&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Load existing places into search field</h4>
+
+<p>Include the database configuration file(which we will be creating shortly). Create a query that will select all the places that were saved in the database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;places_config.php&#39;</span><span class="p">);</span> <span class="c1">//include database config file</span>
+</span><span class='line'>  <span class="nv">$places</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM tbl_places&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then loop through it. Inside the loop we create a new option for the datalist(the datalist serves as the data source for the auto-complete search field) we also add a corresponding data attribute for each of the fields from the table. <code>data-id</code> stores the id of the place, <code>data-lat</code> stores the latitude, etc. We will then use this data later on to fill in the text fields for the place id, name of the place, and description.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;datalist</span> <span class="na">id=</span><span class="s">&quot;saved_places&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="c">&lt;!--loop through the places saved in the database and store their data into each of the data attribute in the options--&gt;</span>
+</span><span class='line'>  <span class="cp">&lt;?php while($row = $places-&gt;fetch_object()){ ?&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;&lt;?php echo $row-&gt;place; ?&gt;&quot;</span> <span class="na">data-id=</span><span class="s">&quot;&lt;?php echo $row-&gt;place_id; ?&gt;&quot;</span>
+</span><span class='line'>          <span class="na">data-lat=</span><span class="s">&quot;&lt;?php echo $row-&gt;lat; ?&gt;&quot;</span> <span class="na">data-lng=</span><span class="s">&quot;&lt;?php echo $row-&gt;lng; ?&gt;&quot;</span>
+</span><span class='line'>          <span class="na">data-place=</span><span class="s">&quot;&lt;?php echo $row-&gt;place; ?&gt;&quot;</span> <span class="na">data-description=</span><span class="s">&quot;&lt;?php echo $row-&gt;description; ?&gt;&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;?php echo $row-&gt;place; ?&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/option&gt;</span>
+</span><span class='line'>  <span class="cp">&lt;?php } ?&gt;</span>
+</span><span class='line'><span class="nt">&lt;/datalist&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Add event listener for the new places search field</h4>
+
+<p>Next were going to add an event listener for when a place is selected from the new places search field. This allows us to get information such as the coordinates of the selected place and use that information to set where the marker will be plotted in the map. If you remember earlier we created a variable named autocomplete which we binded into the map. This variable is what were going to use as the first argument for the event listener when the place selected from the auto-complete search field changes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//executed when a place is selected from the search field</span>
+</span><span class='line'><span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">autocomplete</span><span class="p">,</span> <span class="s1">&#39;place_changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get information about the selected place in the autocomplete text field</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">place</span> <span class="o">=</span> <span class="nx">autocomplete</span><span class="p">.</span><span class="nx">getPlace</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">){</span> <span class="c1">//for places within the default view port (continents, countries)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">fitBounds</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">);</span> <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">//for places that are not on the default view port (cities, streets)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setCenter</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span>  <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span> <span class="c1">//set a custom zoom level of 17</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span> <span class="c1">//set the map to be used by the  marker</span>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span> <span class="c1">//plot marker into the coordinates of the location</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Plotting the Marker</h4>
+
+<p>Next we&rsquo;ll also add the function which will allow the user to plot a marker in the center of the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#plot_marker&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span> <span class="c1">//used for plotting the marker into the map if it doesn&#39;t exist already</span>
+</span><span class='line'>  <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span> <span class="c1">//set the map to be used by marker</span>
+</span><span class='line'>  <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">map</span><span class="p">.</span><span class="nx">getCenter</span><span class="p">());</span> <span class="c1">//set position of marker equal to the current center of the map</span>
+</span><span class='line'>  <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input[type=text], input[type=hidden]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Search field for existing places</h4>
+
+<p>Next we&rsquo;ll add the functionality to search for existing places saved in the database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#search_ex_places&#39;</span><span class="p">).</span><span class="nx">blur</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="c1">//once the user has selected an existing place</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">place</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
+</span><span class='line'>  <span class="c1">//initialize values</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">exists</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#saved_places option&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">){</span> <span class="c1">//loop through the save places</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">cur_place</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">);</span> <span class="c1">//current place description</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//if current place in the loop is equal to the selected place</span>
+</span><span class='line'>    <span class="c1">//then set the information to their respected fields</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">cur_place</span> <span class="o">==</span> <span class="nx">place</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">exists</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#place_id&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">));</span>
+</span><span class='line'>      <span class="nx">lat</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">lng</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;lng&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#n_place&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">));</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#n_description&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//if the place doesn&#39;t exist then empty all the text fields and hidden fields</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">exists</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input[type=text], input[type=hidden]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//set the coordinates of the selected place</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">position</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//set marker position</span>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">position</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//set the center of the map</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">setCenter</span><span class="p">(</span><span class="nx">homeMarker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">());</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Submit information via AJAX</h4>
+
+<p>Were going to submit the information about the place(name of the place, description, latitude, longitude) via AJAX into the backend.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#btn_save&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">place</span>   <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">trim</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#n_place&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">description</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">trim</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#n_description&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lat</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lng</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;save_place.php&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="s1">&#39;place&#39;</span> <span class="o">:</span> <span class="nx">place</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span> <span class="o">:</span> <span class="nx">description</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;lat&#39;</span> <span class="o">:</span> <span class="nx">lat</span><span class="p">,</span> <span class="s1">&#39;lng&#39;</span> <span class="o">:</span> <span class="nx">lng</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">place_id</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">new_option</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span>
+</span><span class='line'>                      <span class="p">{</span>
+</span><span class='line'>                      <span class="s1">&#39;data-id&#39;</span> <span class="o">:</span> <span class="nx">place_id</span><span class="p">,</span> <span class="s1">&#39;data-place&#39;</span> <span class="o">:</span> <span class="nx">place</span><span class="p">,</span>
+</span><span class='line'>                      <span class="s1">&#39;data-lat&#39;</span> <span class="o">:</span> <span class="nx">lat</span><span class="p">,</span> <span class="s1">&#39;data-lng&#39;</span> <span class="o">:</span> <span class="nx">lng</span><span class="p">,</span> <span class="s1">&#39;data-description&#39;</span> <span class="o">:</span> <span class="nx">description</span>
+</span><span class='line'>                      <span class="p">}</span>
+</span><span class='line'>                  <span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">place</span><span class="p">);</span>
+</span><span class='line'>                  
+</span><span class='line'>  <span class="nx">new_option</span><span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#saved_places&#39;</span><span class="p">));</span> <span class="c1">//append new option to the datalist      </span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input[type=text], input[type=hidden]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>    
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Connecting to the Database</h4>
+
+<p>Next were going to connect to the database using MySQLi(MySQL Improved). Make sure that the mysqli extension is enabled in your php.ini file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">[</span><span class="nx">PHP_MYSQLI</span><span class="p">]</span>
+</span><span class='line'><span class="nx">extension</span><span class="o">=</span><span class="nx">php_mysqli</span><span class="p">.</span><span class="nx">dll</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a new file(places_config.php) that will serve as the database configuration file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="c1">//host, user, password, database name</span>
+</span><span class='line'><span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">connect_errno</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">die</span><span class="p">(</span><span class="s1">&#39;Connect Error: &#39;</span> <span class="o">.</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">connect_errno</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Save the place into the Database</h4>
+
+<p>Then create an insert query to save the place into the database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>   
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;places_config.php&#39;</span><span class="p">);</span> <span class="c1">//include database config file   </span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//get place information submitted via ajax earlier   </span>
+</span><span class='line'><span class="nv">$place</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;place&#39;</span><span class="p">];</span>    
+</span><span class='line'><span class="nv">$description</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">];</span>    
+</span><span class='line'><span class="nv">$latitude</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">];</span>   
+</span><span class='line'><span class="nv">$longitude</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>  
+</span><span class='line'>
+</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2"> INSERT INTO tbl_places SET place=&#39;</span><span class="si">$place</span><span class="s2">&#39;, description=&#39;</span><span class="si">$description</span><span class="s2">&#39;,</span>
+</span><span class='line'><span class="s2"> lat=&#39;</span><span class="si">$latitude</span><span class="s2">&#39;, lng=&#39;</span><span class="si">$longitude</span><span class="s2">&#39;</span>
+</span><span class='line'><span class="s2"> &quot;</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'><span class="nv">$place_id</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">insert_id</span><span class="p">;</span> <span class="c1">//get the id of the newly inserted record</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$place_id</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Demo</h3>
+
+<p>Here&rsquo;s a little demo using <code>localStorage</code> as a data store for the places that are saved.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/gNah7/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h3>Conclusion</h3>
+
+<p>You&rsquo;ve learned how to use the Google Maps API together with PHP, MySQL and jQuery to create a simple application that allows users to plot places in Google Maps and allow them to save it in the database for later access.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.google.com/maps/documentation/javascript/tutorial">Google Maps v3 API Documentation</a></li>
+<li><a href="http://leaflet.cloudmade.com/">Leaflet</a></li>
+<li><a href="https://github.com/anchetaWern/tutorials/tree/master/gmaps">Code Samples from this Article</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-27T21:12:00+08:00" pubdate data-updated="true">Aug 27<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/google-maps/'>google-maps</a>, <a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2012/08/27/using-google-maps-with-mysql/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2012/08/27/using-google-maps-with-mysql/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/26/why-every-developer-should-have-a-blog/" title="Previous Post: Why Every Developer Should Have a Blog">&laquo; Why Every Developer Should Have a Blog</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/08/28/introduction-to-facebook-javascript-sdk/" title="Next Post: Introduction to Facebook JavaScript SDK">Introduction to Facebook JavaScript SDK &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/13/my-linux-development-environment/">My Linux Development Environment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial search with Apache Solr and Google Maps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started with Apache Solr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/19/my-windows-development-environment/">My Windows Development Environment</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

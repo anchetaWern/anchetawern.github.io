@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Things I learned on my second job - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this blog post I&rsquo;m going to share some of the things that I learned on my second job. Apache Solr Apache Solr is a search platform that& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/02/10/things-i-learned-on-my-second-job">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/portfolio">Portfolio</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Things I Learned on My Second Job</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-10T15:58:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this blog post I&rsquo;m going to share some of the things that I learned on my second job.</p>
+
+<!--More-->
+
+
+<h3>Apache Solr</h3>
+
+<p>Apache Solr is a search platform that&rsquo;s available for different languages like Ruby, PHP, and Java.
+Solr&rsquo;s main feature is that its very fast. It returns either XML or JSON.
+There&rsquo;s a library available for PHP which is the one that I used. It&rsquo;s called <a href="http://code.google.com/p/solr-php-client/">solr php client</a></p>
+
+<p>Here&rsquo;s a sample query for accessing data that&rsquo;s available in the Solr server:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost/solr/select/?q=id:%search&wt=json&rows=%max_results</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>As you can see its just like accessing data from an API like the one provided by Twitter or Facebook.
+You can use Solr via server-side or client side.</p>
+
+<p>If you want to access its data via the server-side you can use the <code>file_get_contents()</code> php function or <code>curl</code>.
+If you want to access its data via the client-side you can use the <code>$.ajax</code> jQuery function.
+But if the Solr server is located on a different server you can use the <code>jsonp</code> data type.</p>
+
+<h3>Wordpress Plugin Development</h3>
+
+<p>I&rsquo;ve also learned about Wordpress Plugin Development and the Wordpress platform as a whole.
+<a href="http://codex.wordpress.org/">Codex</a>, the main documentation site for Wordpress has some really good guides and reference for the different functions that are available from Wordpress.</p>
+
+<p>When developing Wordpress plugins you will almost always have to hang out in these 2 pages:</p>
+
+<ul>
+<li><a href="http://codex.wordpress.org/Plugin_API/Filter_Reference">Filter Reference</a></li>
+<li><a href="http://codex.wordpress.org/Plugin_API/Action_Reference">Action Reference</a></li>
+</ul>
+
+
+<p>In Wordpress filters are used for processing the things that are already outputted by Wordpress like the content of a blog post or the title of your blog. Filters are used to modify, add, or hide content.
+This is very useful for filtering out things like profanity in blog posts.</p>
+
+<p>Actions in Wordpress are events that happen inside wordpress like publishing a new blog post or creating a new page or activating a plugin. You can hook into these actions to execute a specific function that will do something when these events happen.</p>
+
+<p>There&rsquo;s also a built-in class for accessing the Wordpress database which is the <a href="http://codex.wordpress.org/Class_Reference/wpdb">WPDB</a> which you will most likely use if the plugin that you&rsquo;re trying to build needs to persist data in a database (E.g for storing settings that your plugin will use).</p>
+
+<h3>API&rsquo;s</h3>
+
+<p>I&rsquo;ve also learned how to use API&rsquo;s like the <a href="http://www.flickr.com/services/api/">Flickr API</a>, <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ApiReference.html">Amazon Product Advertising API</a>, <a href="http://developer.ebay.com/common/api/">Ebay API</a>, and <a href="http://wiki.freebase.com/wiki/Freebase_API">Freebase API</a>.
+Since this will be used by the Wordpress plugin that I&rsquo;m developing.</p>
+
+<p>The Ebay API was particularly easy to use since they have a very good documentation.
+And by good documentation I mean things are easy to find.
+The documentation also has everything that a developer who is just getting started with using the API wants to know.</p>
+
+<p>The documentation for Amazon Product Advertising API was the exact opposite of the Ebay API documentation.
+Things were hard to find and you can&rsquo;t even find examples on how to use the API on languages like PHP.
+Thankfully I found this blog post on <a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">how to access the product advertising API in PHP</a> which made life easier.</p>
+
+<p>The Freebase API was also easy to use because the API itself is relatively simple.
+The Freebase API was divided into different services like Search, Image, Text, Topic, etc.
+Each of those returns different sets of data in JSON format.
+Freebase is already owned by Google so you can basically acquire an API key or access key from the Google API console.</p>
+
+<p>The Flickr API is also comparable to the Amazon Product Advertising API when it comes to difficulty.
+Though the documentation is very good it lacks some examples on how to access the API using different languages.
+But the <a href="http://phpflickr.com/">PHPFlickr</a> library made my life easier.
+All I had to do was to specify the App ID and App secret for my Flickr App which can be created at the <a href="http://www.flickr.com/services/apps/create/">App Garden</a> and then I can just call the methods which I need.</p>
+
+<p>That&rsquo;s all for this blog post. I will continue to update this blog post once I learn more things from my second job.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-10T15:58:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/job/'>job</a>, <a class='category' href='/blog/categories/learning/'>learning</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/02/10/things-i-learned-on-my-second-job/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/02/10/things-i-learned-on-my-second-job/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/09/things-i-wish-i-was-told-when-i-first-started-web-development/" title="Previous Post: Things I wish I was told when I first started Web Development">&laquo; Things I wish I was told when I first started Web Development</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/" title="Next Post: Getting Started with Amazon Product Advertising API">Getting Started with Amazon Product Advertising API &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/13/my-linux-development-environment/">My Linux Development Environment</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial search with Apache Solr and Google Maps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started with Apache Solr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/19/my-windows-development-environment/">My Windows Development Environment</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
