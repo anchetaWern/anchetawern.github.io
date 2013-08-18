@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-08-18T18:09:36+08:00</updated>
+  <updated>2013-08-18T21:26:33+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Portfolio plugin for Octopress]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress/"/>
+    <updated>2013-08-18T20:19:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to introduce Portfolio, an Octopress plugin that I created for easily creating portfolio pages based on the images on your filesystem.</p>
+
+<p>The portfolio plugin is a liquid tag type of plugin which means that it gives you the ability to use the tag to generate a specific content. In this case the portfolio plugin allows you to generate image tags based on the images in a directory that you specify.</p>
+
+<h3>How to Install</h3>
+
+<p>You can install the portfolio plugin by simply copying the <code>portfolio.rb</code> file into the <code>plugins</code> directory of your Octopress installation.</p>
+
+<h3>How to Setup</h3>
+
+<p>You can setup the plugin by opening up the <code>_config.yml</code> file and specify the root directories in which the plugin will look for the files that it will be using.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>portfolio_root: /portfolio
+</span><span class='line'>portfolio_img_root: /images/pages/portfolio
+</span><span class='line'>portfolio_path: /web_files/blog/octopress/source/images/pages/portfolio
+</span><span class='line'>portfolio_url: images/posts/pages/portfolio</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>portfolio_root</code> is the name of the directory where your portfolio is saved.
+The <code>portfolio_img_root</code> is where the images for your portfolio is saved.
+The <code>portfolio_path</code> is the actual path in your filesystem where your portfolio is saved.
+And the <code>portfolio_url</code> is the address where you can access your portfolio from the browser.</p>
+
+<p>The plugin doesn&rsquo;t come with a default styling so you have to add them on your own. You can simply hook up to the markup that has been provided,
+that is the <code>gallery-item</code> class.
+In the example above I gave it a default <code>width</code> and <code>height</code>.
+The <code>overflow</code> is set to hidden so that the image that it contains won&rsquo;t overflow.
+The <code>margin</code> is <code>10px</code> all around. Lastly, its floated to the left so it would align nicely.
+You can add this on the <code>sass/base/_layout.scss</code> file or anywhere you feel would be appropriate.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nf">#content</span> <span class="nc">.gallery-item</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">390px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">150px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="n">lightgray</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a directory where the details of your projects will reside. The ideal location would be in the <code>octopress/source</code> directory. This should be the same as the value of the <code>portfolio_path</code> that you have included in your <code>_config.yml</code> file earlier. Each of your project will have its own directory, so if you have a project named <code>echo</code> then you have to create the following directory: <code>octopress/source/portfolio/echo</code>.</p>
+
+<p>Also create the directory where the images for each of your project will reside. Following the path that we specified earlier we should have the following directory for project <code>echo</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">octopress</span><span class="o">/</span><span class="nt">source</span><span class="o">/</span><span class="nt">images</span><span class="o">/</span><span class="nt">pages</span><span class="o">/</span><span class="nt">portfolio</span><span class="o">/</span><span class="nt">echo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>echo</code> directory is where you will save your images. If you intend to use lightbox or any other alternative you can simply put <code>small-</code> as a prefix to the name of your image files. The images with this prefix will automatically be used as the initial image and the one without it will be larger image. So if you have an image file named <code>index.png</code> you also need to have <code>small-index.png</code> file. Of course this should also be resized. Having the browser do the resizing for you by setting the width and height of the image using css is not a good idea.</p>
+
+<p>It&rsquo;s also recommended that you run your images through an image optimizer before you actually add them to the directory as Octopress won&rsquo;t optimize it automatically. This is to ensure that your project page will load faster.</p>
+
+<h3>How to Use</h3>
+
+<p>You can use the plugin by using the <code>portfolio</code> liquid tag followed by a single space then the name of your project. Just put on underscores if you need spaces. Also there shouldn&rsquo;t be any special characters. For our imaginary <code>echo</code> project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="p">{</span><span class="o">%</span> <span class="n">portfolio</span> <span class="n">echo</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resources</h3>
+
+<p><a href="http://jekyllrb.com/docs/plugins/">Jekyll Plugins</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Web Scraping in PHP]]></title>
@@ -8165,84 +8251,6 @@ We also have some new paramters which we haven&rsquo;t used earlier. The <code>S
 <li><p><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_amazon_product_api.7z">Sample Application Source Code</a></p></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Things I learned on my second job]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/02/10/things-i-learned-on-my-second-job/"/>
-    <updated>2013-02-10T15:58:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/02/10/things-i-learned-on-my-second-job</id>
-    <content type="html"><![CDATA[<p>In this blog post I&rsquo;m going to share some of the things that I learned on my second job.</p>
-
-<!--More-->
-
-
-<h3>Apache Solr</h3>
-
-<p>Apache Solr is a search platform that&rsquo;s available for different languages like Ruby, PHP, and Java.
-Solr&rsquo;s main feature is that its very fast. It returns either XML or JSON.
-There&rsquo;s a library available for PHP which is the one that I used. It&rsquo;s called <a href="http://code.google.com/p/solr-php-client/">solr php client</a></p>
-
-<p>Here&rsquo;s a sample query for accessing data that&rsquo;s available in the Solr server:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost/solr/select/?q=id:%search&wt=json&rows=%max_results</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>As you can see its just like accessing data from an API like the one provided by Twitter or Facebook.
-You can use Solr via server-side or client side.</p>
-
-<p>If you want to access its data via the server-side you can use the <code>file_get_contents()</code> php function or <code>curl</code>.
-If you want to access its data via the client-side you can use the <code>$.ajax</code> jQuery function.
-But if the Solr server is located on a different server you can use the <code>jsonp</code> data type.</p>
-
-<h3>Wordpress Plugin Development</h3>
-
-<p>I&rsquo;ve also learned about Wordpress Plugin Development and the Wordpress platform as a whole.
-<a href="http://codex.wordpress.org/">Codex</a>, the main documentation site for Wordpress has some really good guides and reference for the different functions that are available from Wordpress.</p>
-
-<p>When developing Wordpress plugins you will almost always have to hang out in these 2 pages:</p>
-
-<ul>
-<li><a href="http://codex.wordpress.org/Plugin_API/Filter_Reference">Filter Reference</a></li>
-<li><a href="http://codex.wordpress.org/Plugin_API/Action_Reference">Action Reference</a></li>
-</ul>
-
-
-<p>In Wordpress filters are used for processing the things that are already outputted by Wordpress like the content of a blog post or the title of your blog. Filters are used to modify, add, or hide content.
-This is very useful for filtering out things like profanity in blog posts.</p>
-
-<p>Actions in Wordpress are events that happen inside wordpress like publishing a new blog post or creating a new page or activating a plugin. You can hook into these actions to execute a specific function that will do something when these events happen.</p>
-
-<p>There&rsquo;s also a built-in class for accessing the Wordpress database which is the <a href="http://codex.wordpress.org/Class_Reference/wpdb">WPDB</a> which you will most likely use if the plugin that you&rsquo;re trying to build needs to persist data in a database (E.g for storing settings that your plugin will use).</p>
-
-<h3>API&rsquo;s</h3>
-
-<p>I&rsquo;ve also learned how to use API&rsquo;s like the <a href="http://www.flickr.com/services/api/">Flickr API</a>, <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ApiReference.html">Amazon Product Advertising API</a>, <a href="http://developer.ebay.com/common/api/">Ebay API</a>, and <a href="http://wiki.freebase.com/wiki/Freebase_API">Freebase API</a>.
-Since this will be used by the Wordpress plugin that I&rsquo;m developing.</p>
-
-<p>The Ebay API was particularly easy to use since they have a very good documentation.
-And by good documentation I mean things are easy to find.
-The documentation also has everything that a developer who is just getting started with using the API wants to know.</p>
-
-<p>The documentation for Amazon Product Advertising API was the exact opposite of the Ebay API documentation.
-Things were hard to find and you can&rsquo;t even find examples on how to use the API on languages like PHP.
-Thankfully I found this blog post on <a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">how to access the product advertising API in PHP</a> which made life easier.</p>
-
-<p>The Freebase API was also easy to use because the API itself is relatively simple.
-The Freebase API was divided into different services like Search, Image, Text, Topic, etc.
-Each of those returns different sets of data in JSON format.
-Freebase is already owned by Google so you can basically acquire an API key or access key from the Google API console.</p>
-
-<p>The Flickr API is also comparable to the Amazon Product Advertising API when it comes to difficulty.
-Though the documentation is very good it lacks some examples on how to access the API using different languages.
-But the <a href="http://phpflickr.com/">PHPFlickr</a> library made my life easier.
-All I had to do was to specify the App ID and App secret for my Flickr App which can be created at the <a href="http://www.flickr.com/services/apps/create/">App Garden</a> and then I can just call the methods which I need.</p>
-
-<p>That&rsquo;s all for this blog post. I will continue to update this blog post once I learn more things from my second job.</p>
 ]]></content>
   </entry>
   
