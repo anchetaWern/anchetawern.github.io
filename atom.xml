@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-08-25T13:40:52+08:00</updated>
+  <updated>2013-08-27T20:46:34+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,785 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Creating a Real Time Chat Application With Socket.io]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io/"/>
+    <updated>2013-08-25T13:58:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to walk you through the process of building a real time chat application using Socket.io.
+I just said Socket.io but socket.io isn&rsquo;t the only technology that were going to use for this mini project. Basically were going to make use of these technologies:</p>
+
+<ul>
+<li><strong>Node JS</strong> &ndash; this is the core technology that were gonna be using. Its basically just JavaScript on the server side</li>
+<li><strong>Redis</strong> &ndash; were going to use it to store the messages sent by each user</li>
+<li><strong>Socket.io</strong> &ndash; for real-time goodness!</li>
+<li><strong>Express JS</strong> &ndash; a framework for Node JS, were going to use express JS for a more cleaner and expressive syntax</li>
+<li><strong>HTML5 Web Notifications</strong> &ndash; for notifying the user once a message is received from another user</li>
+</ul>
+
+
+<h3>Installation</h3>
+
+<p>First let&rsquo;s go ahead and install the things that we need for this project.</p>
+
+<h4>Redis</h4>
+
+<p>You can install redis by downloading the latest stable release from the <a href="http://redis.io/download">redis website</a>.
+After that you can use <code>tar</code> to extract its contents:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tar xvzf redis-stable.tar.gz
+</span><span class='line'>cd redis-stable
+</span><span class='line'>make</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then try if the build works by executing <code>make test</code> from the terminal to test if you have successfully installed redis.</p>
+
+<p>If you&rsquo;re on Windows you can follow the instructions from here: <a href="http://codingsteps.com/install-redis-on-windows/">install redis on Windows</a></p>
+
+<p>Once you have installed redis, you can test it out by opening a terminal and execute <code>redis-cli</code>.
+This will allow you to interact with redis. You can try inserting a new record by using the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set name "iron man"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then retrieve it using the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>get name //outputs: iron man</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Node JS</h4>
+
+<p>You can install node js through the terminal using <code>apt-get</code> if you&rsquo;re on linux:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install python-software-properties python g++ make
+</span><span class='line'>sudo add-apt-repository ppa:chris-lea/node.js
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install nodejs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you are on Windows you can simply download the installer from the <a href="http://nodejs.org/download/">node js website</a></p>
+
+<h3>Setting Up the Application</h3>
+
+<p>Next we can now create the directory where our little chat application will reside. You can create it anywhere you want since Node.js doesn&rsquo;t need a server like Apache or Nginx to work. But for me I&rsquo;ll just be putting it on the web accessible folder intended for my Apache server. This won&rsquo;t have any effect since we&rsquo;ll be serving the chat application in its own port.</p>
+
+<h4>Specify Dependencies</h4>
+
+<p>Next specify the dependencies of our little chat application. Simply create a <code>package.json</code> file and put in the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>   "name": "realtime_chat_app",
+</span><span class='line'>   "description": "real time chat application",
+</span><span class='line'>   "version": "0.0.1",
+</span><span class='line'>   "dependencies": {
+</span><span class='line'>      "express": "3.x",
+</span><span class='line'>      "socketio" : "latest",
+</span><span class='line'>      "redis" : "latest"
+</span><span class='line'>   }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To break it down:</p>
+
+<ul>
+<li><strong>name</strong> &ndash; this is the name of the application that you&rsquo;re trying to create.</li>
+<li><strong>description</strong> &ndash; a short description of what the application is.</li>
+<li><strong>version</strong> &ndash; the version number of the application, you can have any version number you want.</li>
+<li><strong>dependencies</strong> &ndash; the node packages in which the application depends on in order to work. This takes up a set of key-value pairs. With the key being the name of the package and the value being the version number of the package. Here we&rsquo;ve specified <code>express</code>, <code>socketio</code>, and <code>redis</code> as the dependencies. It&rsquo;s a good practice to actually specify the actual version number of the dependency instead of just specifying <code>latest</code> since there might be some breaking changes to the API in the future and your application will simply refuse to work by that time. But I don&rsquo;t think <code>socketio</code> and the redis client for node js is going to change its API anytime soon so let&rsquo;s stick with using the latest version for now. If you are not sure of the name of the dependency that you are trying to install, you can always make use of the <a href="https://npmjs.org/">npm website</a> to find dependencies and their actual names.</li>
+</ul>
+
+
+<p><img src="http://anchetaWern.github.io/images/posts/realtimechat_socketio/npm.png" alt="npm website" /></p>
+
+<p>Once you&rsquo;re done with that, save the file and open up the terminal in the same location where you have the <code>package.json</code> file then execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install the dependencies under the <code>node_modules</code> directory.</p>
+
+<h3>Building the Application</h3>
+
+<p>Now were ready to build the application. But first go ahead and create the following files and directories in your working directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> - chat_app (your working directory)
+</span><span class='line'>  - public
+</span><span class='line'>      - css
+</span><span class='line'>          - main.css (the main css file for styling the chat app)
+</span><span class='line'>      - img
+</span><span class='line'>      - js
+</span><span class='line'>          - vendor
+</span><span class='line'>              - jquery.min.js (you can download it from jquery.com or simply load it from a cdn)
+</span><span class='line'>  - views - index.html
+</span><span class='line'>  - app.js
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open up the <code>app.js</code> file and initialize the app by declaring the following variables:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">app_port</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">;</span> <span class="c1">//the port in which the application will run</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">io_port</span> <span class="o">=</span> <span class="mi">3333</span><span class="p">;</span> <span class="c1">//the port in which socket io will run</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">);</span> <span class="c1">//include the express js framework</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">)();</span> <span class="c1">//create an app using express js</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">).</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span> <span class="c1">//create an express js server</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">io</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;socket.io&#39;</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">server</span><span class="p">);</span> <span class="c1">//start socket io</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">redis</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;redis&quot;</span><span class="p">);</span> <span class="c1">//include the redis client</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">redis_client</span> <span class="o">=</span> <span class="nx">redis</span><span class="p">.</span><span class="nx">createClient</span><span class="p">();</span> <span class="c1">//create a redis client</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What you have just declared are the variables that&rsquo;s going to be used throughout the app.
+The <code>app_port</code> is the port in which our app will run. So if you start the app by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">node</span> <span class="nx">app</span><span class="p">.</span><span class="nx">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can access it by going to <code>http://localhost:8000</code>. You can also use other ports aside from <code>8000</code> as long as its not already used by another running process.</p>
+
+<p>The <code>io_port</code> is the port in which socket io will run. In this case were using port <code>3333</code>. Again you have to make sure that the port is not already in use by another process otherwise it wouldn&rsquo;t work.</p>
+
+<p>The <code>express</code> variable contains the reference to the express js framework.
+The <code>app</code> variable stores the reference to the new app created using express js.
+The <code>server</code> variable contains the reference to the server that we create using express js.</p>
+
+<p>The <code>io</code> variable contains the reference to socket io. We then immediately let it listen for events triggered from the express js server.</p>
+
+<p>The <code>redis</code> variable contains the reference to the redis client. The redis client is a means of interacting with the redis server that we installed earlier. Its like an interface between node js and the redis server.</p>
+
+<p>Then we create redis client and store it on the <code>redis_client</code> variable.</p>
+
+<p>Then we set our app to use the <code>bodyParser</code>. The main usage for the <code>bodyParser</code> in our app is for parsing the request parameters when were sending parameters to the server. We also set the directory for static files to be served by the server using the <code>static()</code> method. The <code>static()</code> method takes up the name of the directory which contains the static files that you want to serve. In this case its the <code>public</code> directory in the root of our app.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">bodyParser</span><span class="p">());</span>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="kr">static</span><span class="p">(</span><span class="s1">&#39;public&#39;</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we create the variables that will store the names of the people who are currently on the chat and the chat messages.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">chatters</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">chat_messages</span> <span class="o">=</span> <span class="p">[];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we get the names of the people in the chat that are stored in the database. If it exists then we assign it to the <code>chatters</code> variable. We only store the stringified version of the JavaScript Object so we need to use <code>JSON.parse()</code> before assigning it to the variable.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">redis_client</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;chat_app_chatters&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">reply</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">reply</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">chatters</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">reply</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We also get the messages stored in the database and assign it to the <code>chat_messages</code> variable if it exists.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">redis_client</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;chat_app_messages&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">reply</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">reply</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">chat_messages</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">reply</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next let&rsquo;s set what happens when users try to access the root url (<a href="http://localhost:8000">http://localhost:8000</a>).
+Here were using the <code>get()</code> method which takes up 2 arguments. The first argument is the path, and the second argument is the callback function in which the request (req) and response (res) are passed behind the scenes.
+All you need to remember here is that the <code>req</code> variable stores the request parameters such as the form data that you pass when requesting for the specified path (/). And the <code>res</code> variable contains methods which you can use for the response. In this case were simply sending the static <code>index.html</code> file. This means that when users request for <code>http://localhost:8000</code> the <code>index.html</code> under the <code>public/views</code> directory will be rendered in the browser.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">sendfile</span><span class="p">(</span><span class="s1">&#39;./views/index.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we initialize socket io. Here were listening to 2 events, the <code>message</code> event and the <code>update_chatter_count</code> event. These 2 events are custom events so you can name it anything you want as long as it has a reciprocal event on the client side. When the <code>message</code> event happens we immediately emit the <code>send</code> event to each of the users that are currently on the chat room. The same is true with the <code>update_chatter_count</code> event, we immediately emit the <code>count_chatters</code> event to the rest of the clients when this event happens. But we don&rsquo;t just emit the event, we also pass in the data that come from the client who emmited the event.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">socket</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;send&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;update_chatter_count&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;count_chatters&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yes I know this is really confusing, I also got confused at first so I recommend you to just play around with the code until it finally ticks.
+What you have to remember is that both the server and the client should have the code that both listens and emit the events. What you emit in the client side you should listen for it on the server side, and what you listen for in the client side should be emitted from the server side.</p>
+
+<p>Next is the code for joining the chat room. What were doing here is to get the username passed in from the client side, then check if the username already exists in the array of usernames by using the <code>indexOf()</code> method.
+The <code>indexOf()</code> method returns a value of <code>-1</code> if the value that you specified doesn&rsquo;t exists yet.
+If the user doesn&rsquo;t exists yet we simply push it into the <code>chatters</code> array which stores a list of usernames. Then we also save it into the database. The way we save into redis is to call the <code>set</code> method provided by the redis client for node. The <code>set</code> method takes up a <code>key</code> and a <code>value</code> as its arguments. Here were storing the stringified version of the <code>chatters</code> array. Finally we send a response to the client containing the current value of the <code>chatter</code> array and a <code>status</code> of <code>ok</code>. Otherwise we send a <code>failed</code> status if the user already exists.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/join_chat&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">chatters</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">username</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">chatters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">username</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;chat_app_chatters&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">chatters</span><span class="p">));</span>
+</span><span class='line'>      <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="s1">&#39;chatters&#39;</span> <span class="o">:</span> <span class="nx">chatters</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span> <span class="o">:</span> <span class="s1">&#39;ok&#39;</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="s1">&#39;status&#39;</span> <span class="o">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code for leaving the chat room.
+This takes up the username of the user whose going to leave the chat room.
+We simply remove it from the array of chatters by using the <code>splice</code> method which takes up the index of the item that we want to remove in the array and the number of items that we want to remove. We then commit it back to the database and send an ok status to the client.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/leave_chat&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">chatters</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">chatters</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">username</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;chat_app_chatters&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">chatters</span><span class="p">));</span>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="s1">&#39;status&#39;</span> <span class="o">:</span> <span class="s1">&#39;ok&#39;</span><span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code that handles the messages that are sent from the client side.
+This takes up the username (sender) and the actual message. We then push these values to the <code>chat_messages</code> array which stores the sender names and their messages. Then we also commit the stringified version back to the database.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/send_message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">chat_messages</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="s1">&#39;sender&#39;</span> <span class="o">:</span> <span class="nx">username</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span> <span class="o">:</span> <span class="nx">message</span><span class="p">});</span>
+</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;chat_app_messages&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">chat_messages</span><span class="p">));</span>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="s1">&#39;status&#39;</span> <span class="o">:</span> <span class="s1">&#39;ok&#39;</span><span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code that returns the messages. This doesn&rsquo;t take up any parameters from the client side, it simply returns the <code>chat_messages</code> array. This will be used in the client side to load the messages for a person who enters the chat room later than the others. If you remember earlier were updating the database every time a message is sent. And on every page load were assigning the value for the <code>chat_messages</code> array to be equal to the messages that are currently on the database. This means that all the messages that has been previously sent by other users in the chat room will be stored in the <code>chat_messages</code> array which we are returning here.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/get_messages&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">chat_messages</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We also have this code for returning the people who are currently on the chat room.
+This will be used in the client side to determine the number of people who are currently on the chat room.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/get_chatters&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">chatters</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we make our server listen to port 8000 so that we actually see something once we access <code>http://localhost:8000</code> in the browser.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the markup for our simple chat application. I tried to make it as simple as possible so we only have a simple form in here that asks for the username, then a join chat button to actually join the chat room. We also have this <code>.chat-info</code> div which we will use later on to show the number of users that are currently on the chat room. Then we have this <code>.chat</code> div which serves as a container for everything that has something to do with the chat.
+The <code>.messages</code> div which is directly inside of it will be used as a container for all the messages sent by each of the users in the chat room. Then we also have this <code>#message</code> textarea which will be used by users to input their messages. Then we have buttons for leaving the chat room and sending the message. Finally we include the socket io client side script, jquery, and our main JavaScript file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!doctype html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Simple Chat Application<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;/css/main.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Simple Chat Application<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;join-chat&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;username&quot;</span><span class="nt">&gt;</span>Username:<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;username&quot;</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">id=</span><span class="s">&quot;join-chat&quot;</span> <span class="na">value=</span><span class="s">&quot;Join Chat&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;chat-info&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;chat&quot;</span><span class="nt">&gt;</span>       
+</span><span class='line'>          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;messages&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>              
+</span><span class='line'>          <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span> <span class="na">id=</span><span class="s">&quot;message&quot;</span> <span class="na">cols=</span><span class="s">&quot;93&quot;</span> <span class="na">rows=</span><span class="s">&quot;5&quot;</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">id=</span><span class="s">&quot;leave-chat&quot;</span> <span class="na">data-username=</span><span class="s">&quot;&quot;</span> <span class="na">value=</span><span class="s">&quot;Leave Chat&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">id=</span><span class="s">&quot;send-message&quot;</span> <span class="na">data-username=</span><span class="s">&quot;&quot;</span> <span class="na">value=</span><span class="s">&quot;Send Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/socket.io/socket.io.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/js/vendor/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/js/main.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the stylesheet. The main container would be at the center of the screen.
+The container for the messages will have a border of black.
+For the chat container its initially set to be not displayed as users would have to join the chat first before they can see what&rsquo;s going on in the chat room. The container for an individual message sent by a user is going to have a width which occupies the entire width of its parent which is the div with a class of <code>messages</code>.
+Finally, each <code>user</code> container would be floated to the left so that the username would always appear on the left side of the screen.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.container</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">777px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.messages</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">769px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">240px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.chat</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.msg</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.user</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-right</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">font-weight</span><span class="o">:</span> <span class="k">bold</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On our main JavaScript file <code>main.js</code> we declare the <code>socket</code> variable globally.
+It would be a good practice to actually enclose it inside an immediately invoked function expression so that it won&rsquo;t be accessed from the outside but for this tutorial let&rsquo;s just stick with declaring it globally.
+The <code>socket</code> variable is our means of connecting to the socket io server which is running on the server.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;http://localhost&#39;</span><span class="p">);</span> <span class="c1">//connect to the socket io server</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">chatter_count</span><span class="p">;</span> <span class="c1">//stores the current number of users in the chat room</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we get the users who are currently on the chat room. Here were using the <code>$.get</code> jQuery method to request the data from the server using the <code>GET</code> method. If you remember earlier we used <code>app.get('/get_chatters')</code> on our server-side code here were simply telling the server to give us the value returned from that function that we declared earlier. So the <code>response</code> here is actually the array of users that are currently on the chat room.
+We simply get the built-in attribute for arrays which is <code>length</code> to get the number of users who are currently in the chat room. We then use this value to update the contents of the <code>.chat-info</code> div and the <code>chatter_count</code> variable.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/get_chatters&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.chat-info&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;There are currently &quot;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="s2">&quot; people in the chat room&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">chatter_count</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="c1">//update chatter count</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code for joining the chat room. Here were simply requesting for the <code>/join_chat</code> path that we declared earlier on the server. If you go back to that code you&rsquo;ll see that were getting <code>req.param('username')</code>. That&rsquo;s exactly what were passing in here, the username of the user who wants to join the chat room.
+If the username doesn&rsquo;t already exists  we emit the <code>update_chatter_count</code> event passing in an object which contains the specific action that we want to perform with the <code>chatter_count</code> variable. In this case were telling it to increase since a new user just joined the chat room. We also update the UI to show the chat container. We also update the buttons for leaving the chat room and sending a message to include a data attribute of <code>username</code> which simply stores the username of the user who just joined the chat room.
+After that we request for the chat messages from the server. If there&rsquo;s actually a message returned we update the chat box to include these messages. It&rsquo;s a good practice to store the html for updating the UI in a variable then updating the UI after you already got everything to reduce the need to update the browser. It&rsquo;s also a good practice to use templating engines such as Mustache or Handlebars but let&rsquo;s stick with appending HTML to keep things simple. After that we simply hide the container for joining the chat room so that the user cannot join again.
+If the username already exists then we simply <code>alert</code> the user that the username that he inputted already exists, then we re-focus to the username input field to make it easier to input a username again.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#join-chat&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">trim</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/join_chat&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s1">&#39;username&#39;</span> <span class="o">:</span> <span class="nx">username</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>       
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">){</span> <span class="c1">//username doesn&#39;t already exists</span>
+</span><span class='line'>              
+</span><span class='line'>              <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;update_chatter_count&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span> <span class="o">:</span> <span class="s1">&#39;increase&#39;</span><span class="p">});</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.chat&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#leave-chat&#39;</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#send-message&#39;</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/get_messages&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>                      
+</span><span class='line'>                  <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>                      <span class="kd">var</span> <span class="nx">message_count</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>                      <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>                      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">message_count</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>                          <span class="nx">html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=&#39;msg&#39;&gt;&lt;div class=&#39;user&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;sender&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&lt;div class=&#39;txt&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>                      <span class="p">}</span>
+</span><span class='line'>                      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.messages&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+</span><span class='line'>                  <span class="p">}</span>
+</span><span class='line'>              <span class="p">});</span>          
+</span><span class='line'>              
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.join-chat&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span> <span class="c1">//hide the container for joining the chat room.</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="s1">&#39;failed&#39;</span><span class="p">){</span> <span class="c1">//username already exists</span>
+</span><span class='line'>              <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Sorry but the username already exists, please choose another one&quot;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">focus</span><span class="p">();</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the code for leaving the chat room, we simply pass in the <code>username</code> to the server side.
+If the response is <code>ok</code> we emit the <code>message</code> event containing an object that contains the <code>username</code> of the user who left the chat room along with a final message which simply says <code>user x has left the chat room</code> so that other users will also know. Then we also emit the <code>update_chatter_count</code> event and pass the object which simply tells to every listener to <code>decrease</code> the chatter count. Finally we simply hide the chat container, show the join chat container, empty the username field and alert the user that he has successfully left the chat room.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#leave-chat&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/leave_chat&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s1">&#39;username&#39;</span> <span class="o">:</span> <span class="nx">username</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">){</span>
+</span><span class='line'>              <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span> <span class="o">:</span> <span class="nx">username</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span> <span class="o">:</span> <span class="nx">username</span> <span class="o">+</span> <span class="s2">&quot; has left the chat room..&quot;</span><span class="p">});</span>
+</span><span class='line'>              <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;update_chatter_count&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span> <span class="o">:</span> <span class="s1">&#39;decrease&#39;</span><span class="p">});</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.chat&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.join-chat&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;You have successfully left the chat room&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code for sending a message.
+Here were passing along the <code>username</code> of the user who sent the message along with his <code>message</code>.
+If the response from the server is <code>ok</code> then we simply emit the <code>message</code> event containing an object which contains the username of the sender and his actual message. All the listeners to this event would be able to get this data and do something with it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#send-message&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">trim</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#message&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/send_message&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s1">&#39;username&#39;</span> <span class="o">:</span> <span class="nx">username</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;message&#39;</span> <span class="o">:</span> <span class="nx">message</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">){</span>
+</span><span class='line'>              <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span> <span class="o">:</span> <span class="nx">username</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span> <span class="o">:</span> <span class="nx">message</span><span class="p">});</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#message&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the code for listening to the <code>send</code> event.
+This is responsible for updating the UI every time the <code>message</code> event is emitted.
+What it does is to simply append another row which contains the sender name and the actual message to the chat box.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;send&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=&#39;msg&#39;&gt;&lt;div class=&#39;user&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">username</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&lt;div class=&#39;txt&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">message</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.messages&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally the code for listening for the <code>count_chatters</code> event. This is responsible for updating the UI every time the <code>update_chatter_count</code> event is emitted.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;count_chatters&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">action</span> <span class="o">==</span> <span class="s1">&#39;increase&#39;</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">chatter_count</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="nx">chatter_count</span><span class="o">--</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.chat-info&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;There are currently &quot;</span> <span class="o">+</span> <span class="nx">chatter_count</span> <span class="o">+</span> <span class="s2">&quot; people in the chat room&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is what our simple chat application would look like once its done:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/realtime_chat_socketio/simple-chat-app.png" alt="Simple Chat Application" /></p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://nodejs.org/">Node JS</a></li>
+<li><a href="http://expressjs.com/">ExpressJS</a></li>
+<li><a href="http://net.tutsplus.com/tutorials/javascript-ajax/introduction-to-express/">Introduction to Express</a></li>
+<li><a href="http://socket.io/">Socket IO</a></li>
+<li><a href="http://try.redis.io/">Try Redis</a></li>
+<li><a href="http://codertalks.com/long-polling-vs-short-polling/">Long Polling VS Short Polling</a></li>
+</ul>
+
+
+<h2>Conclusion</h2>
+
+<p>You&rsquo;ve learned how to create a simple chat application using NodeJS, ExpressJs, Socket.IO, Redis and jQuery.
+As you can see from the code that we&rsquo;ve written its very easy to create real-time applications with these technologies.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How I use Git as a Solo Developer]]></title>
@@ -6778,425 +7557,6 @@ Programming is a great way to improve problem solving skills.</p>
 <ul>
 <li><a href="http://www.webplatform.org/">web platform.org</a></li>
 <li><a href="https://developer.mozilla.org/en-US/">Mozilla Developer Network</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Freebase API]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/02/11/getting-started-with-freebase-api/"/>
-    <updated>2013-02-11T19:55:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/02/11/getting-started-with-freebase-api</id>
-    <content type="html"><![CDATA[<p>In this blog post I&rsquo;m going to show you the basics of using the Freebase API.</p>
-
-<h3>What is Freebase?</h3>
-
-<p>Freebase is a collection of data from different sources.
-So its basically like an encyclopedia in which you can pull data from.</p>
-
-<p>Here&rsquo;s a diagram that shows exactly what type of data you can fetch from Freebase:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/Freebase-Domains.jpg" alt="freebase diagram" /></p>
-
-<p>You can also watch this video Introducing the knowledge graph:</p>
-
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/mmQl6VGvX-c "></iframe></div>
-
-
-
-
-<!--More-->
-
-
-<h3>Playing with the API</h3>
-
-<p>Most API&rsquo;s requires an API Key so that you could access its data but Freebase is different.
-You have the choice whether or not to register an API key. If you just want to try things out
-you can simply access the data from Freebase like this:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>https://www.googleapis.com/freebase/v1/search?query=nirvana&indent=true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>There are 2 parameters used in this url:</p>
-
-<ul>
-<li>query &ndash; what you want to search.</li>
-<li>indent &ndash; can either be true or false, specify the value of true if you want to return a formatted json string so that you can easily read it.</li>
-</ul>
-
-
-<h4>Specifying Language</h4>
-
-<p>You can also specify the language by using the <code>lang</code> parameter.
-If you specified a non-supported language the API will also tell you:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/unsupported_language.jpg" alt="unsupported language" /></p>
-
-<h4>Filters</h4>
-
-<p>But the true power of this API lies on the filters that you can use to specify what is exactly the type
-of data that you&rsquo;re looking for. For example you want to be able to find music that has the name &ldquo;Robot&rdquo; on it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>https://www.googleapis.com/freebase/v1/search?query=robot&indent=true&filter=(all%20type:music)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The query above would return:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/robot_music.jpg" alt="robot music" /></p>
-
-<p>Another example would be if you&rsquo;re looking for &ldquo;One piece&rdquo; not the swimsuit but the <a href="http://en.wikipedia.org/wiki/One_Piece">manga/anime</a>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>https://www.googleapis.com/freebase/v1/search?query=one%20piece&indent=true&filter=(all%20type:animation)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And as expected it returns only the data which refers to the &ldquo;One Piece&rdquo; anime/manga:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/one_piece.jpg" alt="one piece anime" /></p>
-
-<h3>Read Services</h3>
-
-<p>The Freebase API is actually composed of several services which you can use separately or in tandem with other services. We will go over some of these services later on and implement it using PHP.</p>
-
-<ul>
-<li>Search Service</li>
-<li>MQL Read Service</li>
-<li>Topic API</li>
-<li>RDF API</li>
-<li>Text Service</li>
-<li>Image Service</li>
-<li>Freebase Suggest</li>
-</ul>
-
-
-<h3>Getting an API Key</h3>
-
-<p>Once you&rsquo;ve played around the Freebase API a bit you might want to register an API key.
-You can register from the <a href="https://code.google.com/apis/console/">Google API Console</a>.
-It&rsquo;s free to register but when your application gets more and more users and it exceeds the limit for the free service Google will have you pay for the service.</p>
-
-<p>If you haven&rsquo;t created a project with the Google console before you might need to create a new project.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/new_project.jpg" alt="new project" /></p>
-
-<p>Once that&rsquo;s done look for the Freebase API in the services tab and then enable it by turning it on:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/freebase.jpg" alt="freebase" /></p>
-
-<p>Accept the service agreement and then click on the API Access tab:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_freebase/api_key.jpg" alt="api key" /></p>
-
-<p>All you have to do now is copy the API key and use it on your requests by specifying a key parameter.
-Using our previous query, your query will now look like this with the api key specified:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>https://www.googleapis.com/freebase/v1/search?query=one%20piece&indent=true&filter=(all%20type:animation)&key=xyz</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Freebase with PHP</h3>
-
-<p>Now that we&rsquo;ve played around with the Freebase API in the browser its time to access it using PHP.</p>
-
-<p>First were going to build a simple class that will query the Freebase API for us.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Freebase</span><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"> </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Create a new private variable that will store the API key that we got from the Google console earlier.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">private</span> <span class="nv">$api_key</span> <span class="o">=</span> <span class="s1">&#39;xyz&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Search Service</h4>
-
-<p>Like I mentioned earlier we will go through some of the read services that the Freebase API offers.
-So were going to create a method which will utilize these services in our class.</p>
-
-<p>The service that we have gone over earlier was the Search service which simply allows you to search based on keywords.</p>
-
-<p>Create a new method and call it search this will utilize the search service.
-Here we have 1 required parameter ($query) and 5 optional parameters.
-You can see a full list of the parameters that you can specify in the wiki for the <a href="http://wiki.freebase.com/wiki/ApiSearch">Search API</a>.</p>
-
-<p>As you can see from the code below
-were just building the URL from the arguments that we will supply later on when we call the method.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">search</span><span class="p">(</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$filter</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">$limit</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="nv">$exact</span> <span class="o">=</span> <span class="s1">&#39;false&#39;</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$query</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$query</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
-</span><span class='line'>      <span class="nv">$url</span>    <span class="o">=</span> <span class="s1">&#39;https://www.googleapis.com/freebase/v1/search?query=&#39;</span><span class="o">.</span> <span class="nv">$query</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;filter=(&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$filter</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;)&#39;</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;start=&#39;</span> <span class="o">.</span> <span class="nv">$start</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;limit=&#39;</span> <span class="o">.</span> <span class="nv">$limit</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;exact=&#39;</span> <span class="o">.</span> <span class="nv">$exact</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;key=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">api_key</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">),</span> <span class="k">true</span><span class="p">)[</span><span class="s1">&#39;result&#39;</span><span class="p">];</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The important thing to note here is that the query should be <a href="http://php.net/manual/en/function.urlencode.php">url encoded</a> otherwise your query won&rsquo;t work properly if for example the query has spaces in it or some special characters.</p>
-
-<p>You can see url encoding in action when you input your query manually in the address bar of the browser.
-If you manually input our query earlier it will look like this before you type in enter:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">https</span><span class="o">://</span><span class="nx">www</span><span class="o">.</span><span class="nx">googleapis</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">freebase</span><span class="o">/</span><span class="nx">v1</span><span class="o">/</span><span class="nx">search</span><span class="o">?</span><span class="nx">query</span><span class="o">=</span><span class="nx">one</span> <span class="nx">piece</span><span class="o">&amp;</span><span class="nx">indent</span><span class="o">=</span><span class="k">true</span><span class="o">&amp;</span><span class="nx">filter</span><span class="o">=</span><span class="p">(</span><span class="nx">all</span> <span class="nx">type</span><span class="o">:</span><span class="nx">animation</span><span class="p">)</span><span class="o">&amp;</span><span class="nb">key</span><span class="o">=</span><span class="nx">xyz</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But once you press on enter all those spaces will be replaced with <code>%20</code> or <code>+</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">https</span><span class="o">://</span><span class="nx">www</span><span class="o">.</span><span class="nx">googleapis</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">freebase</span><span class="o">/</span><span class="nx">v1</span><span class="o">/</span><span class="nx">search</span><span class="o">?</span><span class="nx">query</span><span class="o">=</span><span class="nx">one</span><span class="o">%</span><span class="mi">20</span><span class="nx">piece</span><span class="o">&amp;</span><span class="nx">indent</span><span class="o">=</span><span class="k">true</span><span class="o">&amp;</span><span class="nx">filter</span><span class="o">=</span><span class="p">(</span><span class="nx">all</span><span class="o">%</span><span class="mi">20</span><span class="nx">type</span><span class="o">:</span><span class="nx">animation</span><span class="p">)</span><span class="o">&amp;</span><span class="nb">key</span><span class="o">=</span><span class="nx">xyz</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s a <a href="http://www.w3schools.com/tags/ref_urlencode.asp">url encoding reference</a> from W3Schools.</p>
-
-<p>The main meat of all the methods that we will be creating
-for this class is the actual fetching of the data from the Freebase API.
-We do the fetching by using a method called <code>file_get_contents</code> which takes a <code>url</code> as an argument and returns the contents (both html, javascript and text) of the page referenced by the url that you supplied.</p>
-
-<p>But do note that <code>file_get_contents</code> doesn&rsquo;t work with every site or every API out there.
-So in the case it doesn&rsquo;t work then you can use CURL instead.
-There&rsquo;s a very gentle introduction on <a href="http://codular.com/curl-with-php">how to perform cURL request using PHP</a> at codular.</p>
-
-<p>Also note that <code>file_get_contents</code> returns a warning if the content that you&rsquo;re requesting doesn&rsquo;t exist because of an HTTP Error or the API simply didn&rsquo;t find the data that you&rsquo;re requesting for.
-In those cases you might want to include an <code>@</code> sign before the actual method name like <code>@file_get_contents</code> that way it wouldn&rsquo;t return a warning even if nothing is returned.</p>
-
-<p>Lastly we use the <code>json_decode</code> method to convert the json string to a PHP array which we can easily manipulate or loop through.</p>
-
-<h4>Image Service</h4>
-
-<p>There&rsquo;s also the Image Service which simply returns an image base on the entity ID.
-The entity ID can be a string or a number representing the entity.
-But in my experience I notice that this service doesn&rsquo;t generalize if you query for something like &lsquo;naruto&rsquo;, &lsquo;ichigo&rsquo; or &lsquo;gundam&rsquo;. It can only return an image for a certain entity that is globally known like the following people or works:</p>
-
-<ul>
-<li>vincent_van_gogh</li>
-<li>pablo_picasso</li>
-<li>mona_lisa</li>
-<li>the_scream</li>
-<li>jose_rizal</li>
-<li>andres_bonifacio</li>
-<li>leonardo_da_vinci</li>
-</ul>
-
-
-<p>For the others which aren&rsquo;t globally known or entities which didn&rsquo;t deserve to have an actual index for the image service you can use the search service to get the entity ID and then use that entity ID to query the image service.
-We&rsquo;ll go through that in a minute.</p>
-
-<p>For now let&rsquo;s look at the method for fetching image from the image service.
-We have 3 parameters, 1 required and 2 optional.</p>
-
-<p>There&rsquo;s not really much parameters that you can specify for the image service, be sure to check out the wiki for the <a href="http://wiki.freebase.com/wiki/ApiImage">image service</a> to learn more.</p>
-
-<p>The first parameter is the <code>entity_id</code> which for globally known entities can be just words separated by underscores like we saw earlier.
-As you can see were not actually using the <code>file_get_contents</code> method here since we only need the url for the image we only return the url itself.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">image</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">,</span> <span class="nv">$max_width</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span> <span class="nv">$max_height</span> <span class="o">=</span> <span class="mi">150</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;https://usercontent.googleapis.com/freebase/v1/image&#39;</span> <span class="o">.</span> <span class="nv">$entity_id</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;?maxwidth=&#39;</span> <span class="o">.</span> <span class="nv">$max_width</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;maxheight=&#39;</span> <span class="o">.</span> <span class="nv">$max_height</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;key=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">api_key</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$url</span><span class="p">;</span>      
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Text Service</h4>
-
-<p>The text service is different from the image service in that the
-image service actually accepts the title or name of well-known entities as a value for the entity ID as well as the ID representing the entity itself.
-But for the text service we can only utilize it once we&rsquo;ve
-called the search service which returns the entity ID that we need.</p>
-
-<p>The method has also a  <code>max_length</code> parameter which is simply used to specify the maximum length of the text that will be returned. <code>0</code> being no limit so it basically returns everything it can return.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">text</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">,</span> <span class="nv">$max_length</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$url</span>    <span class="o">=</span> <span class="s1">&#39;https://www.googleapis.com/freebase/v1/text/&#39;</span> <span class="o">.</span> <span class="nv">$entity_id</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;?maxlength=&#39;</span> <span class="o">.</span> <span class="nv">$max_length</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;key=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">api_key</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">),</span> <span class="k">true</span><span class="p">)[</span><span class="s1">&#39;result&#39;</span><span class="p">];</span>       
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Topic API</h4>
-
-<p>Lastly there&rsquo;s the topic API. There&rsquo;s actually 3 more services in the Freebase API which we haven&rsquo;t gone over but I&rsquo;ll leave those for another day. The topic API just like the text service and image service requires an entity ID for the request.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">topic</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$entity_id</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;https://www.googleapis.com/freebase/v1/topic&#39;</span> <span class="o">.</span> <span class="nv">$entity_id</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>        
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Calling the Methods</h3>
-
-<p>Now that were done creating the class its now time to actually call the methods
-to produce some output. Create a new file and then import the class that we created earlier.
-Also create an object of that class so that we can use it to call the methods.</p>
-
-<p>What the code below does is just using the search method as the base data source
-and then the image and text methods to fetch the image and a description for each entity
-returned from our main search.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;class.freebase.php&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$freebase</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Freebase</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$freebase</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;Dragon ball z&#39;</span><span class="p">,</span> <span class="s1">&#39;all type:manga&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$result</span> <span class="k">as</span> <span class="nv">$entity</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="nv">$entity</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">];</span>
-</span><span class='line'>  <span class="nv">$name</span> <span class="o">=</span> <span class="nv">$entity</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$image</span> <span class="o">=</span> <span class="nv">$freebase</span><span class="o">-&gt;</span><span class="na">image</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$text</span> <span class="o">=</span> <span class="nv">$freebase</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;li&gt;</span>
-</span><span class='line'><span class="x">  &lt;h3&gt;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$name</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&lt;/h3&gt;</span>
-</span><span class='line'><span class="x">  &lt;img src=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$image</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&quot; alt=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$name</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&quot;&gt;</span>
-</span><span class='line'><span class="x">  &lt;p&gt;</span>
-</span><span class='line'><span class="x">  </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$text</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x"> </span>
-</span><span class='line'><span class="x">  &lt;/p&gt;  </span>
-</span><span class='line'><span class="x">&lt;/li&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="http://wiki.freebase.com/wiki/ApiSearch">Search Service</a></li>
-<li><a href="http://wiki.freebase.com/wiki/ApiImage">Image Service</a></li>
-<li><a href="http://wiki.freebase.com/wiki/ApiText">Text Service</a></li>
-<li><a href="http://wiki.freebase.com/wiki/Topic_API">Topic API</a></li>
-<li><a href="http://wiki.freebase.com/wiki/Search_Cookbook">Search Cookbook</a></li>
-<li><a href="http://www.w3schools.com/tags/ref_urlencode.asp">URL Encoding Reference</a></li>
-<li><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_freebase_api.7z">Sample Application Source Code</a></li>
 </ul>
 
 ]]></content>
