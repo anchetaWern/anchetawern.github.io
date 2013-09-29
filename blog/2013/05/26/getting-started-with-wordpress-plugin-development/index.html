@@ -1716,10 +1716,14 @@ Then we call the <code>get_tweets</code> method which we will create later. This
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Next we now create the <code>get_tweets</code> method which we called earlier from our widget.
-We can either use built-in PHP methods like <code>curl</code> and <code>file_get_contents</code> for this one but like I said in the best practices section earlier, making use of methods which are available to Wordpress is considered a best practice. It will make your life as a developer easier since you don&rsquo;t have to write most of the functionality that you need by hand.</p>
+<p>Next we now create the <code>get_tweets</code> method which we called earlier from our widget. For this were going to use the twitteroauth library which was created by Abraham Williams to easily make calls to the Twitter API using PHP.</p>
 
-<p>Back to our method were using the <code>wp_remote_get</code> method to get the contents returned from the user timeline of the twitter user specified in the plugin options page. An array containing the header (request status and anything else in the request header) and the body (actual content returned) is returned by <code>wp_remote_get</code> if the request was successful. The twitter API returns a json string so we have to use <code>json_decode</code> to convert it to a PHP array which we can iterate from. Once we have that array we simply loop through it and do some modifications (wrapping url&rsquo;s in anchor tags) then store it back to an array which we then return after were done iterating through the results.</p>
+<p>You can download the two files that we will be needing from this method from here: <a href="https://github.com/abraham/twitteroauth/tree/master/twitteroauth">Twitteroauth library</a>. After you&rsquo;ve downloaded that just put those 2 files in a folder called <code>libs</code> in the main plugin directory. After that, create a <code>twitteroauth</code> directory and put those 2 files so we will have no problems distinguishing which files belongs to which library later on.</p>
+
+<p>Once you&rsquo;re done with that go ahead and include the <code>twitteroauth.php</code> inside the <code>get_tweets</code> method. Then create a new object for the <code>TwitterOAuth</code> class. The constructor needs a couple of things which you can get from the <a href="https://dev.twitter.com/">Twitter Developer Site</a> by registering an app. You can simply login using your existing twitter account then under <a href="https://dev.twitter.com/apps">my applications</a> choose <code>create new application</code> if you don&rsquo;t already have an application. I won&rsquo;t dive into much detail on how to create an application, all you have to do is to fill in the required details and agree to the terms and conditions set by twitter. Then after that click on the <code>create access token</code> button to create an access token for your app since its not automatically created.
+Finally, just supply the <code>consumer key</code>, <code>consumer secret</code>, <code>access token</code>, and <code>access token secret</code>.</p>
+
+<p>To get the tweets of the user we simply call on the <code>get</code> method from the <code>TwitterOAuth</code> library and supply 2 arguments. The first one is the method that we want to use, in this case we only want to get the tweets for a specific user so we will use the <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline">statuses/user_timeline</a> method which requires arguments such as the <code>user_id</code> or the <code>screen_name</code> , <code>since_id</code>, <code>count</code>, <code>max_id</code>, and <code>exclude_replies</code>. But we will only use the <code>screen_name</code> or the twitter handle, <code>count</code> and <code>exclude_replies</code>. The <code>screen_name</code> is simply the username of the twitter user that you wish to get, the <code>count</code> is the number of tweets to return, and the <code>exclude_replies</code> requires a boolean value to specify whether you want to exclude the replies to a specific twitter (true) user or not (false). By default the tweets that are returned are ordered from the most recent to less recent tweet.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1746,16 +1750,48 @@ We can either use built-in PHP methods like <code>curl</code> and <code>file_get
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
 </span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_tweets</span><span class="p">(){</span>
 </span><span class='line'>  
-</span><span class='line'>  <span class="c1">//access the twitter API</span>
-</span><span class='line'>  <span class="nv">$result</span> <span class="o">=</span> <span class="nx">wp_remote_get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">protocol</span> <span class="o">.</span> <span class="s2">&quot;api.twitter.com/1/statuses/user_timeline.json?screen_name=&quot;</span><span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twitter_id</span><span class="o">.</span><span class="s2">&quot;&amp;count=11&amp;exclude_replies=true&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">require_once</span> <span class="s1">&#39;libs/twitteroauth/twitteroauth.php&#39;</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="nv">$tweets</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]);</span>
+</span><span class='line'>  <span class="c1">//access the twitter API</span>
+</span><span class='line'>  <span class="nv">$twitterConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterOAuth</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1">//consumer key</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//consumer secret</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//access token</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span>  <span class="c1">//access token secret</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$twitterData</span> <span class="o">=</span> <span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;statuses/user_timeline&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;screen_name&#39;</span>     <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twitter_id</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;count&#39;</span>           <span class="o">=&gt;</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;exclude_replies&#39;</span> <span class="o">=&gt;</span> <span class="k">true</span> <span class="c1">//exclude replies to a specific twitter user</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
 </span><span class='line'>  <span class="nv">$tweet_text</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
 </span><span class='line'>  
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$tweets</span><span class="p">)){</span>      
+</span><span class='line'>  <span class="c1">//if the request was successful</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">http_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">){</span> 
 </span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$tweets</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">){</span>
 </span><span class='line'>          
 </span><span class='line'>          <span class="c1">//wrap all the url&#39;s with anchor tags</span>
@@ -2158,7 +2194,7 @@ For this plugin all we have to do is to drop the tweets table and delete <code>z
 
 
   
-<time datetime="2013-09-21T00:00:00+08:00" class="updated">Updated Sep 21<span>st</span>, 2013</time>
+<time datetime="2013-09-29T00:00:00+08:00" class="updated">Updated Sep 29<span>th</span>, 2013</time>
       
 
 <span class="categories">
