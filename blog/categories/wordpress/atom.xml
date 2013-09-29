@@ -4,7 +4,7 @@
   <title><![CDATA[Category: wordpress | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/wordpress/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-09-29T13:43:38+08:00</updated>
+  <updated>2013-09-29T13:49:44+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -1408,23 +1408,21 @@ $random_index = rand(0, 10); //select a random number from 0 to 10, this will be
 
 $post = get_post($post_id); //get_post returns data for a specific post
 $post_title = $post-&gt;post_title; //title of the post
-</code></pre>
+$post_content = $post-&gt;post_content;
+$post_type = $post-&gt;post_type; //type of the post
 
-<p>  $post_content = $post->post_content;
-  $post_type = $post->post_type; //type of the post</p>
+//check whether the post is not a revision
+if(!wp_is_post_revision($post_id) &amp;&amp; $post_type == 'post'){
 
-<p>  //check whether the post is not a revision
-  if(!wp_is_post_revision($post_id) &amp;&amp; $post_type == &lsquo;post&rsquo;){</p>
+    $pattern = '/\[zam_tweets page=([0-9])\]/'; //the general pattern for the shortcode
+    preg_match($pattern, $post_content, $matches); //check matches
 
-<pre><code>$pattern = '/\[zam_tweets page=([0-9])\]/'; //the general pattern for the shortcode
-preg_match($pattern, $post_content, $matches); //check matches
+    //check if the shortcode that were using matches the currently save post
+    if(!empty($matches)){
 
-//check if the shortcode that were using matches the currently save post
-if(!empty($matches)){
+        $page = $matches[1]; //extract the page from the matches returned
 
-    $page = $matches[1]; //extract the page from the matches returned
-
-    //get tweets for the specific page from twitter
+        //get tweets for the specific page from twitter
         $result = wp_remote_get($this-&gt;protocol . "api.twitter.com/1/statuses/user_timeline.json?screen_name=" . $this-&gt;twitter_id . "&amp;count=11&amp;exclude_replies=true&amp;page=" . $page);
 
         $tweets = json_decode($result['body']);
@@ -1440,11 +1438,11 @@ if(!empty($matches)){
             //insert the tweet into the tweets table
             $wpdb-&gt;insert($tweets_table, array('post_id' =&gt; $post_id, 'tweet' =&gt; $tweet));
         }           
+    }
 }
 </code></pre>
 
-<p>  }
-}
+<p>}
 ?>
 ```</p>
 
