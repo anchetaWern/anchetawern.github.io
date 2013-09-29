@@ -779,11 +779,6 @@ Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> met
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
 </span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">test_get_tweets</span><span class="p">(){</span>
 </span><span class='line'>
@@ -793,47 +788,68 @@ Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> met
 </span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertCount</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="nv">$tweets</span><span class="p">);</span>
 </span><span class='line'><span class="p">}</span>
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="x">####Save Tweets Test</span>
-</span><span class='line'>
-</span><span class='line'><span class="x">Finally we test the `save_tweet` method. This method saves a random tweet from a page specified by the user in a specific Wordpress post. </span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>&lt;?php
-public function test_save_tweets(){</p>
+<h4>Save Tweets Test</h4>
 
-<pre><code>global $wpdb;
-$z = new Zam();
-
-$page = '1';
-$post = array(
-    'post_title' =&gt; 'sample save tweet',
-    'post_content' =&gt; '[zam_tweets page=' . $page . ']',
-    'post_type' =&gt; 'post'
-);
-
-$post_id = wp_insert_post($post);
-
-$tweets_table = $wpdb-&gt;prefix . 'zam_tweets';
-$content = $wpdb-&gt;get_var("SELECT tweet FROM $tweets_table WHERE post_id = '$post_id'");
-
-$tweets = $z-&gt;get_tweets($page);
-$result = in_array($content, $tweets);
-$this-&gt;assertTrue($result);
-</code></pre>
-
-<p>}
-?></p>
+<p>Finally we test the <code>save_tweet</code> method. This method saves a random tweet from a page specified by the user in a specific Wordpress post.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">This method is using the [Shortcode API](http://codex.wordpress.org/Shortcode_API) which has a general syntax similar to this one:</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">test_save_tweets</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$z</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Zam</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$page</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$post</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;post_title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;sample save tweet&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;post_content&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;[zam_tweets page=&#39;</span> <span class="o">.</span> <span class="nv">$page</span> <span class="o">.</span> <span class="s1">&#39;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;post_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;post&#39;</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$post_id</span> <span class="o">=</span> <span class="nx">wp_insert_post</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$tweets_table</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">prefix</span> <span class="o">.</span> <span class="s1">&#39;zam_tweets&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">get_var</span><span class="p">(</span><span class="s2">&quot;SELECT tweet FROM </span><span class="si">$tweets_table</span><span class="s2"> WHERE post_id = &#39;</span><span class="si">$post_id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$tweets</span> <span class="o">=</span> <span class="nv">$z</span><span class="o">-&gt;</span><span class="na">get_tweets</span><span class="p">(</span><span class="nv">$page</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">in_array</span><span class="p">(</span><span class="nv">$content</span><span class="p">,</span> <span class="nv">$tweets</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>[zam_tweets page=3]
-&#8220;`</p>
+<p>This method is using the <a href="http://codex.wordpress.org/Shortcode_API">Shortcode API</a> which has a general syntax similar to this one:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">[zam_tweets page=3]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Where <code>zam_tweets</code> is the specific shortcode ID used by the plugin. And <code>page</code> is the attribute and <code>3</code> is the value for that attribute.</p>
 
