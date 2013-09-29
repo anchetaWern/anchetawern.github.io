@@ -4,7 +4,7 @@
   <title><![CDATA[Category: wordpress-plugin-development | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/wordpress-plugin-development/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-09-29T13:49:44+08:00</updated>
+  <updated>2013-09-29T14:12:39+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -1331,11 +1331,44 @@ add_action('admin_menu', array($this, 'zam_admin_init'));
 <p>Once you&rsquo;re done with that go ahead and include the <code>twitteroauth.php</code> inside the <code>get_tweets</code> method. Then create a new object for the <code>TwitterOAuth</code> class. The constructor needs a couple of things which you can get from the <a href="https://dev.twitter.com/">Twitter Developer Site</a> by registering an app. You can simply login using your existing twitter account then under <a href="https://dev.twitter.com/apps">my applications</a> choose <code>create new application</code> if you don&rsquo;t already have an application. I won&rsquo;t dive into much detail on how to create an application, all you have to do is to fill in the required details and agree to the terms and conditions set by twitter. Then after that click on the <code>create access token</code> button to create an access token for your app since its not automatically created.
 Finally, just supply the <code>consumer key</code>, <code>consumer secret</code>, <code>access token</code>, and <code>access token secret</code>.</p>
 
-<p>To get the tweets of the user we simply call on the <code>get</code> method from the <code>TwitterOAuth</code> library and supply 2 arguments. The first one is the method that we want to use, in this case we only want to get the tweets for a specific user so we will use the <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline">statuses/user_timeline</a> method which requires arguments such as the <code>user_id</code> or the <code>screen_name</code> , <code>since_id</code>, <code>count</code>, <code>max_id</code>, and <code>exclude_replies</code>. But we will only use the <code>screen_name</code> or the twitter handle, <code>count</code> and <code>exclude_replies</code>. The <code>screen_name</code> is simply the username of the twitter user that you wish to get, the <code>count</code> is the number of tweets to return, and the <code>exclude_replies</code> requires a boolean value to specify whether you want to exclude the replies to a specific twitter (true) user or not (false). By default the tweets that are returned are ordered from the most recent to less recent tweet.</p>
+<p>To get the tweets of the user we simply call on the <code>get</code> method from the <code>TwitterOAuth</code> library and supply 2 arguments. The first one is the method that we want to use, in this case we only want to get the tweets for a specific user so we will use the <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline">statuses/user_timeline</a> method which requires arguments such as the <code>user_id</code> or the <code>screen_name</code> , <code>since_id</code>, <code>count</code>, <code>max_id</code>, <code>page</code>, and <code>exclude_replies</code>. But we will only use the <code>screen_name</code> or the twitter handle, <code>count</code>, <code>page</code> and <code>exclude_replies</code>. The <code>screen_name</code> is simply the username of the twitter user that you wish to get, the <code>count</code> is the number of tweets to return, and the <code>exclude_replies</code> requires a boolean value to specify whether you want to exclude the replies to a specific twitter (true) user or not (false). The <code>page</code> is simply the page where you want to fetch the tweets, this will largely depend on the value you specified for the <code>count</code>. For example if the user has the following tweets (ordered from most recent to less recent):</p>
+
+<p><code>
+Super Cool!
+Pretty Dang Cool!
+Dang Cool!
+Kewl!
+Uber Cool!
+Mega Super Duper Cool!
+</code></p>
+
+<p>And the value for <code>count</code> is 3 and the <code>page</code> is 1 it will only return the first 3 tweets:</p>
+
+<p><code>
+Super Cool!
+Pretty Dang Cool!
+Dang Cool!
+</code></p>
+
+<p>Another example when specify <code>count</code> to be 3 and <code>page</code> to be 2, it will return the following tweets:</p>
+
+<p><code>
+Kewl!
+Uber Cool!
+Mega Super Duper Cool!
+</code></p>
+
+<p>But if you specify the <code>count</code> to be <code>5</code> and the <code>page</code> to be <code>2</code> you only get the following:</p>
+
+<p><code>
+Mega Super Duper Cool!
+</code></p>
+
+<p>By default the tweets that are returned are ordered from the most recent to less recent tweet.</p>
 
 <p>```
 &lt;?php
-public function get_tweets(){</p>
+public function get_tweets($page = 1){</p>
 
 <pre><code>require_once 'libs/twitteroauth/twitteroauth.php';
 
@@ -1352,7 +1385,8 @@ $twitterData = $twitterConnection-&gt;get(
   array(
     'screen_name'     =&gt; $this-&gt;twitter_id,
     'count'           =&gt; '11',
-    'exclude_replies' =&gt; true //exclude replies to a specific twitter user
+    'exclude_replies' =&gt; true, //exclude replies to a specific twitter user,
+    'page' =&gt; $page
   )
 );
 
@@ -1391,54 +1425,49 @@ This method will have a <code>$post_id</code> argument when attached to the <cod
 <p>The <code>wp_posts</code> table doesn&rsquo;t just store blog posts it also stores pages, attachments, and revisions for specific posts that&rsquo;s why we need to get the post type as well because the post type that we need is only the <code>post</code>. You can read more about <a href="http://codex.wordpress.org/Post_Types">Post Types</a> on Wordpress codex.</p>
 
 <p>Next we check whether the post is a revision by using the <code>wp_is_post_revision</code> method which takes up the post id as its argument. This returns true if the post is a revision and false if its not. Note that Wordpress doesn&rsquo;t just store the most recent version of a specific posts it also stores some revisions. So for example if you have edited a post twice then it would have 2 revisions that will also be saved in the <code>wp_posts</code> table.
-We also check if the post type is <code>post</code> to make sure were only running this method if the post is an actual blog post and not an attachment, revision or a page.</p>
+We also check if the post type is <code>post</code> to make sure were only running this method if the post is an actual blog post and not an attachment, revision, a page, or some other <a href="http://codex.wordpress.org/Post_Types">post types</a>.</p>
 
 <p>Next we check for the pattern of our shortcode if it exists in the current post.
 If it doesn&rsquo;t exists then we do nothing, but if it exists then we extract the <code>page</code> attribute from the results that were returned which is stored in index 1. Index 0 stores the whole pattern that was matched.</p>
 
-<p>Parenthesis are capturing groups in PHP regular expressions so we have the actual page number stored in index 1 because we wrapped the pattern for selecting the numbers 0-9 in parenthesis. Then we use the page number as part of the parameter for the url to get the tweets. Then we use the <code>json_decode</code> method to convert the json string returned by the twitter API into an array. After that we simply extract the text for that specific tweet by specifying the index number as the random index number that we generated earlier. Then we check the database if an existing entry in the tweets table has already the same post id as the post that were trying to save. We only insert into the database if it doesn&rsquo;t exists yet which is indicated by the number of rows returned from the last select query using <code>$wpdb-&gt;num_rows</code>. If it doesn&rsquo;t exist yet then <code>$wpdb-&gt;num_rows</code> returns 0, if it already exists it returns any number greater than 0 depending on the number of occurence of that specific post id.</p>
+<p>Parenthesis are capturing groups in PHP regular expressions so we have the actual page number stored in index 1 because we wrapped the pattern for selecting the numbers 0-9 in parenthesis. Then we use the page number as part of the parameter for the url to get the tweets. Then we call the <code>get_tweets</code> method, this time specifying the page which was inputted by the user as its argument. After that we simply extract the text for that specific tweet by specifying the index number as the random index number that we generated earlier. Then we check the database if an existing entry in the tweets table has already the same post id as the post that were trying to save. We only insert into the database if it doesn&rsquo;t exists yet which is indicated by the number of rows returned from the last select query using <code>$wpdb-&gt;num_rows</code>. If it doesn&rsquo;t exist yet then <code>$wpdb-&gt;num_rows</code> returns 0, if it already exists it returns any number greater than 0 depending on the number of occurence of that specific post id.</p>
 
 <p>```
 &lt;?php
 public function save_tweet($post_id){</p>
 
-<pre><code>global $wpdb; //wordpress database
+<pre><code>global $wpdb;
 
-$random_index = rand(0, 10); //select a random number from 0 to 10, this will be used later to select a random tweet
+$random_index = rand(0, 10);
 
-$post = get_post($post_id); //get_post returns data for a specific post
-$post_title = $post-&gt;post_title; //title of the post
+$post = get_post($post_id);
+$post_title = $post-&gt;post_title;
 $post_content = $post-&gt;post_content;
-$post_type = $post-&gt;post_type; //type of the post
+$post_type = $post-&gt;post_type;
 
-//check whether the post is not a revision
 if(!wp_is_post_revision($post_id) &amp;&amp; $post_type == 'post'){
 
     $pattern = '/\[zam_tweets page=([0-9])\]/'; //the general pattern for the shortcode
-    preg_match($pattern, $post_content, $matches); //check matches
-
-    //check if the shortcode that were using matches the currently save post
+    preg_match($pattern, $post_content, $matches);
     if(!empty($matches)){
 
         $page = $matches[1]; //extract the page from the matches returned
 
-        //get tweets for the specific page from twitter
-        $result = wp_remote_get($this-&gt;protocol . "api.twitter.com/1/statuses/user_timeline.json?screen_name=" . $this-&gt;twitter_id . "&amp;count=11&amp;exclude_replies=true&amp;page=" . $page);
+        $tweets = $this-&gt;get_tweets($page);
+        $tweet = $tweets[$random_index];
 
-        $tweets = json_decode($result['body']);
-        $tweet = strip_tags($tweets[$random_index]-&gt;text); //select a random tweet using the random index earlier
+        $tweets_table = $wpdb-&gt;prefix . 'zam_tweets';
 
-        $tweets_table = $wpdb-&gt;prefix . 'zam_tweets'; //table name, always remember to get prefix with $wpdb-&gt;prefix
-
-        //query database to select existing posts with the same post id
         $wpdb-&gt;query("SELECT id FROM $tweets_table WHERE post_id = '$post_id'");
 
-        //only save into the database if its a new one
         if($wpdb-&gt;num_rows == 0){
-            //insert the tweet into the tweets table
             $wpdb-&gt;insert($tweets_table, array('post_id' =&gt; $post_id, 'tweet' =&gt; $tweet));
-        }           
+        }
+
+
+
     }
+
 }
 </code></pre>
 

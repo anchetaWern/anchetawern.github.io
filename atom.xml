@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-09-29T13:49:44+08:00</updated>
+  <updated>2013-09-29T14:12:39+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -4530,7 +4530,7 @@ Then we call the <code>get_tweets</code> method which we will create later. This
 <p>Once you&rsquo;re done with that go ahead and include the <code>twitteroauth.php</code> inside the <code>get_tweets</code> method. Then create a new object for the <code>TwitterOAuth</code> class. The constructor needs a couple of things which you can get from the <a href="https://dev.twitter.com/">Twitter Developer Site</a> by registering an app. You can simply login using your existing twitter account then under <a href="https://dev.twitter.com/apps">my applications</a> choose <code>create new application</code> if you don&rsquo;t already have an application. I won&rsquo;t dive into much detail on how to create an application, all you have to do is to fill in the required details and agree to the terms and conditions set by twitter. Then after that click on the <code>create access token</code> button to create an access token for your app since its not automatically created.
 Finally, just supply the <code>consumer key</code>, <code>consumer secret</code>, <code>access token</code>, and <code>access token secret</code>.</p>
 
-<p>To get the tweets of the user we simply call on the <code>get</code> method from the <code>TwitterOAuth</code> library and supply 2 arguments. The first one is the method that we want to use, in this case we only want to get the tweets for a specific user so we will use the <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline">statuses/user_timeline</a> method which requires arguments such as the <code>user_id</code> or the <code>screen_name</code> , <code>since_id</code>, <code>count</code>, <code>max_id</code>, and <code>exclude_replies</code>. But we will only use the <code>screen_name</code> or the twitter handle, <code>count</code> and <code>exclude_replies</code>. The <code>screen_name</code> is simply the username of the twitter user that you wish to get, the <code>count</code> is the number of tweets to return, and the <code>exclude_replies</code> requires a boolean value to specify whether you want to exclude the replies to a specific twitter (true) user or not (false). By default the tweets that are returned are ordered from the most recent to less recent tweet.</p>
+<p>To get the tweets of the user we simply call on the <code>get</code> method from the <code>TwitterOAuth</code> library and supply 2 arguments. The first one is the method that we want to use, in this case we only want to get the tweets for a specific user so we will use the <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline">statuses/user_timeline</a> method which requires arguments such as the <code>user_id</code> or the <code>screen_name</code> , <code>since_id</code>, <code>count</code>, <code>max_id</code>, <code>page</code>, and <code>exclude_replies</code>. But we will only use the <code>screen_name</code> or the twitter handle, <code>count</code>, <code>page</code> and <code>exclude_replies</code>. The <code>screen_name</code> is simply the username of the twitter user that you wish to get, the <code>count</code> is the number of tweets to return, and the <code>exclude_replies</code> requires a boolean value to specify whether you want to exclude the replies to a specific twitter (true) user or not (false). The <code>page</code> is simply the page where you want to fetch the tweets, this will largely depend on the value you specified for the <code>count</code>. For example if the user has the following tweets (ordered from most recent to less recent):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -4538,103 +4538,45 @@ Finally, just supply the <code>consumer key</code>, <code>consumer secret</code>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_tweets</span><span class="p">(){</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">require_once</span> <span class="s1">&#39;libs/twitteroauth/twitteroauth.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//access the twitter API</span>
-</span><span class='line'>  <span class="nv">$twitterConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterOAuth</span><span class="p">(</span>
-</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1">//consumer key</span>
-</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//consumer secret</span>
-</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//access token</span>
-</span><span class='line'>      <span class="s1">&#39;&#39;</span>  <span class="c1">//access token secret</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$twitterData</span> <span class="o">=</span> <span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;statuses/user_timeline&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s1">&#39;screen_name&#39;</span>     <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twitter_id</span><span class="p">,</span>
-</span><span class='line'>      <span class="s1">&#39;count&#39;</span>           <span class="o">=&gt;</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s1">&#39;exclude_replies&#39;</span> <span class="o">=&gt;</span> <span class="k">true</span> <span class="c1">//exclude replies to a specific twitter user</span>
-</span><span class='line'>    <span class="p">)</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$tweet_text</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//if the request was successful</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">http_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">){</span> 
-</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$twitterData</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">){</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="c1">//wrap all the url&#39;s with anchor tags</span>
-</span><span class='line'>          <span class="nv">$text</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span>
-</span><span class='line'>              <span class="s2">&quot;#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|</span><span class="se">\&quot;</span><span class="s2">|&#39;|:|\&lt;|$|\.\s)#ie&quot;</span><span class="p">,</span>
-</span><span class='line'>              <span class="s2">&quot;&#39;&lt;a href=</span><span class="se">\&quot;</span><span class="s2">$1</span><span class="se">\&quot;</span><span class="s2"> target=</span><span class="se">\&quot;</span><span class="s2">_blank</span><span class="se">\&quot;</span><span class="s2">&gt;$3&lt;/a&gt;$4&#39;&quot;</span><span class="p">,</span> <span class="nv">$t</span><span class="o">-&gt;</span><span class="na">text</span>
-</span><span class='line'>          <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="nv">$tweet_text</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$text</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="nv">$tweet_text</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Super Cool!</span>
+</span><span class='line'><span class="x">Pretty Dang Cool!</span>
+</span><span class='line'><span class="x">Dang Cool!</span>
+</span><span class='line'><span class="x">Kewl!</span>
+</span><span class='line'><span class="x">Uber Cool!</span>
+</span><span class='line'><span class="x">Mega Super Duper Cool!</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Next is the <code>save_tweet</code> method which we will use to save the text of the randomly selected tweet into the database.
-This method will have a <code>$post_id</code> argument when attached to the <code>save_post</code> method. This stores the post id of that specific post. We can use this to get the data associated with the post such as the post title and the post content.</p>
+<p>And the value for <code>count</code> is 3 and the <code>page</code> is 1 it will only return the first 3 tweets:</p>
 
-<p>Inside the method we access the global object called <code>$wpdb</code> so that we can do some CRUD operations with the Worpdress database.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Super Cool!</span>
+</span><span class='line'><span class="x">Pretty Dang Cool!</span>
+</span><span class='line'><span class="x">Dang Cool!</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Next we pick a random number from 0 to 10, this will be used later to get a specific tweet with the random index. As you might already know, the most recent tweet will have an index of 0 and the one after that will have an index of 1 and so on.</p>
 
-<p>Next we get more information regarding the post by using the <code>get_post</code> method and passing in the post id as its argument. This will return all the information about the post which you can normally find in the <code>wp_posts</code> table in the Wordpress database. But we only need to get 3 fields: the post title, post content and the post type.</p>
+<p>Another example when specify <code>count</code> to be 3 and <code>page</code> to be 2, it will return the following tweets:</p>
 
-<p>The <code>wp_posts</code> table doesn&rsquo;t just store blog posts it also stores pages, attachments, and revisions for specific posts that&rsquo;s why we need to get the post type as well because the post type that we need is only the <code>post</code>. You can read more about <a href="http://codex.wordpress.org/Post_Types">Post Types</a> on Wordpress codex.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Kewl!</span>
+</span><span class='line'><span class="x">Uber Cool!</span>
+</span><span class='line'><span class="x">Mega Super Duper Cool!</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Next we check whether the post is a revision by using the <code>wp_is_post_revision</code> method which takes up the post id as its argument. This returns true if the post is a revision and false if its not. Note that Wordpress doesn&rsquo;t just store the most recent version of a specific posts it also stores some revisions. So for example if you have edited a post twice then it would have 2 revisions that will also be saved in the <code>wp_posts</code> table.
-We also check if the post type is <code>post</code> to make sure were only running this method if the post is an actual blog post and not an attachment, revision or a page.</p>
 
-<p>Next we check for the pattern of our shortcode if it exists in the current post.
-If it doesn&rsquo;t exists then we do nothing, but if it exists then we extract the <code>page</code> attribute from the results that were returned which is stored in index 1. Index 0 stores the whole pattern that was matched.</p>
+<p>But if you specify the <code>count</code> to be <code>5</code> and the <code>page</code> to be <code>2</code> you only get the following:</p>
 
-<p>Parenthesis are capturing groups in PHP regular expressions so we have the actual page number stored in index 1 because we wrapped the pattern for selecting the numbers 0-9 in parenthesis. Then we use the page number as part of the parameter for the url to get the tweets. Then we use the <code>json_decode</code> method to convert the json string returned by the twitter API into an array. After that we simply extract the text for that specific tweet by specifying the index number as the random index number that we generated earlier. Then we check the database if an existing entry in the tweets table has already the same post id as the post that were trying to save. We only insert into the database if it doesn&rsquo;t exists yet which is indicated by the number of rows returned from the last select query using <code>$wpdb-&gt;num_rows</code>. If it doesn&rsquo;t exist yet then <code>$wpdb-&gt;num_rows</code> returns 0, if it already exists it returns any number greater than 0 depending on the number of occurence of that specific post id.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Mega Super Duper Cool!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>By default the tweets that are returned are ordered from the most recent to less recent tweet.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -4678,48 +4620,146 @@ If it doesn&rsquo;t exists then we do nothing, but if it exists then we extract 
 <span class='line-number'>40</span>
 <span class='line-number'>41</span>
 <span class='line-number'>42</span>
-<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_tweets</span><span class="p">(</span><span class="nv">$page</span> <span class="o">=</span> <span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">require_once</span> <span class="s1">&#39;libs/twitteroauth/twitteroauth.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//access the twitter API</span>
+</span><span class='line'>  <span class="nv">$twitterConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterOAuth</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1">//consumer key</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//consumer secret</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">//access token</span>
+</span><span class='line'>      <span class="s1">&#39;&#39;</span>  <span class="c1">//access token secret</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$twitterData</span> <span class="o">=</span> <span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;statuses/user_timeline&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;screen_name&#39;</span>     <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twitter_id</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;count&#39;</span>           <span class="o">=&gt;</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;exclude_replies&#39;</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span> <span class="c1">//exclude replies to a specific twitter user,</span>
+</span><span class='line'>      <span class="s1">&#39;page&#39;</span> <span class="o">=&gt;</span> <span class="nv">$page</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$tweet_text</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//if the request was successful</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$twitterConnection</span><span class="o">-&gt;</span><span class="na">http_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">){</span> 
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$twitterData</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">){</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">//wrap all the url&#39;s with anchor tags</span>
+</span><span class='line'>          <span class="nv">$text</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span>
+</span><span class='line'>              <span class="s2">&quot;#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|</span><span class="se">\&quot;</span><span class="s2">|&#39;|:|\&lt;|$|\.\s)#ie&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;&#39;&lt;a href=</span><span class="se">\&quot;</span><span class="s2">$1</span><span class="se">\&quot;</span><span class="s2"> target=</span><span class="se">\&quot;</span><span class="s2">_blank</span><span class="se">\&quot;</span><span class="s2">&gt;$3&lt;/a&gt;$4&#39;&quot;</span><span class="p">,</span> <span class="nv">$t</span><span class="o">-&gt;</span><span class="na">text</span>
+</span><span class='line'>          <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nv">$tweet_text</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$text</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nv">$tweet_text</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the <code>save_tweet</code> method which we will use to save the text of the randomly selected tweet into the database.
+This method will have a <code>$post_id</code> argument when attached to the <code>save_post</code> method. This stores the post id of that specific post. We can use this to get the data associated with the post such as the post title and the post content.</p>
+
+<p>Inside the method we access the global object called <code>$wpdb</code> so that we can do some CRUD operations with the Worpdress database.</p>
+
+<p>Next we pick a random number from 0 to 10, this will be used later to get a specific tweet with the random index. As you might already know, the most recent tweet will have an index of 0 and the one after that will have an index of 1 and so on.</p>
+
+<p>Next we get more information regarding the post by using the <code>get_post</code> method and passing in the post id as its argument. This will return all the information about the post which you can normally find in the <code>wp_posts</code> table in the Wordpress database. But we only need to get 3 fields: the post title, post content and the post type.</p>
+
+<p>The <code>wp_posts</code> table doesn&rsquo;t just store blog posts it also stores pages, attachments, and revisions for specific posts that&rsquo;s why we need to get the post type as well because the post type that we need is only the <code>post</code>. You can read more about <a href="http://codex.wordpress.org/Post_Types">Post Types</a> on Wordpress codex.</p>
+
+<p>Next we check whether the post is a revision by using the <code>wp_is_post_revision</code> method which takes up the post id as its argument. This returns true if the post is a revision and false if its not. Note that Wordpress doesn&rsquo;t just store the most recent version of a specific posts it also stores some revisions. So for example if you have edited a post twice then it would have 2 revisions that will also be saved in the <code>wp_posts</code> table.
+We also check if the post type is <code>post</code> to make sure were only running this method if the post is an actual blog post and not an attachment, revision, a page, or some other <a href="http://codex.wordpress.org/Post_Types">post types</a>.</p>
+
+<p>Next we check for the pattern of our shortcode if it exists in the current post.
+If it doesn&rsquo;t exists then we do nothing, but if it exists then we extract the <code>page</code> attribute from the results that were returned which is stored in index 1. Index 0 stores the whole pattern that was matched.</p>
+
+<p>Parenthesis are capturing groups in PHP regular expressions so we have the actual page number stored in index 1 because we wrapped the pattern for selecting the numbers 0-9 in parenthesis. Then we use the page number as part of the parameter for the url to get the tweets. Then we call the <code>get_tweets</code> method, this time specifying the page which was inputted by the user as its argument. After that we simply extract the text for that specific tweet by specifying the index number as the random index number that we generated earlier. Then we check the database if an existing entry in the tweets table has already the same post id as the post that were trying to save. We only insert into the database if it doesn&rsquo;t exists yet which is indicated by the number of rows returned from the last select query using <code>$wpdb-&gt;num_rows</code>. If it doesn&rsquo;t exist yet then <code>$wpdb-&gt;num_rows</code> returns 0, if it already exists it returns any number greater than 0 depending on the number of occurence of that specific post id.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
 </span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">save_tweet</span><span class="p">(</span><span class="nv">$post_id</span><span class="p">){</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span> <span class="c1">//wordpress database</span>
+</span><span class='line'>  <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
 </span><span class='line'>  
-</span><span class='line'>  <span class="nv">$random_index</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> <span class="c1">//select a random number from 0 to 10, this will be used later to select a random tweet</span>
+</span><span class='line'>  <span class="nv">$random_index</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="nv">$post</span> <span class="o">=</span> <span class="nx">get_post</span><span class="p">(</span><span class="nv">$post_id</span><span class="p">);</span> <span class="c1">//get_post returns data for a specific post</span>
-</span><span class='line'>  <span class="nv">$post_title</span> <span class="o">=</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_title</span><span class="p">;</span> <span class="c1">//title of the post</span>
+</span><span class='line'>  <span class="nv">$post</span> <span class="o">=</span> <span class="nx">get_post</span><span class="p">(</span><span class="nv">$post_id</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$post_title</span> <span class="o">=</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_title</span><span class="p">;</span>
 </span><span class='line'>      <span class="nv">$post_content</span> <span class="o">=</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_content</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$post_type</span> <span class="o">=</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_type</span><span class="p">;</span> <span class="c1">//type of the post</span>
+</span><span class='line'>      <span class="nv">$post_type</span> <span class="o">=</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_type</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="c1">//check whether the post is not a revision</span>
 </span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">wp_is_post_revision</span><span class="p">(</span><span class="nv">$post_id</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nv">$post_type</span> <span class="o">==</span> <span class="s1">&#39;post&#39;</span><span class="p">){</span>
 </span><span class='line'>
 </span><span class='line'>      <span class="nv">$pattern</span> <span class="o">=</span> <span class="s1">&#39;/\[zam_tweets page=([0-9])\]/&#39;</span><span class="p">;</span> <span class="c1">//the general pattern for the shortcode</span>
-</span><span class='line'>      <span class="nb">preg_match</span><span class="p">(</span><span class="nv">$pattern</span><span class="p">,</span> <span class="nv">$post_content</span><span class="p">,</span> <span class="nv">$matches</span><span class="p">);</span> <span class="c1">//check matches</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">//check if the shortcode that were using matches the currently save post</span>
+</span><span class='line'>      <span class="nb">preg_match</span><span class="p">(</span><span class="nv">$pattern</span><span class="p">,</span> <span class="nv">$post_content</span><span class="p">,</span> <span class="nv">$matches</span><span class="p">);</span>
 </span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$matches</span><span class="p">)){</span>
 </span><span class='line'>
 </span><span class='line'>          <span class="nv">$page</span> <span class="o">=</span> <span class="nv">$matches</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">//extract the page from the matches returned</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="c1">//get tweets for the specific page from twitter</span>
-</span><span class='line'>          <span class="nv">$result</span> <span class="o">=</span> <span class="nx">wp_remote_get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">protocol</span> <span class="o">.</span> <span class="s2">&quot;api.twitter.com/1/statuses/user_timeline.json?screen_name=&quot;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twitter_id</span> <span class="o">.</span> <span class="s2">&quot;&amp;count=11&amp;exclude_replies=true&amp;page=&quot;</span> <span class="o">.</span> <span class="nv">$page</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="nv">$tweets</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]);</span>
-</span><span class='line'>          <span class="nv">$tweet</span> <span class="o">=</span> <span class="nb">strip_tags</span><span class="p">(</span><span class="nv">$tweets</span><span class="p">[</span><span class="nv">$random_index</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">);</span> <span class="c1">//select a random tweet using the random index earlier</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="nv">$tweets_table</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">prefix</span> <span class="o">.</span> <span class="s1">&#39;zam_tweets&#39;</span><span class="p">;</span> <span class="c1">//table name, always remember to get prefix with $wpdb-&gt;prefix</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="c1">//query database to select existing posts with the same post id</span>
-</span><span class='line'>          <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM </span><span class="si">$tweets_table</span><span class="s2"> WHERE post_id = &#39;</span><span class="si">$post_id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
 </span><span class='line'>          
-</span><span class='line'>          <span class="c1">//only save into the database if its a new one</span>
+</span><span class='line'>          <span class="nv">$tweets</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get_tweets</span><span class="p">(</span><span class="nv">$page</span><span class="p">);</span>
+</span><span class='line'>          <span class="nv">$tweet</span> <span class="o">=</span> <span class="nv">$tweets</span><span class="p">[</span><span class="nv">$random_index</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nv">$tweets_table</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">prefix</span> <span class="o">.</span> <span class="s1">&#39;zam_tweets&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM </span><span class="si">$tweets_table</span><span class="s2"> WHERE post_id = &#39;</span><span class="si">$post_id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>
 </span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">num_rows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>              <span class="c1">//insert the tweet into the tweets table</span>
 </span><span class='line'>              <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span><span class="nv">$tweets_table</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;post_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$post_id</span><span class="p">,</span> <span class="s1">&#39;tweet&#39;</span> <span class="o">=&gt;</span> <span class="nv">$tweet</span><span class="p">));</span>
-</span><span class='line'>          <span class="p">}</span>            
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>          
 </span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
 </span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
 </span><span class='line'><span class="p">}</span>
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
