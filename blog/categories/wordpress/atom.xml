@@ -4,7 +4,7 @@
   <title><![CDATA[Category: wordpress | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/wordpress/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-09-29T13:28:44+08:00</updated>
+  <updated>2013-09-29T13:43:38+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -1044,7 +1044,7 @@ echo "&lt;input type='text' name='zam_options[zam_twitter_id]' class='regular-te
 
 <p>```
 &lt;?php <br/>
-public function display_fields(){
+public static function display_fields(){
 ?></p>
 
 <pre><code>&lt;div class="wrap"&gt;
@@ -1172,15 +1172,17 @@ The <strong>form</strong> function has the <code>$instance</code> parameter whic
 &lt;?php</p>
 
 <pre><code>public function form($instance){
-    if(isset($instance['title']) &amp;&amp; isset($instance['tweets_to_show'])){
 
+    $title = __('', 'zam');
+    $tweets_to_show_range = range(3, 11);
+    $tweets_to_show = 3;
+
+    if(isset($instance['title'])){
         $title = esc_attr($instance['title']);
-        $tweets_to_show = esc_attr($instance['tweets_to_show']);
-        $tweets_to_show_range = range(3, 11);
+    }
 
-    }else{
-        $title = __('', 'zam');
-        $tweets_to_show = __('', 'zam');
+    if(isset($instance['tweets_to_show'])){
+        $tweets_to_show = esc_attr($instance['tweets_to_show']);
     }
 </code></pre>
 
@@ -1196,7 +1198,10 @@ The <strong>form</strong> function has the <code>$instance</code> parameter whic
         &lt;select class="widefat" id="&lt;?php echo $this-&gt;get_field_id('tweets_to_show'); ?&gt;" name="&lt;?php echo $this-&gt;get_field_name('tweets_to_show'); ?&gt;"&gt;
             &lt;?php
             foreach($tweets_to_show_range as $num){
-                $checked = (!empty($tweets_to_show)) ? 'checked=true' : '';
+                $checked = '';
+                if($num == $tweets_to_show){
+                    $checked = 'selected=true';
+                }
             ?&gt;
             &lt;option value="&lt;?php echo $num; ?&gt;" &lt;?php echo $checked; ?&gt;&gt;&lt;?php echo $num; ?&gt;&lt;/option&gt;
             &lt;?php   
