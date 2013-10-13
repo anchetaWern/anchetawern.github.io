@@ -1,0 +1,579 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Flickr API - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this article I&rsquo;ll be showing you how to get started with using the Flickr API.
+The Flickr API is a way to interact with data from Flickr &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Flickr API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-13T11:00:00+08:00" pubdate data-updated="true">Oct 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this article I&rsquo;ll be showing you how to get started with using the Flickr API.
+The Flickr API is a way to interact with data from Flickr Accounts.</p>
+
+<h3>Getting an API Key</h3>
+
+<p>First you have get an API Key from the <a href="http://www.flickr.com/services/apps/create/apply/">flickr developer website</a>.
+In order to get an API key you first have to create an app.
+The app is a way for flickr to track usage of their API. As you know, yahoo owns flickr so you first have to log in using your yahoo account in order to access the page for creating an app.</p>
+
+<p>For the purpose of this tutorial you can just apply for a non-commercial key.</p>
+
+<p><img src="/images/posts/getting_started_with_flickr_api/key_type.png" alt="key type" /></p>
+
+<p>Next, enter an app info. It can be anything you want, but be sure to provide more detailed information if you will be using the API for a project that you&rsquo;re building:</p>
+
+<p><img src="/images/posts/getting_started_with_flickr_api/app_info.png" alt="key type" /></p>
+
+<p>Check the two checkboxes to agree with <a href="http://www.flickr.com/services/api/tos/">Flickr API terms of use</a>.
+Be sure to read it so you will be informed of the limitations of the API.</p>
+
+<p><img src="/images/posts/getting_started_with_flickr_api/app_key.png" alt="app key" /></p>
+
+<p>Once you&rsquo;re done with that you can now see the Flickr key and Secret.
+Copy those two as you will be needing it to interact with the API later.</p>
+
+<h3>Interacting with the API</h3>
+
+<p>Now were ready to actually interact with the API.
+For this tutorial were going to create a little library that will interact with the flickr API for us and then we can simply include it in our code and call the methods from there.</p>
+
+<p>Create a new php file and call it <code>class.flickr.php</code>. Declare 3 private variables which will store the flickr API key, the secret key and the format in which the results will be returned. In this case were using <code>json</code> so we can manipulate it with either JavaScript or PHP if we want. Under the constructor, simply assign the values for the <code>$flickr_key</code> and <code>$flickr_secret</code> to that of the arguments that will be passed later on when the <code>Flickr</code> class is instantiated.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Flickr</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$flickr_key</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$flickr_secret</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$format</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$flickr_key</span><span class="p">,</span> <span class="nv">$flickr_secret</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_key</span> <span class="o">=</span> <span class="nv">$flickr_key</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_secret</span> <span class="o">=</span> <span class="nv">$flickr_secret</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Searching of Public Photos</h4>
+
+<p>Now let&rsquo;s create a method for searching of public photos on Flickr.
+This method performs a call to the <code>flickr.photos.search</code> method from the API.
+You can read more about the arguments which you can pass to that method <a href="http://www.flickr.com/services/api/flickr.photos.search.html">here</a>.</p>
+
+<p>The <code>searchPhotos</code> method will take two arguments.
+The first one is the query or the image that you&rsquo;re looking for. It can be the image title, description or tags that has been attached to it. Note that the query can be a single word or a collection of words, you can also prepend the minus sign (&ndash;) to a word if you want to exclude it in the search results.</p>
+
+<p>The next argument is the tags, the tags is a comma-separated list of words that can be used to further describe the image that you&rsquo;re looking for.</p>
+
+<p>As you can see from the method below were using the <code>urlencode()</code> method to wrap all the user input. This includes the query and the tags. We need to do this in order to properly format the request url.</p>
+
+<p>Were also specifying a couple of arguments to the url aside from the <code>text</code> and the <code>tags</code>:</p>
+
+<ul>
+<li><p><strong>sort</strong> &ndash; the order in which to return the results, in this case I&rsquo;ve chosen <code>relevance</code> to be the value but it can also have a value of of <code>date-posted-asc</code>, <code>date-posted-desc</code>, <code>date-taken-asc</code>, <code>date-taken-desc</code>, <code>interestingness-desc</code>, and <code>interestingness-asc</code> all of which is self-explanatory.</p></li>
+<li><p><strong>safe_search</strong> &ndash; the safe search argument is a filter for results that are returned. You will usually want this to have a value of <code>1</code> which tells to the API to only return results that are safe for viewing for all ages.</p></li>
+<li><p><strong>content_type</strong> &ndash; the type of content, I&rsquo;ve selected the value of <code>4</code> for this to indicate that I want to return results that can be either photos or screenshots.</p></li>
+<li><p><strong>api_key</strong> &ndash; the API key that we got earlier from creating the app.</p></li>
+<li><p><strong>format</strong> &ndash; the format in which to return the results. In this case were using json.</p></li>
+<li><p><strong>per_page</strong> &ndash; this is the limit of images to return per page. In this case we only want the API to return 10 images per page.</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">searchPhotos</span><span class="p">(</span><span class="nv">$query</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$tags</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$urlencoded_tags</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$tags</span><span class="p">)){</span>    
+</span><span class='line'>      <span class="nv">$tags_r</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$tags</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$tags_r</span> <span class="k">as</span> <span class="nv">$tag</span><span class="p">){</span>
+</span><span class='line'>          <span class="nv">$urlencoded_tags</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$tag</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>    
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//construct the url</span>
+</span><span class='line'>  <span class="nv">$url</span>  <span class="o">=</span> <span class="s1">&#39;http://api.flickr.com/services/rest/?&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;method=flickr.photos.search&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;text=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;tags=&#39;</span> <span class="o">.</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$urlencoded_tags</span><span class="p">);</span> <span class="c1">//convert the array of url encoded tags back to a string</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;sort=relevance&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;safe_search=1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;content_type=4&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;api_key=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;format=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;per_page=10&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//get the results</span>
+</span><span class='line'>  <span class="nv">$result</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//remove the unneccessary strings that wraps the result returned from the API</span>
+</span><span class='line'>  <span class="nv">$json</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">),</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$result</span><span class="p">)</span> <span class="o">-</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$photos</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$json</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//check if the status didn&#39;t fail</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fail&#39;</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//return only the data for the photos as that&#39;s the only thing that we need</span>
+</span><span class='line'>      <span class="nv">$photos</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;photos&#39;</span><span class="p">][</span><span class="s1">&#39;photo&#39;</span><span class="p">];</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$photos</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After constructing the url we simply use the <code>file_get_contents()</code> method to request the data from the API.
+The results will then be stored to the <code>$result</code> variable. But the API has wrapped up the data with a function named <code>jsonFlickrApi()</code> as you can see from the screenshot below:</p>
+
+<p><img src="/images/posts/getting_started_with_flickr_api/flickr_results.png" alt="flickr results" /></p>
+
+<p>Thus we cannot immediately convert it to a PHP array or even parse it with a json parser. So we need to use the <code>str_replace()</code> function to trim the unneccessary characters. And that&rsquo;s exactly what this particular line does:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$json</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">),</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$result</span><span class="p">)</span> <span class="o">-</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we simply use the <code>json_decode()</code> function to convert the json string to an array.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$photos</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$json</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//check if the status didn&#39;t fail</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fail&#39;</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//return only the data for the photos as that&#39;s the only thing that we need</span>
+</span><span class='line'>  <span class="nv">$photos</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;photos&#39;</span><span class="p">][</span><span class="s1">&#39;photo&#39;</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nv">$photos</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But wait, were not really done yet. If you might have noticed from the screenshot of the results returned from the API earlier you might have noticed that there were no links to the images matching the query. The common purpose of using the flickr API is to fetch the image source of the images on the flickr website. So why are there no image sources as we can see from the parsed version of the results returned from the API below:</p>
+
+<p><img src="/images/posts/getting_started_with_flickr_api/jsonview.png" alt="json parse" /></p>
+
+<p>That&rsquo;s because we need to construct the url&rsquo;s ourselves using the data that has been returned from the API.
+All you have to do is to extract the <code>farm</code>, <code>server</code>, <code>id</code> and the <code>secret</code>. Here&rsquo;s how to construct the url:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$src</span> <span class="o">=</span> <span class="s2">&quot;http://farm&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;farm&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;.static.flickr.com/&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_m.jpg&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To call the method, you simply have to loop through the results returned from the <code>searchPhotos()</code> method and then construct the url from inside the loop:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;class.flickr.php&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$flickr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Flickr</span><span class="p">(</span><span class="nv">$api_key</span><span class="p">,</span> <span class="nv">$api_secret</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$flickr</span><span class="o">-&gt;</span><span class="na">searchPhotos</span><span class="p">(</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$tags</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$results</span><span class="p">)){</span>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$results</span> <span class="k">as</span> <span class="nv">$photo</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$src</span> <span class="o">=</span> <span class="s2">&quot;http://farm&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;farm&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;.static.flickr.com/&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_m.jpg&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;img src=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$src</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&quot; alt=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&quot;&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>      
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>The flickr API is a great way to fetch and modify user data from the flickr website.
+We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn more about the flickr API be sure to checko out the resources below.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.flickr.com/services/developer/">Flickr Developer Guide</a></li>
+<li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-13T11:00:00+08:00" pubdate data-updated="true">Oct 13<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/api/'>api</a>, <a class='category' href='/blog/categories/flickr-api/'>flickr-api</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/09/29/unit-testing-wordpress-plugins/" title="Previous Post: Unit Testing Wordpress Plugins">&laquo; Unit Testing Wordpress Plugins</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/13/getting-started-with-flickr-api/">Getting Started with Flickr API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/29/unit-testing-wordpress-plugins/">Unit Testing Wordpress Plugins</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io/">Creating a Real Time Chat Application With Socket.io</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/25/how-i-use-git-as-a-solo-developer/">How I use Git as a Solo Developer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress/">Introduction to Portfolio plugin for Octopress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
