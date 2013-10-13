@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-10-13T11:08:14+08:00</updated>
+  <updated>2013-10-13T13:16:12+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -307,6 +307,214 @@ We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn 
 <li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
 </ul>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How to modify the results from the Search API Solr Module]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module/"/>
+    <updated>2013-10-13T01:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module</id>
+    <content type="html"><![CDATA[<p>The <a href="https://drupal.org/project/search_api_solr">Search API Solr module</a> for Drupal is a nice way to use Solr as the server for the <a href="https://drupal.org/project/search_api">Search API module</a>. Its pretty flexible with customizing the data that you want to return from the server but what if you need something that&rsquo;s not directly available from the Solr server? What if you also need the data to be available to the client side and do some kind of data manipulation from there?</p>
+
+<p>In this article I&rsquo;ll be showing you how to do just that. We will be creating a custom module that will tap into the API of the Search API Solr Module to modify the default results that are returned and make it available to the client side.</p>
+
+<h4>Module Information</h4>
+
+<p>Let&rsquo;s begin by creating the <code>.info</code> file for our custom module:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>name = searchapisolrmod
+</span><span class='line'>description = "Modifies the results returned from the Search API Solr Module"
+</span><span class='line'>package = Nrue
+</span><span class='line'>core = 7.x 
+</span><span class='line'>files[] = searchapisolrmod.module
+</span><span class='line'>files[] = searchapisolrmod.install</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Use Case</h4>
+
+<p>Before we dive into the &lsquo;how&rsquo; let me tell you about a sample use case first.
+For example, we have the following data stored in the Solr server:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="err">id:</span> <span class="err">&#39;123&#39;,</span>
+</span><span class='line'>      <span class="err">business_name:</span> <span class="err">&#39;Antares&#39;,</span>
+</span><span class='line'>      <span class="err">business_address:postal_code:</span> <span class="err">&#39;2500</span> <span class="err">AC&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="err">id:</span> <span class="err">&#39;456&#39;,</span>
+</span><span class='line'>      <span class="err">business_name:</span> <span class="err">&#39;Aldebaran&#39;,</span>
+</span><span class='line'>      <span class="err">business_address:postal_code:</span> <span class="err">&#39;3420</span> <span class="err">AD&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="err">id:</span> <span class="err">&#39;352&#39;,</span>
+</span><span class='line'>      <span class="err">business_name:</span> <span class="err">&#39;Cassiopeia&#39;,</span>
+</span><span class='line'>      <span class="err">business_address:postal_code:</span> <span class="err">&#39;1288</span> <span class="err">XD&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="err">id:</span> <span class="err">&#39;93&#39;,</span>
+</span><span class='line'>      <span class="err">business_name:</span> <span class="err">&#39;Regulus&#39;,</span>
+</span><span class='line'>      <span class="err">business_address:postal_code:</span> <span class="err">&#39;671</span> <span class="err">CC&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But we want to display the location of the business in Google Maps by using the postal code as the query.
+Normally we would want to actually update the data that&rsquo;s in the Solr server so there will be no need to modify the results from it. But what if we don&rsquo;t have access to the Solr server? What if its a remote server run by someone else? For that we will need to actually modify the results as they are returned.</p>
+
+<h4>Module File</h4>
+
+<p>Now were ready to create the <code>.module</code> file which will contain the code that will tap into the search api solr module. The search api solr search module already provides a hook that we can tap into to modify the search results. It&rsquo;s called the <code>search_api_solr_search_results_alter()</code>. This takes up 3 arguments, the first one is the <code>$results</code> which contains the current result set. As you can see its an argument that&rsquo;s passed by reference so we don&rsquo;t really have to return it. The second is the <code>$query</code>, we won&rsquo;t really use it in our custom module but its the variable that contains the current query. The third argument is the <code>$response</code>, this is the response object returned from Solr.</p>
+
+<p>In the code below we first have to check whether we are in the specific view in which we want to execute our script.
+In this case were checking if we are in the <code>q</code> view.
+Next we declare a variable called <code>$locations</code>, this will store the modified version of the results returned from the Solr server.
+Next we loop through the results and get the the business name and the postal code.
+We then use the postal code to query the Google Geocoding API.
+After that, we simply convert the results returned from the Google Geocoding API to an array so we could extract
+the coordinates (latitude and longitude). The coordinates is what we ultimately need in order to display the location of the businesses in a Google Map.
+Finally we assign the modified data to the Drupal JavaScript object so that we could access it from the client-side.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Implements hook_search_api_solr_search_results_alter().</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">searchapisolrmod_search_api_solr_search_results_alter</span><span class="p">(</span><span class="o">&amp;</span><span class="nv">$results</span><span class="p">,</span> <span class="nv">$query</span><span class="p">,</span> <span class="nv">$response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;q&#39;</span><span class="p">){</span> <span class="c1">//only execute this script if we are in the q view</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$locations</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$rest</span> <span class="o">=</span> <span class="nv">$results</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$rest</span><span class="p">)){</span>    
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$rest</span> <span class="k">as</span> <span class="nv">$r</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nv">$place</span> <span class="o">=</span> <span class="nv">$r</span><span class="p">[</span><span class="s1">&#39;fields&#39;</span><span class="p">][</span><span class="s1">&#39;business_name&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//encode the postal code to be used as a query for the geocoding api</span>
+</span><span class='line'>          <span class="nv">$postal_code</span> <span class="o">=</span>   <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$r</span><span class="p">[</span><span class="s1">&#39;fields&#39;</span><span class="p">][</span><span class="s1">&#39;business_address:postal_code&#39;</span><span class="p">]);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="nv">$api</span> <span class="o">=</span> <span class="s1">&#39;http://maps.googleapis.com/maps/api/geocode/json?address=&#39;</span> <span class="o">.</span>  <span class="nv">$postal_code</span> <span class="o">.</span> <span class="s1">&#39;&amp;sensor=false&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="nv">$api_results</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$api</span><span class="p">);</span> <span class="c1">//get the results from the google geocoding api</span>
+</span><span class='line'>          <span class="nv">$api_data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$api_results</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nv">$api_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span><span class="p">){</span>
+</span><span class='line'>              <span class="nv">$location</span> <span class="o">=</span> <span class="nv">$api_data</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="nv">$locations</span><span class="p">[]</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                  <span class="s1">&#39;place&#39;</span> <span class="o">=&gt;</span> <span class="nv">$place</span><span class="p">,</span>
+</span><span class='line'>                  <span class="s1">&#39;lat&#39;</span> <span class="o">=&gt;</span> <span class="nv">$location</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">],</span>
+</span><span class='line'>                  <span class="s1">&#39;lng&#39;</span> <span class="o">=&gt;</span> <span class="nv">$location</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">);</span>   
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;searchapisolrmod&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="c1">//namespacing is very important</span>
+</span><span class='line'>          <span class="s1">&#39;locations&#39;</span> <span class="o">=&gt;</span> <span class="nv">$locations</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;results&#39;</span> <span class="o">=&gt;</span> <span class="nv">$rest</span> <span class="c1">//store the original result set that was returned</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">drupal_add_js</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="s1">&#39;setting&#39;</span><span class="p">);</span> <span class="c1">//add the data to the Drupal JavaScript object</span>
+</span><span class='line'>  <span class="p">}</span>    
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">####Accessing the data from the client-side</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">The modified results is now available from the client side via the `Drupal` object. </span>
+</span><span class='line'><span class="x">You can make use of this data however you want.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Drupal.settings.searchapisolrmod.results
+Drupal.settings.searchapisolrmod.locations
+&#8220;`</p>
 ]]></content>
   </entry>
   
@@ -8535,97 +8743,6 @@ Here&rsquo;s a tutorial on <a href="https://github.com/mojombo/jekyll/wiki/Plugi
 <li><a href="https://github.com/mojombo/jekyll/wiki/Plugins">Jekyll Plugins</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What I Like in a Company]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/03/10/what-i-like-in-a-company/"/>
-    <updated>2013-03-10T10:44:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/03/10/what-i-like-in-a-company</id>
-    <content type="html"><![CDATA[<p>Perhaps this is one of the posts where I share the things I want.
-A few alternative titles might be:</p>
-
-<blockquote><p>What kind of Companies do I like to work for?</p></blockquote>
-
-
-
-
-<blockquote><p>Things I&#8217;m looking for in a Company</p></blockquote>
-
-
-
-
-<blockquote><p>What makes a company awesome?</p></blockquote>
-
-
-
-
-<!--More-->
-
-
-<p>I want to work for a company that:</p>
-
-<ul>
-<li>Offers a salary that matches my level of competency</li>
-<li>Gives a lot of opportunity to grow</li>
-<li>Has some nice and awesome people</li>
-<li>Gives rasonable deadlines</li>
-</ul>
-
-
-<h3>Offers a salary that matches my level of competency</h3>
-
-<p>As a professional its really important to get paid rightfully with the work that we do.
-We do our jobs well and often times we also work beyond the time when we are required to work.
-But the exception is that when were just starting out (probably around 1-3 years in the industry)
-the priority is to get experience. It doesn&rsquo;t matter if the salary is low because later on
-you&rsquo;ll get to demand your salary once you&rsquo;re awesome enough.</p>
-
-<h3>Gives a lot of opportunity to grow</h3>
-
-<p>This is the most important one in the list if you&rsquo;re just starting out.
-What I specifically look for in a company is that they&rsquo;re willing to give me work
-that involves technologies, tools and methodologies that I do not already know how
-to use. This is great because what can you gain from doing things that you already
-know over and over and over again? Nothing right?
-But you will probably become an expert at doing it.
-And you gain the ability to do it blindfolded while your other hand is handcuffed.</p>
-
-<p>Ok going back to the original topic: a company that gives a lot of opportunity to grow.
-This is what fresh graduates and people that are fresh in the industry should be looking for.
-Because schools only teaches a small fraction of what you would be really working with when you graduate. Its important that you gain the knowledge and experience needed for most of the work that you will be doing in the industry.</p>
-
-<h3>Nice and awesome people</h3>
-
-<p>There will always be douchebags, and people that you can&rsquo;t really work with because of their attitude so its always nice to have some nice people around which are always accomodating, friendly and always ready to answer your questions.
-Always offers a piece of advice and always has a suggestion whenever you get yourself in a hole.</p>
-
-<h3>Reasonable Deadlines</h3>
-
-<p>Deadlines are great because it prevents you from working on a project forever.
-It prevents you from fooling around while working.
-And it keeps you focused on the project.</p>
-
-<p>But some deadlines, especially those that are given by project managers
-who have no experience in development are just terrible.</p>
-
-<p>Reasonable deadlines are really important so the developer won&rsquo;t end up
-crapifying the code just to catch up to a deadline made for zombie superhumans.
-Just like the saying goes:</p>
-
-<blockquote><p>Everything that is forced ends up like crap</p></blockquote>
-
-
-<p>Its important that the project manager or anyone who&rsquo;s giving out the deadlines
-has a prior experience in development.
-Because only then can they make an intelligent decision on what the deadline should be.
-Even better is letting the developer estimate how much the specific story or module
-will take.</p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this blog post. At the end of the day you will always have to choose the company where you&rsquo;re happy to work with and that you&rsquo;re enjoying the work that you do for that company. Otherwise you wouldn&rsquo;t last or even if you stay on that company longer, the work that you do will always be badly affected.</p>
 ]]></content>
   </entry>
   

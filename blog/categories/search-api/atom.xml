@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: search-api | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/search-api/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2013-10-13T13:16:12+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to modify the results from the Search API Solr Module]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module/"/>
+    <updated>2013-10-13T01:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module</id>
+    <content type="html"><![CDATA[<p>The <a href="https://drupal.org/project/search_api_solr">Search API Solr module</a> for Drupal is a nice way to use Solr as the server for the <a href="https://drupal.org/project/search_api">Search API module</a>. Its pretty flexible with customizing the data that you want to return from the server but what if you need something that&rsquo;s not directly available from the Solr server? What if you also need the data to be available to the client side and do some kind of data manipulation from there?</p>
+
+<p>In this article I&rsquo;ll be showing you how to do just that. We will be creating a custom module that will tap into the API of the Search API Solr Module to modify the default results that are returned and make it available to the client side.</p>
+
+<h4>Module Information</h4>
+
+<p>Let&rsquo;s begin by creating the <code>.info</code> file for our custom module:</p>
+
+<p><code>
+name = searchapisolrmod
+description = "Modifies the results returned from the Search API Solr Module"
+package = Nrue
+core = 7.x
+files[] = searchapisolrmod.module
+files[] = searchapisolrmod.install
+</code></p>
+
+<h4>Use Case</h4>
+
+<p>Before we dive into the &lsquo;how&rsquo; let me tell you about a sample use case first.
+For example, we have the following data stored in the Solr server:</p>
+
+<p>```json
+[</p>
+
+<pre><code>{
+    id: '123',
+    business_name: 'Antares',
+    business_address:postal_code: '2500 AC'
+},
+{
+    id: '456',
+    business_name: 'Aldebaran',
+    business_address:postal_code: '3420 AD'
+},
+{
+    id: '352',
+    business_name: 'Cassiopeia',
+    business_address:postal_code: '1288 XD'
+},
+{
+    id: '93',
+    business_name: 'Regulus',
+    business_address:postal_code: '671 CC'
+}
+</code></pre>
+
+<p>]
+```</p>
+
+<p>But we want to display the location of the business in Google Maps by using the postal code as the query.
+Normally we would want to actually update the data that&rsquo;s in the Solr server so there will be no need to modify the results from it. But what if we don&rsquo;t have access to the Solr server? What if its a remote server run by someone else? For that we will need to actually modify the results as they are returned.</p>
+
+<h4>Module File</h4>
+
+<p>Now were ready to create the <code>.module</code> file which will contain the code that will tap into the search api solr module. The search api solr search module already provides a hook that we can tap into to modify the search results. It&rsquo;s called the <code>search_api_solr_search_results_alter()</code>. This takes up 3 arguments, the first one is the <code>$results</code> which contains the current result set. As you can see its an argument that&rsquo;s passed by reference so we don&rsquo;t really have to return it. The second is the <code>$query</code>, we won&rsquo;t really use it in our custom module but its the variable that contains the current query. The third argument is the <code>$response</code>, this is the response object returned from Solr.</p>
+
+<p>In the code below we first have to check whether we are in the specific view in which we want to execute our script.
+In this case were checking if we are in the <code>q</code> view.
+Next we declare a variable called <code>$locations</code>, this will store the modified version of the results returned from the Solr server.
+Next we loop through the results and get the the business name and the postal code.
+We then use the postal code to query the Google Geocoding API.
+After that, we simply convert the results returned from the Google Geocoding API to an array so we could extract
+the coordinates (latitude and longitude). The coordinates is what we ultimately need in order to display the location of the businesses in a Google Map.
+Finally we assign the modified data to the Drupal JavaScript object so that we could access it from the client-side.</p>
+
+<p>```php
+&lt;?php
+/<em>*
+ * Implements hook_search_api_solr_search_results_alter().
+ </em>/
+function searchapisolrmod_search_api_solr_search_results_alter(&amp;$results, $query, $response){</p>
+
+<p>  if($_GET[&lsquo;q&rsquo;] == &lsquo;q&rsquo;){ //only execute this script if we are in the q view</p>
+
+<pre><code>$locations = array();  
+$rest = $results['results'];
+
+if(!empty($rest)){  
+    foreach($rest as $r){
+
+        $place = $r['fields']['business_name'];
+
+        //encode the postal code to be used as a query for the geocoding api
+        $postal_code =  urlencode($r['fields']['business_address:postal_code']); 
+
+        $api = 'http://maps.googleapis.com/maps/api/geocode/json?address=' .  $postal_code . '&amp;sensor=false';
+        $api_results = file_get_contents($api); //get the results from the google geocoding api
+        $api_data = json_decode($api_results, true);
+
+        if($api_data['status'] == 'OK'){
+            $location = $api_data['results'][0]['geometry']['location'];
+
+            $locations[] = array(
+                'place' =&gt; $place,
+                'lat' =&gt; $location['lat'],
+                'lng' =&gt; $location['lng']
+            );  
+        }
+    }
+}
+
+$data = array(
+    'searchapisolrmod' =&gt; array( //namespacing is very important
+        'locations' =&gt; $locations, 
+        'results' =&gt; $rest //store the original result set that was returned
+    )
+);
+
+drupal_add_js($data, 'setting'); //add the data to the Drupal JavaScript object
+</code></pre>
+
+<p>  }
+}
+?></p>
+
+<h4>Accessing the data from the client-side</h4>
+
+<p>The modified results is now available from the client side via the <code>Drupal</code> object.
+You can make use of this data however you want.</p>
+
+<p><code>
+Drupal.settings.searchapisolrmod.results
+Drupal.settings.searchapisolrmod.locations
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>
