@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-10-20T14:46:19+08:00</updated>
+  <updated>2013-10-20T15:57:15+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,296 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Delicious API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/10/20/getting-started-with-delicious-api/"/>
+    <updated>2013-10-20T13:17:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/10/20/getting-started-with-delicious-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API.</p>
+
+<p>The Delicious API unlike other Web API&rsquo;s that&rsquo;s using either OAuth, OAuth2 or their custom Authentication method is using <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic Access Authentication</a>. This means that performing API calls requires the username and the password of the user whose bookmarks you want to have access to.
+This means that there&rsquo;s no confidentiality with this Authentication method. Without you knowing, the application that&rsquo;s going to do the talking with the Delicious API can just save your username and password in a database and the developers can have access to the links that you&rsquo;ve bookmarked in your account whether public or private. So as a user its recommended that you only bookmark links that doesn&rsquo;t contain any confidential or classified information.</p>
+
+<h3>Delicious Class</h3>
+
+<p>First let&rsquo;s go ahead and create the class that we will be using to access the Delicious API. Let&rsquo;s name it <code>class.delicious.php</code>. Then declare the 4 private variables that we will be using throughout the class:</p>
+
+<p>```php
+&lt;?php
+class delicious{</p>
+
+<pre><code>private $curl;
+private $curl_options; //options that will be used for curl
+private $username; //delicious username
+private $password; //delicious password
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>The constructor will accept 2 arguments, the delicious username and password. We&rsquo;ll also initialize <code>curl</code> so we don&rsquo;t have to initialize it on every method call.</p>
+
+<p>```
+&lt;?php
+public function __construct($username, $password){</p>
+
+<pre><code>$this-&gt;username = $username;
+$this-&gt;password = $password;
+$this-&gt;curl = curl_init();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next, create the <code>set_options()</code> method. This method will simply set the curl options.</p>
+
+<p>```
+&lt;?php
+public function set_options(){</p>
+
+<pre><code>$this-&gt;curl_options = array(
+    CURLOPT_RETURNTRANSFER =&gt; 1, //return the response from the delicious API.
+    CURLOPT_SSL_VERIFYPEER =&gt; false, //disable verification of the peer's certificate 
+    CURLOPT_USERPWD =&gt; $this-&gt;username . ':' . $this-&gt;password //set the username and password to be used for authentication
+);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next is the <code>execute()</code> method. This method is called from every method calls that are responsible for calling a specific method from the API. What it does is to assign the curl options to the curl object, executes it and then returns the response.</p>
+
+<p>```
+&lt;?php
+public function execute(){</p>
+
+<pre><code>curl_setopt_array($this-&gt;curl, $this-&gt;curl_options);
+
+$response = curl_exec($this-&gt;curl);
+if(!$response){
+    //terminate the execution of the script if there's no response
+    die('Error: "' . curl_error($this-&gt;curl) . '" - Code: ' . curl_errno($this-&gt;curl));
+}
+curl_close($this-&gt;curl); //close the connection              
+return $response;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting all Bookmarks</h4>
+
+<p>We can now create the methods for actually getting the bookmarks. The first method that we will create is the <code>get_all()</code> method. As the name suggests, the <code>get_all()</code> method simply gets everything that you have ever bookmarked on your delicious account. This might take some time to execute depending on the number of links that you have bookmarked.</p>
+
+<p>```
+&lt;?php
+public function get_all(){</p>
+
+<pre><code>$this-&gt;set_options();
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response); //converts the string response into an xml object      
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Before we proceed with the next method, I&rsquo;d like you to take a few minutes to observe what were doing here.
+Because the pattern that we&rsquo;ve used here will be used on other methods that we will be creating later.</p>
+
+<p>As you can see, were calling the <code>set_options()</code> method to set the arguments that will be needed for the request.</p>
+
+<p><code>
+&lt;?php
+$this-&gt;set_options();
+?&gt;
+</code></p>
+
+<p>Next, we set the main URL that were requesting from. In this cae were requesting the <code>https://api.del.icio.us/v1/posts/all</code> url. At the time of writing of this article, the main request url is <code>https://api.del.icio.us</code> The version of the API is <code>v1</code> and the method is <code>posts/all</code>. You can see the full list of API methods that you can call <a href="https://github.com/avos/delicious-api/blob/master/APIs.md">here</a>.</p>
+
+<p><code>
+&lt;?php
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
+?&gt;
+</code></p>
+
+<p>Next, we execute the request. The <code>execute()</code> method returns the response from the API. The response is basically in string format so we have to process it further to really get into the details that we want.</p>
+
+<p><code>
+&lt;?php
+$response = $this-&gt;execute();
+?&gt;
+</code></p>
+
+<p>In order to do that we call the <code>simplexml_load_string()</code> method. It&rsquo;s a built-in PHP method which you can call to convert a string response into an XML object. You can read more about it <a href="http://php.net/manual/en/function.simplexml-load-string.php">here</a>.</p>
+
+<p><code>
+&lt;?php
+$xml = simplexml_load_string($response);
+?&gt;
+</code></p>
+
+<p>After converting the response to an XML object, we simply return it.</p>
+
+<p><code>
+&lt;?php
+return $xml;
+?&gt;
+</code></p>
+
+<h4>Getting Bookmarks by Tag</h4>
+
+<p>We can also get bookmarks by tag name. All we have to do is to specify the <code>tag</code> argument to the <code>posts/all</code> method and supply a url encoded value as the query.</p>
+
+<p>```
+&lt;?php
+public function get_by_tag($tag){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url = 'https://api.del.icio.us/v1/posts/all?tag=' . urlencode($tag);
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response);        
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting Bookmarks by Offset</h4>
+
+<p>We can also get by a certain limit and offset. All we have to do is supply a value for the <code>start</code> argument (offset), and the <code>results</code> argument (limit).</p>
+
+<p>```
+&lt;?php
+public function get_by_offset($start, $limit){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/all?start=' . $start;
+$request_url .= '&amp;results=' . $limit;
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();        
+$xml = simplexml_load_string($response);        
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting Recently Bookmarked Links</h4>
+
+<p>Recently bookmarked links can also be fetched from the API. The method to be used is the <code>posts/recent</code> method.
+You can also supply an optional <code>tag</code> or <code>count</code> argument.</p>
+
+<p>`&ldquo;
+&lt;?php
+public function get_recent($tag = &rdquo;, $count = 1){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/recent?';
+if(!empty($tag)){ //limit results by tag
+    $request_url .= 'tag=' . urlencode($tag);
+}
+
+if(!empty($count)){ //limit results by bookmark count
+    $request_url .= '&amp;count=' . $count;
+}
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response);        
+
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Bookmarking Links</h4>
+
+<p>Bookmarking new links can also be done from the API. The method to be used is the <code>posts/add</code> method.
+The <code>url</code> argument is required and you can also set an optional <code>description</code> or <code>tags</code>. If there are more than one tags you can separate them using a comma (E.g php, web-development)</p>
+
+<p>`&ldquo;
+&lt;?php
+public function add($url, $description = &rdquo;, $tags = &lsquo;&rsquo;){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/add?';
+$request_url .= 'url=' . urlencode($url);
+$request_url .= '&amp;description=' . urlencode($description);
+$request_url .= '&amp;tags=' . urlencode($tags);
+
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$this-&gt;execute();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Deleting Bookmarks</h4>
+
+<p>You can also delete links that were previously bookmarked. The request method is <code>posts/delete</code>.
+You have to pass in the <code>url</code> of the link that you wish to delete.</p>
+
+<p>```
+&lt;?php
+public function delete($url){</p>
+
+<pre><code>$this-&gt;set_options();
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/delete?url=' . $url;
+$this-&gt;execute();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>There are a bunch of other methods which you can use so be sure to check out the Delicious API documentation.</p>
+
+<h3>Using the Class</h3>
+
+<p>```
+&lt;?php
+&lt;?php
+require_once(&lsquo;class.delicious.php&rsquo;);</p>
+
+<p>$username = &lsquo;XYZ&rsquo;;
+$password = &lsquo;secret&rsquo;;</p>
+
+<p>$deli = new Delicious($username, $password);</p>
+
+<p>$links = $deli->get_by_tag(&lsquo;php&rsquo;);</p>
+
+<p>foreach($links->post as $row){
+?></p>
+
+<pre><code>&lt;li&gt;&lt;?php echo $row['href']; ?&gt;&lt;/li&gt;
+</code></pre>
+
+<p>&lt;?php <br/>
+}
+?>
+```</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://github.com/avos/delicious-api/blob/master/APIs.md">Delicious API</a></li>
+<li><a href="https://github.com/anchetaWern/delicious-php">Delicious-PHP</a> &ndash; a little PHP class that I created for interacting with the Delicious API</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Flickr API]]></title>
@@ -1838,259 +2128,6 @@ echo $html;
 
 <p>The code above doesn&rsquo;t really look great and we can avoid having to write those kinds of codes by using templates.
 This is true for all the templating libraries that we have gone around in this article and others which we haven&rsquo;t tackled.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Extending Laravel's Validation Class]]></title>
-    <link href="http://anchetaWern.github.io/blog/2012/12/25/extending-laravels-validation-class/"/>
-    <updated>2012-12-25T18:29:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2012/12/25/extending-laravels-validation-class</id>
-    <content type="html"><![CDATA[<p>Laravel is built with useful validation rules like required, numeric, unique data from a table in a database, etc.
-But there are some situations where the built-in validation rules cannot handle.
-That&rsquo;s where extending Laravel&rsquo;s validation class comes in handy.
-In this post I&rsquo;ll be showing you how to extend Laravel&rsquo;s validation class.
-This will enable you to use custom validation rules specifically created for your needs.</p>
-
-<!--More-->
-
-
-<h4>Validating Arrays</h4>
-
-<p>One thing I&rsquo;ve noticed while evaluating Laravel is that it doesn&rsquo;t have the methods that deals with an array of data.
-For example if you have this form:</p>
-
-<p>```html
-<form method="post"></p>
-
-<pre><code>&lt;label for=""&gt;Students&lt;/label&gt;
-&lt;input type="text" name="student_name[]" id="student_name"&gt;
-&lt;input type="text" name="student_name[]" id="student_name"&gt;
-&lt;input type="text" name="student_name[]" id="student_name"&gt;
-&lt;input type="submit" value="Save"&gt;
-</code></pre>
-
-<p></form>
-```</p>
-
-<p>And you want every student name to be required. Using Laravel&rsquo;s built in methods. You do something like this:</p>
-
-<p>```php
-&lt;?php
-$rules = array(&lsquo;student_name&rsquo; => &lsquo;required&rsquo;);</p>
-
-<p>$validator = Validator::make(Input::all(), $rules);</p>
-
-<p>if($validator->fails()){</p>
-
-<pre><code>//redirect back to form with errors
-</code></pre>
-
-<p>}else{</p>
-
-<pre><code>//save form to database
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>But if you might have already noticed. This doesn&rsquo;t work.
-Curiosity leads us to inspecting Laravel&rsquo;s validation method for the required rule (<code>laravel/validator.php</code>):</p>
-
-<p>```
-&lt;?php
-/<em>*
- * Validate that a required attribute exists in the attributes array.
- *
- * @param  string  $attribute
- * @param  mixed   $value
- * @return bool
- </em>/
-protected function validate_required($attribute, $value)
-{</p>
-
-<pre><code>if (is_null($value))
-{
-    return false;
-}
-elseif (is_string($value) and trim($value) === '')
-{
-    return false;
-}
-elseif ( ! is_null(Input::file($attribute)) and is_array($value) and $value['tmp_name'] == '')
-{
-    return false;
-}
-
-return true;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>As you can see from the above method. It doesn&rsquo;t seem that Laravel is automatically dealing with array as inputs for form. Looking closer this block of code seems to be close to what were looking for. But this only deals with file input(stored in <code>$_FILES</code>). So this isn&rsquo;t the method were looking for.</p>
-
-<p>`&ldquo;
-&lt;?php
-elseif ( ! is_null(Input::file($attribute)) and is_array($value) and $value[&lsquo;tmp_name&rsquo;] == &rdquo;)
-{</p>
-
-<pre><code>return false;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Thankfully the creators of Laravel made it incredibly easy to extend its validation class in case a need like this arises. To extend Laravel&rsquo;s validation class we&rsquo;ll need to create a new library at <code>application/libraries</code>.
-Let&rsquo;s name it <code>Validator</code>.</p>
-
-<p>```
-&lt;?php
-class Validator extends Laravel\Validator {</p>
-
-<p>}
-?><br/>
-```</p>
-
-<p>Then disable the autoloading of the validator class on <code>application/config/application.php</code> file.</p>
-
-<p><code>
-'Task'          =&gt; 'Laravel\\CLI\\Tasks\\Task',
-'URI'           =&gt; 'Laravel\\URI',
-'Validator'     =&gt; 'Laravel\\Validator', //remove this line
-'View'          =&gt; 'Laravel\\View',
-</code></p>
-
-<p>Then we create a method that will deal with array inputs:</p>
-
-<p>```
-&lt;?php
-/<em>*
- * checks if an array input has no empty values
-</em>/
-public function validate_arrayfull($attribute, $value, $parameters){</p>
-
-<pre><code>return in_array('', $value);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Naturally laravel&rsquo;s input class would be able to capture any kind of input be it a regular string, file, or array.</p>
-
-<p>Methods for the validation class accepts 3 arguments:</p>
-
-<ol>
-<li><strong>Attribute</strong> &ndash; the name given to the input (Eg. name, age)</li>
-<li><strong>Value</strong> &ndash; the value of the input (Eg. Yael, 27)</li>
-<li><strong>Parameters</strong> &ndash;  additional data passed after defining the rules.
-For example the additional data that you pass after defining a <code>unique</code> rule:</li>
-</ol>
-
-
-<p>```
-&lt;?php
-$rules = array(</p>
-
-<pre><code>'username' =&gt; unique:tbl_users,username
-</code></pre>
-
-<p>);
-?>
-```</p>
-
-<p>The additional data that I&rsquo;m referrring to is the string that comes after the colon (tbl_users,username).
-In the case of defining a unique rule for a particular field. The first parameter is the name of the table, the second parameter is the name of the field.</p>
-
-<p>The important thing to note here is that parameters are separated by comma.
-And that method names has a prefix of <code>validate_</code>.</p>
-
-<p>Ok back to the <code>arrayfull()</code> method.
-Basically what the <code>arrayfull()</code> method does is to check whether an array contains empty values
-by using the <code>in_array()</code> method. The <code>in_array()</code> method simply returns <code>true</code> if it has found a specific value in the array and <code>false</code> if it didn&rsquo;t find the value:</p>
-
-<p><code>
-return in_array('', $value);
-</code></p>
-
-<h4>Validating Dates</h4>
-
-<p>One more thing I&rsquo;ve noticed about Laravel is its date validation rules.
-It only has rules for before and after a certain date.
-This is good but there should also be a validation rule for simply validating if
-the user input is indeed a date. So I&rsquo;ve written a method that does it:</p>
-
-<p>```
-&lt;?php
-public function validate_date($attribute, $value, $parameters){</p>
-
-<pre><code>$e_str = explode("-", $value);
-</code></pre>
-
-<p>  if(count($e_str) === 3){</p>
-
-<pre><code>//expected format for date input is: Y-m-d
-$year = $e_str[0];
-$month = $e_str[1];
-$day = $e_str[2];
-
-return checkdate($month, $day, $year); //expected format for checkdate is: m-d-y
-</code></pre>
-
-<p>  }
-  return false;
-}
-?>
-```</p>
-
-<p>As you can see were counting the number fragments after invoking the <code>explode()</code> method.
-Anything other than 3 is not a valid number of fragments since the expected date format is supposed
-to have 3 fragments(Year-Month-Day).
-Once it passes this condition we then check if the date is a valid date in the Gregorian calendar
-by invoking the <code>checkdate()</code> function which accepts 3 arguments(month, day, year).</p>
-
-<h4>Default Validation Messages</h4>
-
-<p>You can just set the validation messages when creating an instance of the validator class like this:</p>
-
-<p>```
-&lt;?php
-$rules = array();</p>
-
-<p>$messages = array(</p>
-
-<pre><code>'username' =&gt; 'username is required'
-);
-</code></pre>
-
-<p>$validator = Validator::make(Input:all(), $rules, $messages);
-?><br/>
-```</p>
-
-<p>But if you want to set default messages for your
-validation rules then you can set it on <code>application/language/en/validation.php</code>.</p>
-
-<p><code>
-&lt;?php
-"date"              =&gt; "The :attribute is invalid date",
-"arrayfull"     =&gt; "The :attribute contains empty values",
-"arrayunique"   =&gt; "The :attribute contains duplicate values"
-?&gt;
-</code></p>
-
-<p>The key will be the name of the validation method.
-For example if the name of your validation method is <code>validate_date</code> then the key will be <code>date</code>.
-The value will be the error message that you want to show up when there&rsquo;s an error with the validation.
-<code>:attribute</code> represents the name of the field.</p>
-
-<h3>Resources</h3>
-
-<p><a href="http://laravel.com/docs">Laravel Documentation</a>
-<a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/extending_laravels_validation_class.7z">Sample Application Source Code</a></p>
 ]]></content>
   </entry>
   
