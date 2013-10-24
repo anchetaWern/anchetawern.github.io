@@ -9,7 +9,8 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API. The Delicious API &hellip;">
+  <meta name="description" content="In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.
+There&rsquo;s really no bullet-proof method of doing this &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +69,117 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/">How to Perform Cross-domain AJAX Requests</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-24T18:30:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.
+There&rsquo;s really no bullet-proof method of doing this. It might work, it might not since AJAX requests should only be performed within the same domain due to security concerns.</p>
+
+<p>Note that I&rsquo;m not going to show how to perform an AJAX request to any domain from any domain. What I&rsquo;m going to show you is how to perform an AJAX request to a different domain which you have control over the code.</p>
+
+<p>For example you want to get some data via AJAX from <code>xyz.com</code>. You are making the request from <code>abc.com</code> so it wouldn&rsquo;t work if you do something like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;http://xyz.com/get_data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span> <span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//do something with the response</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;haru&#39;</span><span class="p">,</span> <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;tora&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;parse_results(&quot;</span> <span class="o">.</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$data</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&quot;)&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>When calling the method from <code>abc.com</code> all you have to do is to use the <code>$.getJSON()</code> method and declare the same function that you used on <code>xyz.com</code>. In this case the name of the function is <code>parse_results()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">parse_results</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//do something with the response</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;http://xyz.com/get_data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span> <span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also use the more robust <code>$.ajax()</code> method if you want:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">parse_results</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//do something with the response</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">url</span> <span class="o">:</span> <span class="s1">&#39;http://xyz.com/get_data&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">type</span> <span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;jsonp&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">data</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;data&#39;</span> <span class="o">:</span> <span class="s1">&#39;abc&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3021,47 +3133,6 @@ That&rsquo;s where Web Scraping comes in, if the data is not made available by t
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Spatial Search With Apache Solr and Google Maps</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-03T21:33:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial I&rsquo;m going to show you how to setup spatial search in Apache Solr then were going to create an application which uses Spatial searching with the use of Google Maps.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -3077,6 +3148,10 @@ That&rsquo;s where Web Scraping comes in, if the data is not made available by t
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/">How to perform cross-domain AJAX requests</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/20/getting-started-with-delicious-api/">Getting Started with Delicious API</a>
       </li>
     
@@ -3090,10 +3165,6 @@ That&rsquo;s where Web Scraping comes in, if the data is not made available by t
     
       <li class="post">
         <a href="/blog/2013/09/29/unit-testing-wordpress-plugins/">Unit Testing Wordpress Plugins</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io/">Creating a Real Time Chat Application With Socket.io</a>
       </li>
     
   </ul>
