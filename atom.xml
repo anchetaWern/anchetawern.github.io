@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-11-27T09:07:08+08:00</updated>
+  <updated>2013-12-01T16:53:19+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,549 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api/"/>
+    <updated>2013-12-01T11:49:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api</id>
+    <content type="html"><![CDATA[<p>Bitcoin is really trending these days with its value now over <a href="http://www.extremetech.com/extreme/171762-bitcoin-hits-1000-but-how-far-can-it-go">$1000 per coin</a>. I think its timely to explore some of the services which uses Bitcoin as a form of payment. Last time I also showed you how to <a href="http://anchetawern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/">get started with the Coinbase API</a> which is also another service which allows you to use Bitcoins as a means of payment for goods and services. This time we will be exploring Bitpay. But first lets determine what&rsquo;s the difference between the Coinbase and Bitpay. Here&rsquo;s a really good answer to <a href="http://bitcoin.stackexchange.com/questions/7544/what-are-the-differences-and-similarities-among-paymium-bitpay-coinbase-etc">this question</a>:</p>
+
+<blockquote><p>BitPay is a payment processor for E-Commerce as well as for bricks and mortar / point-of-sale. This allows a business to accept bitcoins for payment and the proceeds are delivered to the merchant as directed. This could be 100% fiat (e.g., all bitcoin sales get converted to USDs immediately, or a mix, .. like 30% USD, 70% BTCs, etc.) The currently can send payments to merchants in U.S., Mexico, Canada and several nations in Europe.</p></blockquote>
+
+
+
+
+<blockquote><p>Coinbase is an EWallet provider and provides a service for buying and selling bitcoins. They do not operate a market, but instead use the exchange rate from the leading exchange (Mt. Gox) for customer buying and selling. They charge just 1% to buy or sell, but they have low limits (i.e., buy a max of $100 USD per-day) for new customers still in the 30-day probationary period.</p></blockquote>
+
+
+<p>So what service you use basically depends on what you need.</p>
+
+<h3>Signing Up</h3>
+
+<p>First you need to <a href="https://bitpay.com/start">sign up at Bitpay</a> in order to get an API key which you can use for interacting with their API. Bitpay is really strict when it comes to the registration so you really have to provide real information about your business so that you can actually confirm it when they need some confirmation.</p>
+
+<h3>Connecting to Bitpay API</h3>
+
+<p>The Bitpay API only requires basic HTTP authentication so the process of connecting to the API is really simple.
+All you have to do is to call the <code>base64_encode()</code> method on the API key that you acquire from Bitpay and then pass it as one of the HTTP header fields. Under the <code>Authorization</code> field use <code>Basic</code> followed by the base 64 encoded string representation of the API key. Here&rsquo;s how to do it using <code>file_get_contents()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="nb">base64_encode</span><span class="p">(</span><span class="nv">$api_key</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'><span class="nv">$context_options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s2">&quot;http&quot;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;method&quot;</span> <span class="o">=&gt;</span> <span class="nv">$method</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;header&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;Content-type: application/json</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>          <span class="s2">&quot;Content-Length: </span><span class="si">$length</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>          <span class="s2">&quot;Authorization: Basic </span><span class="si">$user</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>     
+</span><span class='line'>
+</span><span class='line'><span class="nv">$context</span> <span class="o">=</span> <span class="nb">stream_context_create</span><span class="p">(</span><span class="nv">$context_options</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the $url here is the API resource that you&#39;re trying to request from</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$context</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Creating an Invoice</h3>
+
+<p>You can create an Invoice via by using the following resource in the Bitpay API:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">https://bitpay.com/api/invoice</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then passing in all the fields required by the resource:</p>
+
+<ul>
+<li><strong>price</strong> &ndash; the price of the service or good.</li>
+<li><strong>currency</strong> &ndash; any valid currency short name (USD, GBP, EUR, JPY). Here&rsquo;s a <a href="http://www.casi.org.uk/info/1051list/annexd.html">full list of valid currency short names</a>. This will be automatically converted to the corresponding value in Bitcoins (BTC) depending on the <a href="https://bitpay.com/bitcoin-exchange-rates">current Bitcoin exchange rates</a>.</li>
+</ul>
+
+
+<p>You can also pass in some optional fields:</p>
+
+<ul>
+<li><strong>posData</strong> &ndash; this is normally used for passing in some additional information regarding the service or good that a customer is trying to purchase</li>
+<li><p><strong>notificationURL</strong> &ndash; the URL that will be pinged by Bitpay everytime the transaction status changes. Note that a change from <code>new</code> to <code>expired</code> doesn&rsquo;t count as a transaction status change. Bitpay will only ping the URL when the transaction status changes from <code>new</code> to <code>paid</code>, <code>confirmed</code>, or<code>complete</code>.</p></li>
+<li><p><strong>transactionSpeed</strong> &ndash; this can be set to <code>high</code>, <code>medium</code> or <code>low</code>. High means that the invoice is considered to be confirmed after a payment has been received. Medium means it will be considered confirmed after 10 minutes. And low means it will be considered confirmed after an hour.</p></li>
+<li><p><strong>fullNotifications</strong> &ndash; this can be set to <code>true</code> or <code>false</code>. If you want Bitpay to notify via email or via the notification url that you have set every time the transaction status changes then use <code>true</code>. If you only want Bitpay to notify once the transaction status becomes confirmed then set to <code>false</code>.</p></li>
+<li><p><strong>notificationEmail</strong> &ndash; the email address that Bitpay will notify on every transaction status change.</p></li>
+<li><strong>redirectURL</strong> &ndash; the URL in which Bitpay will display in the receipt after a payment has been made.</li>
+</ul>
+
+
+<p>And here are some fields which you can use to supply information regarding the product or the customer:</p>
+
+<ul>
+<li><strong>orderID</strong></li>
+<li><strong>itemDesc</strong></li>
+<li><strong>itemCode</strong></li>
+<li><strong>physical</strong></li>
+<li><strong>buyerName</strong></li>
+<li><strong>buyerAddress1</strong></li>
+<li><strong>buyerAddress2</strong></li>
+<li><strong>buyerCity</strong></li>
+<li><strong>buyerState</strong></li>
+<li><strong>buyerZip</strong></li>
+<li><strong>buyerCountry</strong></li>
+<li><strong>buyerEmail</strong></li>
+<li><strong>buyerPhone</strong></li>
+</ul>
+
+
+<h3>Invoice Status</h3>
+
+<p>The invoice status is the status of the invoice at any given time. Here are some of the invoice states:</p>
+
+<ul>
+<li><strong>new</strong> &ndash; Initially the invoice status is <code>new</code>. This means that someone can still initiate a payment to the Bitcoin address that is associated with the invoice.</li>
+<li><strong>paid</strong> &ndash; when an invoice becomes fully paid its status changes to <code>paid</code></li>
+<li><strong>confirmed</strong> &ndash; an invoice is considered confirmed depending on the transaction speed that was set on the creation of invoice. If the transaction speed is set to low then it will be confirmed after an hour or 6 blocks in the Bitcoin network, if the transaction speed is set to medium then it will be confirmed after 1 block (10 minutes) in the Bitcoin network, if its set to high then it will be confirmed right after full payment has been made.</li>
+<li><strong>complete</strong> &ndash; this means that Bitpay has credited the merchant&rsquo;s account for the invoice.</li>
+<li><strong>expired</strong> &ndash; this means that no payment has been received after the 15 minute limit alloted by Bitpay.</li>
+<li><strong>invalid</strong> &ndash; this means that the invoice has been paid but has not been confirmed after an hour.</li>
+</ul>
+
+
+<p>Now were ready to actually make a request to the Bitpay API. You can start by downloading the official <a href="https://github.com/bitpay/php-client">PHP client</a> provided by Bitpay for interacting with the Bitpay API. There&rsquo;s also a <a href="https://github.com/bitpay/ruby-client">Ruby</a> and <a href="https://github.com/bitpay/nodejs-client">Node.js</a> client if you&rsquo;re developing for those.</p>
+
+<p>Once you&rsquo;ve downloaded it on your working directory open up the <code>bp_options.php</code> file and supply a value for the <code>apiKey</code>, <code>currency</code> or any of the optional fields that you would like to supply.</p>
+
+<p>Create a new PHP file which we will be using to call the methods from <code>bp_lib.php</code>. To create an invoice call the <code>bpCreateInvoice()</code> method. It needs 4 arguments. The first one is the order ID which we will just supply <code>null</code> since we really don&rsquo;t have a system for generating order IDs. The second is the amount or the cost of the product or service.
+The third is the optional post data in which we can provide additional information for the product or service in key-value pairs. The fourth is the additional options which is primarily used for supplying information regarding the product or the customer.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;bp_lib.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$amount</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$post_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;excalibur&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;level&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;999&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$addl_options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;itemDesc&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Anime Figurine&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nx">bpCreateInvoice</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="nv">$amount</span><span class="p">,</span> <span class="nv">$post_data</span><span class="p">,</span> <span class="nv">$addl_options</span><span class="p">);</span>                   
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$response</span><span class="p">)){</span>
+</span><span class='line'>  <span class="c1">//do something</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bitpay returns a response similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [id] =&gt; xxx</span>
+</span><span class='line'><span class="x">    [url] =&gt; https://bitpay.com/invoice?id=xxx</span>
+</span><span class='line'><span class="x">    [posData] =&gt; {&quot;posData&quot;:{&quot;name&quot;:&quot;excalibur&quot;,&quot;level&quot;:999},&quot;hash&quot;:&quot;xxxx-xx&quot;}</span>
+</span><span class='line'><span class="x">    [status] =&gt; new</span>
+</span><span class='line'><span class="x">    [btcPrice] =&gt; 0.0009</span>
+</span><span class='line'><span class="x">    [price] =&gt; 1</span>
+</span><span class='line'><span class="x">    [currency] =&gt; USD</span>
+</span><span class='line'><span class="x">    [invoiceTime] =&gt; 1385885490958</span>
+</span><span class='line'><span class="x">    [expirationTime] =&gt; 1385886390958</span>
+</span><span class='line'><span class="x">    [currentTime] =&gt; 1385885491133</span>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>id</strong> &ndash; the unique id of the invoice</li>
+<li><strong>url</strong> &ndash; the URL in which the invoice can be viewed</li>
+<li><strong>posData</strong> &ndash; the additional data that we provided earlier</li>
+<li><strong>status</strong> &ndash; the invoice status</li>
+<li><strong>btcPrice</strong> &ndash; the corresponding amount in Bitcoins of the amount supplied earlier</li>
+<li><strong>price</strong> &ndash; the amount that was supplied earlier when the invoice was created</li>
+<li><strong>currency</strong> &ndash; the currency of the price</li>
+<li><strong>invoiceTime</strong> &ndash; the time the invoice was created since January 1, 1970 midnight. This is in a UNIX timestamp format.</li>
+<li><strong>expirationTime</strong> &ndash; the time in which the invoice will expire. When the invoice expires payments can no longer be accepted.</li>
+<li><strong>currentTime</strong> &ndash; the current time in the Bitpay server. This is primarily used for determining the time remaining before the invoice expires.</li>
+</ul>
+
+
+<p>Accessing the invoice URL will give you a page similar to the following:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_bitpay/bitpay-donation.png" alt="invoice url" /></p>
+
+<p>Customers can then use a Bitcoin client such as <a href="http://bitcoin.org/en/download">Bitcoin Qt</a>, <a href="http://electrum.org/">Electrum</a>, <a href="https://multibit.org/">Multibit</a>, or <a href="https://bitcoinarmory.com/">Armory</a> to pay you the merchant.</p>
+
+<h3>Getting Invoice Status</h3>
+
+<p>You can also get the status of an invoice by calling the <code>bpGetInvoice()</code> method and supplying the invoice ID as the argument:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$invoice</span> <span class="o">=</span> <span class="nx">bpGetInvoice</span><span class="p">(</span><span class="s1">&#39;85AHEqCRaT2aZ3xAMpK8fQ&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method will return something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [id] =&gt; xxx</span>
+</span><span class='line'><span class="x">    [url] =&gt; https://bitpay.com/invoice?id=xxx</span>
+</span><span class='line'><span class="x">    [posData] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [name] =&gt; excalibur</span>
+</span><span class='line'><span class="x">            [age] =&gt; 27</span>
+</span><span class='line'><span class="x">        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    [status] =&gt; new</span>
+</span><span class='line'><span class="x">    [btcPrice] =&gt; 0.0009</span>
+</span><span class='line'><span class="x">    [price] =&gt; 1</span>
+</span><span class='line'><span class="x">    [currency] =&gt; USD</span>
+</span><span class='line'><span class="x">    [invoiceTime] =&gt; 1385885490958</span>
+</span><span class='line'><span class="x">    [expirationTime] =&gt; 1385886390958</span>
+</span><span class='line'><span class="x">    [currentTime] =&gt; 1385886420720</span>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Its basically the same as the response that we get when creating an invoice.</p>
+
+<h3>Bitpay Class</h3>
+
+<p>Before I end this tutorial here&rsquo;s the modified version of the Bitpay client provided by Bitpay that works with servers without CURL support:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Bitpay</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$options</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$options</span><span class="p">){</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span> <span class="o">=</span> <span class="nv">$options</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpLog</span><span class="p">(</span><span class="nv">$contents</span><span class="p">){</span>
+</span><span class='line'>      <span class="nv">$file</span> <span class="o">=</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;/bplog.txt&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;m-d H:i:s&#39;</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="nx">FILE_APPEND</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$contents</span><span class="p">))</span>
+</span><span class='line'>          <span class="nv">$contents</span> <span class="o">=</span> <span class="nb">var_export</span><span class="p">(</span><span class="nv">$contents</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> 
+</span><span class='line'>      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">is_object</span><span class="p">(</span><span class="nv">$contents</span><span class="p">))</span>
+</span><span class='line'>          <span class="nv">$contents</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$contents</span><span class="p">);</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nv">$contents</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nx">FILE_APPEND</span><span class="p">);</span>         
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpfilegetcontents</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="nv">$apiKey</span><span class="p">,</span> <span class="nv">$post</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">global</span> <span class="nv">$bpOptions</span><span class="p">;</span>    
+</span><span class='line'>          
+</span><span class='line'>      <span class="nv">$length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nv">$post</span><span class="p">){</span> 
+</span><span class='line'>          <span class="nv">$length</span> <span class="o">=</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
+</span><span class='line'>          <span class="nv">$method</span> <span class="o">=</span> <span class="s2">&quot;POST&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$uname</span> <span class="o">=</span> <span class="nb">base64_encode</span><span class="p">(</span><span class="nv">$apiKey</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$context_options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s2">&quot;http&quot;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>              <span class="s2">&quot;method&quot;</span> <span class="o">=&gt;</span> <span class="nv">$method</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;header&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;Content-type: application/json</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;Content-Length: </span><span class="si">$length</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;Authorization: Basic </span><span class="si">$uname</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+</span><span class='line'>          <span class="p">)</span>
+</span><span class='line'>      <span class="p">);</span>       
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nv">$method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">){</span>
+</span><span class='line'>          <span class="nv">$context_options</span><span class="p">[</span><span class="s2">&quot;http&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$post</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$context</span> <span class="o">=</span> <span class="nb">stream_context_create</span><span class="p">(</span><span class="nv">$context_options</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$context</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$response</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpCreateInvoice</span><span class="p">(</span><span class="nv">$orderId</span><span class="p">,</span> <span class="nv">$price</span><span class="p">,</span> <span class="nv">$posData</span><span class="p">,</span> <span class="nv">$options</span> <span class="o">=</span> <span class="k">array</span><span class="p">())</span> <span class="p">{</span> 
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$options</span> <span class="o">=</span> <span class="nb">array_merge</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span><span class="p">,</span> <span class="nv">$options</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$pos</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;posData&#39;</span> <span class="o">=&gt;</span> <span class="nv">$posData</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span><span class="p">[</span><span class="s1">&#39;verifyPos&#39;</span><span class="p">])</span>
+</span><span class='line'>          <span class="nv">$pos</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bpHash</span><span class="p">(</span><span class="nb">serialize</span><span class="p">(</span><span class="nv">$posData</span><span class="p">),</span> <span class="nv">$options</span><span class="p">[</span><span class="s1">&#39;apiKey&#39;</span><span class="p">]);</span>
+</span><span class='line'>      <span class="nv">$options</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$pos</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$options</span><span class="p">[</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$orderId</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$options</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$price</span><span class="p">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$postOptions</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;orderID&#39;</span><span class="p">,</span> <span class="s1">&#39;itemDesc&#39;</span><span class="p">,</span> <span class="s1">&#39;itemCode&#39;</span><span class="p">,</span> <span class="s1">&#39;notificationEmail&#39;</span><span class="p">,</span> <span class="s1">&#39;notificationURL&#39;</span><span class="p">,</span> <span class="s1">&#39;redirectURL&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;posData&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="s1">&#39;currency&#39;</span><span class="p">,</span> <span class="s1">&#39;physical&#39;</span><span class="p">,</span> <span class="s1">&#39;fullNotifications&#39;</span><span class="p">,</span> <span class="s1">&#39;transactionSpeed&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerName&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;buyerAddress1&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerAddress2&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerCity&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerState&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerZip&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerEmail&#39;</span><span class="p">,</span> <span class="s1">&#39;buyerPhone&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$postOptions</span> <span class="k">as</span> <span class="nv">$o</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nb">array_key_exists</span><span class="p">(</span><span class="nv">$o</span><span class="p">,</span> <span class="nv">$options</span><span class="p">))</span>
+</span><span class='line'>              <span class="nv">$post</span><span class="p">[</span><span class="nv">$o</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$options</span><span class="p">[</span><span class="nv">$o</span><span class="p">];</span>
+</span><span class='line'>      <span class="nv">$post</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bpfilegetcontents</span><span class="p">(</span><span class="s1">&#39;https://bitpay.com/api/invoice/&#39;</span><span class="p">,</span> <span class="nv">$options</span><span class="p">[</span><span class="s1">&#39;apiKey&#39;</span><span class="p">],</span> <span class="nv">$post</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$response</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpVerifyNotification</span><span class="p">(</span><span class="nv">$apiKey</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$apiKey</span><span class="p">)</span>
+</span><span class='line'>          <span class="nv">$apiKey</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span><span class="p">[</span><span class="s1">&#39;apiKey&#39;</span><span class="p">];</span>      
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$post</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;php://input&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$post</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span> <span class="s1">&#39;No post data&#39;</span><span class="p">;</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$post</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$json</span><span class="p">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nv">$json</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">array_key_exists</span><span class="p">(</span><span class="s1">&#39;posData&#39;</span><span class="p">,</span> <span class="nv">$json</span><span class="p">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="s1">&#39;no posData&#39;</span><span class="p">;</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="nv">$posData</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">],</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span><span class="p">[</span><span class="s1">&#39;verifyPos&#39;</span><span class="p">]</span> <span class="k">and</span> <span class="nv">$posData</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bpHash</span><span class="p">(</span><span class="nb">serialize</span><span class="p">(</span><span class="nv">$posData</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">]),</span> <span class="nv">$apiKey</span><span class="p">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="s1">&#39;authentication failed (bad hash)&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$posData</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">];</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$json</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpGetInvoice</span><span class="p">(</span><span class="nv">$invoiceId</span><span class="p">,</span> <span class="nv">$apiKey</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$apiKey</span><span class="p">)</span>
+</span><span class='line'>          <span class="nv">$apiKey</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">options</span><span class="p">[</span><span class="s1">&#39;apiKey&#39;</span><span class="p">];</span>      
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bpfilegetcontents</span><span class="p">(</span><span class="s1">&#39;https://bitpay.com/api/invoice/&#39;</span><span class="o">.</span><span class="nv">$invoiceId</span><span class="p">,</span> <span class="nv">$apiKey</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nv">$response</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">],</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;posData&#39;</span><span class="p">][</span><span class="s1">&#39;posData&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$response</span><span class="p">;</span> 
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">bpHash</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="nv">$key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$hmac</span> <span class="o">=</span> <span class="nb">base64_encode</span><span class="p">(</span><span class="nb">hash_hmac</span><span class="p">(</span><span class="s1">&#39;sha256&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">,</span> <span class="nv">$key</span><span class="p">,</span> <span class="k">TRUE</span><span class="p">));</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">strtr</span><span class="p">(</span><span class="nv">$hmac</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;+&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
+<li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Shopify App Development]]></title>
@@ -8676,209 +9219,6 @@ The kind of discipline that will keep you from looking at your Facebook or Twitt
 <p>Lastly, you should always have a todo list so that you can keep track of what to do, what&rsquo;s done and what needs some review.</p>
 
 <p>That&rsquo;s all there is to it really. You don&rsquo;t need the Pomodoro technique or any other technique to be productive. All you need is discipline and love for your work.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Digging into Chrome Dev Tools]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/04/21/digging-into-chrome-dev-tools/"/>
-    <updated>2013-04-21T17:15:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/04/21/digging-into-chrome-dev-tools</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to walk you through some of the things that we can do with the Chrome Developer Tools to improve our web development workflow.</p>
-
-<!--More-->
-
-
-<h3>Accessing Chrome Dev Tools</h3>
-
-<p>You can access the Chrome Developer Tools by clicking on the Chrome Settings button &ndash;> Tools &ndash;> Developer Tools.</p>
-
-<h4>Elements Panel</h4>
-
-<p>First there&rsquo;s the elements panel which we can use to inspect and edit the html that is used in a web page.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/elements_panel.jpg" alt="elements panel" /></p>
-
-<p>This is very useful for when you want to edit the HTML of the web page that you&rsquo;re working on, adding some classes or attributes on the fly.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/element_options.jpg" alt="elements options" /></p>
-
-<p>As you can see from the screenshot above there&rsquo;s a bunch of things that you can do with the currently selected element like copying its HTML, Edit the HTML, or deleting the node which you can do by just pressing delete on your keyboard. If you mess up you can always press on ctrl + z to undo the changes that you&rsquo;ve made.</p>
-
-<p>You can also edit entire HTML blocks or navigate directly to the parent element of the currently selected element.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/edit_html_block.jpg" alt="edit html blocks" /></p>
-
-<p>You can also drag elements around by holding the left mouse button and then dragging the element to where you want it to be and then finally releasing it.</p>
-
-<p>Another thing that you can do within the elements panel is live editing of the CSS used in a particular element.</p>
-
-<p>You can add new styles by pressing tab while the cursor is inside the value of the last property for a specific selector. As you can see from the screenshot below it also gives you a nice auto-completion for every property and values that are currently supported by the browser.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/add_styling.jpg" alt="add styling" /></p>
-
-<p>You can also disable a specific style by unchecking the checkbox before the property:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/disable_styling.jpg" alt="remove styling" /></p>
-
-<p>To delete a property entirely you can press delete while the cursor is either inside of the property or the value.</p>
-
-<p>There&rsquo;s also a sweet color picker which you can use to experiment on the color that you want to use.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/color_picker.jpg" alt="color picker" /></p>
-
-<p>You can also directly edit the css file by clicking on the name of the css file that you want to edit.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/css_file.jpg" alt="css file" /></p>
-
-<p>After that you can just edit the file like you usually do in a text-editor and the web page will be automatically updated as you type in the value for each property. The only difference is that you don&rsquo;t get the auto-completion while in this mode.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/css_editing.jpg" alt="css editing" /></p>
-
-<p>But the only problem with this is that all your changes only lives on the browser once you refresh the page all your changes will be gone. And the only plugin-less solution would be to click on the filename of the css file that you&rsquo;ve edited then copy all of its contents and then paste it back on your source file. Or you can actually right click on the file and then click on save.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/save_css.jpg" alt="save css file" /></p>
-
-<h3>Resources Panel</h3>
-
-<p>Next is the resources panel where we can see some of the resources that the web page has loaded on initial page load.
-That includes the current page (html), images, script files (mainly JavaScript), stylesheets, and other types of media.
-Each of these files are group according to their file type so all stylesheets are under the same group, all the JavaScript are in the same group, etc. Also note that the ordering depends on what has been loaded first. So the first files that were loaded during page load are first on the list.</p>
-
-<p>From the resources panel you can also see what&rsquo;s stored in Web SQL, Indexed DB, local storage, session storage, cookies, and application cache which is mainly specified in the manifest file whenever you want your application to be accessed offline.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/resources_panel.jpg" alt="resources panel" /></p>
-
-<p>The resources panel also gives you a nice preview of the file that you&rsquo;re currently viewing.
-For images you get something like this:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/image_preview.jpg" alt="image preview" /></p>
-
-<p>And for HTML, CSS, and JavaScript files you get to view the source:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/html_source.jpg" alt="html source" /></p>
-
-<h3>Network Panel</h3>
-
-<p>Next is the network panel where you can see the list of files which are loaded by the web page.
-Either on initial page load or while the users are interacting with the web page.
-So you can actually see the AJAX requests, template files and other network requests in the network panel.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/network_panel.jpg" alt="network panel" /></p>
-
-<p>Here are some of the information that you can see on the Network Panel:</p>
-
-<p><strong>Name</strong> &ndash; the name of the file that was requested.</p>
-
-<p><strong>Method</strong> &ndash; the method that was used to get the specific file (GET, POST).</p>
-
-<p><strong>Type</strong> &ndash; the <a href="http://en.wikipedia.org/wiki/MIME">type of file</a> that was requested.</p>
-
-<p><strong>Status</strong> &ndash; the status of the request <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">status</a>. The common status are 200 OK which means the request was successful and the file was directly downloaded from the server. There&rsquo;s also 304 not modified.</p>
-
-<p><strong>Initiator</strong> &ndash; the page that requested the file or resource. This is usually the current page.</p>
-
-<p><strong>Size</strong> &ndash; the size of the requested file in kilobytes.</p>
-
-<p><strong>Time</strong> &ndash;  the time between making the request and the server&rsquo;s first response in milliseconds.</p>
-
-<p><strong>Timeline</strong> &ndash; shows the waiting and receiving time for each file. The waiting time is the amount of time in which the browsers waits for the file upon requesting it. The receiving time is the amount of time in which the file is downloaded.</p>
-
-<p>Clicking on each file allows you to view the request headers, preview, response, cookies and the timing.</p>
-
-<p><strong>headers</strong> &ndash; this shows you the details of the request like the Request URL which is the URL to the file that is requested.
-The request method which is usually GET or POST. The status code which you also saw from the network request summary earlier.</p>
-
-<p>There&rsquo;s also the Request Headers and Response Headers. The Request Headers are the information that is present in the browser. And the Response Headers is the information returned from the server.</p>
-
-<p>Some of the information that are present in the Request Headers are the  Referer which is basically the url of the file that initially requested the file or resource, the User-Agent is the browser used by the user to access the web page.</p>
-
-<p>While the Response Headers contains information like the name of the Server (Apache, ECS, Nginx and a bunch of others), the current system date of the server, the <a href="http://en.wikipedia.org/wiki/HTTP_ETag">entity tag</a>.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/network_request.jpg" alt="network request" /></p>
-
-<p><strong>preview</strong> &ndash; this is usually the source of the file. If its an image file you usually get a preview of the image.</p>
-
-<p><strong>response</strong> &ndash; the same as preview but this time you only get the raw data.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/response.jpg" alt="response" /></p>
-
-<p><strong>cookies</strong> &ndash; this is usually the cookies stored by the website that the user is currently looking at.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/cookies.jpg" alt="cookies" /></p>
-
-<p><strong>timing</strong> &ndash; the same as the information displayed in the waterfall timeline that you see on the network request summary only this time its only for the file that you have clicked on.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/timing.jpg" alt="timing" /></p>
-
-<h3>Sources Panel</h3>
-
-<p>The sources panel allows you to view and edit the source files used in the current web page.
-We kind of touch on this earlier when we click on a filename on the elements panel we get redirected to the sources panel and then it allows us to edit the file that we selected and the changes would be automatically reflected on the page. But that&rsquo;s just on the css side of things. You can actually debug JavaScript code as well in the sources panel. The official Chrome Dev Tools documentation already had us covered in the <a href="https://developers.google.com/chrome-developer-tools/docs/scripts-breakpoints">Breakpoints</a> section so I won&rsquo;t delve much in how that&rsquo;s done.</p>
-
-<h3>Timeline Panel</h3>
-
-<p>The timeline panel allows you to view information regarding the performance of your web app. Things like paint times, frames per second, and memory consumption. It gives you a complete overview of how your web app performs.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/timeline_panel.jpg" alt="timeline panel" /></p>
-
-<p>You can start using the timeline panel by clicking on the <code>record</code> button found at the lower left portion of chrome dev tools.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/record_button.jpg" alt="record button" /></p>
-
-<p>Then interact with your app a bit. Usually you would interact on the parts of your app in which you want to measure the performance. Once you&rsquo;re done click on the <code>stop</code> button.</p>
-
-<p>On first look this might really look complicated. I also had no idea where the hell should I start looking the first time I used the timeline panel.</p>
-
-<p>First let&rsquo;s talk about the colors that you see in the timeline panel:</p>
-
-<p><strong>Blue</strong> &ndash; sending of requests and network related stuff.
-<strong>Yellow</strong> &ndash; execution of JavaScript code.
-<strong>Purple</strong> &ndash; css calculation and rendering.
-<strong>Green</strong> &ndash; repaints (updating the page).</p>
-
-<p>The length of these colors depends on the amount of time (in milliseconds) that the browser executed the operation.
-That&rsquo;s about all I can share about the timeline panel. I&rsquo;m not really in the level yet of measuring the performance of the applications that I&rsquo;m trying to build especially in the frontend because I do more backend than I do frontend.</p>
-
-<h3>Console</h3>
-
-<p>The console panel allows you to play around with JavaScript code that you want to include in your application.
-It also serves as a shortcut in selecting elements in the DOM.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/console_select.jpg" alt="selecting in the console" /></p>
-
-<p>There are also some shortcuts which you can use to select elements.</p>
-
-<p>To select the element that is currently selected in the elements panel you can use <code>$0</code>:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/dollar_zero.jpg" alt="$0" /></p>
-
-<p>Of course you can also use <code>$1</code>, <code>$2</code> and other numbers for as far as your memory can reach to select the elements that were previously selected. So if you select the body then the main wrapper then the first child of that wrapper. <code>$0</code> returns the first child of the wrapper, <code>$1</code> returns the wrapper, and <code>$0</code> returns the body.</p>
-
-<p>Other things that the console allows you to do:</p>
-
-<ul>
-<li><p>view errors &ndash; the console automatically allows you to view errors in your JavaScript code like parse errors when trying to call <code>JSON.parse</code> on an invalid JSON string.</p></li>
-<li><p>assertion &ndash; checking if a specific condition is true. You can use the <code>assert</code> method to do assertions.
-For example when checking if the following values are true:</p></li>
-</ul>
-
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/console_assert_numbers.jpg" alt="asserting values" /></p>
-
-<p>As you can see from the screenshot above the first two conditions returned <code>undefined</code> which means the assertion has pass. While on the 3rd condition the assertion failed since were using the strict equality operator which also checks the data type of the variable and not just its value.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/typeof.jpg" alt="typeof" /></p>
-
-<p>You can also assert return values from functions as well:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/digging_into_chrome_dev_tools/assert_functions.jpg" alt="asserting functions" /></p>
-
-<p>As you can see from the screenshot above the first assertion failed since 3 is not equal to 4. But the second assertion passes since 3 is less than 4. This is a pretty simple example but you can also have more complex functions checked by <code>console.assert</code> as long as they have return values which it can check.</p>
-
-<h3>Resources</h3>
-
-<p><a href="https://developers.google.com/chrome-developer-tools/">Chrome Dev Tools Documentation</a></p>
 ]]></content>
   </entry>
   

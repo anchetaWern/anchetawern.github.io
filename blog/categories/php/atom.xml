@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-11-27T09:07:08+08:00</updated>
+  <updated>2013-12-01T16:53:19+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,371 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api/"/>
+    <updated>2013-12-01T11:49:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api</id>
+    <content type="html"><![CDATA[<p>Bitcoin is really trending these days with its value now over <a href="http://www.extremetech.com/extreme/171762-bitcoin-hits-1000-but-how-far-can-it-go">$1000 per coin</a>. I think its timely to explore some of the services which uses Bitcoin as a form of payment. Last time I also showed you how to <a href="http://anchetawern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/">get started with the Coinbase API</a> which is also another service which allows you to use Bitcoins as a means of payment for goods and services. This time we will be exploring Bitpay. But first lets determine what&rsquo;s the difference between the Coinbase and Bitpay. Here&rsquo;s a really good answer to <a href="http://bitcoin.stackexchange.com/questions/7544/what-are-the-differences-and-similarities-among-paymium-bitpay-coinbase-etc">this question</a>:</p>
+
+<p><blockquote><p>BitPay is a payment processor for E-Commerce as well as for bricks and mortar / point-of-sale. This allows a business to accept bitcoins for payment and the proceeds are delivered to the merchant as directed. This could be 100% fiat (e.g., all bitcoin sales get converted to USDs immediately, or a mix, .. like 30% USD, 70% BTCs, etc.) The currently can send payments to merchants in U.S., Mexico, Canada and several nations in Europe.</p></blockquote></p>
+
+<p><blockquote><p>Coinbase is an EWallet provider and provides a service for buying and selling bitcoins. They do not operate a market, but instead use the exchange rate from the leading exchange (Mt. Gox) for customer buying and selling. They charge just 1% to buy or sell, but they have low limits (i.e., buy a max of $100 USD per-day) for new customers still in the 30-day probationary period.</p></blockquote></p>
+
+<p>So what service you use basically depends on what you need.</p>
+
+<h3>Signing Up</h3>
+
+<p>First you need to <a href="https://bitpay.com/start">sign up at Bitpay</a> in order to get an API key which you can use for interacting with their API. Bitpay is really strict when it comes to the registration so you really have to provide real information about your business so that you can actually confirm it when they need some confirmation.</p>
+
+<h3>Connecting to Bitpay API</h3>
+
+<p>The Bitpay API only requires basic HTTP authentication so the process of connecting to the API is really simple.
+All you have to do is to call the <code>base64_encode()</code> method on the API key that you acquire from Bitpay and then pass it as one of the HTTP header fields. Under the <code>Authorization</code> field use <code>Basic</code> followed by the base 64 encoded string representation of the API key. Here&rsquo;s how to do it using <code>file_get_contents()</code>:</p>
+
+<p>```php
+&lt;?php
+$user = base64_encode($api_key);</p>
+
+<p>$context_options = array(</p>
+
+<pre><code>"http" =&gt; array(
+    "method" =&gt; $method,
+    "header"  =&gt; "Content-type: application/json\r\n" . 
+        "Content-Length: $length\r\n" .
+        "Authorization: Basic $user\r\n"
+)
+</code></pre>
+
+<p>);</p>
+
+<p>$context = stream_context_create($context_options);</p>
+
+<p>//the $url here is the API resource that you&rsquo;re trying to request from
+$response = file_get_contents($url, false, $context);
+$response = json_decode($response, true);
+?>
+```</p>
+
+<h3>Creating an Invoice</h3>
+
+<p>You can create an Invoice via by using the following resource in the Bitpay API:</p>
+
+<p><code>
+https://bitpay.com/api/invoice
+</code></p>
+
+<p>Then passing in all the fields required by the resource:</p>
+
+<ul>
+<li><strong>price</strong> &ndash; the price of the service or good.</li>
+<li><strong>currency</strong> &ndash; any valid currency short name (USD, GBP, EUR, JPY). Here&rsquo;s a <a href="http://www.casi.org.uk/info/1051list/annexd.html">full list of valid currency short names</a>. This will be automatically converted to the corresponding value in Bitcoins (BTC) depending on the <a href="https://bitpay.com/bitcoin-exchange-rates">current Bitcoin exchange rates</a>.</li>
+</ul>
+
+
+<p>You can also pass in some optional fields:</p>
+
+<ul>
+<li><strong>posData</strong> &ndash; this is normally used for passing in some additional information regarding the service or good that a customer is trying to purchase</li>
+<li><p><strong>notificationURL</strong> &ndash; the URL that will be pinged by Bitpay everytime the transaction status changes. Note that a change from <code>new</code> to <code>expired</code> doesn&rsquo;t count as a transaction status change. Bitpay will only ping the URL when the transaction status changes from <code>new</code> to <code>paid</code>, <code>confirmed</code>, or<code>complete</code>.</p></li>
+<li><p><strong>transactionSpeed</strong> &ndash; this can be set to <code>high</code>, <code>medium</code> or <code>low</code>. High means that the invoice is considered to be confirmed after a payment has been received. Medium means it will be considered confirmed after 10 minutes. And low means it will be considered confirmed after an hour.</p></li>
+<li><p><strong>fullNotifications</strong> &ndash; this can be set to <code>true</code> or <code>false</code>. If you want Bitpay to notify via email or via the notification url that you have set every time the transaction status changes then use <code>true</code>. If you only want Bitpay to notify once the transaction status becomes confirmed then set to <code>false</code>.</p></li>
+<li><p><strong>notificationEmail</strong> &ndash; the email address that Bitpay will notify on every transaction status change.</p></li>
+<li><strong>redirectURL</strong> &ndash; the URL in which Bitpay will display in the receipt after a payment has been made.</li>
+</ul>
+
+
+<p>And here are some fields which you can use to supply information regarding the product or the customer:</p>
+
+<ul>
+<li><strong>orderID</strong></li>
+<li><strong>itemDesc</strong></li>
+<li><strong>itemCode</strong></li>
+<li><strong>physical</strong></li>
+<li><strong>buyerName</strong></li>
+<li><strong>buyerAddress1</strong></li>
+<li><strong>buyerAddress2</strong></li>
+<li><strong>buyerCity</strong></li>
+<li><strong>buyerState</strong></li>
+<li><strong>buyerZip</strong></li>
+<li><strong>buyerCountry</strong></li>
+<li><strong>buyerEmail</strong></li>
+<li><strong>buyerPhone</strong></li>
+</ul>
+
+
+<h3>Invoice Status</h3>
+
+<p>The invoice status is the status of the invoice at any given time. Here are some of the invoice states:</p>
+
+<ul>
+<li><strong>new</strong> &ndash; Initially the invoice status is <code>new</code>. This means that someone can still initiate a payment to the Bitcoin address that is associated with the invoice.</li>
+<li><strong>paid</strong> &ndash; when an invoice becomes fully paid its status changes to <code>paid</code></li>
+<li><strong>confirmed</strong> &ndash; an invoice is considered confirmed depending on the transaction speed that was set on the creation of invoice. If the transaction speed is set to low then it will be confirmed after an hour or 6 blocks in the Bitcoin network, if the transaction speed is set to medium then it will be confirmed after 1 block (10 minutes) in the Bitcoin network, if its set to high then it will be confirmed right after full payment has been made.</li>
+<li><strong>complete</strong> &ndash; this means that Bitpay has credited the merchant&rsquo;s account for the invoice.</li>
+<li><strong>expired</strong> &ndash; this means that no payment has been received after the 15 minute limit alloted by Bitpay.</li>
+<li><strong>invalid</strong> &ndash; this means that the invoice has been paid but has not been confirmed after an hour.</li>
+</ul>
+
+
+<p>Now were ready to actually make a request to the Bitpay API. You can start by downloading the official <a href="https://github.com/bitpay/php-client">PHP client</a> provided by Bitpay for interacting with the Bitpay API. There&rsquo;s also a <a href="https://github.com/bitpay/ruby-client">Ruby</a> and <a href="https://github.com/bitpay/nodejs-client">Node.js</a> client if you&rsquo;re developing for those.</p>
+
+<p>Once you&rsquo;ve downloaded it on your working directory open up the <code>bp_options.php</code> file and supply a value for the <code>apiKey</code>, <code>currency</code> or any of the optional fields that you would like to supply.</p>
+
+<p>Create a new PHP file which we will be using to call the methods from <code>bp_lib.php</code>. To create an invoice call the <code>bpCreateInvoice()</code> method. It needs 4 arguments. The first one is the order ID which we will just supply <code>null</code> since we really don&rsquo;t have a system for generating order IDs. The second is the amount or the cost of the product or service.
+The third is the optional post data in which we can provide additional information for the product or service in key-value pairs. The fourth is the additional options which is primarily used for supplying information regarding the product or the customer.</p>
+
+<p>```
+&lt;?php
+require &lsquo;bp_lib.php&rsquo;;</p>
+
+<p>$amount = 10;
+$post_data = array(</p>
+
+<pre><code>'name' =&gt; 'excalibur',
+'level' =&gt; '999'
+</code></pre>
+
+<p>);
+$addl_options = array(</p>
+
+<pre><code>'itemDesc' =&gt; 'Anime Figurine'
+</code></pre>
+
+<p>);</p>
+
+<p>$response = bpCreateInvoice(null, $amount, $post_data, $addl_options);                <br/>
+if(!empty($response)){</p>
+
+<pre><code>//do something
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Bitpay returns a response similar to the following:</p>
+
+<p>```
+Array
+(</p>
+
+<pre><code>[id] =&gt; xxx
+[url] =&gt; https://bitpay.com/invoice?id=xxx
+[posData] =&gt; {"posData":{"name":"excalibur","level":999},"hash":"xxxx-xx"}
+[status] =&gt; new
+[btcPrice] =&gt; 0.0009
+[price] =&gt; 1
+[currency] =&gt; USD
+[invoiceTime] =&gt; 1385885490958
+[expirationTime] =&gt; 1385886390958
+[currentTime] =&gt; 1385885491133
+</code></pre>
+
+<p>)
+```</p>
+
+<ul>
+<li><strong>id</strong> &ndash; the unique id of the invoice</li>
+<li><strong>url</strong> &ndash; the URL in which the invoice can be viewed</li>
+<li><strong>posData</strong> &ndash; the additional data that we provided earlier</li>
+<li><strong>status</strong> &ndash; the invoice status</li>
+<li><strong>btcPrice</strong> &ndash; the corresponding amount in Bitcoins of the amount supplied earlier</li>
+<li><strong>price</strong> &ndash; the amount that was supplied earlier when the invoice was created</li>
+<li><strong>currency</strong> &ndash; the currency of the price</li>
+<li><strong>invoiceTime</strong> &ndash; the time the invoice was created since January 1, 1970 midnight. This is in a UNIX timestamp format.</li>
+<li><strong>expirationTime</strong> &ndash; the time in which the invoice will expire. When the invoice expires payments can no longer be accepted.</li>
+<li><strong>currentTime</strong> &ndash; the current time in the Bitpay server. This is primarily used for determining the time remaining before the invoice expires.</li>
+</ul>
+
+
+<p>Accessing the invoice URL will give you a page similar to the following:</p>
+
+<p><img src="/images/posts/getting_started_with_bitpay/bitpay-donation.png" alt="invoice url" /></p>
+
+<p>Customers can then use a Bitcoin client such as <a href="http://bitcoin.org/en/download">Bitcoin Qt</a>, <a href="http://electrum.org/">Electrum</a>, <a href="https://multibit.org/">Multibit</a>, or <a href="https://bitcoinarmory.com/">Armory</a> to pay you the merchant.</p>
+
+<h3>Getting Invoice Status</h3>
+
+<p>You can also get the status of an invoice by calling the <code>bpGetInvoice()</code> method and supplying the invoice ID as the argument:</p>
+
+<p><code>php
+&lt;?php
+$invoice = bpGetInvoice('85AHEqCRaT2aZ3xAMpK8fQ');
+?&gt;
+</code></p>
+
+<p>The method will return something like this:</p>
+
+<p>```
+Array
+(</p>
+
+<pre><code>[id] =&gt; xxx
+[url] =&gt; https://bitpay.com/invoice?id=xxx
+[posData] =&gt; Array
+    (
+        [name] =&gt; excalibur
+        [age] =&gt; 27
+    )
+
+[status] =&gt; new
+[btcPrice] =&gt; 0.0009
+[price] =&gt; 1
+[currency] =&gt; USD
+[invoiceTime] =&gt; 1385885490958
+[expirationTime] =&gt; 1385886390958
+[currentTime] =&gt; 1385886420720
+</code></pre>
+
+<p>)
+```</p>
+
+<p>Its basically the same as the response that we get when creating an invoice.</p>
+
+<h3>Bitpay Class</h3>
+
+<p>Before I end this tutorial here&rsquo;s the modified version of the Bitpay client provided by Bitpay that works with servers without CURL support:</p>
+
+<p>```php
+&lt;?php
+class Bitpay{</p>
+
+<pre><code>private $options;
+
+public function __construct($options){
+    $this-&gt;options = $options;
+}
+
+public function bpLog($contents){
+    $file = dirname(__FILE__).'/bplog.txt';
+    file_put_contents($file, date('m-d H:i:s').": ", FILE_APPEND);
+
+    if (is_array($contents))
+        $contents = var_export($contents, true);    
+    else if (is_object($contents))
+        $contents = json_encode($contents);
+
+    file_put_contents($file, $contents."\n", FILE_APPEND);          
+}
+
+public function bpfilegetcontents($url, $apiKey, $post = false) {
+    global $bpOptions;  
+
+    $length = 0;
+    $method = "GET";
+    if($post){  
+        $length = strlen($post);
+        $method = "POST";
+    }
+
+    $uname = base64_encode($apiKey);
+
+    $context_options = array(
+        "http" =&gt; array(
+            "method" =&gt; $method,
+            "header"  =&gt; "Content-type: application/json\r\n" . 
+                "Content-Length: $length\r\n" .
+                "Authorization: Basic $uname\r\n"
+        )
+    );      
+
+    if($method == 'POST'){
+        $context_options["http"]["content"] = $post;
+    }
+
+    $context = stream_context_create($context_options);
+    $response = file_get_contents($url, false, $context);
+    $response = json_decode($response, true);
+
+    return $response;
+}
+
+public function bpCreateInvoice($orderId, $price, $posData, $options = array()) {   
+
+    $options = array_merge($this-&gt;options, $options);
+
+    $pos = array('posData' =&gt; $posData);
+    if ($this-&gt;options['verifyPos'])
+        $pos['hash'] = $this-&gt;bpHash(serialize($posData), $options['apiKey']);
+    $options['posData'] = json_encode($pos);
+
+    $options['orderID'] = $orderId;
+    $options['price'] = $price;
+
+    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL', 
+        'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName', 
+        'buyerAddress1', 'buyerAddress2', 'buyerCity', 'buyerState', 'buyerZip', 'buyerEmail', 'buyerPhone');
+    foreach($postOptions as $o)
+        if (array_key_exists($o, $options))
+            $post[$o] = $options[$o];
+    $post = json_encode($post);
+
+    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/', $options['apiKey'], $post);
+
+    return $response;
+}
+
+
+public function bpVerifyNotification($apiKey = false) {
+
+    if (!$apiKey)
+        $apiKey = $this-&gt;options['apiKey'];     
+
+    $post = file_get_contents("php://input");
+    if (!$post)
+        return 'No post data';
+
+    $json = json_decode($post, true);
+
+    if (is_string($json))
+        return $json;
+
+    if (!array_key_exists('posData', $json)) 
+        return 'no posData';
+
+    $posData = json_decode($json['posData'], true);
+    if($this-&gt;options['verifyPos'] and $posData['hash'] != $this-&gt;bpHash(serialize($posData['posData']), $apiKey))
+        return 'authentication failed (bad hash)';
+    $json['posData'] = $posData['posData'];
+
+    return $json;
+}
+
+public function bpGetInvoice($invoiceId, $apiKey = false) {
+
+    if (!$apiKey)
+        $apiKey = $this-&gt;options['apiKey'];     
+
+    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/'.$invoiceId, $apiKey);
+    if (is_string($response))
+        return $response; 
+    $response['posData'] = json_decode($response['posData'], true);
+    $response['posData'] = $response['posData']['posData'];
+
+    return $response;   
+}
+
+public function bpHash($data, $key) {
+    $hmac = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
+    return strtr($hmac, array('+' =&gt; '-', '/' =&gt; '_', '=' =&gt; ''));
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
+<li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Shopify App Development]]></title>
@@ -1352,229 +1717,6 @@ $password = &lsquo;secret&rsquo;;</p>
 <ul>
 <li><a href="https://github.com/avos/delicious-api/blob/master/APIs.md">Delicious API</a></li>
 <li><a href="https://github.com/anchetaWern/delicious-php">Delicious-PHP</a> &ndash; a little PHP class that I created for interacting with the Delicious API</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Flickr API]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api/"/>
-    <updated>2013-10-13T11:00:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get started with using the Flickr API.
-The Flickr API is a way to interact with data from Flickr Accounts.</p>
-
-<h3>Getting an API Key</h3>
-
-<p>First you have get an API Key from the <a href="http://www.flickr.com/services/apps/create/apply/">flickr developer website</a>.
-In order to get an API key you first have to create an app.
-The app is a way for flickr to track usage of their API. As you know, yahoo owns flickr so you first have to log in using your yahoo account in order to access the page for creating an app.</p>
-
-<p>For the purpose of this tutorial you can just apply for a non-commercial key.</p>
-
-<p><img src="/images/posts/getting_started_with_flickr_api/key_type.png" alt="key type" /></p>
-
-<p>Next, enter an app info. It can be anything you want, but be sure to provide more detailed information if you will be using the API for a project that you&rsquo;re building:</p>
-
-<p><img src="/images/posts/getting_started_with_flickr_api/app_info.png" alt="key type" /></p>
-
-<p>Check the two checkboxes to agree with <a href="http://www.flickr.com/services/api/tos/">Flickr API terms of use</a>.
-Be sure to read it so you will be informed of the limitations of the API.</p>
-
-<p><img src="/images/posts/getting_started_with_flickr_api/app_key.png" alt="app key" /></p>
-
-<p>Once you&rsquo;re done with that you can now see the Flickr key and Secret.
-Copy those two as you will be needing it to interact with the API later.</p>
-
-<h3>Interacting with the API</h3>
-
-<p>Now were ready to actually interact with the API.
-For this tutorial were going to create a little library that will interact with the flickr API for us and then we can simply include it in our code and call the methods from there.</p>
-
-<p>Create a new php file and call it <code>class.flickr.php</code>. Declare 3 private variables which will store the flickr API key, the secret key and the format in which the results will be returned. In this case were using <code>json</code> so we can manipulate it with either JavaScript or PHP if we want. Under the constructor, simply assign the values for the <code>$flickr_key</code> and <code>$flickr_secret</code> to that of the arguments that will be passed later on when the <code>Flickr</code> class is instantiated.</p>
-
-<p>```php
-&lt;?php
-class Flickr{</p>
-
-<pre><code>private $flickr_key;
-private $flickr_secret;
-private $format = 'json';
-
-public function __construct($flickr_key, $flickr_secret) {
-
-    $this-&gt;flickr_key = $flickr_key;
-    $this-&gt;flickr_secret = $flickr_secret;
-}
-</code></pre>
-
-<p>?>
-```</p>
-
-<h4>Searching of Public Photos</h4>
-
-<p>Now let&rsquo;s create a method for searching of public photos on Flickr.
-This method performs a call to the <code>flickr.photos.search</code> method from the API.
-You can read more about the arguments which you can pass to that method <a href="http://www.flickr.com/services/api/flickr.photos.search.html">here</a>.</p>
-
-<p>The <code>searchPhotos</code> method will take two arguments.
-The first one is the query or the image that you&rsquo;re looking for. It can be the image title, description or tags that has been attached to it. Note that the query can be a single word or a collection of words, you can also prepend the minus sign (&ndash;) to a word if you want to exclude it in the search results.</p>
-
-<p>The next argument is the tags, the tags is a comma-separated list of words that can be used to further describe the image that you&rsquo;re looking for.</p>
-
-<p>As you can see from the method below were using the <code>urlencode()</code> method to wrap all the user input. This includes the query and the tags. We need to do this in order to properly format the request url.</p>
-
-<p>Were also specifying a couple of arguments to the url aside from the <code>text</code> and the <code>tags</code>:</p>
-
-<ul>
-<li><p><strong>sort</strong> &ndash; the order in which to return the results, in this case I&rsquo;ve chosen <code>relevance</code> to be the value but it can also have a value of of <code>date-posted-asc</code>, <code>date-posted-desc</code>, <code>date-taken-asc</code>, <code>date-taken-desc</code>, <code>interestingness-desc</code>, and <code>interestingness-asc</code> all of which is self-explanatory.</p></li>
-<li><p><strong>safe_search</strong> &ndash; the safe search argument is a filter for results that are returned. You will usually want this to have a value of <code>1</code> which tells to the API to only return results that are safe for viewing for all ages.</p></li>
-<li><p><strong>content_type</strong> &ndash; the type of content, I&rsquo;ve selected the value of <code>4</code> for this to indicate that I want to return results that can be either photos or screenshots.</p></li>
-<li><p><strong>api_key</strong> &ndash; the API key that we got earlier from creating the app.</p></li>
-<li><p><strong>format</strong> &ndash; the format in which to return the results. In this case were using json.</p></li>
-<li><p><strong>per_page</strong> &ndash; this is the limit of images to return per page. In this case we only want the API to return 10 images per page.</p></li>
-</ul>
-
-
-<p>`&ldquo;
-&lt;?php
-public function searchPhotos($query = &rdquo;, $tags = &lsquo;&rsquo;){</p>
-
-<pre><code>$urlencoded_tags = array(); 
-
-if(!empty($tags)){  
-    $tags_r = explode(',', $tags);
-    foreach($tags_r as $tag){
-        $urlencoded_tags[] = urlencode($tag);
-    }
-}   
-
-//construct the url
-$url  = 'http://api.flickr.com/services/rest/?';
-$url .= 'method=flickr.photos.search';
-$url .= '&amp;text=' . urlencode($query);
-$url .= '&amp;tags=' . implode(',', $urlencoded_tags); //convert the array of url encoded tags back to a string
-$url .= '&amp;sort=relevance';
-$url .= '&amp;safe_search=1';
-$url .= '&amp;content_type=4';
-$url .= '&amp;api_key=' . $this-&gt;flickr_key;
-$url .= '&amp;format=' . $this-&gt;format;
-$url .= '&amp;per_page=10';
-
-//get the results
-$result = file_get_contents($url);
-
-//remove the unneccessary strings that wraps the result returned from the API
-$json = substr($result, strlen("jsonFlickrApi("), strlen($result) - strlen("jsonFlickrApi(") - 1);
-
-$photos = array();
-$data = json_decode($json, true);
-
-//check if the status didn't fail
-if($data['stat'] != 'fail'){
-    //return only the data for the photos as that's the only thing that we need
-    $photos = $data['photos']['photo'];
-    return $photos;
-}else{
-    return false;
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>After constructing the url we simply use the <code>file_get_contents()</code> method to request the data from the API.
-The results will then be stored to the <code>$result</code> variable. But the API has wrapped up the data with a function named <code>jsonFlickrApi()</code> as you can see from the screenshot below:</p>
-
-<p><img src="/images/posts/getting_started_with_flickr_api/flickr_results.png" alt="flickr results" /></p>
-
-<p>Thus we cannot immediately convert it to a PHP array or even parse it with a json parser. So we need to use the <code>str_replace()</code> function to trim the unneccessary characters. And that&rsquo;s exactly what this particular line does:</p>
-
-<p><code>
-&lt;?php
-$json = substr($result, strlen("jsonFlickrApi("), strlen($result) - strlen("jsonFlickrApi(") - 1);
-?&gt;
-</code></p>
-
-<p>Then we simply use the <code>json_decode()</code> function to convert the json string to an array.</p>
-
-<p>```
-&lt;?php
-$photos = array();
-$data = json_decode($json, true);</p>
-
-<p>//check if the status didn&rsquo;t fail
-if($data[&lsquo;stat&rsquo;] != &lsquo;fail&rsquo;){</p>
-
-<pre><code>//return only the data for the photos as that's the only thing that we need
-$photos = $data['photos']['photo'];
-return $photos;
-</code></pre>
-
-<p>}else{</p>
-
-<pre><code>return false;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>But wait, were not really done yet. If you might have noticed from the screenshot of the results returned from the API earlier you might have noticed that there were no links to the images matching the query. The common purpose of using the flickr API is to fetch the image source of the images on the flickr website. So why are there no image sources as we can see from the parsed version of the results returned from the API below:</p>
-
-<p><img src="/images/posts/getting_started_with_flickr_api/jsonview.png" alt="json parse" /></p>
-
-<p>That&rsquo;s because we need to construct the url&rsquo;s ourselves using the data that has been returned from the API.
-All you have to do is to extract the <code>farm</code>, <code>server</code>, <code>id</code> and the <code>secret</code>. Here&rsquo;s how to construct the url:</p>
-
-<p><code>
-&lt;?php
-$src = "http://farm" . $photo['farm'] . ".static.flickr.com/" . $photo['server'] . '/' . $photo['id'] . '_' . $photo['secret'] . '_m.jpg';
-?&gt;
-</code></p>
-
-<p>To call the method, you simply have to loop through the results returned from the <code>searchPhotos()</code> method and then construct the url from inside the loop:</p>
-
-<p>```
-&lt;?php
-require_once(&lsquo;class.flickr.php&rsquo;);</p>
-
-<p>$flickr = new Flickr($api_key, $api_secret);</p>
-
-<p>$results = $flickr->searchPhotos($query, $tags);
-if(!empty($results)){</p>
-
-<pre><code>foreach($results as $photo){
-
-    $src = "http://farm" . $photo['farm'] . ".static.flickr.com/" . $photo['server'] . '/' . $photo['id'] . '_' . $photo['secret'] . '_m.jpg';
-</code></pre>
-
-<p>?></p>
-
-<pre><code>&lt;img src="&lt;?php echo $src; ?&gt;" alt="&lt;?php echo $photo['title']; ?&gt;"&gt;
-</code></pre>
-
-<p>&lt;?php</p>
-
-<pre><code>}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h3>Conclusion</h3>
-
-<p>The flickr API is a great way to fetch and modify user data from the flickr website.
-We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn more about the flickr API be sure to checko out the resources below.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://www.flickr.com/services/developer/">Flickr Developer Guide</a></li>
-<li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
 </ul>
 
 ]]></content>
