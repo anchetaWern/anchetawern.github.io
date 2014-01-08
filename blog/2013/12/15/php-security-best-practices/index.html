@@ -87,6 +87,8 @@
   
 
 
+
+  
 <time datetime="2013-12-15T11:00:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
@@ -162,7 +164,7 @@ Here&rsquo;s an example of a site which has set <code>expose_php</code> to <code
 
 
 <ul>
-<li>Limit the maximum size of POST data to a value that you think is enough for your web application needs. This is to prevent attackers from flooding your web application by POSTing huge amount of data. Note that this can be expressed in kilo (K), mega (M) or giga (G).</li>
+<li>Limit the maximum size of POST data to a value that you think is enough for your web application needs. This is to prevent attackers from flooding your web application by POSTing huge amounts of data. Note that this can be expressed in kilo (K), mega (M) or giga (G).</li>
 </ul>
 
 
@@ -184,7 +186,7 @@ Here&rsquo;s an example of a site which has set <code>expose_php</code> to <code
 
 <ul>
 <li>Limit maximum input time. This will limit the amount of time for PHP to parse input data from either <code>$_POST</code> or <code>$_GET</code>.
-Note that the value is expressed in seconds.</li>
+Note that the value is expressed in seconds.`</li>
 </ul>
 
 
@@ -193,7 +195,7 @@ Note that the value is expressed in seconds.</li>
 
 
 <ul>
-<li>Limit maximum execution time to a reasonable value. The default value of 30 seconds seems reasonable enough.</li>
+<li>Limit maximum execution time to a reasonable value. This will automatically terminate a running PHP script once the maximum execution time is over. The default value of 30 seconds seems reasonable enough so in most cases you won&rsquo;t really need to change it.</li>
 </ul>
 
 
@@ -203,7 +205,7 @@ Note that the value is expressed in seconds.</li>
 
 <ul>
 <li><p>Limit the use of shell functions such as <code>exec</code>, <code>passthru</code>, <code>shell_exec</code>, <code>proc_open</code>, and <code>popen</code>. If there&rsquo;s no other option for implementing something and you absolutely need to use it make sure that users of your web application will not be able to execute any system commands. If you need user input for executing system commands then make sure that you&rsquo;re validating the data correctly.</p></li>
-<li><p>Only allow execution of PHP files on a specific directory.</p></li>
+<li><p>Only allow execution of PHP files on a specific directory. Preferably this should be the web accessible root directory.</p></li>
 </ul>
 
 
@@ -232,8 +234,8 @@ Note that the value is expressed in seconds.</li>
 <h3>Use CURL</h3>
 
 <p>Always use the CURL extension when making requests to other servers especially if you&rsquo;re working with sensitive data.
-This is because CURL is by default makes requests securely over SSL/TLS (Secure Socket Layer/Transport Security Layer).
-Here&rsquo;s an example of how to perform requests using CURL:</p>
+This is because CURL by default makes requests securely over SSL/TLS (Secure Socket Layer/Transport Security Layer).
+Here&rsquo;s an example on how to perform requests using CURL:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -264,7 +266,7 @@ Here&rsquo;s an example of how to perform requests using CURL:</p>
 
 <ul>
 <li><p><strong>Filtering</strong> &ndash; also called sanitization. This is used for ensuring that the data is properly formatted before we try to validate. An example of filtering is removing whitespaces from a string or removing any invalid characters from an email address.</p></li>
-<li><p><strong>Validation</strong> &ndash; the process of making sure that the data is what you expect it to be. For example if the web form asks for the age then you expect the age to be a number so the code must validate that what is inputted in the age field is indeed a number. And not just any number. If you expect the users who will fill out the form to be between ages 20 &ndash; 40 then you must also validate that the age that was inputted falls within that range. There are lots of things to consider when validating user input, as programmers its our duty to ensure that we&rsquo;ve covered most of the use cases.</p></li>
+<li><p><strong>Validation</strong> &ndash; the process of making sure that the data is what you expect it to be. For example if the web form asks for the age then you expect the age to be a number so the code must validate that what is inputted in the age field is indeed a number. And not just any number. If you expect the users who will fill out the form to be between ages 20 &ndash; 40 then you must also validate that the age that was inputted falls within that range. There are lots of things to consider when validating user input, as programmers its our duty to ensure that we&rsquo;ve covered most of the scenarios.</p></li>
 </ul>
 
 
@@ -326,17 +328,17 @@ Here&rsquo;s an example of how to perform requests using CURL:</p>
 <p>There are also a bunch of PHP functions that checks for a specific data type and returns <code>true</code> if the value meets</p>
 
 <ul>
-<li><strong>is_array</strong></li>
-<li><strong>is_bool</strong></li>
-<li><strong>is_double</strong></li>
-<li><strong>is_float</strong></li>
+<li><strong>is_array</strong> &ndash; checks if a variable contains an array.</li>
+<li><strong>is_bool</strong> &ndash; checks if a variable contains a boolean value.</li>
+<li><strong>is_double</strong> &ndash; checks if a variable contains a double.</li>
+<li><strong>is_float</strong> &ndash; checks if a variable contains a floating point number.</li>
 <li><strong>is_integer|is_long|is_int</strong> &ndash; checks if value is a valid integer. Note that this doesn&rsquo;t check for the data type since all user input is always in string so either the value <code>'1'</code> or simply <code>1</code> will pass.</li>
 <li><strong>is_null</strong> &ndash; checks if a variable is <code>NULL</code></li>
 <li><strong>is_numeric</strong> &ndash; checks if a value is a valid number, the main difference of this function with <code>is_int</code> is that it also checks for the data type so string numbers such as <code>'1'</code>, <code>'23'</code>, or <code>'14'</code> will return <code>false</code>.</li>
-<li><strong>is_object</strong></li>
-<li><strong>is_resource</strong></li>
-<li><strong>is_scalar</strong></li>
-<li><strong>is_string</strong></li>
+<li><strong>is_object</strong> &ndash; checks if a variable contains an object.</li>
+<li><strong>is_resource</strong> &ndash; checks if a variable contains a resource.</li>
+<li><strong>is_scalar</strong> &ndash; checks if a variable contains a scalar value.</li>
+<li><strong>is_string</strong> &ndash; checks if a variable contains string.</li>
 </ul>
 
 
@@ -375,7 +377,7 @@ Here&rsquo;s an example of how to perform requests using CURL:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is not a good practice since the root user has the privilege to perform almost all the operations that you can perform in all of the database that&rsquo;s currently residing in the MySQL server. Selecting data, inserting new data, updating, deleting, truncating tables, dropping tables, dropping a whole database you name it all of these can be performed by the root user so a successful SQL injection attack can pretty much give an attacker the privilege to do all of these operations.</p>
+<p>This is not a good practice since the root user has the privilege to perform almost all the operations that you can perform in all of the database that&rsquo;s currently residing in the MySQL server. Selecting data, inserting new data, updating, deleting, truncating tables, dropping tables, dropping a whole database. All of these can be performed by the root user so a successful SQL injection attack can pretty much give an attacker the privilege to do all of these operations.</p>
 
 <p>Limiting the user privileges is really simple. In the screenshot below I&rsquo;m using a tool called phpmyadmin to create a user that has only read privileges:</p>
 
@@ -450,7 +452,7 @@ But what if an attacker successfully gains access to a database user that has al
 
 <p>One more thing to consider when working with databases is how to safely store passwords. You probably already know that its a bad practice to simply store passwords in plain text. Because this means that when attackers were successfully able to dump the contents of a user table then they will basically have access to all of the users information which includes things such as credit card numbers, favorite TV show or the name of your first crush.</p>
 
-<p>And it might already be old news to you but these functions for hashing passwords isn&rsquo;t safe either as attackers can use brute force attack or rainbow tables in order to determine a password:</p>
+<p>And it might already be old news to you but these functions for hashing passwords isn&rsquo;t that safe as attackers can use brute force attack or rainbow tables in order to determine a password:</p>
 
 <ul>
 <li><strong>md5</strong></li>
@@ -537,7 +539,7 @@ But what if an attacker successfully gains access to a database user that has al
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Some people say that you should store your salt strings to a database separate from the database where you store your hashes. Maybe this is true if you don&rsquo;t use random salts for each of the passwords. An attacker would still have difficulty in cracking a password even if he has access to both salt and hash as long as the salt is random.</p>
+<p>Some people say that you should store your salt strings to a database separate from the database where you store your hashes. Maybe this is true if you don&rsquo;t use random salts for each of the passwords. An attacker would still have difficulty in cracking a password even if he has access to both salt and hash as long as the salt is random for each user.</p>
 
 <p>For <code>crypt</code> and <code>password_hash</code> there&rsquo;s no need to store the random salts separately since you can verify if the password is valid without specifying the salt that was used:</p>
 
@@ -741,7 +743,7 @@ But what if an attacker successfully gains access to a database user that has al
 
 <h2>Conclusion</h2>
 
-<p>We&rsquo;ve barely scratch the surface with this guide. There&rsquo;s a lot more you can do to improve the security of the applications that you&rsquo;re writing. Be sure to check out the resources below if you want to learn more about securing PHP applications.</p>
+<p>In this article you&rsquo;ve learned some of the basic ways you can add security to your PHP projects. We&rsquo;ve barely scratch the surface with this guide. There&rsquo;s a lot more you can do to improve the security of the applications that you&rsquo;re writing. Be sure to check out the resources below if you want to learn more about securing PHP applications.</p>
 
 <h2>Resources</h2>
 
@@ -775,7 +777,9 @@ But what if an attacker successfully gains access to a database user that has al
   
 
 
-<time datetime="2013-12-15T11:00:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2013</time>
+
+  
+<time datetime="2014-01-08T10:00:00+08:00" class="updated">Updated Jan 8<span>th</span>, 2014</time>
       
 
 <span class="categories">
@@ -805,6 +809,8 @@ But what if an attacker successfully gains access to a database user that has al
         <a class="basic-alignment left" href="/blog/2013/12/01/getting-started-with-bitpay-api/" title="Previous Post: Getting Started with Bitpay API">&laquo; Getting Started with Bitpay API</a>
       
       
+        <a class="basic-alignment right" href="/blog/2014/01/08/getting-started-with-paypal-api/" title="Next Post: Getting Started with Paypal API">Getting Started with Paypal API &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -825,6 +831,10 @@ But what if an attacker successfully gains access to a database user that has al
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/08/getting-started-with-paypal-api/">Getting Started with Paypal API</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/15/php-security-best-practices/">PHP Security Best Practices</a>
       </li>
     
@@ -838,10 +848,6 @@ But what if an attacker successfully gains access to a database user that has al
     
       <li class="post">
         <a href="/blog/2013/11/03/gettting-started-with-coinbase-api/">Gettting Started with Coinbase API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/">How to perform cross-domain AJAX requests</a>
       </li>
     
   </ul>
@@ -903,7 +909,7 @@ But what if an attacker successfully gains access to a database user that has al
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Wern Ancheta -
+  Copyright &copy; 2014 - Wern Ancheta -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: best-practices | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/best-practices/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-12-18T14:51:03+08:00</updated>
+  <updated>2014-01-08T20:15:13+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -78,7 +78,7 @@ allow_url_include = Off #disable including of urls to files (e.g include 'http:/
 </code></p>
 
 <ul>
-<li>Limit the maximum size of POST data to a value that you think is enough for your web application needs. This is to prevent attackers from flooding your web application by POSTing huge amount of data. Note that this can be expressed in kilo (K), mega (M) or giga (G).</li>
+<li>Limit the maximum size of POST data to a value that you think is enough for your web application needs. This is to prevent attackers from flooding your web application by POSTing huge amounts of data. Note that this can be expressed in kilo (K), mega (M) or giga (G).</li>
 </ul>
 
 
@@ -100,7 +100,7 @@ memory_limit = 25M
 
 <ul>
 <li>Limit maximum input time. This will limit the amount of time for PHP to parse input data from either <code>$_POST</code> or <code>$_GET</code>.
-Note that the value is expressed in seconds.</li>
+Note that the value is expressed in seconds.`</li>
 </ul>
 
 
@@ -109,7 +109,7 @@ max_input_time = 5
 </code></p>
 
 <ul>
-<li>Limit maximum execution time to a reasonable value. The default value of 30 seconds seems reasonable enough.</li>
+<li>Limit maximum execution time to a reasonable value. This will automatically terminate a running PHP script once the maximum execution time is over. The default value of 30 seconds seems reasonable enough so in most cases you won&rsquo;t really need to change it.</li>
 </ul>
 
 
@@ -119,7 +119,7 @@ max_execution_time = 30
 
 <ul>
 <li><p>Limit the use of shell functions such as <code>exec</code>, <code>passthru</code>, <code>shell_exec</code>, <code>proc_open</code>, and <code>popen</code>. If there&rsquo;s no other option for implementing something and you absolutely need to use it make sure that users of your web application will not be able to execute any system commands. If you need user input for executing system commands then make sure that you&rsquo;re validating the data correctly.</p></li>
-<li><p>Only allow execution of PHP files on a specific directory.</p></li>
+<li><p>Only allow execution of PHP files on a specific directory. Preferably this should be the web accessible root directory.</p></li>
 </ul>
 
 
@@ -148,8 +148,8 @@ sudo chmod -R 0444 /var/www/public_html
 <h3>Use CURL</h3>
 
 <p>Always use the CURL extension when making requests to other servers especially if you&rsquo;re working with sensitive data.
-This is because CURL is by default makes requests securely over SSL/TLS (Secure Socket Layer/Transport Security Layer).
-Here&rsquo;s an example of how to perform requests using CURL:</p>
+This is because CURL by default makes requests securely over SSL/TLS (Secure Socket Layer/Transport Security Layer).
+Here&rsquo;s an example on how to perform requests using CURL:</p>
 
 <p><code>php
 &lt;?php
@@ -174,7 +174,7 @@ $response = curl_exec($req);
 
 <ul>
 <li><p><strong>Filtering</strong> &ndash; also called sanitization. This is used for ensuring that the data is properly formatted before we try to validate. An example of filtering is removing whitespaces from a string or removing any invalid characters from an email address.</p></li>
-<li><p><strong>Validation</strong> &ndash; the process of making sure that the data is what you expect it to be. For example if the web form asks for the age then you expect the age to be a number so the code must validate that what is inputted in the age field is indeed a number. And not just any number. If you expect the users who will fill out the form to be between ages 20 &ndash; 40 then you must also validate that the age that was inputted falls within that range. There are lots of things to consider when validating user input, as programmers its our duty to ensure that we&rsquo;ve covered most of the use cases.</p></li>
+<li><p><strong>Validation</strong> &ndash; the process of making sure that the data is what you expect it to be. For example if the web form asks for the age then you expect the age to be a number so the code must validate that what is inputted in the age field is indeed a number. And not just any number. If you expect the users who will fill out the form to be between ages 20 &ndash; 40 then you must also validate that the age that was inputted falls within that range. There are lots of things to consider when validating user input, as programmers its our duty to ensure that we&rsquo;ve covered most of the scenarios.</p></li>
 </ul>
 
 
@@ -231,17 +231,17 @@ $age = filter_var($</em>POST[&lsquo;age&rsquo;], FILTER_VALIDATE_INT);</p>
 <p>There are also a bunch of PHP functions that checks for a specific data type and returns <code>true</code> if the value meets</p>
 
 <ul>
-<li><strong>is_array</strong></li>
-<li><strong>is_bool</strong></li>
-<li><strong>is_double</strong></li>
-<li><strong>is_float</strong></li>
+<li><strong>is_array</strong> &ndash; checks if a variable contains an array.</li>
+<li><strong>is_bool</strong> &ndash; checks if a variable contains a boolean value.</li>
+<li><strong>is_double</strong> &ndash; checks if a variable contains a double.</li>
+<li><strong>is_float</strong> &ndash; checks if a variable contains a floating point number.</li>
 <li><strong>is_integer|is_long|is_int</strong> &ndash; checks if value is a valid integer. Note that this doesn&rsquo;t check for the data type since all user input is always in string so either the value <code>'1'</code> or simply <code>1</code> will pass.</li>
 <li><strong>is_null</strong> &ndash; checks if a variable is <code>NULL</code></li>
 <li><strong>is_numeric</strong> &ndash; checks if a value is a valid number, the main difference of this function with <code>is_int</code> is that it also checks for the data type so string numbers such as <code>'1'</code>, <code>'23'</code>, or <code>'14'</code> will return <code>false</code>.</li>
-<li><strong>is_object</strong></li>
-<li><strong>is_resource</strong></li>
-<li><strong>is_scalar</strong></li>
-<li><strong>is_string</strong></li>
+<li><strong>is_object</strong> &ndash; checks if a variable contains an object.</li>
+<li><strong>is_resource</strong> &ndash; checks if a variable contains a resource.</li>
+<li><strong>is_scalar</strong> &ndash; checks if a variable contains a scalar value.</li>
+<li><strong>is_string</strong> &ndash; checks if a variable contains string.</li>
 </ul>
 
 
@@ -277,7 +277,7 @@ $db = new Mysqli("localhost", "root", "", "my_db");
 ?&gt;
 </code></p>
 
-<p>This is not a good practice since the root user has the privilege to perform almost all the operations that you can perform in all of the database that&rsquo;s currently residing in the MySQL server. Selecting data, inserting new data, updating, deleting, truncating tables, dropping tables, dropping a whole database you name it all of these can be performed by the root user so a successful SQL injection attack can pretty much give an attacker the privilege to do all of these operations.</p>
+<p>This is not a good practice since the root user has the privilege to perform almost all the operations that you can perform in all of the database that&rsquo;s currently residing in the MySQL server. Selecting data, inserting new data, updating, deleting, truncating tables, dropping tables, dropping a whole database. All of these can be performed by the root user so a successful SQL injection attack can pretty much give an attacker the privilege to do all of these operations.</p>
 
 <p>Limiting the user privileges is really simple. In the screenshot below I&rsquo;m using a tool called phpmyadmin to create a user that has only read privileges:</p>
 
@@ -333,7 +333,7 @@ if(is_int($user_id)){ //check if id is an integer</p>
 
 <p>One more thing to consider when working with databases is how to safely store passwords. You probably already know that its a bad practice to simply store passwords in plain text. Because this means that when attackers were successfully able to dump the contents of a user table then they will basically have access to all of the users information which includes things such as credit card numbers, favorite TV show or the name of your first crush.</p>
 
-<p>And it might already be old news to you but these functions for hashing passwords isn&rsquo;t safe either as attackers can use brute force attack or rainbow tables in order to determine a password:</p>
+<p>And it might already be old news to you but these functions for hashing passwords isn&rsquo;t that safe as attackers can use brute force attack or rainbow tables in order to determine a password:</p>
 
 <ul>
 <li><strong>md5</strong></li>
@@ -393,7 +393,7 @@ if($hash_from_db == $hash){</p>
 ?>
 ```</p>
 
-<p>Some people say that you should store your salt strings to a database separate from the database where you store your hashes. Maybe this is true if you don&rsquo;t use random salts for each of the passwords. An attacker would still have difficulty in cracking a password even if he has access to both salt and hash as long as the salt is random.</p>
+<p>Some people say that you should store your salt strings to a database separate from the database where you store your hashes. Maybe this is true if you don&rsquo;t use random salts for each of the passwords. An attacker would still have difficulty in cracking a password even if he has access to both salt and hash as long as the salt is random for each user.</p>
 
 <p>For <code>crypt</code> and <code>password_hash</code> there&rsquo;s no need to store the random salts separately since you can verify if the password is valid without specifying the salt that was used:</p>
 
@@ -545,7 +545,7 @@ try{</p>
 
 <h2>Conclusion</h2>
 
-<p>We&rsquo;ve barely scratch the surface with this guide. There&rsquo;s a lot more you can do to improve the security of the applications that you&rsquo;re writing. Be sure to check out the resources below if you want to learn more about securing PHP applications.</p>
+<p>In this article you&rsquo;ve learned some of the basic ways you can add security to your PHP projects. We&rsquo;ve barely scratch the surface with this guide. There&rsquo;s a lot more you can do to improve the security of the applications that you&rsquo;re writing. Be sure to check out the resources below if you want to learn more about securing PHP applications.</p>
 
 <h2>Resources</h2>
 

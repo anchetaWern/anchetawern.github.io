@@ -4,7 +4,7 @@
   <title><![CDATA[Category: api | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/api/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2013-12-18T14:51:03+08:00</updated>
+  <updated>2014-01-08T20:15:13+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,361 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Paypal API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/"/>
+    <updated>2014-01-08T18:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how you can get started with using the Paypal API. I&rsquo;ll walk you through the steps needed in order to get you started with using the Paypal API in your projects.</p>
+
+<h3>Concepts to Remember</h3>
+
+<p>Here are some of the concepts that you have to remember when working with the Paypal API in any of your projects:</p>
+
+<ul>
+<li><p><strong>Sandbox</strong> &ndash; this is used for testing requests to the Paypal API. Sandbox Paypal accounts can be assigned with funds of up to 5000 USD and then you can use it for testing.</p></li>
+<li><p><strong>Live</strong> &ndash; the live Paypal website. You can switch your API calls to use the live endpoints upon deploying your project.</p></li>
+<li><p><strong>API Request</strong> &ndash; you can use either NVP (Name-Value Pair) or SOAP when making request to the API. We will use name-value pairs in this tutorial.</p></li>
+<li><p><strong>API Credentials</strong> &ndash; the credentials that you will use in order to make API calls.</p></li>
+<li><p><strong>API</strong> &ndash; short for Application Programming Interface. Paypal is composed of different APIs such as the adaptive accounts, adaptive payments, invoicing, merchant APIs and permissions. In this tutorial I&rsquo;m going to discuss about the merchant API.</p></li>
+<li><p><strong>Service Endpoint</strong> &ndash; this simply refers to the URL of the server that will handle a specific request. Note that the endpoints used for testing (sandbox) and production (live) are different. So you have to update the endpoints after you&rsquo;re done with the testing.</p></li>
+<li><p><strong>Call Payload</strong> &ndash; the minimum data required by paypal that you have to submit as part of the request to the API.</p></li>
+<li><p><strong>Request and Response Formats</strong> &ndash; the format in which your API request and the response that&rsquo;s going to be returned after a successful call.</p></li>
+<li><p><strong>HTTP Headers</strong> &ndash; the HTTP request header information that you have to specify in each API call.</p></li>
+</ul>
+
+
+<h3>Create a Paypal Account</h3>
+
+<p>First you have to create either a Paypal Personal Account or a Paypal Business Account on the Paypal website.
+After creating an account go to <a href="https://developer.paypal.com/">developer.paypal.com</a> and login using the account that you created.</p>
+
+<h3>Create a Sandbox Account</h3>
+
+<p>Once you&rsquo;re logged in to the paypal developer website, click on the applications tab then go to sandbox accounts. In this page you will see the default paypal account that you can use for testing. The default account contains information that you can use to authenticate your API calls. In most cases you would only need to take note of the username, password and the signature in order to authenticate API calls.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/default-test-account.png" alt="default account" /></p>
+
+<p>The default test account is a business account so if you need to test on a personal account you may need to create a new test account which you can do on the same page by clicking on the <code>Create Account</code> button.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/paypal-create-testacc.png" alt="create test account" /></p>
+
+<p>The default test account along with any test account that you create can be used to login in the <a href="https://www.sandbox.paypal.com">sandbox paypal website</a>. This is great as you can use this like a real paypal account to view your transactions, make payments, etc.</p>
+
+<h3>Getting Live API Credentials</h3>
+
+<p>Note that the API credentials that comes along with the default test account can&rsquo;t be used to make API calls with the live version of the API. For that you would need to login to <a href="http://paypal.com">paypal</a> then go to <strong>My Account</strong> &ndash;> <strong>Profile</strong> &ndash;> <strong>My Selling Tools</strong> then click on the <strong>update</strong> link beside the <strong>API Access</strong> section. After that click on the <strong>Request API Credentials</strong> link. Finally, select <strong>Request API signature</strong> and click <strong>Agree and Submit</strong>. This will generate the API Username, Password and Signature that you can use in your live API calls.</p>
+
+<h3>Paypal Class</h3>
+
+<p>Now were ready to build the class that we will be using later on to make requests to the Paypal API.
+First create a new class and call it <code>Paypal</code>. Then declare the following class variables:</p>
+
+<ul>
+<li><strong>request method</strong> &ndash; the request method to use. This can be either CURL or file_get_contents.</li>
+<li><strong>errors</strong> &ndash; stores the current errors that occured while making the requests.</li>
+<li><strong>credentials</strong> &ndash; stores the API credentials.</li>
+<li><strong>endpoint</strong> &ndash; the URL of the service end point to use.</li>
+<li><strong>version</strong> &ndash; the version of the API. Currently its 74.0</li>
+</ul>
+
+
+<p>```php
+&lt;?php
+class Paypal{</p>
+
+<p>  public $request_method;</p>
+
+<p>  public $_errors = array();</p>
+
+<p>  protected $<em>credentials;
+  protected $</em>endPoint = &lsquo;<a href="https://api-3t.sandbox.paypal.com/nvp">https://api-3t.sandbox.paypal.com/nvp</a>&rsquo;;
+  protected $_version = &lsquo;74.0&rsquo;;</p>
+
+<p>}
+?>
+```</p>
+
+<p>Next declare the constructor. This will take 3 required arguments and two optional arguments:</p>
+
+<ul>
+<li><p><strong>user</strong> &ndash; the API username that you got from paypal. Note that this should correspond with the endpoint that you use. If the endpoint is a sandbox endpoint then use the sandbox credentials otherwise use the live credentials.</p></li>
+<li><p><strong>pass</strong> &ndash; the API password</p></li>
+<li><strong>signature</strong> &ndash; the API signature</li>
+<li><strong>paypal server</strong> &ndash; this can either be set to sandbox or live. This is set to sandbox by default so its using the sandbox endpoint. Setting this to live will set the endpoint to the live endpoint.</li>
+<li><strong>request method</strong> &ndash; the request method to use, this can be either file_get_contents or curl. Its recommended to use curl since its more secure. The file_get_contents method is only there in case the server where you are deploying has no support for CURL.</li>
+</ul>
+
+
+<p>What the constructor does is to initialize the values for the class variables based on the arguments supplied when an object for the class is declared.</p>
+
+<p>```
+&lt;?php
+  public function __construct($user, $pass, $signature, $paypal_server = &lsquo;sandbox&rsquo;, $request_method = &lsquo;file_get_contents&rsquo;){</p>
+
+<pre><code>$this-&gt;_credentials = array(
+    'USER' =&gt; $user,
+    'PWD' =&gt; $pass,
+    'SIGNATURE' =&gt; $signature,
+);
+
+$this-&gt;request_method = $request_method;
+if($paypal_server == 'live'){
+  $this-&gt;_endPoint = 'https://api-3t.paypal.com/nvp';
+}
+</code></pre>
+
+<p>  }
+?>
+```</p>
+
+<p>Next create the request method. This will be the primary method that we will call from this class once we make the request to the API. This accepts two arguments:</p>
+
+<ul>
+<li><strong>method</strong> &ndash; the API method to use.</li>
+<li><strong>params</strong> &ndash; the parameters required by the method that we specified.</li>
+</ul>
+
+
+<p>What this method does is to build the name-value pair that will be used for the request. It also builds the required HTTP header based on the credentials supplied through the constructor earlier. Once its done building all the information required by a specific API method it makes the request depending on the request method.</p>
+
+<p>```
+&lt;?php
+  public function request($method, $params = array()){</p>
+
+<pre><code>$this-&gt;_errors = array();
+if(empty($method)){ 
+  $this-&gt;_errors = array('There is no API Method');
+  return false;
+}
+
+$requestParams = array(
+   'METHOD' =&gt; $method,
+   'VERSION' =&gt; $this-&gt;_version
+) + $this-&gt;_credentials;
+
+
+$request = http_build_query($requestParams + $params); //build a query string based on the array of request parameters
+
+if($this-&gt;request_method == 'curl'){
+
+    //build the HTTP header required by Paypal
+    $http_header = array(
+        'X-PAYPAL-SECURITY-USERID' =&gt; $this-&gt;_credentials['USER'],
+        'X-PAYPAL-SECURITY-PASSWORD' =&gt; $this-&gt;_credentials['PWD'],
+        'X-PAYPAL-SECURITY-SIGNATURE' =&gt; $this-&gt;_credentials['SIGNATURE'],
+        'X-PAYPAL-REQUEST-DATA-FORMAT' =&gt; 'JSON',
+        'X-PAYPAL-RESPONSE-DATA-FORMAT' =&gt; 'JSON'
+    );
+
+    //set options for CURL
+    $curlOptions = array (
+        CURLOPT_HTTPHEADER =&gt; $http_header,
+        CURLOPT_URL =&gt; $this-&gt;_endPoint,
+        CURLOPT_VERBOSE =&gt; 1,
+        CURLOPT_SSL_VERIFYPEER =&gt; true, 
+        CURLOPT_SSL_VERIFYHOST =&gt; 2,
+        CURLOPT_CAINFO =&gt; dirname(__FILE__) . '/cert/cacert.pem', //CA cert file
+        CURLOPT_RETURNTRANSFER =&gt; 1,
+        CURLOPT_POST =&gt; 1,
+        CURLOPT_POSTFIELDS =&gt; $request
+    );
+
+    $ch = curl_init();
+    curl_setopt_array($ch, $curlOptions);
+
+    $response = curl_exec($ch); //make the request
+
+    if(curl_errno($ch)){
+        $this-&gt;_errors = curl_error($ch);
+        curl_close($ch);
+        return false;
+    }else{
+        curl_close($ch);
+        $responseArray = array();
+        parse_str($response, $responseArray); //convert the response string to an array
+        return $responseArray;
+    }
+
+}else if($this-&gt;request_method == 'file_get_contents'){
+
+    //build the HTTP header required by Paypal
+    $context_options = array(
+        "http" =&gt; array(
+          "method" =&gt; "POST",
+          "header"  =&gt; "Content-type: application/x-www-form-urlencoded\r\n" .
+                "X-PAYPAL-SECURITY-USERID: " . $this-&gt;_credentials['USER'] . "\r\n" .
+                "X-PAYPAL-SECURITY-PASSWORD: " . $this-&gt;_credentials['PWD'] . "\r\n" .
+                "X-PAYPAL-SECURITY-SIGNATURE: " . $this-&gt;_credentials['SIGNATURE'] . "\r\n" .
+                "X-PAYPAL-REQUEST-DATA-FORMAT: JSON\r\n" .
+                "X-PAYPAL-RESPONSE-DATA-FORMAT: JSON\r\n",
+          "content" =&gt; $request
+        )
+    );
+
+    $context = stream_context_create($context_options); //create context for file_get_contents
+    $response = file_get_contents($this-&gt;_endPoint, false, $context); //make the request
+
+    $responseArray = array();
+    parse_str($response, $responseArray); //convert the response string to an array
+    return $responseArray;
+
+}
+</code></pre>
+
+<p>  }
+}
+?>
+```</p>
+
+<h3>API Methods</h3>
+
+<p>Before we dive into actually making an API request its important that we first understand the API methods that we will actually use. In this tutorial were only going to use 3 methods: SetExpressCheckout, GetExpressCheckoutDetails, and DoExpressCheckoutPayment. Were going to use these methods to create an application that accepts payments using Paypal.</p>
+
+<h4>SetExpressCheckout</h4>
+
+<p>The <code>SetExpressCheckout</code> method allows you to initiate an express checkout transaction. This is the easiest way to implement a payment operation in your application. What this does is to generate a unique token that can be appended into the paypal URL which is used for making payments. The URL to be used for sandbox and live are different so you have to make sure that the URL that you&rsquo;re using corresponds to the current API endpoint that you&rsquo;re using:</p>
+
+<ul>
+<li><strong>sandbox</strong> &ndash; <a href="https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+<li><strong>live</strong> &ndash; <a href="https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+</ul>
+
+
+<p>The <code>SetExpressCheckout</code> method requires the following parameters:</p>
+
+<ul>
+<li><p><strong>METHOD</strong> &ndash; must be set to <code>SetExpressCheckout</code></p></li>
+<li><p><strong>RETURNURL</strong> &ndash; this is the URL where the buyer will be redirected after a successful payment</p></li>
+<li><strong>CANCELURL</strong> &ndash; this is the URL where the buyer will be redirected if he doesn&rsquo;t accept to make the payment</li>
+<li><strong>NOSHIPPING</strong> &ndash; you can use this to specify if shipping information is enabled or not. If the customer is paying for a specific service that doesn&rsquo;t require shipping then you can simply set the value to <code>1</code></li>
+<li><p><strong>ALLOWNOTE</strong> &ndash; you can use this to specify if notes are allowed. You can set this to <code>0</code> if you don&rsquo;t want buyers to send a note along with the payment information. Otherwise set it to <code>1</code></p></li>
+<li><p><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; the total cost of the product or service. If you have more than one item then the value for this parameter should be the total of those items. Note that any value that you supply for any parameter that requires an amount should be expressed in 2 decimal places. So if the item is worth 25 dollars then it should be written as <code>25.00</code>.</p></li>
+<li><strong>PAYMENTREQUEST_0_SHIPPINGAMT</strong> &ndash; the shipping cost. If the <code>NOSHIPPING</code> is set to <code>1</code> then there&rsquo;s no need to supply a value for this parameter</li>
+<li><p><strong>PAYMENTREQUEST_0_ITEMAMT</strong> &ndash; the cost of the product or service. Note that if you have more than one product you can simply set this to <code>PAYMENTREQUEST_1_ITEMAMT</code>, <code>PAYMENTREQUEST_2_ITEMAMT</code> and so on. Just be sure to get the total of the values that you supplied to those parameters</p></li>
+<li><p><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; the currency in which the <code>PAYMENTREQUEST_0_AMT</code> and <code>PAYMENTREQUEST_0_ITEMAMT</code> is expressed. Here&rsquo;s a <a href="https://developer.paypal.com/docs/classic/api/currency_codes/">list of currency codes</a> that you can use. If you don&rsquo;t specify a value for this parameter the default value of <code>USD</code> will be used.</p></li>
+<li><p><strong>L_PAYMENTREQUEST_0_NAME0</strong> &ndash; the name of the product or service</p></li>
+<li><strong>L_PAYMENTREQUEST_0_DESC0</strong> &ndash; the description of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_AMT0</strong> &ndash; the cost of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_QTY0</strong> &ndash; the quantity of the product or service</li>
+</ul>
+
+
+<p>After a successfull request it returns the following response:</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that can be appended to the URL of the paypal website where the payment can be made.</li>
+</ul>
+
+
+<h4>GetExpressCheckoutDetails</h4>
+
+<p>The <code>GetExpressCheckoutDetails</code> method is used for getting additional information regarding a specific express checkout transaction. This is called after a payment has successfully been made through the paypal website. This happens when paypal successfully redirects to the <code>RETURNURL</code> that we specified in the <code>SetExpressCheckout</code> method.</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. You can get the token by using <code>$_GET['token']</code>.</li>
+</ul>
+
+
+<p>After a successful request paypal returns a bunch of information regarding the payment. This includes information about the transaction itself and some payer information. Check out the <a href="https://developer.paypal.com/docs/classic/api/merchant/GetExpressCheckoutDetails_API_Operation_NVP/">official documentation</a> if you want to see a full list of the response objects returned from calling the <code>GetExpressCheckoutDetails</code> method.</p>
+
+<h4>DoExpressCheckoutPayment</h4>
+
+<p>The <code>DoExpressCheckoutPayment</code> method is used for completing the express checkout transaction. You might think that once the payment has been made its already completed but actually its not. The transaction isn&rsquo;t actually completed unless the payment is confirmed on both sides (paypal and your website).</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. Yes this is the same as the token that you used for the <code>GetExpressCheckoutDetails</code> method.</li>
+<li><strong>PAYMENTREQUEST_n_PAYMENTACTION</strong> &ndash; specifies how you want to obtain the payment. There are 3 possible values for this: <code>Authorization</code>, <code>Order</code>, and <code>Sale</code>. In most cases the value used here is <code>Sale</code>.</li>
+<li><strong>PAYERID</strong> &ndash; the unique ID of the buyer. This information is also appended in the return URL, you can get it by using <code>$_GET['PayerID']</code></li>
+<li><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_AMT</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+<li><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_CURRENCYCODE</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+</ul>
+
+
+<p>After a successful request the express checkout transaction is now completed.</p>
+
+<h3>Making API Requests</h3>
+
+<p>Now were ready to actually make requests to the API. First include the file where the Paypal class is located. Then create a new object for the Paypal class:</p>
+
+<p>```
+&lt;?php
+require &lsquo;Paypal.php&rsquo;;</p>
+
+<p>//get credentials from DB
+$credentials = $db->get(&ldquo;tbl_credentials&rdquo;, &ldquo;paypal&rdquo;);
+extract($credentials);</p>
+
+<p>$paypal = new Paypal($user, $pass, $signature, $paypal_server);</p>
+
+<p>if(empty($<em>GET[&lsquo;TOKEN&rsquo;]) &amp;&amp; empty($</em>GET[&lsquo;PayerID&rsquo;])){</p>
+
+<pre><code>$request_params = array(
+   'RETURNURL' =&gt; $success_url,
+   'CANCELURL' =&gt; $cancel_url,
+   'NOSHIPPING' =&gt; '1',
+   'ALLOWNOTE' =&gt; '1'
+);  
+
+$order_params = array(
+   'PAYMENTREQUEST_0_AMT' =&gt; $amount,
+   'PAYMENTREQUEST_0_ITEMAMT' =&gt; $amount,
+   'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
+);
+
+$item = array(
+   'L_PAYMENTREQUEST_0_NAME0' =&gt; 'Oldies Anime Collection',
+   'L_PAYMENTREQUEST_0_DESC0' =&gt; 'old anime',
+   'L_PAYMENTREQUEST_0_AMT0' =&gt; $amount,
+   'L_PAYMENTREQUEST_0_QTY0' =&gt; '1'
+);  
+
+//initiate express checkout transaction
+$response = $paypal-&gt;request('SetExpressCheckout', $request_params + $order_params + $item);
+
+if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
+    $token = $response['TOKEN'];
+    //redirect to paypal where the buyer will make his payment
+    header('Location: https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=' . $token);
+}
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>//after a successful redirect, complete the express checkout transaction
+$request_params = array(
+    'TOKEN' =&gt; $_GET['token'],
+    'PAYMENTACTION' =&gt; 'Sale',
+    'PAYERID' =&gt; $_GET['PayerID'],
+    'PAYMENTREQUEST_0_AMT' =&gt; $amount, 
+    'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
+);
+
+$response = $paypal-&gt;request('DoExpressCheckoutPayment', $request_params);
+
+if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
+    //commit the transaction in your database
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial you&rsquo;ve learned the basics of making API requests to the Paypal API. We have specifically used the Merchant API. But there are other Paypal APIs which we can use for different use cases.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developer.paypal.com/docs/classic/api/gs_PayPalAPIs/">Paypal Classic API Getting Started Guide</a></li>
+<li><a href="https://developer.paypal.com/docs/classic/api/">Paypal Classic API Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
@@ -1083,287 +1438,6 @@ We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn 
 <ul>
 <li><a href="http://www.flickr.com/services/developer/">Flickr Developer Guide</a></li>
 <li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Ebay Finding API]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/04/03/getting-started-with-ebay-finding-api/"/>
-    <updated>2013-04-03T08:09:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/04/03/getting-started-with-ebay-finding-api</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how you can access the e-bay finding API to access products that are sold from e-bay.
-Product data such as the list price, available quantities, images are available from the e-bay finding API.</p>
-
-<!--More-->
-
-
-<h3>Getting an API Key</h3>
-
-<p>First thing that you have to do is to get an API Key from e-bay.
-This will serve as a unique identification for your application
-and a means for e-bay to limit access to their API to only those that have an API key.</p>
-
-<p>To get an API key you must first register with e-bay: <a href="https://developer.ebay.com/join/">developer.ebay.com/join</a></p>
-
-<p>After successfully registering you will receive an email from e-bay. Click on the link to verify your email and you will be redirected to a screen similar to the screenshot below:</p>
-
-<p><img src="/images/posts/getting_started_with_ebay_finding_api/registration_success.jpg" alt="successful registration" /></p>
-
-<p>You can then click on the get your application keys link, you will be redirected to the accounts page where you can click on the Generate production keys button to generate the API key.</p>
-
-<h3>Building a Simple e-bay Class</h3>
-
-<p>Next were going to build the class that were going to use later to access the API.
-Create a new PHP file and name it <code>class.ebay.php</code>. Then put the following contents:</p>
-
-<p>```
-&lt;?php
-class ebay{</p>
-
-<p>}
-?>
-```</p>
-
-<p>Inside the class declare the following private member variables:</p>
-
-<p><code>php
-&lt;?php
-private $url = 'http://svcs.ebay.com/services/search/FindingService/v1';
-private $app_id; //api key
-private $global_id; //e-bay region (eg. EBAY-US)
-private $version = '1.0.0'; //version of the API to use
-private $format = 'json'; //format of the returned data
-?&gt;
-</code></p>
-
-<p>The <code>$url</code> is the address in which the API can be accessed.</p>
-
-<p>The <code>$app_id</code> is the API key that you got earlier from registering your application with e-bay.</p>
-
-<p>The <code>$global_id</code> is the e-bay region in which you want to access product data. Think of it as the e-bay store which you access in your browser when you want to buy something online. The e-bay store that you&rsquo;re accessing when you type in <code>ebay.com</code> is the US store which has a global id of <code>EBAY-US</code>. There are also other global ids that you can use, you can access them here: <a href="http://developer.ebay.com/DevZone/finding/CallRef/Enums/GlobalIdList.html">Global ID List</a></p>
-
-<p>The <code>$version</code> is the version of the API that you want to use. At the time of writing of this article the version that is available is <code>1.0.0</code> so were going to use that here.</p>
-
-<p>The <code>$format</code> is the format in which you want the returned data to be encoded. The preffered format is <code>json</code> since we can easily manipulate it using PHP or JavaScript.</p>
-
-<p>Next is the constructor which will take up 3 arguments. The <code>$app_id</code> and <code>$global_id</code>.
-The constructor is called once you create an object of this class so you&rsquo;ll have to pass in the 2 arguments when you create an object.</p>
-
-<p>```
-&lt;?php
-public function __construct($app_id, $global_id){</p>
-
-<pre><code>$this-&gt;app_id = $app_id; 
-$this-&gt;global_id = $global_id; 
-</code></pre>
-
-<p>}
-?><br/>
-```</p>
-
-<p>Next, create a new method and call it <code>findItems</code> this will take 2 arguments: the <code>$keyword</code> and the <code>$limit</code>.
-The <code>$keyword</code> is your query. For example <code>computer accessories</code>.
-The <code>$limit</code> is the number of products which you want to return.</p>
-
-<p>In this method were simply appending the different parameters to the <code>$url</code> that we declared earlier.</p>
-
-<p>The parameters that we have used here are:</p>
-
-<ul>
-<li><p>operation-name &ndash; the operation that you want to perform. In the example below were using the <code>findItemsByKeywords</code> operation. The type of operation will determine the other parameters that you will be including in your request.
-In the case of <code>findItemsByKeywords</code> the required parameter is the <code>keywords</code>. There are also other operations which you can use you can find them at the <a href="http://developer.ebay.com/DevZone/finding/CallRef/index.html">call reference page</a>.</p></li>
-<li><p><strong>service-version</strong> &ndash; the version of the API that you would want to use. In our example were using version    <code>1.0.0</code></p></li>
-<li><p><strong>keywords</strong> &ndash; the parameter required by the <code>findItemsByKeywords</code> operation in which you supply your url encoded query.</p></li>
-<li><p><strong>paginationInput.entriesPerPage</strong> &ndash; the number of entries per page</p></li>
-<li><p><strong>security-appname</strong> &ndash; the APP id that you got from registering your application with e-bay</p></li>
-<li><p><strong>response-data-format</strong> &ndash; the format in which you want the returned data to be.
-The preferred format is json although you can also have XML or SOAP as response data format.</p></li>
-</ul>
-
-
-<p>Once the parameters are all appended together with the request url we can then make a request to the API by using the <code>file_get_contents</code> method and supplying the request url as the argument. And since we specified <code>json</code> as the format earlier were going to use the <code>json_decode</code> method to convert the json string into an array.</p>
-
-<p>`&ldquo;
-&lt;?php
-public function findItems($keyword = &rdquo;, $limit = 2){</p>
-
-<pre><code>$url    = $this-&gt;url . '?';
-$url .= 'operation-name=findItemsByKeywords';
-$url .= '&amp;service-version=' . $this-&gt;version;
-$url .= '&amp;keywords=' . urlencode($keyword);
-$url .= '&amp;paginationInput.entriesPerPage=' . $limit;
-
-$url .= '&amp;security-appname='. $this-&gt;app_id;
-$url .= '&amp;response-data-format=' . $this-&gt;format;
-
-return json_decode(file_get_contents($url), true);
-</code></pre>
-
-<p>}
-?><br/>
-```</p>
-
-<p>We can also have a method where we can have more specificity with what we want to find.
-We can also specify the sorting type, item type, minimum price and maximum price. Note that we are using a different operation name for this method and that is the <code>findItemsAdvanced</code> operation.</p>
-
-<p>`&ldquo;
-&lt;?php
-public function findItemsAdvanced($keyword = &rdquo;, $item_sort = &lsquo;BestMatch&rsquo;, $item_type = &lsquo;FixedPricedItem&rsquo;, $min_price = &lsquo;0&rsquo;, $max_price = &lsquo;9999999&rsquo;, $limit = 2){</p>
-
-<pre><code>    $url    = $this-&gt;url . '?';
-    $url .= 'operation-name=findItemsAdvanced';
-    $url .= '&amp;service-version=' . $this-&gt;version;
-    $url .= '&amp;global-id=' . $this-&gt;global_id;
-    $url .= '&amp;keywords=' . urlencode($keyword);
-
-    $url .= '&amp;sortOrder=BestMatch';
-    $url .= '&amp;itemFilter(0).name=ListingType';
-    $url .= '&amp;itemFilter(0).value=FixedPrice';
-    $url .= '&amp;itemFilter(1).name=MinPrice';
-    $url .= '&amp;itemFilter(1).value=' . $min_price;
-    $url .= '&amp;itemFilter(2).name=MaxPrice';
-    $url .= '&amp;itemFilter(2).value=' . $max_price;
-    $url .= '&amp;paginationInput.entriesPerPage=' . $limit;
-    $url .= '&amp;descriptionSearch=false';
-
-    $url .= '&amp;security-appname='. $this-&gt;app_id;
-    $url .= '&amp;response-data-format=' . $this-&gt;format;
-
-    return json_decode(file_get_contents($url), true);
-}
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>Lastly, we can also create a method which simply returns an array of the sort orders available via e-bay.
-You can find the available values for sort orders in <a href="http://developer.ebay.com/DevZone/finding/CallRef/findItemsAdvanced.html#Request.sortOrder">this page</a>.</p>
-
-<p>```
-&lt;?php
-public function sortOrders(){</p>
-
-<pre><code>$sort_orders = array(
-    'BestMatch' =&gt; 'Best Match',
-    'BidCountFewest' =&gt; 'Bid Count Fewest',
-    'BidCountMost' =&gt; 'Bid Count Most',
-    'CountryAscending' =&gt; 'Country Ascending',
-    'CountryDescending' =&gt; 'Country Descending',
-    'CurrentPriceHighest' =&gt; 'Current Highest Price',
-    'DistanceNearest' =&gt; 'Nearest Distance',
-    'EndTimeSoonest' =&gt; 'End Time Soonest',
-    'PricePlusShippingHighest' =&gt; 'Price Plus Shipping Highest',
-    'PricePlusShippingLowest' =&gt; 'Price Plus Shipping Lowest',
-    'StartTimeNewest' =&gt; 'Start Time Newest'
-);
-
-return $sort_orders;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h3>Building a Simple App</h3>
-
-<p>Time to use the class that we just created in building a simple application.
-Our simple application will have a search field for inputting products that the user wants to search
-and a drop-down box to sort the results.</p>
-
-<p>The only product details that were going to show to the user is the item title, price and the product image.
-In the code below were declaring an object of the class that we created earlier specifying the API key
-and the e-bay region as the first and second parameter.</p>
-
-<p>Then we call the <code>sortOrders</code> method which simply returns an array of sort orders that are available from the e-bay finding API.</p>
-
-<p>Next, we build the form for searching products.</p>
-
-<p>Finally, we check if the <code>$_POST['search']</code> variable is not empty and use its value together with the sort selected by the user as the argument for the <code>findItemsAdvanced</code> method.
-Going back to the class that we created earlier we used <code>findItemsAdvanced</code> as the operation.
-The operation determines the first index when accessing the results.
-So for the <code>findItemsAdvanced</code> it will have <code>findItemsAdvancedResponse</code> as the first index.</p>
-
-<p>```
-&lt;?php
-require_once(&lsquo;class.ebay.php&rsquo;);</p>
-
-<p>$ebay = new ebay(&lsquo;YOUR API KEY&rsquo;, &lsquo;EBAY-US&rsquo;);
-$sort_orders = $ebay->sortOrders();
-?></p>
-
-<p><form action="ebay_finding_test.php" method="post"></p>
-
-<pre><code>&lt;input type="text" name="search" id="search"&gt;
-&lt;select name="sort" id="sort"&gt;
-&lt;?php
-foreach($sort_orders as $key =&gt; $sort_order){
-?&gt;
-    &lt;option value="&lt;?php echo $key; ?&gt;"&gt;&lt;?php echo $sort_order; ?&gt;&lt;/option&gt;
-&lt;?php   
-}
-?&gt;
-&lt;/select&gt;
-&lt;input type="submit" value="Search"&gt;
-</code></pre>
-
-<p></form></p>
-
-<p>&lt;?php
-if(!empty($_POST[&lsquo;search&rsquo;])){</p>
-
-<pre><code>$results = $ebay-&gt;findItemsAdvanced($_POST['search'], $_POST['sort']);
-$item_count = $results['findItemsAdvancedResponse'][0]['searchResult'][0]['@count'];
-
-if($item_count &gt; 0){
-    $items = $results['findItemsAdvancedResponse'][0]['searchResult'][0]['item'];
-
-    foreach($items as $i){
-</code></pre>
-
-<p>?></p>
-
-<pre><code>    &lt;li&gt;
-        &lt;div class="item_title"&gt;
-            &lt;a href="&lt;?php echo $i['viewItemURL'][0]; ?&gt;"&gt;&lt;?php echo $i['title'][0]; ?&gt;&lt;/a&gt;
-        &lt;/div&gt;
-        &lt;div class="item_img"&gt;
-            &lt;img src="&lt;?php echo $i['galleryURL'][0]; ?&gt;" alt="&lt;?php echo $i['title']; ?&gt;"&gt;
-        &lt;/div&gt;
-        &lt;div class="item_price"&gt;
-            &lt;?php echo $i['sellingStatus'][0]['currentPrice'][0]['@currencyId']; ?&gt;
-            &lt;?php echo $i['sellingStatus'][0]['currentPrice'][0]['__value__']; ?&gt;
-        &lt;/div&gt;
-    &lt;/li&gt;
-</code></pre>
-
-<p>&lt;?php</p>
-
-<pre><code>    }
-}       
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Here&rsquo;s the demo for this simple application implemented using JavaScript by using Handlebars for the template and jQuery&rsquo;s <code>$.ajax</code> method to request the data. Be sure to place your own app id that you got from e-bay in order to make this demo work.</p>
-
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/L6Nkj/embedded/js,resources,html,css,result/light/"></iframe></p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this tutorial. Using the API is really easy since you don&rsquo;t need to construct signatures to be used in the request like other API&rsquo;s. Be sure to check out the resources below if you want to learn more about the e-bay finding API.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://developer.ebay.com/DevZone/finding/HowTo/">Finding API How To</a></li>
-<li><a href="http://developer.ebay.com/DevZone/finding/Concepts/MakingACall.html">Making an API Call</a></li>
-<li><a href="http://developer.ebay.com/DevZone/finding/CallRef/index.html">Call Reference</a></li>
-<li><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/ebay_finding_api.7z">Sample Application Source Code</a></li>
-<li><a href="http://tutorialdemos-wern.rhcloud.com/ebay_finding_api/ebay_finding_test.php">Sample Application Demo</a></li>
 </ul>
 
 ]]></content>
