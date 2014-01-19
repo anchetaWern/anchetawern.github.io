@@ -3462,7 +3462,7 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
+<p> entry_title</p>
 
 <p>When calling the method from <code>abc.com</code> all you have to do is to use the <code>$.getJSON()</code> method and declare the same function that you used on <code>xyz.com</code>. In this case the name of the function is <code>parse_results()</code>:</p>
 
@@ -3475,7 +3475,7 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span><span class='line'>  <span class="c1">//do something with the response</span>
 </span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;http://xyz.com/get_data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span> <span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">};</span>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;http://xyz.com/get_data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span> <span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">});</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -5476,6 +5476,17 @@ Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> met
 
 
 
-
+<script src="/javascripts/libs/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
 </body>
 </html>
