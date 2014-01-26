@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-01-25T21:12:49+08:00</updated>
+  <updated>2014-01-26T14:55:27+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,329 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Caching in PHP]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php/"/>
+    <updated>2014-01-26T09:56:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php</id>
+    <content type="html"><![CDATA[<p>In this post were going to explore how to do caching in PHP. But first let&rsquo;s define what caching is. With a quick Google search we get these definitions:</p>
+
+<blockquote><p>store away in hiding or for future use.</p></blockquote>
+
+
+<p>Another definition from <a href="http://www.citrix.com/glossary/caching.html">citrix.com</a></p>
+
+<blockquote><p>Temporarily storing recently used information. The content, which includes HTML pages, images, files and Web objects, is stored on the local hard drive in order to make it faster for the user to access it, which helps improve the efficiency of the computer and its overall performance</p></blockquote>
+
+
+<p>So we now know that caching is temporarily storing information in order to improve performance.</p>
+
+<h3>Caching Techniques</h3>
+
+<p>There are different caching methods that we can use with PHP:</p>
+
+<ul>
+<li>Caching content</li>
+<li>Memory Cache</li>
+<li>Database Cache</li>
+<li>Opcode Cache</li>
+</ul>
+
+
+<h3>Caching Content</h3>
+
+<p>We can cache content in PHP by saving the final output of a specific script into the filesystem then simply serving it like a static file for a specific period of time instead of executing the original script.</p>
+
+<p>Below is an example on how to cache content on the FileSystem. First we declare a variable which stores the location of the cache file, current time and the time when the cache file was last modified. Once that&rsquo;s done we simply check whether there is a cache file for the particular script that a visitor is currently accessing. If there is a cache file then we simply include it in the page. If not then we access the database for the content and output the HTML. Then all of the output will be stored in the cache file. <a href="http://www.php.net/ob_start">Output buffering</a> is used to store all of the output in a string format so only the HTML that&rsquo;s outputted in the browser is going to be saved in the cache file. This means that the database access is bypassed when we load the cache file later on when a second visitor visits the site. Its like serving plain HTML, which means that it will load faster than the previous request.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$file</span> <span class="o">=</span> <span class="s1">&#39;cache/&#39;</span> <span class="o">.</span> <span class="nb">basename</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;SCRIPT_NAME&#39;</span><span class="p">]);</span> <span class="c1">//location of cache file</span>
+</span><span class='line'><span class="nv">$current_time</span> <span class="o">=</span> <span class="nb">time</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$cache_last_modified</span> <span class="o">=</span> <span class="nb">filemtime</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span> <span class="c1">//time when the cache file was last modified</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$current_time</span> <span class="o">&lt;</span> <span class="nb">strtotime</span><span class="p">(</span><span class="s1">&#39;+1 day&#39;</span><span class="p">,</span> <span class="nv">$cache_last_modified</span><span class="p">))){</span> <span class="c1">//check if cache file exists and hasn&#39;t expired yet</span>
+</span><span class='line'>  <span class="k">include</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span> <span class="c1">//include cache file</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>  <span class="nb">ob_start</span><span class="p">();</span> <span class="c1">//start output buffering</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;h1&gt;Hello World!&lt;/h1&gt;</span>
+</span><span class='line'><span class="x">  </span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm"> some code accessing the database</span>
+</span><span class='line'><span class="cm"> for some data here</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm"> probably some complex computations here</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">);</span> <span class="c1">//open cache file</span>
+</span><span class='line'>  <span class="nb">fwrite</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nb">ob_get_contents</span><span class="p">());</span> <span class="c1">//create new cache file</span>
+</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span> <span class="c1">//close cache file</span>
+</span><span class='line'>  <span class="nb">ob_end_flush</span><span class="p">();</span> <span class="c1">//flush output buffered</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Opcode Cache</h3>
+
+<p>Another method of caching is the Opcode cache or Object cache. This is mostly used for temporarily storing data and not the actual content. The first time I encountered object cache I couldn&rsquo;t understand what&rsquo;s the difference between it and sessions.
+I did some reading and found out that by default sessions are stored in the filesystem. And data stored via object cache is stored in memory so its faster compared to session.</p>
+
+<h4>APC</h4>
+
+<p>We can implement object caching by using APC. APC isn&rsquo;t packaged with PHP so you have to install it separately. In Ubuntu you can install it by going to the terminal and executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install php-apc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done you can simply restart Apache for the changes to reflect.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo service apache2 restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using APC is simple. There are only 3 methods that you need to remember in order to start using it:</p>
+
+<ul>
+<li><strong>apc_add/apc_store</strong> &ndash; store a variable in the cache. The only difference between <code>apc_add</code> and <code>apc_store</code> is that <code>apc_store</code> overwrites the data if it already exists and <code>apc_add</code> does not</li>
+<li><strong>apc_fetch</strong> &ndash; fetch a variable from the cache</li>
+<li><strong>apc_delete</strong> &ndash; delete a variable from the cache</li>
+</ul>
+
+
+<p>Below is a sample implementation of APC. Here were simply checking if the value returned from fetching the <code>db_results</code> cache is null. If its null then we get the data from the database, store the results in the cache then do something with the results that were retrieved. If the call to <code>apc_fetch</code> returned something then we simply use it instead of travelling back to the database to get the data that we need.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$results_array</span> <span class="o">=</span> <span class="nb">apc_fetch</span><span class="p">(</span><span class="s1">&#39;db_results&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$results_array</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$user</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//get data from the database</span>
+</span><span class='line'>  <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT title, SUM(views) AS view_count FROM tbl_octoblog </span>
+</span><span class='line'><span class="s2">     LEFT JOIN tbl_blogviews ON tbl_octoblog.id = tbl_blogviews.post_id</span>
+</span><span class='line'><span class="s2">     GROUP BY title&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$results_array</span> <span class="o">=</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span> <span class="c1">//convert results to associative array</span>
+</span><span class='line'>  <span class="nb">apc_add</span><span class="p">(</span><span class="s1">&#39;db_results&#39;</span><span class="p">,</span> <span class="nv">$results_array</span><span class="p">,</span> <span class="mi">86400</span><span class="p">);</span> <span class="c1">//store results in the cache for 1 day (1 day = 86400 seconds)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with the $results_array</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you wish to learn more about APC, be sure to check out the <a href="http://www.php.net/apc/">official APC documentation</a> on PHP.net.</p>
+
+<h4>Memcached</h4>
+
+<p>Memcached is an in-memory key-value store for small chunks of arbitrary data (strings, objects) from results of database calls, API calls, or page rendering. That&rsquo;s the definition that I got from the memcached site. To put simply, memcached is used for temporarily storing data that came from a specific source (database, API, page rendering).</p>
+
+<p>To install memcached execute the following from your terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install memcached</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And just like with APC, you also have to restart apache in order for the changes to take effect:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo service apache2 restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can go ahead and start using memcached. To use memcached you first have to define the memcached server in which you want to connect to. Since this is just a getting started tutorial we can simply use <code>127.0.0.1</code> as the host. This refers to the localhost or the machine that you&rsquo;re currently working on. As for the port, the default port that memcached is running on is port <code>11211</code>. You can change these values by updating the <code>memcached.conf</code> file located under the <code>etc</code> directory.
+After that, declare a new object of the Memcache class then call the <code>connect</code> method using the newly declared object. The <code>connect</code> method takes up the host and port that you declared earlier as its arguments. You can then use the variable that you used to store the result of that call to check whether the connection was successful or not.
+From there the scenario is similar to that of the APC example earlier. First you call the <code>get</code> method and supply a unique key that you will be using to refer to the data as the argument then store the result in a variable. Then you simply check whether this variable contains <code>null</code>. If its <code>null</code> then it means there&rsquo;s no data assigned to the specific key that you used so you have to get the data from its original source, in the case of the example below the database is the original source. Once you get the data from its original source you can then use the <code>set</code> method to save the data into the cache. The <code>set</code> method takes up 2 required arguments, the first is the unique key that will be used to identify the data, the second is the data that you want to store, the third is a flag on whether to use compression or not. If you want to compress the data you can use <code>MEMCACHE_COMPRESSED</code> as the value for the flag, otherwise simply use <code>false</code>. The last argument is the expiration time. You can use either a unix timestamp or the number of seconds in which to store the data in the cache. In the example below we used the number of seconds <code>86400</code> which is the number of seconds in a day.
+The next time the script runs it will no longer go back to the database to get the data. It will get it from the cache instead.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="c1">//define the memcached host and port to connect to</span>
+</span><span class='line'><span class="nv">$memcache_host</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$memcache_port</span> <span class="o">=</span> <span class="s1">&#39;11211&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//connect to memcached server</span>
+</span><span class='line'><span class="nv">$memcache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcache</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$is_cache</span> <span class="o">=</span> <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="nv">$memcache_host</span><span class="p">,</span> <span class="nv">$memcache_port</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$is_cache</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$things</span> <span class="o">=</span> <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;things&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$things</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span> <span class="c1">//if data hasn&#39;t been cached yet</span>
+</span><span class='line'>      <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nv">$db_host</span><span class="p">,</span> <span class="nv">$db_user</span><span class="p">,</span> <span class="nv">$db_password</span><span class="p">,</span> <span class="nv">$db_name</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM tbl_things WHERE needed = &#39;yes&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$things</span> <span class="o">=</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span> <span class="c1">//convert result set to an array</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;things&#39;</span><span class="p">,</span> <span class="nv">$things</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="mi">86400</span><span class="p">);</span> <span class="c1">//cache the data</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//do something with the $things, output it, mess with it, whatever.</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are some of the common methods that you can use with memcached:</p>
+
+<ul>
+<li><strong>add</strong> &ndash; saves a specific data into the cache</li>
+<li><strong>store</strong> &ndash; saves a specific data into the cache. The only difference between <code>store</code> and <code>add</code> is that <code>add</code> will return <code>false</code> if the key already exists but store goes aheads and over-writes the data if it already exists</li>
+<li><strong>delete</strong> &ndash; deletes data from the cache based on the key that you define as its argument</li>
+<li><strong>flush</strong> &ndash; deletes all the data that you have on the cache</li>
+</ul>
+
+
+<p>To learn more about memcached be sure to check out the <a href="http://memcached.org/">official memcached site</a> or the <a href="http://php.net/manual/en/book.memcache.php">memcached documentation for PHP</a>.</p>
+
+<h3>Database Cache</h3>
+
+<p>We have been talking about how to do caching in the application layer but caching can also be in the database layer.
+In this form of caching the caching is done by the database server itself. This works by caching the results of the query so the query is only parsed the first time it runs and in the succeeding requests it won&rsquo;t be parsed since the results from the specific query is already cached by the database server.
+In this section I&rsquo;m going to walk you through how caching is done in MySQL.</p>
+
+<p>To configure caching in MySQL simply open up the <code>my.cnf</code> file under the <code>etc</code> directory and add the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">query_cache_type    = 1</span>
+</span><span class='line'><span class="x">query_cache_limit = 1M</span>
+</span><span class='line'><span class="x">query_cache_size    = 16M</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>query_cache_type</strong> &ndash; whether to enable caching. Set to <code>0</code> if you want to disable, <code>1</code> to enable for all cacheable queries except those that begin with <code>SELECT SQL_NO_CACHE</code>. And <code>2</code> to cache only for cacheable queries that begin with <code>SELECT SQL_CACHE</code></li>
+<li><strong>query_cache_limit</strong> &ndash; limit caching for a specific result set. If the results returned from the query exceeds the value set in this option then it won&rsquo;t be cache</li>
+<li><strong>query_cache_size</strong> &ndash; the amount of memory allocated for caching results</li>
+</ul>
+
+
+<p>The query cache works by storing the text of a SELECT statement together with the result. If the same query is received at a lter time, the server retrieves the results from the query cache rather than parsing and executing the statement again. The query cache is shared among sessions, so a result set generated by one client can be sent in response to the same query issued by another client.</p>
+
+<p>But you may ask: &ldquo;What if the contents of a specific table has been changed, will the server return the results from the cache?&rdquo;. The answer is no it doesn&rsquo;t. The server is smart enough to flush the cache when the tables in question is updated or modified in some way.</p>
+
+<p>Here are some of the things that you need to remember when using the query cache in MySQL:</p>
+
+<ul>
+<li>Only full queries are cached. This means that subqueries aren&rsquo;t cached by the server at all</li>
+<li>Query cache stores the text of a SELECT statement together with the result. Yes I already said that earlier but I think its worth emphasizing</li>
+<li>Only works for SELECT queries</li>
+<li>No support for prepared statements</li>
+<li>Only works for queries that are absolutely the same</li>
+</ul>
+
+
+<p>Be sure to read about <a href="http://dev.mysql.com/doc/refman/5.1/en/query-cache-operation.html">how the query caching operates</a> at the official MySQL website if you want to learn more about the query cache.</p>
+
+<h3>Things to Remember</h3>
+
+<p>Implementing a caching functionality in the applications that you&rsquo;re writing can be great, but like Uncle Ben from Spiderman said &lsquo;With great power comes great responsibility&rsquo;. So as developers we always have to carefully study if caching is appropriate for a specific scenario or not. For example here are some instances in which caching is not recommended:</p>
+
+<ul>
+<li>real-time data</li>
+<li>search results</li>
+<li>latest news</li>
+</ul>
+
+
+<p>A good rule of thumb when trying to implement caching is that to ask yourself whether the data needs to be always fresh or not. For the examples above caching is pretty much not applicable. But if you think about the requirements, for example for the latest news, is there always a latest news every minute? Yes there may be but does publishing a new news in news website (that&rsquo;s a tongue twister that I just came up with) takes less than a minute? Maybe you can actually apply caching but only cache for example 30 seconds. The same is true with search results, if the website doesn&rsquo;t really publish much content then caching can still be applied. Just be sure to think about the expiration time carefully.</p>
+
+<h2>Conclusion</h2>
+
+<p>There you have it! Some of the most common caching techniques that you can use with PHP to improve the performance of the applications that you&rsquo;re writing. Like I just said, caching is a very good way to improve the performance of your app. There&rsquo;s no need to run a query every time a page is requested. If you can cache it somewhere (filesytem, memory) will it take less time to access, the better.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/548301/what-is-caching">What is Caching</a></li>
+<li><a href="http://www.slideshare.net/anisniit/caching-new">Caching Basics</a></li>
+<li><a href="http://www.mobify.com/blog/beginners-guide-to-http-cache-headers/">Beginners Guide to HTTP Cache Headers</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Database_caching">Database Caching</a></li>
+<li><a href="http://www.mysqlperformanceblog.com/2011/04/04/mysql-caching-methods-and-tips/">MySQL Caching Methods Tips and Tricks</a></li>
+<li><a href="http://www.taos.com/2013/04/10/understanding-mysql-query-cache/">Understanding MySQL Query Cache</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Paypal API]]></title>
@@ -10184,116 +10507,6 @@ You have 3 options if you want to install it on Windows. First is using CURL:</p
 If the package that you installed can be executed from the command-line simply add it to the environment variables so that you can easily execute it from the command-line regardless of the path where you are currently in.</p>
 
 <p><a href="http://getcomposer.org/download/">Download</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to get a job in the Web Development Industry]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/05/13/how-to-get-a-job-in-the-web-development-industry/"/>
-    <updated>2013-05-13T13:19:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/05/13/how-to-get-a-job-in-the-web-development-industry</id>
-    <content type="html"><![CDATA[<p>Want to get a job in the Web Development Industry? That&rsquo;s easy! You must know HTML, CSS, JavaScript and PHP.
-Nah! Sometimes that is all you really need but most of the time you need to know more than that in order to get the job you want. In this article I&rsquo;m going to share to you some of the tips that has worked for me in finding a job in Web Development.</p>
-
-<!--More-->
-
-
-<p>First of all just to make sure that we are on the same boat. What is a web developer?
-According to <a href="http://en.wikipedia.org/wiki/Web_developer">Wikipedia</a>:</p>
-
-<blockquote><p>A web developer is a programmer who specializes in, or is specifically engaged in, the development of World Wide Web applications, or distributed network applications that are run over HTTP from a web server to a web browser.</p></blockquote>
-
-
-<p>Ok so a web developer is actually a programmer who works on the web.
-Web developers can be classified into 4 groups:</p>
-
-<ul>
-<li>front-end developer</li>
-<li>back-end developer</li>
-<li>middle-tier developer</li>
-<li>full-stack developer</li>
-</ul>
-
-
-<p>The <strong>front-end developer</strong> mainly works on the public facing part of a web application.
-Front-end developers are mainly concerned with UI components, browser support, front-end performance, and everything else that the user can perceive. Common technologies involved are HTML, CSS, JavaScript.</p>
-
-<p>The <strong>back-end developer</strong> mainly works on the back-end of the website or the things that happens in the background while the user is interacting with the web application. This is the core of the web application. Common technologies involved are server-side technologies like PHP, Python, and Ruby. Back-end developers also works with databases such as MySQL, PostgreSQL Oracle, and MariaDB.</p>
-
-<p>The <strong>middle-tier developer</strong> mainly works with services that sit between the front-end and the back-end. The middle tier developer is mainly concerned with how the front-end and back-end of the web application is going to communicate.</p>
-
-<p>Lastly there&rsquo;s the <strong>full-stack developer</strong> which knows how to do a bit of the front-end, back-end and middle stack.</p>
-
-<p>So which do you want to be? Personally for me I&rsquo;m currently working as a full-stack developer. I work a bit on the front-end, back-end and the middle stack. The advantage of the first 3 types of developers is that they&rsquo;re specialists. They have a very deep understanding of the technologies that they are working on, specialists are often rare so their salary is very high. The advantage of being a full stack developer is that its easy to become one and you will be more marketable since you know a lot of different skills and technologies. The only downside is that they don&rsquo;t make as much salary as the front-end, back-end and middle-tier guys make.</p>
-
-<p>Back to the main topic of this article. Here are some tips to get a job in web development:</p>
-
-<ul>
-<li>Have a Portfolio / Github / Stackoverflow / LinkedIn / Blog</li>
-<li>Learn things on your free time</li>
-<li>Network</li>
-<li>Apply for that job</li>
-</ul>
-
-
-<h3>Have a Portfolio / Github / Stackoverflow / LinkedIn / Blog</h3>
-
-<p>You must have your own portfolio, <a href="https://github.com">github</a>, <a href="http://stackoverflow.com">stackoverflow</a> and <a href="http://www.linkedin.com/">linked In</a>. You can also create a blog if you like writing and sharing your ideas.</p>
-
-<p>If you&rsquo;re a new graduate you might not have anything to put in your portfolio and that&rsquo;s just normal.
-What you can do is to work on personal projects or create a blog. A personal project can be anything that you really want to create. For developers its common to work on projects that can help them in their daily tasks like generators, code linters, or libraries. You can also have a personal project that involves technologies that you want to learn. For example, if you want to learn how to use the Facebook Graph API you can go ahead and plan out the application that you want to build. It doesn&rsquo;t matter if you don&rsquo;t know anything about the technology or if the features that the application that you have in mind are already present in Facebook. Just dive in to the <a href="https://developers.facebook.com/docs/reference/api/">Facebook Graph API Documentation</a> and figure out how to do stuff using the API by Googling stuff. You can also ask questions at Stackoverflow if you get stuck.</p>
-
-<p>The fastest way to learn things is to dive right in to doing it, but be sure to google best practices and look at code that other people have written so that you&rsquo;ll have an idea on how to do things the right way.</p>
-
-<p>Once you have setup your personal project you can just go ahead and push it up on Github so that the rest of the world can see it. It doesn&rsquo;t matter if other people thinks your code sucks. What matters is that you know you&rsquo;ve done a good job and is constantly working on improving it.</p>
-
-<p>You can also create your stackoverflow profile and answer some of the questions that you can already answer. It doesn&rsquo;t matter if the question that you&rsquo;re trying to answer has already an accepted answer or that the question is already 3 years old. Just answer the question as best as you could and people will surely notice. They will give comments on how to improve your answer and you will even get an upvote if they think your answer is awesome.</p>
-
-<p>Lastly you can also create your LinkedIn profile and start putting some of your achievements in school and the personal projects that you have worked on in your free time. Link to your portfolio, twitter, Google plus, stackoverflow, github or even your facebook if you want.
-Its okay to put in a lot of information about your past achievements and projects but be sure to only include the things that actually matter to the career that you are trying to pursue. In this case being a web developer. So there&rsquo;s no need to put in your linkedIn profile that you are actually a chess champion or a basketball super star.</p>
-
-<h3>Learn things on your free time</h3>
-
-<p>The best way to make yourself more marketable is to learn things on your free time. Its a good time to learn something new. Especially now that there&rsquo;s so much good learning resources out there which are free to use. Here are some of the resources that I have personally used:</p>
-
-<p><a href="https://www.udacity.com/">Udacity</a>
-<a href="http://www.codeschool.com/">Codeschool</a>
-<a href="http://learn.shayhowe.com/html-css/">A Beginners Guide to HTML and CSS</a>
-<a href="https://developer.mozilla.org/en-US/">Mozilla Developer Network</a>
-<a href="http://google.com">Google</a></p>
-
-<p>The sheer amount of stuff that you need to learn in order to become a proficient web developer is staggering. But the key is don&rsquo;t be overwhelmed because its <a href="http://anchetawern.github.io/blog/2013/04/13/this-crazy-world-of-web-development/">just how things are in this field</a>. Just take it easy and learn things one at a time.
-My advice is that you should learn first the fundamentals before diving in to the shiny and new stuff. An example would be to learn first how to do things in JavaScript before you learn jQuery. Write plain CSS first before using CSS Preprocessors like LESS and SASS.</p>
-
-<h3>Network</h3>
-
-<p>Its always a good idea to have a network of people who can recommend you for a job. If you have taken up college, it can be your classmates, teachers, friends. It can also be like-minded people that you have met online. A good place to find those connections is linkedIn, a social network for professionals. But be sure to keep your linkedIn profile updated so that people will actually notice your profile. Its also a good idea to add recruiters who are recruiting professionals in the field of web development. You can also join groups in LinkedIn and start contributing to the community. There will be a bigger chance that someone will notice you and can recommend you to a client.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/how_to_find_a_job_in_the_webdev_industry/groups.png" alt="linkedIn Groups" /></p>
-
-<h3>Apply for that job</h3>
-
-<p>We are never really 100% ready to apply for a job that we want. Sometimes were not confident that we enough of that specific technology in order to apply. But that&rsquo;s actually a good sign that you&rsquo;re ready. If you&rsquo;re familiar with the Dunning-Kruger effect which according to Wikipedia is:</p>
-
-<blockquote><p>a cognitive bias in which unskilled individuals suffer from illusory superiority, mistakenly rating their ability much higher than average. This bias is attributed to a metacognitive inability of the unskilled to recognize their mistakes.</p></blockquote>
-
-
-<p>Not having the confidence that you already know enough to start appliying for a job means that you&rsquo;re already in the second stage of competence which is the conscious incompetence which means that you already recognize your lack of knowledge or skill on a specific field. This is enough to drive you into learning more.</p>
-
-<p>At some point in time when you feel like you already have the minimum requirements to get started with applying for a job then you can go ahead and start applying. Here are some good places to start looking for jobs:</p>
-
-<ul>
-<li><p><a href="http://www.craigslist.org/about/sites">Craigslist</a> &ndash; you can look at web/HTML/info design jobs, internet engineering jobs, and software/QA/DBA/etc jobs. Sometimes there are bad eggs that you have to filter through. Some signs that a job posting is a bad egg if there are lots of mispelled words and there&rsquo;s really no sane job description which gives you a bit of idea what you will be working on once you get accepted for the job.</p></li>
-<li><p><a href="http://jobmote.com/">Jobmote</a> &ndash; by far has the most quality job listings I&rsquo;ve ever found. These are human curated job listings so the bad eggs are already filtered out. These are mostly telecommuting jobs.</p></li>
-<li><p><a href="https://www.staff.com/">Staff</a> &ndash; mostly telecommute jobs. You will get emailed when there&rsquo;s a job opportunity.</p></li>
-</ul>
-
-
-<p>All you really need to get to that interview is to have an awesome Résumé and cover letter. I won&rsquo;t be delving into those in this article since they have already been written a dozen times before. Just Google those and you will surely find an answer.</p>
-
-<h2>Closing Thoughts</h2>
-
-<p>I cannot assure that this will work for you as well as it worked for me but just give it a try if you really want to get that job. All I can say is that you&rsquo;re already half-way to getting that job if you have the genuine passion and you really love web development and building things.</p>
 ]]></content>
   </entry>
   
