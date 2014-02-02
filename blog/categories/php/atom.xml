@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-01-30T11:43:01+08:00</updated>
+  <updated>2014-02-02T21:14:38+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -244,6 +244,166 @@ query_cache_size    = 16M
 
 
 <p>Be sure to read about <a href="http://dev.mysql.com/doc/refman/5.1/en/query-cache-operation.html">how the query caching operates</a> at the official MySQL website if you want to learn more about the query cache.</p>
+
+<h3>Caching Libraries</h3>
+
+<p>To make the caching implementation easier you can also use caching libraries. Caching libraries allows you to use different caching methods such as the file system, sqlite, apc, memcached and xcache.</p>
+
+<h4>PHPFastCache</h4>
+
+<p>First on the list is PHPFastCache. PHPFastCache is a high-performance object caching system for PHP.
+To use PHPFastCache all you have to do is download the library from their site and include the <code>phpfastcache.php</code> file on the script where you plan to use it. Then declare a variable that will contain the configuration details such as the storage, the path for the cache files and the htaccess protection to disable direct access to the data that are cached.</p>
+
+<p>```php
+&lt;?php
+require_once(&ldquo;libs/phpfastcache/phpfastcache.php&rdquo;);</p>
+
+<p>//configuration
+$config = array(</p>
+
+<pre><code>"storage" =&gt; "files",
+"path" =&gt; "/somewhere/outside/your/web_folder", //path for cache files
+"htaccess" =&gt; true, //set htaccess protection (default: true)
+</code></pre>
+
+<p>);
+?>
+```</p>
+
+<p>You can also supply a <code>fallback</code> option in case the primary caching option that you supplied isn&rsquo;t available on the server where you deploy your application.</p>
+
+<p>```
+&lt;?php
+$config = array(</p>
+
+<pre><code>"fallback"  =&gt;  array(
+    "memcache" =&gt; "files", //if memcached isn't installed use file system instead
+    "apc" =&gt; "files", //if apc isn't installed use file system instead
+)
+</code></pre>
+
+<p>);
+?>
+```</p>
+
+<p>If you used memcached as the cache type, you can provide the memcached server details under the <code>server</code> key of the configuration. If you remember earlier when we used memcached we supplied the <code>server</code> and the <code>port</code>. You also need to pass these details under the configuration.</p>
+
+<p>```
+&lt;?php
+$config = array(
+ &ldquo;server&rdquo; =>  array(</p>
+
+<pre><code>array("127.0.0.1", 11211, 1) 
+</code></pre>
+
+<p>  )
+);
+?>
+```</p>
+
+<p>Once you&rsquo;re done with setting up the configuration, simply pass it as the argument for the <code>setup</code> method then declare a new instance of the <code>phpFastCache</code> class:</p>
+
+<p><code>
+&lt;?php
+phpFastCache::setup($config);
+$cache = new phpFastCache();
+?&gt;
+</code></p>
+
+<p>Just like with any other caching methods that we&rsquo;ve used so far there&rsquo;s only a couple of methods that you have to remember: <code>get</code> and <code>set</code>. In PHPFastCache we use <code>set</code> to save a specific data into the cache and <code>get</code> to get the data back for processing.
+In the example below were trying to get the products from the cache. If it doesn&rsquo;t exists we simply get the data from the original source and cache it.</p>
+
+<p>```
+&lt;?php
+$products_cache = $cache->get(&ldquo;products&rdquo;);
+if($products_cache == null){</p>
+
+<pre><code>$results = $db-&gt;query("SELECT item_name, quantity, price FROM tbl_products LIMIT 10");
+$results-&gt;fetch_array(MYSQLI_ASSOC);
+$cache-&gt;set("products", $products_cache);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>You can learn more about <a href="http://www.phpfastcache.com/">PHPFastCache</a> on their official site.</p>
+
+<h4>Doctrine/Cache</h4>
+
+<p>The Doctrine Object Relational Mapper also comes with a caching module which you can use separately even if you&rsquo;re not using Doctrine. You can install the Doctrine caching module through composer.</p>
+
+<p>```
+{</p>
+
+<pre><code>"require": {
+  "doctrine/cache": "1.2"
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Include the <code>autoload.php</code> file and initialize the cache driver that you want to use.</p>
+
+<p>```
+&lt;?php
+require &lsquo;vendor/autoload.php&rsquo;;
+$cache = new \Doctrine\Common\Cache\ApcCache(); //use APC as the driver
+$fruits = $cache->fetch(&lsquo;fruits&rsquo;); //fetch the data from the cache</p>
+
+<p>if($fruits == null){</p>
+
+<pre><code>$fruits = array('apple', 'orange', 'grapes', 'coconut', 'papaya');
+$cache-&gt;save('fruits', $fruits); //save data into the cache
+</code></pre>
+
+<p>}</p>
+
+<p>//do something with $fruits
+?>
+```</p>
+
+<p>With Doctrine you can also use the following as the cache driver:</p>
+
+<ul>
+<li>ArrayCache</li>
+<li>CouchbaseCache</li>
+<li>FileCache</li>
+<li>FilesystemCache</li>
+<li>MemcacheCache</li>
+<li>MemcachedCache</li>
+<li>MongoDBCache</li>
+<li>PhpFileCache</li>
+<li>RedisCache</li>
+<li>RiakCache</li>
+<li>WinCacheCache</li>
+<li>XcacheCache</li>
+<li>ZendDataCache</li>
+</ul>
+
+
+<p>So if you want to use Memcache you do something like this:</p>
+
+<p><code>
+&lt;?php
+$memcache = new Memcache();
+$memcache-&gt;connect('127.0.0.1', 11211); //connect to the memcache server
+$cache = new \Doctrine\Common\Cache\MemcacheCache();
+?&gt;
+</code></p>
+
+<p>As you can see Doctrine doesn&rsquo;t automatically handle connecting to the memcache server so you have to do it manually before initialiazing the cache driver that you want to use. After that you can use the same methods that you use with any other caching driver. Here are the commonly used methods:</p>
+
+<ul>
+<li>fetch($id) &ndash; fetch an item from the cache</li>
+<li>contains($id) &ndash; check if an item exists in the cache</li>
+<li>save($id, $data, $lifetime) &ndash; save the data into the cache. Note that the lifetime is expressed in seconds</li>
+<li>delete($id) &ndash; deletes an item from the cache</li>
+</ul>
+
+
+<p>You can learn more about the Doctrine caching module <a href="http://docs.doctrine-project.org/en/2.0.x/reference/caching.html">here</a>.</p>
 
 <h3>Things to Remember</h3>
 

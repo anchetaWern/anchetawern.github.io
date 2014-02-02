@@ -388,6 +388,207 @@ In this section I&rsquo;m going to walk you through how caching is done in MySQL
 
 <p>Be sure to read about <a href="http://dev.mysql.com/doc/refman/5.1/en/query-cache-operation.html">how the query caching operates</a> at the official MySQL website if you want to learn more about the query cache.</p>
 
+<h3>Caching Libraries</h3>
+
+<p>To make the caching implementation easier you can also use caching libraries. Caching libraries allows you to use different caching methods such as the file system, sqlite, apc, memcached and xcache.</p>
+
+<h4>PHPFastCache</h4>
+
+<p>First on the list is PHPFastCache. PHPFastCache is a high-performance object caching system for PHP.
+To use PHPFastCache all you have to do is download the library from their site and include the <code>phpfastcache.php</code> file on the script where you plan to use it. Then declare a variable that will contain the configuration details such as the storage, the path for the cache files and the htaccess protection to disable direct access to the data that are cached.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;libs/phpfastcache/phpfastcache.php&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//configuration</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s2">&quot;storage&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;path&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/somewhere/outside/your/web_folder&quot;</span><span class="p">,</span> <span class="c1">//path for cache files</span>
+</span><span class='line'>    <span class="s2">&quot;htaccess&quot;</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span> <span class="c1">//set htaccess protection (default: true)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also supply a <code>fallback</code> option in case the primary caching option that you supplied isn&rsquo;t available on the server where you deploy your application.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s2">&quot;fallback&quot;</span>  <span class="o">=&gt;</span>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;memcache&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="c1">//if memcached isn&#39;t installed use file system instead</span>
+</span><span class='line'>      <span class="s2">&quot;apc&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="c1">//if apc isn&#39;t installed use file system instead</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you used memcached as the cache type, you can provide the memcached server details under the <code>server</code> key of the configuration. If you remember earlier when we used memcached we supplied the <code>server</code> and the <code>port</code>. You also need to pass these details under the configuration.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'> <span class="s2">&quot;server&quot;</span> <span class="o">=&gt;</span>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">11211</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done with setting up the configuration, simply pass it as the argument for the <code>setup</code> method then declare a new instance of the <code>phpFastCache</code> class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">phpFastCache</span><span class="o">::</span><span class="na">setup</span><span class="p">(</span><span class="nv">$config</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">phpFastCache</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just like with any other caching methods that we&rsquo;ve used so far there&rsquo;s only a couple of methods that you have to remember: <code>get</code> and <code>set</code>. In PHPFastCache we use <code>set</code> to save a specific data into the cache and <code>get</code> to get the data back for processing.
+In the example below were trying to get the products from the cache. If it doesn&rsquo;t exists we simply get the data from the original source and cache it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$products_cache</span> <span class="o">=</span> <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;products&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$products_cache</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT item_name, quantity, price FROM tbl_products LIMIT 10&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="nv">$products_cache</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can learn more about <a href="http://www.phpfastcache.com/">PHPFastCache</a> on their official site.</p>
+
+<h4>Doctrine/Cache</h4>
+
+<p>The Doctrine Object Relational Mapper also comes with a caching module which you can use separately even if you&rsquo;re not using Doctrine. You can install the Doctrine caching module through composer.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">{</span>
+</span><span class='line'><span class="x">  &quot;require&quot;: {</span>
+</span><span class='line'><span class="x">    &quot;doctrine/cache&quot;: &quot;1.2&quot;</span>
+</span><span class='line'><span class="x">  }</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the <code>autoload.php</code> file and initialize the cache driver that you want to use.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Doctrine\Common\Cache\ApcCache</span><span class="p">();</span> <span class="c1">//use APC as the driver</span>
+</span><span class='line'><span class="nv">$fruits</span> <span class="o">=</span> <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">);</span> <span class="c1">//fetch the data from the cache</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$fruits</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$fruits</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;grapes&#39;</span><span class="p">,</span> <span class="s1">&#39;coconut&#39;</span><span class="p">,</span> <span class="s1">&#39;papaya&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="nv">$fruits</span><span class="p">);</span> <span class="c1">//save data into the cache</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with $fruits</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With Doctrine you can also use the following as the cache driver:</p>
+
+<ul>
+<li>ArrayCache</li>
+<li>CouchbaseCache</li>
+<li>FileCache</li>
+<li>FilesystemCache</li>
+<li>MemcacheCache</li>
+<li>MemcachedCache</li>
+<li>MongoDBCache</li>
+<li>PhpFileCache</li>
+<li>RedisCache</li>
+<li>RiakCache</li>
+<li>WinCacheCache</li>
+<li>XcacheCache</li>
+<li>ZendDataCache</li>
+</ul>
+
+
+<p>So if you want to use Memcache you do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$memcache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcache</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">11211</span><span class="p">);</span> <span class="c1">//connect to the memcache server</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Doctrine\Common\Cache\MemcacheCache</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see Doctrine doesn&rsquo;t automatically handle connecting to the memcache server so you have to do it manually before initialiazing the cache driver that you want to use. After that you can use the same methods that you use with any other caching driver. Here are the commonly used methods:</p>
+
+<ul>
+<li>fetch($id) &ndash; fetch an item from the cache</li>
+<li>contains($id) &ndash; check if an item exists in the cache</li>
+<li>save($id, $data, $lifetime) &ndash; save the data into the cache. Note that the lifetime is expressed in seconds</li>
+<li>delete($id) &ndash; deletes an item from the cache</li>
+</ul>
+
+
+<p>You can learn more about the Doctrine caching module <a href="http://docs.doctrine-project.org/en/2.0.x/reference/caching.html">here</a>.</p>
+
 <h3>Things to Remember</h3>
 
 <p>Implementing a caching functionality in the applications that you&rsquo;re writing can be great, but like Uncle Ben from Spiderman said &lsquo;With great power comes great responsibility&rsquo;. So as developers we always have to carefully study if caching is appropriate for a specific scenario or not. For example here are some instances in which caching is not recommended:</p>
@@ -440,7 +641,7 @@ In this section I&rsquo;m going to walk you through how caching is done in MySQL
 
 
   
-<time datetime="2014-01-27T00:00:00+08:00" class="updated">Updated Jan 27<span>th</span>, 2014</time>
+<time datetime="2014-02-02T00:00:00+08:00" class="updated">Updated Feb 2<span>nd</span>, 2014</time>
       
 
 <span class="categories">
