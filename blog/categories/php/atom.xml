@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-02-02T21:14:38+08:00</updated>
+  <updated>2014-02-03T16:55:10+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,298 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with SPBAS]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/03/getting-started-with-spbas/"/>
+    <updated>2014-02-03T09:55:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/03/getting-started-with-spbas</id>
+    <content type="html"><![CDATA[<p>As developers we often need to sell the applications that were creating. Places like the Google Web Store, Codecanyon, Apple Store, Shopify App Store exist for that matter. These repositories are good places to start with but it often requires you to upload your work and have it reviewed by other developers so they are ensured that the app that you submitted meets their criteria.</p>
+
+<p>This is often a tedious process and sometimes you have to wait for a specific period of time before your app gets approved.
+With SPBAS you can skip that process altogether and host your own business automation software on a server of your choice.
+In this post I&rsquo;ll be walking you through SPBAS, short for SolidPHP Business Automation Software. With SPBAS you can easily host the apps that you have created and have people who wants to buy your app pay you via the payment method of your choice. Note that I won&rsquo;t be discussing about the specific features of this business automation software as the <a href="https://solidphp.atlassian.net/wiki/display/docs/Home">official documentation</a> has a plenty of information on that. Rather I&rsquo;d like to focus on the developer&rsquo;s perspective. Things like setting up SPBAS and how to actually get up and running with it. I&rsquo;m not going to go in-depth with the concepts such as licensing and the different options that are available. Instead I&rsquo;m going to stick with only the necessary parts in order to get up and running quickly with SPBAS.</p>
+
+<h3>Getting SPBAS</h3>
+
+<p>Before you can begin installation, you first have to register with SPBAS. To register simply go to the SPBAS site, click on customer area and click on the register tab.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/spbas-registration.png" alt="spbas registration" /></p>
+
+<p>Once you&rsquo;re done with that simply login to the account and click on the order tab. The order page lists all the available products. For this guide were simply going to use the Free version so click on the link under the SPBAS 25 Free version.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/spbas-order.png" alt="spbas order" /></p>
+
+<p>After that, click on the add to cart button to add the specific product into your cart.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/add-to-cart.png" alt="add to cart" /></p>
+
+<p>Then click on the checkout button.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/checkout.png" alt="checkout" /></p>
+
+<p>After that you will be ask to enter your business details. Once you&rsquo;re done entering your business details simply click on the continue to next step button. You will then be redirected to the order summary page just click on the ok button at this point to confirm that your order is correct. If everything went well you will see a screen similar to the following:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/order-complete.png" alt="order complete" /></p>
+
+<p>At that point your product license will have been emailed to you by SPBAS. You can use the product license on your SPBAS installation later on. If you didn&rsquo;t receive your license details you can also access it from the customer area. To access your license details from the customer area, just click on the dashboard link and under the My Packages section click on the licenses link. This will redirect you to the My Packages page which you will see the product that you ordered earlier. Just click on the view details link once you&rsquo;re on that page to view the details for that specific package. Once you&rsquo;re on the package details page just click on the licenses tab to view your license key. Copy your license key and store it somewhere safe, a password manager like keepass or lastpass will do. You will be using the license key later.</p>
+
+<p>Once you&rsquo;re done saving the license key, click on the downloads tab then select the current release. At the time of writing of this post the current SPBAS version is 3.2.0. If they already have anything higher than that by the time you read this simply stick with that version instead. Under the current release directory is the SPBAS zip file, download the zip file and extract it on your machine then copy it to your web directory or upload it to a server somewhere using Filezilla or other FTP clients.</p>
+
+<h3>Installing Ioncube</h3>
+
+<p>SPBAS has been encoded with Ioncube so it requires the ioncube PHP module to be installed on the server before you can make use of it. In case you don&rsquo;t know what encoding is, its used to obfuscate code so that when its source file is opened it cannot be understood by a human. Its a way to protect intellectual property. Because as you already know PHP is an interpreted language so the code that you write is pretty much exposed to anyone which has access to your web directory.</p>
+
+<p>You can install ioncube by downloading the ioncube loader from the <a href="http://www.ioncube.com/loaders.php">ioncube website</a>. All you have to do is select the loader that&rsquo;s applicable to your machine. The first step is to determine the Operating System that you&rsquo;re using and the version of PHP installed. You can do that by executing the <code>phpinfo()</code> function:</p>
+
+<p><code>php
+&lt;?php
+phpinfo();
+?&gt;
+</code></p>
+
+<p>Access the file from your browser and look at the header:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/phpinfo.png" alt="phpinfo" /></p>
+
+<p>As you can see from the screenshot above I&rsquo;m running PHP version 5.5.7 on Ubuntu Raring Ringtail (13.04). Looking at the loaders available from the ioncube website there&rsquo;s no loader that&rsquo;s specifically for Ubuntu 13.04 so the closest one that I could download is the one for Linux (x86). Under the archives I downloaded the zip file and extracted it on my machine. If you&rsquo;re using Windows then all you have to do is download the one&rsquo;s that are under the Windows installer column and select the one that&rsquo;s applicable to your Operating System and PHP installation.</p>
+
+<p>After extracting (on Ubuntu) or executing the installer file on Windows, copy the directory extracted from the ioncube loader zip file on your web directory and access the <code>loader-wizard.php</code> from your browser. This will give you an idea whether your installation was successful. If it wasn&rsquo;t successful the loader wizard will show all the warnings and will give you an idea on what went wrong so you can fix it.</p>
+
+<p>Here&rsquo;s an example of an error from the loader wizard:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/loader-wizard.png" alt="loader wizard" /></p>
+
+<p>As you can see from the screenshot above it will automatically detect where the correct loader files are located and shows you where it should be installed. Simply follow the instructions and restart apache once you&rsquo;re done:</p>
+
+<p><code>
+sudo service apache2 restart
+</code></p>
+
+<h4>Common Installation Issues</h4>
+
+<p>Here are some of the common issues when installing ioncube:</p>
+
+<ul>
+<li><strong>PHP Fatal error The Loader must appear as the first entry in the php.ini file in Unknown on line 0</strong> &ndash; this means that the ioncube loader must be the first module that should be loaded by PHP. In Ubuntu you can do this by going to the following directory:</li>
+</ul>
+
+
+<p><code>
+/etc/php5/apache2/conf.d
+</code></p>
+
+<p>And create a new file and name it <code>01-ioncube.ini</code> then put the following contents:</p>
+
+<p><code>
+zend_extension = /usr/lib/php5/20121212/ioncube_loader_lin_5.4.so
+</code></p>
+
+<p>This ensures that the ioncube loader is first on the queue.
+Do note that the path here should be the same as the path that was mentioned in the loader wizard and that the loader file, in this case the loader file is the <code>ioncube_loader_lin_5.4.so</code> file should exist in the location specified. The loader files are stored in the directory that you extracted earlier and its stored along with the <code>loader-wizard.php</code> file. And don&rsquo;t forget to restart apache once you&rsquo;re done making the changes.</p>
+
+<ul>
+<li><p><strong>The installed loader is for PHP 5.4 but your server is running PHP 5.5</strong> &ndash; this means that the loader and the PHP version isn&rsquo;t compatible. To solve this problem you have to use the loader that&rsquo;s specific to your PHP version. There&rsquo;s really no problem with this if you&rsquo;re able to access the loader wizard since it already mentions from there which loader version you have to install.</p></li>
+<li><p><strong>PHP version used for encoding the files isn&rsquo;t the same as the ioncube loader version</strong> &ndash; unfortunately there&rsquo;s really nothing that you can do with this one. If the PHP software that you&rsquo;re trying to use was encoded with ioncube that has a lower or higher version than that of the ioncube loader that your machine has then it won&rsquo;t work. The basic rule is that the encoder version should be the same as the loader version.</p></li>
+</ul>
+
+
+<h3>Installing SPBAS</h3>
+
+<p>Once you have successfully installed Ioncube you can now install SPBAS. You can do that by extracting the SPBAS zip file that you downloaded earlier into your web directory. The default file name of the extracted directory is <code>rename_upload_me</code> so you have to rename the directory to something like <code>spbas</code> so its easily recognizable. When accessing SPBAS from your browser for the first time you have to access the install path:</p>
+
+<p><code>
+http://localhost/spbas/install/
+</code></p>
+
+<p>Once you&rsquo;re in the install page simply follow the installation instructions to install SPBAS.</p>
+
+<h3>Configuration</h3>
+
+<p>After installing SPBAS you&rsquo;re now ready for configuration. Configuring SPBAS can be done by logging into your administrator account and accessing specific areas that you want to configure. In this section I&rsquo;ll be walking you through some of the most common configurations to get you up and running with SPBAS.</p>
+
+<h4>Products</h4>
+
+<p>To add products all you have to do is click on the following links in order:</p>
+
+<p><code>
+settings &gt; storefronts &amp; products &gt; products &gt; add product
+</code></p>
+
+<p>Once you&rsquo;re in the add product page simply enter the details for the application that you&rsquo;re trying to sell:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/1-add-new-product.png" alt="add product" /></p>
+
+<h4>Pricing Tier</h4>
+
+<p>After adding a product you have to add a pricing tier. Things such as the minimum quantity, maximum quantity and price can be added here. You can add a price tier by going to:</p>
+
+<p><code>
+settings &gt; storefronts &amp; products &gt; products &gt; find the product that you want &gt; manage &gt; product price tier &gt; add price tier    
+</code></p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/2-Add-pricing-tier.png" alt="add pricing tier" /></p>
+
+<h4>System Configuration</h4>
+
+<p>After adding the pricing tier for a specific product you may also want to configure the overall system settings. Things such as the date format, time format, default upload path and your SPBAS license key can be added from here. The system configuration page can be accessed by going to:</p>
+
+<p><code>
+admin &gt; system &gt; application &gt; system configuration
+</code></p>
+
+<p>If you still remember that license key that you got from the SPBAS website earlier that&rsquo;s the one that you should supply in the SPBAS license key field. Another important configuration is the media upload path. This is where the product files are going to be uploaded.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/3-setup-upload-path.png" alt="system configuration" /></p>
+
+<h4>Licensing Method</h4>
+
+<p>Next is the optional licensing method. I said optional because not all products requires a license in order to work. If the application that you&rsquo;re trying to sell is a one-time payment only then there&rsquo;s no need to setup a licensing method. But if you&rsquo;re application requires a license in order to work then read on.
+The licensing method is the type of licensing that you want to use for the products that you&rsquo;re selling. A licensing method can be added by going to:</p>
+
+<p><code>
+settings &gt; licensing &gt; licensing methods &gt; add a new method
+</code></p>
+
+<p>Note that the SPBAS is the recommended licensing method as its the only licensing method that&rsquo;s actively developed.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/4-add-licensing-method.png" alt="licensing method" /></p>
+
+<p>Once you&rsquo;re done selecting the licensing method and giving it an easily recognizable name you can now add the details for that specific licensing method. Things such as the license prefix, license validation options and max instances of each issued license can be set from this page. Here&rsquo;s an example configuration for a licensing method:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/5-add-details-to-licensing-method.png" alt="licensing method details" /></p>
+
+<p>As I have said earlier I&rsquo;m only going to discuss about the necessary parts in order to easily get up and running with SPBAS. If you want to dive in deeper with the licensing options available and what each of the options mean, you can check the <a href="https://solidphp.atlassian.net/wiki/display/docs/Licensing">documentation on licensing</a>.</p>
+
+<h4>Download Category</h4>
+
+<p>Next is the download category. Download categories is part of the group of settings for setting up downloads for your products.
+To add a new download category go to:</p>
+
+<p><code>
+settings &gt; media &gt; downloads &gt; new category
+</code></p>
+
+<p>From there you can create a new download category. Simply click on the add category button once you&rsquo;re done giving the download category a name.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/6-add-download-category.png" alt="add download category" /></p>
+
+<p>Once you&rsquo;re done with that you can now add a specific media or the archive version of the product that you&rsquo;re trying to sell to that download category. You can do that by going to:</p>
+
+<p><code>
+settings &gt; media &gt; downloads &gt; media
+</code></p>
+
+<p>Then simply supply the display name and the actual file name. Note that the file should exist in the media upload path that you supplied earlier in the system configuration page. If this doesn&rsquo;t work, simply use the web upload feature in which you can manually upload the files. After that click on the add media to category button to add the files to a specific download category.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/7-add-media-to-download-category.png" alt="add media to download category" /></p>
+
+<h4>Media Set</h4>
+
+<p>Media sets are categories of downloads that can be assigned to product price tiers as assets. In simple terms they are used to link pricing tiers to the files for a specific product. You can add a media set by going to:</p>
+
+<p><code>
+settings &gt; media &gt; media sets &gt; add media set
+</code></p>
+
+<p>Give the media set a name that can be easily recognizable as part of a specific price tier and click on the add new button.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/8-addmedia-set.png" alt="add media set" /></p>
+
+<p>Once you&rsquo;re done with that simply assign the media set to a specific product price tier by checking the checkbox beside the product pricing tier. You can access the following page by clicking on the manage link beside the media set that you created:</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/9-assign-asset-pricing-tier-to-media-set.png" alt="assign asset to media set" /></p>
+
+<p>After that you can now assign a media category to the media set. You can do this by going to:</p>
+
+<p><code>
+settings &gt; media &gt; media sets &gt; assign media to sets
+</code></p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/10-assign-media-category-to-media-set.png" alt="assign media category to media set" /></p>
+
+<h4>Assigning License Method as an Asset</h4>
+
+<p>In order to create new license keys you must first assign the licensing method to a product price tier. After you do this customers can order the product, or you as an admin can manually add a package, which will result in a license key asset being issued to the customer account. The customer can then enter the license key into your application to activate it. To assign a licensing method click the Assign as Asset menu link and check the box beside each relevant product price tier.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/11-assign-asset-pricing-tier-to-licensing-method.png" alt="assign asset to licensing method" /></p>
+
+<h4>Assigning Product Order to Form</h4>
+
+<p>Finally you can now assign a specific product to the order form. This will allow customer to see your product listed on the order page of your SPBAS installation. You can do that by going to:</p>
+
+<p><code>
+settings &gt; storefronts &amp; products &gt; order forms
+</code></p>
+
+<p>Once you are there simply check the checkbox beside the Products to assign your products to your order form.</p>
+
+<p><img src="/images/posts/getting_started_with_business_automation_software/12-assign-product-to-order-form.png" alt="assign product order to form" /></p>
+
+<h3>Licensing Implementation</h3>
+
+<p>You can implement licensing by including the <code>SPBAS.class.php</code> somewhere in your app. And include a code that&rsquo;s similar to the code below:</p>
+
+<p>```php
+&lt;?php
+include &lsquo;SPBAS.class.php&rsquo;
+$license_key = trim($_POST[&lsquo;lickey&rsquo;]); //license key inputted by the user</p>
+
+<p>$spbas = new spbas(); //initialize spbas</p>
+
+<p>if(!empty($license_key)){</p>
+
+<pre><code>$spbas-&gt;license_key = trim($license_key);
+
+$spbas-&gt;api_server = 'http://localhost/spbas/api/index.php'; //the URL in which SPBAS is hosted 
+$spbas-&gt;secret_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';  //the secret key from the licensing method
+
+$spbas-&gt;validate(); //check if the license key is valid
+
+$response = array();
+
+if(empty($spbas-&gt;errors)){
+
+    $db-&gt;query("INSERT INTO tbl_settings SET license = '$license_key'"); //save license into the database
+
+    /* 
+    some code here to activate the application
+    */
+
+    //setup success response
+    $response = array(
+        'type' =&gt; 'success', 
+        'text' =&gt; 'You have successfully Activated the plugin!'
+    );  
+}else{
+    //setup error response
+    $response = array(
+        'type' =&gt; 'error',
+        'text' =&gt; $spbas-&gt;errors
+    );
+}
+
+echo json_encode($response);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>You may want to encode this specific part of the code using something like Ioncube so the implementation details are protected. The only downside is that the ioncube loader should also be installed anywhere where your app is going to run so its not really feasible in most cases.</p>
+
+<h3>Conclusion</h3>
+
+<p>SPBAS is a nice way in which you can automate your business but it is by no means an alternative to an app store.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://solidphp.atlassian.net/wiki/display/docs/Home">SPBAS Documentation</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Caching in PHP]]></title>
@@ -1698,795 +1990,6 @@ public function bpHash($data, $key) {
 <ul>
 <li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
 <li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Shopify App Development]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/11/09/getting-started-with-shopify-app-development/"/>
-    <updated>2013-11-09T13:34:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/11/09/getting-started-with-shopify-app-development</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to start developing apps for Shopify.
-But first of all what is Shopify?</p>
-
-<p><blockquote><p>Shopify is an online e-commerce platform, you can use Shopify to create online stores to sell goods and services.<br/>The only difference between Shopify and other e-commerce solutions like Wordpress or Joomla is that you don&rsquo;t have to install anything yourself. Every store is hosted by Shopify. But you can use a custom domain if you want.</p></blockquote></p>
-
-<p>As were going to create a Shopify App its also important that we understand what a Shopify app is:</p>
-
-<p><blockquote><p>Shopify apps are used for adding extra features and capabilities to Shopify.</p></blockquote></p>
-
-<p>If you&rsquo;ve ever used a Content Management System like Wordpress or Drupal you might have noticed that the plugin or modules are uploaded into the site were Wordpress or Drupal is running.</p>
-
-<p>But in Shopify you don&rsquo;t need to upload anything. Shopify apps are basically hosted on a different server. So the creators of the App takes care of all the resources needed by the app to run.</p>
-
-<h3>Register as a Shopify Partner</h3>
-
-<p>The first thing that you need to do is to register a Shopify Partner Account.
-This will allow you to create Apps for Shopify.</p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/shopify_partner_registration.png" alt="register as a shopify partner" /></p>
-
-<p>After you have filled up and successfully submitted the form go ahead and verify your email address.</p>
-
-<h3>Create an App</h3>
-
-<p>Once you&rsquo;re done verifying you can now login to your Shopify partners account.</p>
-
-<p>Once you&rsquo;re logged in click on the <code>Apps</code> tab. This is where the apps that you have created using your account will be listed.</p>
-
-<p>Click on the <code>create app</code> button to create a new app.</p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/shopify_apps.png" alt="your apps" /></p>
-
-<p>The form for creating a new app asks for some information regarding the app that you want to create. But the only one&rsquo;s which are required is the <code>Name of app</code> and the <code>Application Callback URL</code>. As this is only a getting started tutorial were just going to fill up what&rsquo;s required. The <code>app name</code> is simply a human readable name for the app. Make sure that it directly describes what the app does so you can easily make sense of what it does by just reading its name. The <code>Application Callback URL</code> is the URL where the merchant will be redirected after he installs your app.
-As we are only getting started we can actually put in the url in your local development server. So something like: <code>http://localhost/shopify_testing/shopify_app.php</code></p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/create_app.png" alt="create app" /></p>
-
-<p>Once the app is created the API Key and Shared Secret will be generated by Shopify. You can use this later on to authenticate requests to the Shopify API.</p>
-
-<h3>Create a Dev Shop</h3>
-
-<p>Now that you&rsquo;re done creating an App we can now create a Dev Shop. A Dev Shop as the name suggests is a Shopify Shop used for testing the apps that you develop. Unlike real Shopify Shops a Dev Shop has no time restrictions and all the functionality available to a normal Shop is also available. The only difference is that a Dev Shop cannot accept payments. Although Shopify has provided a <a href="http://docs.shopify.com/manual/your-store/orders/test-orders">bogus payment gateway</a> so developers can still test out the actual checkout process even when using a Dev Shop.</p>
-
-<p>To create a Dev Shop, just click on the <code>Dev Shops</code> tab then click on the <code>create new dev shop</code> button.
-Then fill up the form for creating a new Dev Shop. Everything is required:</p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/create_devshop.png" alt="create dev shop" /></p>
-
-<p>Once you&rsquo;re done just click on the <code>create dev shop</code> button to finish creating the dev shop.
-After that you can now access your dev shop by accessing a url similar to the following:</p>
-
-<p><code>
-https://shop-name.myshopify.com/admin
-</code></p>
-
-<h3>Dev Shop Settings</h3>
-
-<p>As were going to do some API calls using the app later on. Its useful to set some of the General Settings on your dev shop. I suggest supplying information for the following fields:</p>
-
-<ul>
-<li>Store name</li>
-<li>Homepage title</li>
-<li>Account email</li>
-<li>Customer email</li>
-<li>Phone</li>
-<li>Street</li>
-<li>City</li>
-<li>Postal/Zip Code</li>
-<li>Country</li>
-<li>Currency</li>
-</ul>
-
-
-<p>You can also setup the checkout settings. Like I said earlier, a dev shop can only accept payments via the Bogus Gateway.</p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/bogus_gateway.png" alt="Bogus Gateway" /></p>
-
-<p>When testing payment via bogus gateway the credit card number will always be <code>1</code> and the card security code is <code>111</code>.</p>
-
-<h3>Installing the Dependencies</h3>
-
-<p>Now were ready to develop the app. To make things easier we will be using a library that will interact with the Shopify API.</p>
-
-<p>First create a <code>composer.json</code> file and put the following contents:</p>
-
-<p>```
-{</p>
-
-<pre><code>"minimum-stability": "dev",
-"require": {
-    "sandeepshetty/shopify_api": "dev-master"
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>If you haven&rsquo;t already installed Composer, go ahead and install it by executing the following command from the terminal:</p>
-
-<p><code>
-curl -s http://getcomposer.org/installer | php
-</code></p>
-
-<p>Once Composer is installed execute the following command in the same directory where the <code>composer.json</code> file is. This will install all the Shopify API library along with all of its dependencies:</p>
-
-<p><code>
-php composer.phar install
-</code></p>
-
-<p>Once everything is installed by Composer you will see the following directories under the <code>vendor</code> directory:</p>
-
-<p><code>
--composer
--sandeepshetty
--autoload.php
-</code></p>
-
-<h3>Database</h3>
-
-<p>Were going to use the database for storing the general app data and store specific data.</p>
-
-<h4>App Settings</h4>
-
-<p><code>sql
-CREATE TABLE IF NOT EXISTS `tbl_appsettings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `api_key` varchar(300) DEFAULT NULL,
-  `redirect_url` varchar(300) DEFAULT NULL,
-  `permissions` text,
-  `shared_secret` varchar(300) NOT NULL,
-  PRIMARY KEY (`id`)
-)
-</code></p>
-
-<ul>
-<li><strong>id</strong> &ndash; auto-increment primary key</li>
-<li><strong>api key</strong> &ndash; the API key that you got earlier when you created an app</li>
-<li><strong>redirect_url</strong> &ndash; the url where the merchant will be redirected after installing your app. This is also the url where the merchant will be redirected when he accesses your app from his store.</li>
-<li><strong>permissions</strong> &ndash; an array of permissions allowed in your app. These are specific data that your app has access to when a merchant installs your app into his Shop. Some examples are read orders and read products.</li>
-<li><strong>shared_secret</strong> &ndash; your apps shared secret. This identifies you as the app owner so only you as the app creator should have access to it.</li>
-</ul>
-
-
-<h4>Store Settings</h4>
-
-<p><code>
-CREATE TABLE IF NOT EXISTS `tbl_usersettings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `access_token` text NOT NULL,
-  `store_name` varchar(300) NOT NULL,
-  PRIMARY KEY (`id`)
-)
-</code></p>
-
-<ul>
-<li><strong>id</strong> &ndash; auto-increment primary key</li>
-<li><strong>access_token</strong> &ndash; the permanent access token associated with the store to be used when authenticating API requests. This is saved into the database so that there will be no need to generate the access token everytime the merchant uses the application.</li>
-<li><strong>store_name</strong> &ndash; the name of the store under the myshopify domain. For example: mystore.myshopify.com</li>
-</ul>
-
-
-<h3>Getting App Permissions</h3>
-
-<p>Now were ready to actually develop the app. Start by creating the file that you used earlier for the callback URL. In this case were simply going to call it <code>shopify_app.php</code>.
-Include the library that we downloaded earlier using Composer.</p>
-
-<p><code>php
-&lt;?php
-require 'vendor/autoload.php';
-use sandeepshetty\shopify_api;
-?&gt;
-</code></p>
-
-<p>Next check if the shop name is passed in the URL. When the app is accessed from the shop it will always have the shop name passed as an argument along with the callback URL that you specified in the app settings. We then use this shop name to query the database if the shop already exists.</p>
-
-<p>If the shop already exists then we verify if the request is a valid request from Shopify. We can do that by calling the <code>is_valid_request()</code> method from the Shopify API library so were sure that not just anyone can access the app by directly inputting the URL and the required arguments.</p>
-
-<p>If the request is valid we simply save the <code>shopify signature</code> and <code>shop name</code> to the session so it can be accessed on each subsequent request to the app. This will be used to determine if a user is currently logged in to the app.</p>
-
-<p>This means that there&rsquo;s no need to have a separate login feature for the app. As long as the merchant has properly gone through the process of accessing the app. That is by first</p>
-
-<p>If the shop doesn&rsquo;t exist in the database yet we simply get the specific permissions stored in the database, convert it to an array then supply it as an argument along with the shop name and api key to the <code>permission_url()</code> method. The <code>permission_url()</code> method generates the URL to the page which asks the merchant to give the app the permission to get specific data from the merchant&rsquo;s store.</p>
-
-<p>```
-&lt;?php
-session_start(); //start a session</p>
-
-<p>$db = new Mysqli(&ldquo;localhost&rdquo;, &ldquo;root&rdquo;, &ldquo;&rdquo;, &ldquo;shopify_app&rdquo;);</p>
-
-<p>if($db->connect_errno){</p>
-
-<pre><code>die('Connect Error: ' . $db-&gt;connect_errno);
-</code></pre>
-
-<p>}</p>
-
-<p>$select_settings = $db->query(&ldquo;SELECT * FROM tbl_appsettings WHERE id = 1&rdquo;);
-$app_settings = $select_settings->fetch_object();</p>
-
-<p>if(!empty($_GET[&lsquo;shop&rsquo;])){ //check if the shop name is passed in the URL</p>
-
-<pre><code>$shop = $_GET['shop']; //shop-name.myshopify.com
-
-$select_store = $db-&gt;query("SELECT store_name FROM tbl_usersettings WHERE store_name = '$shop'"); //check if the store exists
-
-if($select_store-&gt;num_rows &gt; 0){
-
-    if(shopify_api\is_valid_request($_GET, $app_settings-&gt;shared_secret)){  //check if its a valid request from Shopify     
-        $_SESSION['shopify_signature'] = $_GET['signature'];
-        $_SESSION['shop'] = $shop; 
-        header('Location: http://localhost/shopify_testing/admin.php'); //redirect to the admin page
-    }
-
-}else{      
-
-    //convert the permissions to an array
-    $permissions = json_decode($app_settings-&gt;permissions, true);
-
-    //get the permission url
-    $permission_url = shopify_api\permission_url(
-        $_GET['shop'], $app_settings-&gt;api_key, $permissions
-    );
-    $permission_url .= '&amp;redirect_uri=' . $app_settings-&gt;redirect_url;
-
-    header('Location: ' . $permission_url); //redirect to the permission url
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Once the merchant has granted the permission for your app to access specific data he will be redirected to the URL you specify as the value for the <code>redirect_uri</code> argument passed in the permission URL.</p>
-
-<p>As you can see were getting the redirect URL from the database. This redirect URL shouldn&rsquo;t necessarily be the same as the URL that you used for the callback URL in your app settings.
-This redirect URL has the responsibility of saving the shop&rsquo;s details into the database. This is because the merchant will only be redirected to this URL the first time he installs your app.</p>
-
-<p>You will know that the merchant has already been redirected to this page when both a code and the shop name is passed as an argument to the URL. A permanent access token can then be generated by passing in the name of the shop, api key, shared secret and the temporary code generated by shopify to the <code>oauth_access_token()</code> method.</p>
-
-<p>Then we save the shop details to the database and to the current session. Finally we redirect to the admin page.</p>
-
-<p>```
-&lt;?php
-if(!empty($<em>GET[&lsquo;shop&rsquo;]) &amp;&amp; !empty($</em>GET[&lsquo;code&rsquo;])){</p>
-
-<pre><code>$shop = $_GET['shop']; //shop name
-
-//get permanent access token
-$access_token = shopify_api\oauth_access_token(
-    $_GET['shop'], $app_settings-&gt;api_key, $app_settings-&gt;shared_secret, $_GET['code']
-);
-
-//save the shop details to the database
-$db-&gt;query("
-    INSERT INTO tbl_usersettings 
-    SET access_token = '$access_token',
-    store_name = '$shop'
-");
-
-//save the signature and shop name to the current session
-$_SESSION['shopify_signature'] = $_GET['signature'];
-$_SESSION['shop'] = $shop;
-
-header('Location: http://localhost/shopify_testing/shopify_app.php/admin.php');
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Now that we&rsquo;ve gone through the process of getting permissions for the app and written the code for it. It&rsquo;s time for you to actually install the app to the dev shop that you created earlier.
-Apps are normally installed from the Shopify app store but we haven&rsquo;t submitted our app to the Shopify app store yet. So what we&rsquo;ll do is to go ahead and access the install URL for the app:</p>
-
-<p><code>
-http://shop-name.myshopify.com/admin/api/auth?api_key=xyz
-</code></p>
-
-<p>Be sure to replace <code>shop-name</code> with the actual name of the dev shop that you created earlier. And the value for the <code>api_key</code> to be the actual api key for your app.</p>
-
-<p>That specific URL is where the merchants will be ultimately redirected to once they install your app from the Shopify app store so we don&rsquo;t really need to submit our app to the app store yet. And Shopify won&rsquo;t really approve the app unless its well done. It has to go through some sort of review process to make sure that its safe for shop owners(merchants) to install it.</p>
-
-<h3>Making API Requests</h3>
-
-<p>Now that were done with the authentication part we can now make requests to the API.
-Go ahead and create the <code>admin.php</code> file. That is where we make requests to the API to get some data about the shop were it is installed. But wait, we don&rsquo;t have any data to fetch from the shop yet. For starters go ahead and create some products on the dev shop that you created earlier. Come back here after you&rsquo;ve done that.</p>
-
-<h4>Products</h4>
-
-<p>Cool! Now you&rsquo;ve added some products to your shop. We can now fetch some of those products by talking to the API.
-First you have to call the <code>client</code> method from the Shopify API library passing along the shop name, access token, api key and the shared secret. All of this data is already present in the database as long as the merchant has gone through the install process.</p>
-
-<p>```
-&lt;?php
-$shopify = shopify_api\client(</p>
-
-<pre><code>$shop, $shop_data-&gt;access_token, $app_settings-&gt;api_key, $app_settings-&gt;shared_secret
-</code></pre>
-
-<p>);
-?>
-```</p>
-
-<p>Once you&rsquo;re done with that you can now use the <code>$shopify</code> variable to call methods from the API.
-Here were getting a list of products that are published in the shop:</p>
-
-<p><code>
-&lt;?php
-$products = $shopify('GET', '/admin/products.json', array('published_status' =&gt; 'published'));
-?&gt;
-</code></p>
-
-<p>The first argument that we specify above is the request method. It can either be <code>GET</code> or <code>POST</code> depending on what&rsquo;s included in the documentation. Some methods require <code>GET</code> as the request method and some require <code>POST</code>. But the common pattern is that when you&rsquo;re modifying or creating something the request method to use is <code>POST</code>, but when only retrieving specific data you use <code>GET</code>.</p>
-
-<p>The second argument is the resource that you&rsquo;re trying to access. In this case were accessing <code>products.json</code> which refers to the products in the shop.</p>
-
-<p>The third argument is an array of arguments that you want to pass. There&rsquo;s a bunch of arguments that you can pass with the <code>products</code> resource. In the above example we used the <code>published_status</code> and supplied <code>published</code> as its value. This is like saying to the API that we only want to get the products which are published. In shopify products can either be draft or published. Published means that its already viewable by customers in your shop. It means that the merchant is already displaying the product for sale.
-There&rsquo;s also the <code>product_type</code> argument this allows you to limit the products returned for a specific product type only. For example you only want to return perishable goods.</p>
-
-<p>Here&rsquo;s a sample response:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[0] =&gt; Array
-    (
-        [body_html] =&gt; Crested shirt
-        [created_at] =&gt; 2013-10-13T23:09:53-04:00
-        [handle] =&gt; crested-shirt
-        [id] =&gt; 164668989
-        [product_type] =&gt; t-shirts
-        [published_at] =&gt; 2013-10-13T23:09:13-04:00
-        [published_scope] =&gt; global
-        [template_suffix] =&gt; 
-        [title] =&gt; Crested shirt
-        [updated_at] =&gt; 2013-10-14T01:31:44-04:00
-        [vendor] =&gt; zentopia
-        [tags] =&gt; 
-        [variants] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [barcode] =&gt; 
-                        [compare_at_price] =&gt; 
-                        [created_at] =&gt; 2013-10-13T23:09:53-04:00
-                        [fulfillment_service] =&gt; manual
-                        [grams] =&gt; 234
-                        [id] =&gt; 378254785
-                        [inventory_management] =&gt; 
-                        [inventory_policy] =&gt; deny
-                        [option1] =&gt; Default Title
-                        [option2] =&gt; 
-                        [option3] =&gt; 
-                        [position] =&gt; 1
-                        [price] =&gt; 322.00
-                        [product_id] =&gt; 164668989
-                        [requires_shipping] =&gt; 1
-                        [sku] =&gt; 
-                        [taxable] =&gt; 1
-                        [title] =&gt; Default Title
-                        [updated_at] =&gt; 2013-10-13T23:09:53-04:00
-                        [inventory_quantity] =&gt; 0
-                    )
-
-            )
-
-        [options] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [id] =&gt; 197676733
-                        [name] =&gt; Title
-                        [position] =&gt; 1
-                        [product_id] =&gt; 164668989
-                    )
-
-            )
-
-        [images] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [created_at] =&gt; 2013-10-14T01:31:39-04:00
-                        [id] =&gt; 330590691
-                        [position] =&gt; 1
-                        [product_id] =&gt; 164668989
-                        [updated_at] =&gt; 2013-10-14T01:31:39-04:00
-                        [src] =&gt; http://cdn.shopify.com/s/files/1/0279/0287/products/crest.jpg?305
-                    )
-
-            )
-
-        [image] =&gt; Array
-            (
-                [created_at] =&gt; 2013-10-14T01:31:39-04:00
-                [id] =&gt; 330590691
-                [position] =&gt; 1
-                [product_id] =&gt; 164668989
-                [updated_at] =&gt; 2013-10-14T01:31:39-04:00
-                [src] =&gt; http://cdn.shopify.com/s/files/1/0279/0287/products/crest.jpg?305
-            )
-
-    )
-</code></pre>
-
-<p>)
-```</p>
-
-<p>Note that you can also specify the fields that you want to return by using the <code>fields</code> as an argument and supply a comma-separated list of the fields that you want to return. Something like:</p>
-
-<p>```
-&lt;?php
-$arguments = array(</p>
-
-<pre><code>'published_status' =&gt; 'published',
-'fields' =&gt; 'body_html,created_at,handle,id,title,image'
-</code></pre>
-
-<p>);</p>
-
-<p>$products = $shopify(&lsquo;GET&rsquo;, &lsquo;/admin/products.json&rsquo;, $arguments);
-?>
-```</p>
-
-<p>The documentation for the products is available <a href="http://docs.shopify.com/api/product#index">here</a>.
-Go through it so you know what other methods you can call that involves the products in the shop.</p>
-
-<h4>Orders</h4>
-
-<p>You can also access information about <a href="http://docs.shopify.com/api/order">orders</a> using the API.</p>
-
-<p>To get a list of orders:</p>
-
-<p>```
-&lt;?php
-$arguments = array(</p>
-
-<pre><code>'limit' =&gt; '10', //default: 50
-'page' =&gt; '1', //default: 1
-'status' =&gt; 'open', 
-</code></pre>
-
-<p>);
-$orders = $shopify(&lsquo;GET&rsquo;, &lsquo;/admin/orders.json&rsquo;, $arguments);
-?>
-```</p>
-
-<p>Here&rsquo;s a sample response:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[0] =&gt; Array
-    (
-        [buyer_accepts_marketing] =&gt; 1
-        [cancel_reason] =&gt; 
-        [cancelled_at] =&gt; 
-        [cart_token] =&gt; ba56ddbaab418b79566316fe5e99e4e3
-        [checkout_token] =&gt; 2b4ef76523c1bb6fc6e6825a97a4c992
-        [closed_at] =&gt; 
-        [confirmed] =&gt; 1
-        [created_at] =&gt; 2013-10-17T00:13:59-04:00
-        [currency] =&gt; PHP
-        [email] =&gt; vbcanc@gmail.com
-        [financial_status] =&gt; authorized
-        [fulfillment_status] =&gt; 
-        [gateway] =&gt; bogus
-        [id] =&gt; 188680051
-        [landing_site] =&gt; /
-        [location_id] =&gt; 
-        [name] =&gt; #1001
-        [note] =&gt; 
-        [number] =&gt; 1
-        [reference] =&gt; 
-        [referring_site] =&gt; 
-        [source] =&gt; browser
-        [subtotal_price] =&gt; 322.00
-        [taxes_included] =&gt; 
-        [test] =&gt; 1
-        [token] =&gt; 35330c6d0bb04c0198ab94b04317e1af
-        [total_discounts] =&gt; 0.00
-        [total_line_items_price] =&gt; 322.00
-        [total_price] =&gt; 342.00
-        [total_price_usd] =&gt; 7.93
-        [total_tax] =&gt; 0.00
-        [total_weight] =&gt; 234
-        [updated_at] =&gt; 2013-10-17T00:13:59-04:00
-        [user_id] =&gt; 
-        [browser_ip] =&gt; 180.191.38.211
-        [landing_site_ref] =&gt; 
-        [order_number] =&gt; 1001
-        [discount_codes] =&gt; Array
-            (
-            )
-
-        [note_attributes] =&gt; Array
-            (
-            )
-
-        [processing_method] =&gt; direct
-        [checkout_id] =&gt; 140790649
-        [source_name] =&gt; web
-        [line_items] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [fulfillment_service] =&gt; manual
-                        [fulfillment_status] =&gt; 
-                        [grams] =&gt; 234
-                        [id] =&gt; 328820335
-                        [price] =&gt; 322.00
-                        [product_id] =&gt; 164668989
-                        [quantity] =&gt; 1
-                        [requires_shipping] =&gt; 1
-                        [sku] =&gt; 
-                        [title] =&gt; Crested shirt
-                        [variant_id] =&gt; 378254785
-                        [variant_title] =&gt; 
-                        [vendor] =&gt; zentopia
-                        [name] =&gt; Crested shirt
-                        [variant_inventory_management] =&gt; 
-                        [properties] =&gt; Array
-                            (
-                            )
-
-                        [product_exists] =&gt; 1
-                    )
-
-            )
-
-        [shipping_lines] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [code] =&gt; International Shipping
-                        [price] =&gt; 20.00
-                        [source] =&gt; shopify
-                        [title] =&gt; International Shipping
-                    )
-
-            )
-
-        [tax_lines] =&gt; Array
-            (
-            )
-
-        [payment_details] =&gt; Array
-            (
-                [avs_result_code] =&gt; 
-                [credit_card_bin] =&gt; 1
-                [cvv_result_code] =&gt; 
-                [credit_card_number] =&gt; XXXX-XXXX-XXXX-1
-                [credit_card_company] =&gt; Bogus
-            )
-
-        [billing_address] =&gt; Array
-            (
-                [address1] =&gt; 86-92 &amp; 103 Brighton Road Coulsdon Surrey
-                [address2] =&gt; 
-                [city] =&gt; Coulsdon
-                [company] =&gt; doble
-                [country] =&gt; United Kingdom
-                [first_name] =&gt; sfs
-                [last_name] =&gt; rew
-                [latitude] =&gt; 51.314819
-                [longitude] =&gt; -0.12435
-                [phone] =&gt; 3252325
-                [province] =&gt; Surrey
-                [zip] =&gt; CR5 2NG
-                [name] =&gt; sfs rew
-                [country_code] =&gt; GB
-                [province_code] =&gt; 
-            )
-
-        [shipping_address] =&gt; Array
-            (
-                [address1] =&gt; 86-92 &amp; 103 Brighton Road Coulsdon Surrey
-                [address2] =&gt; 
-                [city] =&gt; Coulsdon
-                [company] =&gt; doble
-                [country] =&gt; United Kingdom
-                [first_name] =&gt; sfs
-                [last_name] =&gt; rew
-                [latitude] =&gt; 51.314819
-                [longitude] =&gt; -0.12435
-                [phone] =&gt; 3252325
-                [province] =&gt; Surrey
-                [zip] =&gt; CR5 2NG
-                [name] =&gt; sfs rew
-                [country_code] =&gt; GB
-                [province_code] =&gt; 
-            )
-
-        [fulfillments] =&gt; Array
-            (
-            )
-
-        [client_details] =&gt; Array
-            (
-                [accept_language] =&gt; en-US,en;q=0.8
-                [browser_ip] =&gt; xxx.xxx.xx.xxx
-                [session_hash] =&gt; 4bb858f172df6367b05ab424f9c6bd0f778e711e9046c5a13833cc91bc33a237
-                [user_agent] =&gt; Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/28.0.1500.71 Chrome/28.0.1500.71 Safari/537.36
-            )
-
-        [customer] =&gt; Array
-            (
-                [accepts_marketing] =&gt; 1
-                [created_at] =&gt; 2013-10-15T21:26:24-04:00
-                [email] =&gt; vbcanc@gmail.com
-                [first_name] =&gt; wef
-                [id] =&gt; 148878735
-                [last_name] =&gt; rew
-                [last_order_id] =&gt; 
-                [multipass_identifier] =&gt; 
-                [note] =&gt; 
-                [orders_count] =&gt; 0
-                [state] =&gt; disabled
-                [total_spent] =&gt; 0.00
-                [updated_at] =&gt; 2013-10-17T00:14:01-04:00
-                [verified_email] =&gt; 1
-                [tags] =&gt; 
-                [last_order_name] =&gt; 
-                [image_url] =&gt; //gravatar.com/avatar/aba221e4cb888289b95b7864d754c4ce?default=http%3A%2F%2Fcdn.shopify.com%2Fs%2Fimages%2Fadmin%2Fcustomers%2Fcustomers_avatar_england_londonbridge.png
-                [default_address] =&gt; Array
-                    (
-                        [address1] =&gt; 86-92 &amp; 103 Brighton Road Coulsdon Surrey
-                        [address2] =&gt; 
-                        [city] =&gt; Coulsdon
-                        [company] =&gt; doble
-                        [country] =&gt; United Kingdom
-                        [first_name] =&gt; sfs
-                        [id] =&gt; 193735639
-                        [last_name] =&gt; rew
-                        [phone] =&gt; 3252325
-                        [province] =&gt; Surrey
-                        [zip] =&gt; CR5 2NG
-                        [name] =&gt; sfs rew
-                        [province_code] =&gt; 
-                        [country_code] =&gt; GB
-                        [country_name] =&gt; United Kingdom
-                        [default] =&gt; 1
-                    )
-
-            )
-
-    )
-</code></pre>
-
-<p>)
-```</p>
-
-<p>As you can see from the above response all information about a specific order is returned. The line items, payment details, billing address and customer information are all included in the default response.
-Information about the device (IP address, browser) were the order was made is also captured by Shopify.</p>
-
-<h4>Webhooks</h4>
-
-<p>The Shopify API also supports webhooks. In case you don&rsquo;t know what a webhook is here&rsquo;s a good definition from <a href="http://en.wikipedia.org/wiki/Webhook">Wikipedia</a>:</p>
-
-<p><blockquote><p>A Webhook, in web development, is a method of augmenting or altering the behavior of a web page, or web application, with custom callbacks. These callbacks may be maintained, modified, and managed by third-party users and developers who may not necessarily be affiliated with the originating website or application.</p></blockquote></p>
-
-<p>In simple terms a webhook is used to perform specific actions when a certain event happens. In Shopify there are a number of events which you can hook into to perform specific action:</p>
-
-<p>Webhooks can be set from the dev shop or from the app. To set a webhook from the dev shop go to the admin page of your shop, click on the settings tab then click on notifications tab. Scroll down until you find the webhooks section. To create a new webhook just click on the <code>create a webhook</code> button. Then select the event in which you want to add a webhook then enter the complete URL of the page where you want to submit the data when the specific event happens.</p>
-
-<p><img src="/images/posts/getting_started_with_shopify_app_development/webhook.png" alt="Webhook" /></p>
-
-<p>To add a webhook via the API simply make a <code>POST</code> request to the <code>webhooks</code> resource and passing in the <code>topic</code> and <code>address</code>. The <code>topic</code> is the actual event and the <code>address</code> is the URL which you want to submit the data returned from the specific event when it happens. Do note that we can&rsquo;t use the local server URL for this. It must be a URL that&rsquo;s actually accessible from the internet. In the example below were submitting the data to the address specified when a cart is created or updated.</p>
-
-<p>```
-&lt;?php
-//when cart is created
-$arguments = array(</p>
-
-<pre><code>'topic' =&gt; 'cart/creation',
-'address' =&gt; 'http://somewhere.com/update_inventory.php'
-</code></pre>
-
-<p>);</p>
-
-<p>$webhooks = $shopify(&lsquo;GET&rsquo;, &lsquo;/admin/webhooks.json&rsquo;, $arguments);</p>
-
-<p>//when cart is updated
-$arguments = array(</p>
-
-<pre><code>'topic' =&gt; 'cart/update',
-'address' =&gt; 'http://somewhere.com/update_inventory.php'
-</code></pre>
-
-<p>);</p>
-
-<p>$webhooks = $shopify(&lsquo;GET&rsquo;, &lsquo;/admin/webhooks.json&rsquo;, $arguments);
-?>
-```</p>
-
-<p>Remember that every event where you can hook upon in the admin interface you can also create a hook on it using the API. You can read more about webhooks <a href="http://docs.shopify.com/api/tutorials/using-webhooks">here</a>.</p>
-
-<p>If you want to check what specific data is being passed to the URL that you specify for a specific webhook you can use a service like <a href="http://requestb.in/">request bin</a></p>
-
-<p>Heres a sample request for when a cart is created. You can use the properties under the <code>data</code> property as a basis for the data that you&rsquo;re going to access from the address that you specified in your webhook:</p>
-
-<p>```json
-{
-  &ldquo;url&rdquo;: &ldquo;<a href="http://api.yourapihere.com/">http://api.yourapihere.com/</a>&rdquo;,
-  &ldquo;headers&rdquo;: {</p>
-
-<pre><code>"Connection": "close",
-"X-Shopify-Topic": "carts/create",
-"Host": "api.yourapihere.com",
-"Accept-Encoding": "gzip, deflate, compress",
-"X-Shopify-Shop-Domain": "test-shop.myshopify.com",
-"User-Agent": "Ruby",
-"Content-Type": "application/json",
-"Content-Length": "281",
-"Accept": "*/*"
-</code></pre>
-
-<p>  },
-  &ldquo;args&rdquo;: {},
-  &ldquo;data&rdquo;: &ldquo;{\"id\&rdquo;:\&ldquo;carts:eeafa272cebfd4b22385bc4b645e762c\&rdquo;,\&ldquo;token\&rdquo;:\&ldquo;eeafa272cebfd4b22385bc4b645e762c\&rdquo;,\&ldquo;line_items\&rdquo;:[{\&ldquo;id\&rdquo;:null,\&ldquo;title\&rdquo;:\&ldquo;Example T-Shirt\&rdquo;,\&ldquo;price\&rdquo;:\&ldquo;19.99\&rdquo;,\&ldquo;line_price\&rdquo;:\&ldquo;59.97\&rdquo;,\&ldquo;quantity\&rdquo;:3,\&ldquo;sku\&rdquo;:\&ldquo;example-shirt-s\&rdquo;,\&ldquo;grams\&rdquo;:200,\&ldquo;vendor\&rdquo;:\&ldquo;Acme\&rdquo;,\&ldquo;properties\&rdquo;:null,\&ldquo;variant_id\&rdquo;:null}]}&ldquo;,
-  "origin&rdquo;: &ldquo;54.236.226.56&rdquo;,
-  &ldquo;form&rdquo;: {},
-  &ldquo;files&rdquo;: {},
-  &ldquo;json&rdquo;: {</p>
-
-<pre><code>"id": "carts:eeafa272cebfd4b22385bc4b645e762c",
-"line_items": [
-  {
-    "id": null,
-    "sku": "example-shirt-s",
-    "variant_id": null,
-    "quantity": 3,
-    "vendor": "Acme",
-    "grams": 200,
-    "title": "Example T-Shirt",
-    "properties": null,
-    "price": "19.99",
-    "line_price": "59.97"
-  }
-],
-"token": "eeafa272cebfd4b22385bc4b645e762c"
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<p>The data that is passed to the address that you specified is an <a href="http://php.net/manual/en/wrappers.php.php">input stream</a>. It&rsquo;s not passed using the common <code>GET</code> or <code>POST</code> request method. You can use the <code>fopen()</code> method in PHP and pass in the <code>php://input</code> stream. Then pass in <code>rb</code> as the mode. <code>rb</code> means read-only in binary mode.
-Then we just loop through the input stream until we reach the end of the file. Inside the loop we also use the <code>fread()</code> method to read from the resource created when we called <code>fopen()</code> earlier. We also pass the maximum number of bytes to read which is 4096 (approximately 4Mb). Finally we close the resource and convert the webhook content to an array using the <code>json_decode()</code> method.</p>
-
-<p>`&ldquo;php
-&lt;?php
-$webhook_content = &rdquo;;
-$webhook = fopen(&lsquo;php://input&rsquo; , &lsquo;rb&rsquo;);
-while(!feof($webhook)){ //loop through the input stream while the end of file is not reached</p>
-
-<pre><code>$webhook_content .= fread($webhook, 4096); //append the content on the current iteration
-</code></pre>
-
-<p>}
-fclose($webhook); //close the resource</p>
-
-<p>$data = json_decode($webhook_content, true); //convert the json to array</p>
-
-<p>//do whatever you want with the data
-?>
-```</p>
-
-<h2>Conclusion</h2>
-
-<p>That&rsquo;s it! You&rsquo;ve learned how to create a Shopify app. Creating a shopify app involves creating a Shopify partners account, a dev shop and an app. You&rsquo;ve also learned that Shopify apps aren&rsquo;t directly integrated into a shop, instead it is hosted somewhere else. Shopify apps are a nice way to extend the functionality that is already available to Shopify.</p>
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="http://docs.shopify.com/api/the-basics/getting-started">The basics of Building a Shopify App</a></li>
-<li><a href="http://www.shopify.com/technology/3671962-developing-shopify-apps-part-1-the-setup#axzz2itCLJCrk">Developing Shopify Apps</a></li>
-<li><a href="https://github.com/sandeepshetty/shopify_api">Sandeepshetty/shopify_api</a></li>
 </ul>
 
 ]]></content>
