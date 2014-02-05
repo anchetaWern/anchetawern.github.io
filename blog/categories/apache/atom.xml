@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: apache | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/apache/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-02-05T12:43:01+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Fixing the Forbidden Error in Apache]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/"/>
+    <updated>2014-02-05T11:33:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache</id>
+    <content type="html"><![CDATA[<p>Every time I reformat my machine I always seem to be stuck with the forbidden error in Apache when changing the default web directory. But that ends today since I&rsquo;m going to share the solution that works for me.</p>
+
+<p>First you have to edit the <code>apache2.conf</code> file which is stored in the following directory:</p>
+
+<p><code>
+/etc/apache2
+</code></p>
+
+<p>Open up the file with elevated privileges by executing the following command:</p>
+
+<p><code>
+sudo gedit apache2.conf
+</code></p>
+
+<p>Then look for the default web directory which is in most cases is <code>/var/www</code>. When you look at the file it looks something like this:</p>
+
+<p>```
+<Directory /var/www></p>
+
+<pre><code>...
+...
+...
+</code></pre>
+
+<p></Directory>
+```</p>
+
+<p>Now change it to your preferred location. For me its in the <code>web_files</code> directory inside <code>/home/wern</code>. Also change the directives to follow symbolic links and use multiviews, also set the <code>AllowOverride</code> option to <code>All</code> so <code>.htaccess</code> files can override the default options. Then set the <code>Order</code> option to <code>allow,deny</code> so that the allow directives would be evaluated first before the deny directives. Lastly, set to <code>allow from all</code> option to allow access from all hosts:</p>
+
+<p>```
+<Directory /home/wern/web_files></p>
+
+<pre><code>Options FollowSymLinks MultiViews
+AllowOverride All
+Order allow,deny
+allow from all
+</code></pre>
+
+<p></Directory>
+```</p>
+
+<p>Next edit the the <code>000-default.conf</code> file inside the <code>etc/apache2/sites-available directory and add the same directives that we added on the</code>apache2.conf` file:</p>
+
+<p>```
+DocumentRoot /home/wern/web_files
+<Directory /></p>
+
+<pre><code>Options FollowSymLinks
+AllowOverride None
+</code></pre>
+
+<p></Directory>
+<Directory /home/wern/web_files></p>
+
+<pre><code>Options FollowSymLinks
+AllowOverride All
+order allow,deny
+allow from all
+</code></pre>
+
+<p></Directory>
+```</p>
+
+<p>Next enable the Apache <code>userdir</code> module by executing the following command in the terminal:</p>
+
+<p><code>
+sudo  a2enmod userdir
+</code></p>
+
+<p>Make the necessary changes on the <code>/etc/apache2/mods-enabled/userdir.conf</code> file by changing the directory path to your desired web directory:</p>
+
+<p>```
+<IfModule mod_userdir.c></p>
+
+<pre><code>UserDir web_files
+UserDir disabled root
+
+&lt;Directory /home/wern/web_files&gt;
+    AllowOverride FileInfo AuthConfig Limit Indexes
+    Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+    &lt;Limit GET POST OPTIONS&gt;
+        Require all granted
+    &lt;/Limit&gt;
+    &lt;LimitExcept GET POST OPTIONS&gt;
+        Require all denied
+    &lt;/LimitExcept&gt;
+&lt;/Directory&gt;
+</code></pre>
+
+<p></IfModule></p>
+
+<h1>vim: syntax=apache ts=4 sw=4 sts=4 sr noet</h1>
+
+<p>```</p>
+
+<p>Finally, open up the <code>/etc/apache2/mods-enabled/php5.conf</code> file and comment out the following lines by adding the pound sign (#) right before each line:</p>
+
+<p>```</p>
+
+<h1><IfModule mod_userdir.c></h1>
+
+<h1><Directory /home/*/public_html></h1>
+
+<h1>php_admin_value engine Off</h1>
+
+<h1></Directory></h1>
+
+<h1></IfModule></h1>
+
+<p>```</p>
+
+<p>To apply your changes to the current Apache instance simply restart the service:</p>
+
+<p><code>
+sudo service apache2 restart
+</code></p>
+
+<p>If this doesn&rsquo;t work make sure that your file permissions are ok, then restart Apache:</p>
+
+<p><code>
+sudo chmod -R 755 /home/wern/web_files
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>
