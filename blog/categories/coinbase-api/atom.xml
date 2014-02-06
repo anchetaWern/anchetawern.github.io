@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: coinbase-api | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/coinbase-api/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-02-06T10:34:14+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Gettting Started with Coinbase API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/"/>
+    <updated>2013-11-03T13:34:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get started developing applications which communicates with the Coinbase API. But first what is Coinbase?</p>
+
+<p><blockquote><p>Coinbase is a service that allows you to use bitcoins as a means of payment for goods and services.<br/>Its like Paypal but for bitcoins.</p></blockquote></p>
+
+<p>First thing that you need to do is to register an account with Coinbase.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-register.png" alt="register account" /></p>
+
+<p>Then go to your email and verify the account.</p>
+
+<p>Accept the license.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-license.png" alt="accept license" /></p>
+
+<p>Next, click on account settings and then click on the integrations tab:</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-api.png" alt="integrations" /></p>
+
+<p>Next, click on show my API key. You would need to enter your password to verify that you are indeed the account owner. Initially the API key is disabled so you need to enable it as well.</p>
+
+<p><img src="/images/posts/coinbase_api/enable-apikey.png" alt="enable api key" /></p>
+
+<p>After that, simply copy the API key that&rsquo;s displayed.</p>
+
+<p><img src="/images/posts/coinbase_api/copy-apikey.png" alt="copy api key" /></p>
+
+<p>The API key will be used for authenticating requests to the Coinbase API.</p>
+
+<h3>Authentication</h3>
+
+<p>There are 2 ways in which a request to the API can be authenticated:</p>
+
+<ol>
+<li>API key</li>
+<li>OAuth2</li>
+</ol>
+
+
+<h4>Authentication using API Key</h4>
+
+<p>Authenticating a request via the API Key is the easier way of making requests to the API. All you have to do is to append the api key on each request. The cool thing is you can directly execute a request to the API directly from the browser for methods that can be called via <code>GET</code>.</p>
+
+<p>For example when you want to get the account balance, you simply do something like:</p>
+
+<p><code>
+https://coinbase.com/api/v1/account/balance?api_key=xyz
+</code></p>
+
+<p>There&rsquo;s a bunch of other methods which you can call directly from the browser. They&rsquo;re all listed <a href="https://coinbase.com/api/doc/1.0.html">here</a>. Do note that you can only call a method directly from the browser when its request method is <code>GET</code>. <code>POST</code> methods cannot be called directly from the browser, you need to use <code>curl</code> or <code>file_get_contents()</code> to be able to make the request.</p>
+
+<p>Here&rsquo;s an example of using <code>curl</code> to generate  a payment button, remember to pass the API Key along with the parameters required by the specific API method:</p>
+
+<p>```php
+&lt;?php</p>
+
+<pre><code>$request = '{
+    "api_key" : "xyz", 
+    "button": {
+        "name": "test",
+        "price_string": "1.23",
+        "price_currency_iso": "USD"
+    }
+}';
+
+$post_fields = json_decode($request, true); //convert json string to an object
+$post_fields = http_build_query($post_fields); //urlencode for arrays
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_POST, true); //tell curl that were posting some data along with the request 
+curl_setopt($curl, CURLOPT_POSTFIELDS, $post_fields); //the data that we want to post
+curl_setopt($curl, CURLOPT_URL, 'https://coinbase.com/api/v1/buttons'); //the request url
+
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); //return the transfer, by default its being echoed out
+$response = curl_exec($curl); //execute the request
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>The method that we have used above is the <code>buttons</code> method. It only requires 3 arguments:</p>
+
+<ul>
+<li><p><strong>button[name]</strong> &ndash; the name of the item or service for which you are collecting bitcoins.</p></li>
+<li><p><strong>button[price_string]</strong> &ndash; the total price of the item or service.</p></li>
+<li><p><strong>button[price_currency_iso]</strong> &ndash; the currency of the price used in the <code>button[price_string]</code> argument. Examples are <code>USD</code>, <code>PHP</code>, <code>SGD</code>, <code>CAD</code>, or <code>BTC</code> for the bitcoin currency. It would be easier if <code>BTC</code> isn&rsquo;t used so you won&rsquo;t have to convert. Simply use your local currency and the API will automatically convert it to <code>BTC</code> depending on the current exchange rate.</p></li>
+</ul>
+
+
+<p>The response would be formatted in JSON:</p>
+
+<p>```json
+{</p>
+
+<pre><code>"success": true,
+"button": {
+    "code": "93865b9cae83706ae59220c013bc0afd",
+    "type": "buy_now",
+    "style": "buy_now_large",
+    "text": "Pay With Bitcoin",
+    "name": "test",
+    "description": "Sample description",
+    "custom": "Order123",
+    "price": {
+        "cents": 123,
+        "currency_iso": "USD"
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>To generate the payment button, simply create a div with a class of <code>coinbase-button</code> then give it a data attribute <code>data-code</code> using the button code as its value. After that create a new script element and use the <code>button.js</code> from coinbase:</p>
+
+<p>```html</p>
+
+<div class="coinbase-button" data-code="<?php echo $response->button->code; ?>"></div>
+
+
+<script src="https://coinbase.com/assets/button.js"></script>
+
+
+<p>```</p>
+
+<p>The response returned above can also be used for generating payment pages.
+All you have to do is append the button code to the coinbase checkout url:</p>
+
+<p><code>html
+&lt;?php
+$response = json_decode($response); //convert json string to an object
+?&gt;
+&lt;a href="https://coinbase.com/checkouts/&lt;?php echo $response-&gt;button-&gt;code; ?&gt;"&gt;Checkout&lt;/a&gt;
+</code></p>
+
+<h4>Authentication using OAuth2</h4>
+
+<p>Authentication using OAuth2 is a bit difficult. Thankfully there are good people out there who creates libraries that makes our lives easier. One of those libraries is the <a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a> library.</p>
+
+<p>To use it, simply download the zip file from the Github repository or clone it on your machine. Once the download is done, you can just include it on your working script:</p>
+
+<p><code>php
+&lt;?php
+require 'libs/coinbase/Coinbase.php';
+?&gt;
+</code></p>
+
+<p>After that, you can go ahead and call the methods available from the library. In the example below were calling the <code>getOrders()</code> method which simply returns all the orders received by the merchant who owns the API Key that is used in the code. This means that every merchant who plans to integrate Coinbase in their application has to create their own Coinbase app in order to receive an API Key. The API Key will then serve as their identification for each request that is made to the API. Yes this is a bit of a drag for the merchants but that&rsquo;s just how it works so there&rsquo;s no choice but to stick with it.</p>
+
+<p><code>
+&lt;?php
+$api_key = 'xyz';
+$coinbase = new Coinbase($api_key);
+$orders = $coinbase-&gt;getOrders();
+?&gt;
+</code></p>
+
+<p>The response returned from the code above is not the same as the response that you directly get from the API.
+The library already converts it to an object so there&rsquo;s no need to. Here&rsquo;s an example of looping through the orders:</p>
+
+<p>```
+&lt;?php
+if($orders->total_count > 0){</p>
+
+<pre><code>foreach($orders-&gt;orders as $row){
+
+    echo $row-&gt;order-&gt;created_at; 
+    echo $row-&gt;order-&gt;button-&gt;description; 
+    echo $row-&gt;order-&gt;status; 
+    echo $row-&gt;order-&gt;total_native-&gt;cents; 
+    echo $row-&gt;order-&gt;button-&gt;name; 
+
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h2>Conclusion</h2>
+
+<p>You&rsquo;ve learned how to perform requests to the Coinbase API. Requests can be performed directly from the browser or via Curl. You have also learned how to generate payment buttons via the API.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://coinbase.com/api/doc/1.0.html">API Documentation</a></li>
+<li><a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
