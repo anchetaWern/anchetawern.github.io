@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="The Search API Solr module for Drupal is a nice way to use Solr as the server for the Search API module. Its pretty flexible with customizing the &hellip;">
+  <meta name="description" content="In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API. The Delicious API &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +68,445 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/20/getting-started-with-delicious-api/">Getting Started With Delicious API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-20T13:17:00+08:00" pubdate data-updated="true">Oct 20<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/10/20/getting-started-with-delicious-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API.</p>
+
+<p>The Delicious API unlike other Web API&rsquo;s that&rsquo;s using either OAuth, OAuth2 or their custom Authentication method is using <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic Access Authentication</a>. This means that performing API calls requires the username and the password of the user whose bookmarks you want to have access to.
+This means that there&rsquo;s no confidentiality with this Authentication method. Without you knowing, the application that&rsquo;s going to do the talking with the Delicious API can just save your username and password in a database and the developers can have access to the links that you&rsquo;ve bookmarked in your account whether public or private. So as a user its recommended that you only bookmark links that doesn&rsquo;t contain any confidential or classified information.</p>
+
+<h3>Delicious Class</h3>
+
+<p>First let&rsquo;s go ahead and create the class that we will be using to access the Delicious API. Let&rsquo;s name it <code>class.delicious.php</code>. Then declare the 4 private variables that we will be using throughout the class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">delicious</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$curl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$curl_options</span><span class="p">;</span> <span class="c1">//options that will be used for curl</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$username</span><span class="p">;</span> <span class="c1">//delicious username</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$password</span><span class="p">;</span> <span class="c1">//delicious password</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The constructor will accept 2 arguments, the delicious username and password. We&rsquo;ll also initialize <code>curl</code> so we don&rsquo;t have to initialize it on every method call.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span> <span class="o">=</span> <span class="nv">$username</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nv">$password</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create the <code>set_options()</code> method. This method will simply set the curl options.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">set_options</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">//return the response from the delicious API.</span>
+</span><span class='line'>        <span class="nx">CURLOPT_SSL_VERIFYPEER</span> <span class="o">=&gt;</span> <span class="k">false</span><span class="p">,</span> <span class="c1">//disable verification of the peer&#39;s certificate </span>
+</span><span class='line'>        <span class="nx">CURLOPT_USERPWD</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span> <span class="o">.</span> <span class="s1">&#39;:&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="c1">//set the username and password to be used for authentication</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the <code>execute()</code> method. This method is called from every method calls that are responsible for calling a specific method from the API. What it does is to assign the curl options to the curl object, executes it and then returns the response.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nb">curl_setopt_array</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$response</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//terminate the execution of the script if there&#39;s no response</span>
+</span><span class='line'>        <span class="k">die</span><span class="p">(</span><span class="s1">&#39;Error: &quot;&#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;&quot; - Code: &#39;</span> <span class="o">.</span> <span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl</span><span class="p">);</span> <span class="c1">//close the connection              </span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$response</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting all Bookmarks</h4>
+
+<p>We can now create the methods for actually getting the bookmarks. The first method that we will create is the <code>get_all()</code> method. As the name suggests, the <code>get_all()</code> method simply gets everything that you have ever bookmarked on your delicious account. This might take some time to execute depending on the number of links that you have bookmarked.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_all</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/all&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$xml</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span> <span class="c1">//converts the string response into an xml object      </span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$xml</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before we proceed with the next method, I&rsquo;d like you to take a few minutes to observe what were doing here.
+Because the pattern that we&rsquo;ve used here will be used on other methods that we will be creating later.</p>
+
+<p>As you can see, were calling the <code>set_options()</code> method to set the arguments that will be needed for the request.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we set the main URL that were requesting from. In this cae were requesting the <code>https://api.del.icio.us/v1/posts/all</code> url. At the time of writing of this article, the main request url is <code>https://api.del.icio.us</code> The version of the API is <code>v1</code> and the method is <code>posts/all</code>. You can see the full list of API methods that you can call <a href="https://github.com/avos/delicious-api/blob/master/APIs.md">here</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/all&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we execute the request. The <code>execute()</code> method returns the response from the API. The response is basically in string format so we have to process it further to really get into the details that we want.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In order to do that we call the <code>simplexml_load_string()</code> method. It&rsquo;s a built-in PHP method which you can call to convert a string response into an XML object. You can read more about it <a href="http://php.net/manual/en/function.simplexml-load-string.php">here</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$xml</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After converting the response to an XML object, we simply return it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">return</span> <span class="nv">$xml</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting Bookmarks by Tag</h4>
+
+<p>We can also get bookmarks by tag name. All we have to do is to specify the <code>tag</code> argument to the <code>posts/all</code> method and supply a url encoded value as the query.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_by_tag</span><span class="p">(</span><span class="nv">$tag</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$request_url</span> <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/all?tag=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$tag</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$request_url</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$xml</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$xml</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting Bookmarks by Offset</h4>
+
+<p>We can also get by a certain limit and offset. All we have to do is supply a value for the <code>start</code> argument (offset), and the <code>results</code> argument (limit).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_by_offset</span><span class="p">(</span><span class="nv">$start</span><span class="p">,</span> <span class="nv">$limit</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$request_url</span>  <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/all?start=&#39;</span> <span class="o">.</span> <span class="nv">$start</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;results=&#39;</span> <span class="o">.</span> <span class="nv">$limit</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$request_url</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$xml</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$xml</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting Recently Bookmarked Links</h4>
+
+<p>Recently bookmarked links can also be fetched from the API. The method to be used is the <code>posts/recent</code> method.
+You can also supply an optional <code>tag</code> or <code>count</code> argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">get_recent</span><span class="p">(</span><span class="nv">$tag</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$count</span> <span class="o">=</span> <span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$request_url</span>  <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/recent?&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$tag</span><span class="p">)){</span> <span class="c1">//limit results by tag</span>
+</span><span class='line'>      <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;tag=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$tag</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$count</span><span class="p">)){</span> <span class="c1">//limit results by bookmark count</span>
+</span><span class='line'>      <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;count=&#39;</span> <span class="o">.</span> <span class="nv">$count</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$request_url</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$xml</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$xml</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Bookmarking Links</h4>
+
+<p>Bookmarking new links can also be done from the API. The method to be used is the <code>posts/add</code> method.
+The <code>url</code> argument is required and you can also set an optional <code>description</code> or <code>tags</code>. If there are more than one tags you can separate them using a comma (E.g php, web-development)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="nv">$description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$tags</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$request_url</span>  <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/add?&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;url=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;description=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$description</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$request_url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;tags=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$tags</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$request_url</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Deleting Bookmarks</h4>
+
+<p>You can also delete links that were previously bookmarked. The request method is <code>posts/delete</code>.
+You have to pass in the <code>url</code> of the link that you wish to delete.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">delete</span><span class="p">(</span><span class="nv">$url</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set_options</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">curl_options</span><span class="p">[</span><span class="nx">CURLOPT_URL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https://api.del.icio.us/v1/posts/delete?url=&#39;</span> <span class="o">.</span> <span class="nv">$url</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are a bunch of other methods which you can use so be sure to check out the Delicious API documentation.</p>
+
+<h3>Using the Class</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;class.delicious.php&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$username</span> <span class="o">=</span> <span class="s1">&#39;XYZ&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;secret&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$deli</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Delicious</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$links</span> <span class="o">=</span> <span class="nv">$deli</span><span class="o">-&gt;</span><span class="na">get_by_tag</span><span class="p">(</span><span class="s1">&#39;php&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$links</span><span class="o">-&gt;</span><span class="na">post</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;li&gt;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/li&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>  
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://github.com/avos/delicious-api/blob/master/APIs.md">Delicious API</a></li>
+<li><a href="https://github.com/anchetaWern/delicious-php">Delicious-PHP</a> &ndash; a little PHP class that I created for interacting with the Delicious API</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2643,50 +3082,6 @@ That&rsquo;s where Web Scraping comes in, if the data is not made available by t
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/15/getting-started-with-solr/">Getting Started With Apache Solr</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-15T12:35:00+08:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/15/getting-started-with-solr/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial we&rsquo;ll be looking at Apache Solr.
-Apache Solr is a search server. Its features include blazing fast searches, faceted search, handling of files such as PDF and Word.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/15/getting-started-with-solr/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2704,6 +3099,10 @@ Apache Solr is a search server. Its features include blazing fast searches, face
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/09/a-whirlwind-tour-of-web-developer-tools/">A Whirlwind Tour of Web Developer Tools - In-Browser Tools</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">Fixing the Forbidden Error in Apache</a>
       </li>
     
@@ -2717,10 +3116,6 @@ Apache Solr is a search server. Its features include blazing fast searches, face
     
       <li class="post">
         <a href="/blog/2014/01/08/getting-started-with-paypal-api/">Getting Started with Paypal API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/php-security-best-practices/">PHP Security Best Practices</a>
       </li>
     
   </ul>
