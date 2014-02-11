@@ -1,0 +1,2214 @@
+---
+layout: post
+title: "Building a User Management System in Laravel"
+date: 2012-12-17 14:03
+comments: true
+categories: [php, laravel-3]
+updated: 2014-01-27
+---
+
+{% blockquote %}
+Note: The code that were used in this tutorial is for an older version of Laravel (version 3). Some of the code might still be applicable in the current version of Laravel. But just to be sure, check out the official Laravel documentation at laravel.com/docs for the corresponding code of the code that you find in here.
+{% endblockquote %}
+
+There's no shortage of good resources for learning laravel.
+So instead of the usual introductory tutorial were just gonna learn Laravel by building
+a project from scratch and that's gonna be a User Management System.
+
+I don't know if my definition of a User Management System is correct 
+but here's my idea of what's it's capable of doing:
+
+- Register Roles
+- Register Users
+- Update Users
+- Disable Users
+- Update Transactions which can be performed by each role
+- Login Users
+- Limit Transactions that can be performed by each role
+
+Yup! that's a lot so you might want to go ahead and grab some coffee and some snacks
+before we start. 
+
+
+<!--More-->
+
+
+The version of Laravel that were gonna use is Laravel v3.2.1 so if you're reading this and version 4 is already out then you might want to use that version instead. There maybe some parts which won't work because of changes in the syntax
+but the Laravel Documentation is always updated so you might want to check it out if some of the code below won't work
+as you expected.
+
+If you haven't downloaded Laravel yet now is the time to do so. Just go to [Laravel.com](http://laravel.com/) and click the big download button.
+
+
+###Project Setup
+
+After extracting the laravel zip file the root of your project should now look like this:
+
+![project structure](/images/posts/building_user_management_using_laravel/project_structure.jpg)
+
+
+For this project we will be using the following to make our life easier:
+
+- [jQuery](http://jquery.com)
+- [Foundation](http://foundation.zurb.com)
+- [jQuery UI](http://jqueryui.com)
+
+Project assets are normally stored in the ```public``` directory in laravel. 
+Go ahead and navigate to that directory and add the following folders if they not already exists.
+
+- **js** - javascript goodness (jquery)
+- **css** - stylesheets (main.css)
+- **img** - system images (logo)
+- **assets** - image sprites, icons (foundation zurb icons)
+- **libs** - css frameworks (foundation, jquery ui)
+
+Once you have placed all the project assets in their directories. 
+Go ahead and add a constructor method on the base controller. 
+The base controller is located at ```application/controllers/base.php``` The base controller is extended by every controller 
+that you create in laravel so its constructor is the perfect place to add code that automatically runs on every
+page in your application. In this case were just going to use it to add our project assets.
+
+```php
+<?php
+public function __construct(){
+	//styles
+	Asset::add('main_style', 'css/main.css');
+	Asset::add('jquery', 'js/jquery.js');
+	Asset::add('foundation_style', 'libs/foundation/stylesheets/foundation.min.css');
+	Asset::add('foundation_icons', 'assets/foundation_icons_general/stylesheets/general_foundicons.css');
+	Asset::add('jqueryui_style', 'libs/jquery-ui/css/smoothness/jquery-ui-1.9.1.custom.min.css');
+	Asset::add('datatables_style', 'libs/datatables/media/css/jquery.dataTables.css');
+
+	//scripts
+	Asset::add('foundation_script', 'libs/foundation/javascripts/foundation.min.js');
+	Asset::add('jqueryui_script', 'libs/jquery-ui/js/jquery-ui-1.9.1.custom.min.js');
+	Asset::add('datatables_script', 'libs/datatables/media/js/jquery.dataTables.js');
+	Asset::add('mustache_script', 'js/mustache.js');
+	Asset::add('main_script', 'js/main.js');
+
+	parent::__construct();
+}
+?>	
+```
+
+###Laravel Generator
+
+To make your life easier you might want to use [Laravel Generator](https://github.com/JeffreyWay/Laravel-Generator) by Jeffrey Way. 
+It's use to generate views, models, controllers, assets, tests and migrations easier.
+
+Just grab the ```generate.php``` file from the github page I linked to earlier. 
+Then paste it to the ```application\tasks``` folder.
+
+
+###Configuration
+
+For every framework there's always something you need to configure and 
+for that you need to go to ```application/config``` directory and 
+open up the ```application.php``` file. Remove the default value for the key or if you want 
+just type in some 32 characters of random gibberish. The key is used for encryption and cookie stuff. Based on my understanding its like the salt for a password used to make it more difficult for a hacker to crack it.
+
+```
+'key' => '' 
+```
+
+If you don't want to type the key by hand there's the ```artisan``` tool to the rescue, just execute the following command
+while you're in your projects root directory to generate the random gibberish for you.
+
+```
+php artisan key:generate
+```
+
+Next thing you need to configure is the ```profiler```. Just set it to true. 
+This will give you an idea how long it took the page to execute, or how many queries 
+were executed, what queries were executed.
+
+```
+profiler' => true
+```
+
+Next open up the ```database.php``` file. Make sure that the default is set to mysql:
+
+```
+'default' => 'mysql'
+```
+
+Then enter your database information:
+
+```
+<?php
+'mysql' => array(
+	'driver'   => 'mysql',
+	'host'     => 'localhost',
+	'database' => 'rpt',
+	'username' => 'root',
+	'password' => '',
+	'charset'  => 'utf8',
+	'prefix'   => '',
+);
+?>
+```
+
+Next open up the ```session.php``` file. Set the driver to file.
+
+```
+'driver' => 'file'
+```
+
+The driver is the means of storing a session. You can also use cookies, database, memcached, apc or redis.
+
+Set the ```lifetime``` of the session to whatever feels right. 
+Since were building a user management system you want to keep it to a minimum.
+This means that the session will automatically be destroyed after 15 minutes of being idle.
+
+```
+'lifetime' => 15
+```
+
+You may also want to set ```expire_on_close``` to ```true``` for extra security. 
+This will automatically expire the session when the user closes the browser window.
+
+```
+'expire_on_close' => true
+```
+
+Next open up the ```auth.php``` file. Were doing this configuration in advance since we haven't created the users table yet.
+Go ahead and read up the text in the database section to create the users table then go back to this one.
+Otherwise just continue with this and change the field names in the users table later on.
+
+The ```auth.php``` file stores the configuration for the default user authentication functionality that is available on laravel.
+
+Change the values for ```driver``` , ```username``` , ```password``` and ```model```.
+
+```
+'driver' => 'eloquent',
+'username' => 'username',
+'password' => 'hashed_password',
+'model' => 'User',
+```
+
+The driver can either be ```fluent``` or ```eloquent``` but were using ```eloquent``` to have a flexibility in naming the primary key. Since the default name for primary key field is ```id``` and if we have something like ```user_id``` as a field name
+then it won't work. The values for ```username``` and ```password``` are the field names of your username and password fields in your users table. The model is the name of the model for the ```users``` table.
+
+
+###Database
+
+It's good practice to use migrations to track the changes in the database. 
+Database migrations is like a version control for databases. 
+In order to use database migrations you first have to create the table that will be used
+by laravel to track the migrations that are created. To do that execute the following command:
+
+```
+php artisan migrate:install
+```
+
+The command will create a ```laravel_migrations``` table in your database.
+
+![laravel migrations](/images/posts/building_user_management_using_laravel/laravel_migrations.jpg)
+
+
+Once that's done create the migration file that will create the users table.
+The syntax for generating migrations would be:
+
+- what the migration does (Eg. create, update, delete)
+- what's the name of the table or field (Eg. users, username, roles)
+- what will be generated (Eg. table, field)
+
+**Users Table**
+
+```
+php artisan migrate:make create_users_table
+```
+
+The command above will generate a file in ```application/migrations``` directory 
+which will have a filename like ```2012_11_25_004329_create_table_users.php```  composed of the timestamp in which the file was generated plus the actual name of the migration. If you open it up it will look something like this:
+
+```
+<?php
+class Create_Users_Table {    
+
+	public function up(){
+
+
+  }    
+
+	public function down(){
+
+
+  }
+
+}
+?>
+```
+
+The ```up()``` method contains what you want to do to the database when you execute the migration. 
+It will normally contain an array of fields to be created and some default values to be inserted on the table.
+
+The ```down()``` method will contain what you want to do when you rollback the migration.
+
+Open up the migration file for creating the users table and add the following code on the ```up()``` method:
+
+```
+<?php
+Schema::create('create', function($table) {
+	$table->increments('id');
+	$table->string('firstname', 200);
+	$table->string('middlename', 200);
+	$table->string('lastname', 200);
+	$table->integer('department_id');
+	$table->string('role_id');
+	$table->string('username', 200);
+	$table->text('hashed_password');
+	$table->integer('status');
+});
+?>
+```
+
+You can also insert some default data on the table if you want:
+
+```
+<?php
+DB::table('users')->insert(
+  array(
+      'firstname' => 'Hibari',
+      'middlename' => 'Neo',
+      'lastname' => 'Kyoya',
+      'department_id' => 1,
+      'role_id' => 1
+      'username' => 'hkyoya',
+      'hashed_password' => Hash:make('somepassword')
+      'status' => 1
+  )
+);
+?>
+```
+
+By now you should have grok database migrations. Let's move on to the next level by generating migrations using the Laravel generator tool:
+
+```
+php artisan generate:migration create_departments_table department:string
+
+php artisan generate:migration create_roles_table department_id:integer role:string
+
+php artisan generate:migration create_transactions_table department_id:integer main_menu:string menu_text:string address:string
+
+php artisan generate:migration create_rolestransactions_table role_id:integer transaction_id:integer status:integer
+
+php artisan generate:migration create_userlogs_table user_id:integer user:string department:string transaction:string dateandtime:timestamp
+```
+
+If you open up the files that were generated you will see that there's a method called ```timestamps()```. 
+This creates two additional fields: created_at and updated_at. 
+In most cases you don't need those, you can go ahead and remove those for each migration file.
+
+```
+$table->timestamps();
+``` 
+
+Next, execute the migration to create the tables in the database:
+
+```
+php artisan migrate
+```
+
+Executing the above command will create the following tables in your database:
+
+- **users** - stores user login information
+- **departments** - stores departments, offices or sections
+- **roles** - stores the roles or user groups for each department. (Eg. collector in the treasury department)
+- **rolestransactions** - stores the status of the transactions that can be performed by each role
+- **transactions** - stores all the transactions that can be performed in the application
+
+If for some reason you have made a mistake, you can execute ```php artisan migrate:rollback``` to 
+execute the ```down()``` method in the migrate file.
+Once that's executed you can go ahead and make the necessary changes on the migration file then execute ```php artisan migrate``` again to commit the changes to the database.
+
+
+Once the tables are added into the database let's add the relationships between those tables.
+This time we will just use the default functionality for creating migrations in laravel and not the laravel generator.
+Based on the documentation of laravel generator I think there's still no way of specifying the relationships for each table.
+But we don't know maybe by the time you're reading this Jeffrey Way has already added that functionality so you might want to use it if its already available to save some time.
+
+Execute the following commands to generate migrations for adding relationships for each table:
+
+```
+php artisan migrate:make add_foreignkeys_to_users_table
+
+php artisan migrate:makeadd_foreignkeys_to_roles_table
+
+php artisan migrate:makeadd_foreignkeys_to_transactions_table
+
+php artisan migrate:make add_foreignkeys_to_rolestransactions_table
+```
+
+Go ahead and open up the files that were generated. 
+For this one I'll only show you how to do the first one then you'll have to do the rest
+since the process is basically the same.
+
+The migration file for adding foreign keys to the users table will look like this 
+on the first time you open it:
+
+```
+<?php
+class Add_Foreignkeys_To_Users_Table {
+
+	/**
+	 * Make changes to the database.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+
+	}
+
+	/**
+	 * Revert the changes to the database.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+
+	}
+
+}
+?>
+```
+
+Add these code to the ```up()``` method. This adds a foreign key and index to the ```department_id``` and ```role_id``` fields:
+
+```
+Schema::table('users', function($table) {
+	$table->foreign('department_id')->references('id')->on('departments');
+	$table->foreign('role_id')->references('id')->on('roles');
+});
+```
+
+Then on the ```down()``` method we just have to drop those indexes that were created:
+
+```
+<?php
+Schema::table('users', function($table){
+	$table->drop_index('users_department_id_foreign');
+	$table->drop_index('users_role_id_foreign');
+	$table->drop_foreign('users_department_id_foreign');
+	$table->drop_foreign('users_role_id_foreign');
+});
+?>
+```
+
+The naming convention used by laravel (or maybe its the default for mysql) is:
+
+- table name (Eg. users)
+- field name (Eg. department_id)
+- key type (Eg. foreign)
+
+To be separated by underscores so if you have a table named ```users``` and you want to drop 
+the foreign key and index on the ```department_id``` field then the name of the index would be: ```users_department_id_foreign```.
+
+Finally execute the command to commit the migrations into the database.
+
+```
+php artisan migrate
+```
+
+###Building the Project
+
+Were finally in the fun part. First let's add the main styling. 
+Normally this would reside in the ```public/css``` directory:
+
+```css
+.pointer{
+	cursor: pointer;
+}
+
+.pointer a{
+	color: #333;
+}
+
+footer{
+	margin-top: 20px;
+	text-align: center;
+}
+
+.transactions li{
+	list-style: none;
+}
+
+select{
+	height: 32px;
+}
+```
+
+####Main Script
+
+Then the main script. This normally resides on ```public/scripts``` directory:
+
+```javascript
+//common script for every page which has text input and datepickers
+$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+$("input[type=text]").attr("autocomplete", "off");
+$('input[type=text]:first').focus();
+
+//common script for create user and update user
+$("#department").blur(function(){
+  var department = $.trim(this.value);
+  $("#role").val("");
+  $("#role").attr("list", department);
+});
+```
+
+####Public Template
+
+Inside the ```application/views``` folder. 
+Generate the template for the public view using the following command:  
+
+```
+php artisan generate:view public
+```
+
+This will generate a file called ```public.blade.php```. 
+By default the laravel generator automatically uses ```.blade``` as a file extension so that you can use whatever syntactic sugar it offers (no ugly php opening and closing tags, sweet!).
+
+This is like the ```header.php``` that most of us are familiar with when we first started with PHP
+in which we include all the common elements to be used on all pages like system-wide scripts, styling and header. 
+
+Note that were using blade in here so instead of the single curly brace pair ```{}```. 
+You have to use double curly brace pair. There's an issue with maruku that's why I can only 
+put the single curly brace pair. Remember to replace the single curly brace pair ```{}``` with a double curly brace pair whenever you see them in the examples to follow.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>UMS</title>
+        {Asset::styles()}
+    </head>
+    <body>
+			<div class="row">
+        <div class="twelve columns">
+          <nav class="top-bar">
+            <ul>
+              <!-- Title Area -->
+              <li class="name">
+                <img src="{URL::to_asset('img/umslogo.png')}" alt="ums_logo">
+              </li>
+              <li class="name">
+                <h1>
+                  <a href="#">
+                    UMS
+                  </a>
+                </h1>
+              </li>
+              <li class="toggle-topbar"><a href="#"></a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>    	
+    	<div class="container">
+    		@yield('content')
+    		<footer>
+    			 <p>&copy; UMS 2012</p>
+    		</footer>
+    	</div> <!-- /container -->
+    	{Asset::scripts()}
+    </body>
+</html>    
+```
+
+Here are some of the methods that we've used:
+
+```php
+<?php
+@yield('content') //yields a particular section defined from a page
+{URL::to_asset('img/umslogo.png')} //includes the application logo
+{Asset::styles()} //includes the stylesheets that we have added earlier on the base controller
+{Asset::scripts()} //includes the scripts that we have added earlier on the base controller
+?>
+```
+
+The only thing to remember when you're using these methods is that their root is the public directory of your project. 
+
+
+####Login View
+
+Next is the login page. The login page will inherit from the public template that we have just created.
+The magic keyword for inheriting what's on a specific template is ```@layout('name_of_the_template')```.
+
+Another magic keyword that we have used below is ```@section``` which basically lets you define a section that you want to be rendered in the template. That's what the ```@yield('content')``` in the template is used for, to render the specific section that you have defined in a specific page. 
+
+We also have ```@render('errors')``` so this means that we can also render sections inside a section in laravel (How cool is that?). 
+
+```html
+@layout('public')
+
+@section('content')
+<div class="row">
+  <div class="twelve columns">
+    <h5>Login</h5>
+  </div>
+</div>
+<div id="login_container" class="row">
+  @render('errors')
+  <form method="post">
+    <div class="row">    
+      <div class="two columns">
+        <label class="right inline">Username</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="username" class="five" />
+      </div>
+
+      <div class="two columns">
+        <label class="right inline">Password</label>
+      </div>
+      <div class="ten columns">
+        <input type="password" name="password" class="five" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="five columns">
+        
+      </div>
+      <div class="seven columns">
+        <button class="success medium button" href="#">Login</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+@endsection  
+```
+
+####Error View
+
+Create another view using the Laravel generator and name it ```errors```. 
+This view is what we will be using to display form errors (mostly form validation errors).
+
+This can display both form validation errors and custom form errors that you want your users to see.
+Form validation errors that Laravel produces are usually objects so we'll have to loop through those.
+
+```
+<div class="row">
+  <div class="nine columns">
+    @if($errors->messages) //this is pass through: with_errors($validation)
+    <div class="alert-box alert">
+      @foreach($errors->messages as $e)
+        <li> {$e[0]} </li>
+      @endforeach
+      <a href="" class="close">&times;</a>
+    </div>
+    @endif
+    <?php //<--How I wish I could remove this
+    $error = Session::get('error'); //this is pass through: with('key', 'value') on form redirect
+    //and this--> ?> 
+    @if(!empty($error))
+    <div class="alert-box alert">
+      <li>{$error}</li>
+    </div>
+    @endif
+  </div>
+</div>
+```
+
+####Success View
+If we have a separate view for errors then there must also be a view for success right? 
+Just call it ```success``` or whatever. Here it is:
+
+```
+<?php 
+$success_message = Session::get('success_message');
+?>
+<div class="row">
+  <div class="nine columns">
+  	@if(!empty($success_message))
+    <div class="alert-box success">
+    		{$success_message}
+      <a href="" class="close">&times;</a>
+    </div>
+    @endif
+  </div>
+</div>
+```
+
+We've already setup the ```session``` and the ```auth``` earlier so were pretty much ready to write the code that will process user login. 
+Go ahead and create a new controller called ```login``` and make it restful.
+
+```
+php artisan generate:controller login restful
+```
+
+
+####Default Controllers
+
+I haven't told you about how are Laravel controllers by default so before you wrap your mind
+about restful controllers I'll talk a little about default controllers.
+
+By default controllers in Laravel has a prefix of ```action_``` which indicates that they are used to render a specific view and pass data into it.
+
+```php
+<?php
+class Login_Controller extends Base_Controller{
+
+}
+?>
+```
+
+Laravel controllers normally extend the ```base controller``` in which we specified the projects assets earlier. The naming convention would be ```Name_of_the_controller``` + ```_Controller```. Where the name of the controller normally starts with a capital letter. The filename should be the same with name of the controller.
+
+Back to the ```action_``` thingy. If you want a method to render a specific view then it should be a public method with the prefix of ```action_```.
+
+For example if you want the index or the ```public/login``` page to accessible in the browser then you should name it like the following:
+
+```
+<?php
+class Login_Controller extends Base_Controller{
+
+	public function action_index(){
+		return View::make('login'); //renders the login.blade.php located in the root of the view folder
+	}
+}
+?>
+```
+
+If your method isn't gonna render a view and its just going to perform some computations or database related stuff in your controller then just make it into a private method.
+
+```
+<?php
+private function compute_stuff(){
+
+}
+?>
+```
+
+Then you can just access it in your controller like.
+
+```
+<?php
+public function action_index(){
+	$this->compute_stuff();
+}
+?>
+``` 
+
+####Restful Controllers
+
+Going back to restful controllers, laravel generator usually generates something like this if you haven't specified some of the methods.
+
+```
+<?php
+class Login_Controller extends Base_Controller {
+
+	public $restful = true;
+?>
+```	
+
+To specify some methods, just add the method name right after the name of the controller. 
+In this case the name of the controller is ```login``` and the method name is ```index```.
+
+```
+php artisan generate:controller login index restful
+```
+
+If you have executed the command above then your controller will look like this.
+
+```
+<?php
+class Login_Controller extends Base_Controller {
+
+	public $restful = true;    
+
+	public function get_index()
+    {
+
+    } 
+?>      
+```
+
+Restful methods generally has these prefix:
+
+- **get** - when requesting a specific page (Eg. login/index)
+- **post** - when submitting data through a form
+- **put** - when updating data
+- **delete** - when deleting data
+
+Only the first two can materialize (sorry couldn't think of a better word, peace grammar natzis) on a browser. But the idea is that methods which are used to render a specific view will have ```get_``` as its prefix. 
+And methods which processes or validates a form will have ```post_``` as its prefix.
+
+
+###Login Controller
+
+Ok back with the controller. For the index just like with any other PHP framework that you might have used before, the index method is the default method for a controller. 
+This means that you don't have to type in ```login/index``` to access what the index method has to return.
+In this case were just rendering the login view that we created earlier.
+
+```
+<?php
+public function get_index(){
+	return View::make('login');
+}
+?>
+```
+
+Create another method called ```post_index``` this will be executed everytime the login form is submitted.
+
+```
+<?php
+public function post_index(){
+
+}
+?>
+```
+
+####Getting Inputs
+
+Inside the method we'll first have to get what the user has inputted in the form. 
+Laravel allows us to do that using the ```Input::get('field_name')``` method 
+where the ```field_name``` is the name of the input field.  
+There's also the ```input::all()``` method which gets all the data inputted in the form.
+It would be nice if we could just use that but we need to hash the password before saving it to the database that's why we need to get those fields separately.
+
+```
+$username = Input::get('username');
+$password = Input::get('password'); 
+$user_details = Input::all(); //Input::all() gets all the data inputted in the form
+```
+
+####Form Validation
+
+Next we have to specify the validation rules for each field.
+Laravel still uses the name attribute of the input field for this. 
+
+For both fields were using the same rules which is ```required``` this is the only rule we need since this is just a login form. 
+
+```
+$rules = array('username' => 'required', 'password' => 'required');
+```
+
+It would be nice if Laravel allows us to specify common validation rules for each field. 
+Something like.
+
+```
+$rules = array(Input::all() => 'required');
+```
+
+But that isn't possible yet, maybe in future versions.
+
+After that just call ```Validator::make()``` to create an instance of the validator class.
+From there you can just call the ```fails()``` or ```passes()``` method to check if
+the validation failed or suceeded.
+
+If the validation failed all we have to do is to redirect to the login page
+passing in the validation instance using the ```with_errors()``` method. 
+This can then be accessed from the error view that we created earlier: 
+
+```
+<?php
+$validation = Validator::make($user_details, $rules);
+if($validation->fails()){
+
+	return Redirect::to('login')->with_errors($validation);
+}
+?>
+```
+
+If the validation suceeded then we will try to login the user. 
+We can do that by using the ```attempt()``` method from the ```Auth``` class in Laravel.
+
+```
+<?php
+if(Auth::attempt($user_details)){ //attempt to login the user
+	if(Auth::check()){ //check if the user is already logged in
+		$user_id = Auth::user()->user_id;
+
+		//get user data
+		$user = DB::table('users')
+				->where('user_id', '=', $user_id)
+		->first(array('department_id', 'role_id', 'status'));
+
+		$status = $user->status;
+
+		if($status == 1){ //check if user account is enabled
+			$department_id = $user->department_id;
+			$role_id = $user->role_id;
+
+			//save user details into session
+			Session::put('department_id', $department_id);
+			Session::put('role_id', $role_id);
+			Session::put('current_user', $username);
+			Session::put('current_user_id', $user_id);
+
+			//the departments available in the system
+			$departments = ['it', 'marketing', 'defense'];
+
+			//redirect user to his departments homepage
+			return Redirect::to($departments[$department_id - 1] . '/home');
+
+		}else{//if user account is disabled
+			return Redirect::to('login')
+				->with('error', 'Disabled users cannot login');
+		}
+	}
+}
+?>
+```
+
+###User Management
+
+Now that were done with the login we can now proceed with the main meat of this project: the user management.
+
+####Main Template
+
+First let's create the main template to be used on all pages.
+It's basically the same with the public template that we created earlier
+the only difference is the navigation section.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>UMS</title>
+        {Asset::styles()}
+    </head>
+    <body>
+
+        <div class="row">
+          <div class="twelve columns">
+            <nav class="top-bar">
+              <ul>
+                <!-- Title Area -->
+                <li class="name">
+                  <img src="{URL::to_asset('img/umslogo.png')}" alt="ums_logo">
+                </li>
+                <li class="name">
+                  <h1>
+                    <a href="#">
+                      UMS
+                    </a>
+                  </h1>
+                </li>
+                <li class="toggle-topbar"><a href="#"></a></li>
+              </ul>
+
+              <section>
+                <!-- Left Nav Section -->
+                {$navigation}
+                <ul class="right">
+                  <li class="divider"></li>
+                  <li class="name">
+                    <a href="">{Session::get('current_user')}</a> 
+                  </li>
+                  <li class="divider"></li>
+                  <li class="name">
+                    <a href="{URL::to('logout')}">Logout</a>
+                  </li>
+                </ul>
+                
+              </section>
+            </nav>
+          </div>
+        </div>
+        <div class="container">
+            @yield('content')
+            <hr>
+            <footer>
+                <p>&copy; UMS 2012</p>
+            </footer>
+        </div> <!-- /container -->
+        {Asset::scripts()}
+        @yield('script')
+    </body>
+</html>
+```
+
+Next, create another view for the registration of new users.
+Again there's nothing bizzare about this.
+The only thing that we haven't already used is ```input::old()``` and ```@foreach```.  The ```input::old()``` method is 
+used to access the value that was inputted by the user before the form 
+was submitted. This is very useful since we don't have to write the functionality ourselves, Laravel has already this useful functionality built in to it. The most common use case for this is for forms that has validation errors.
+Normally you would want to retrieve the values that were originally submitted.
+
+On the other hand ```@foreach``` is just like the ```foreach``` that were using in plain PHP: to iterate over an array or an object. In this case were merely iterating through all the departments and the roles for each department in the database. There are only 3 departments so the looping for the department can be done without the ```@foreach``` but it is such a joy to use ```@foreach``` that I didn't really think of it.
+
+Of course all the data that we are iterating through aren't directly available in the view, we will have to pass the data to the view using the controller which will render this view. And that's what were going to do next. 
+
+```
+@layout('main')
+
+@section('content')
+<div class="row">
+  <div class="twelve columns">
+    <h5>Create User</h5>
+  </div>
+</div>
+<div class="row">
+  @render('errors')
+  @render('success')
+  <form method="post">
+  	<div class="row">    
+      <div class="two columns">
+        <label for="firstname" class="right inline">First Name </label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="firstname" id="firstname" class="five" value="{Input::old('firstname')}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="middlename" class="right inline">Middle Name </label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="middlename" id="middlename" class="five" value="{Input::old('middlename')}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="lastname" class="right inline">Last Name</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="lastname" id="lastname" class="five" value="{Input::old('lastname')}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="username" class="right inline">Username</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="username" id="username" class="five" value="{Input::old('username')}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="password" class="right inline">Password</label>
+      </div>
+      <div class="ten columns">
+        <input type="password" name="password" id="password" class="five" />
+      </div>   
+
+      <div class="two columns">
+        <label for="department" class="right inline">Department</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="department" id="department" class="five" list="departments" value="{Input::old('department')}"/>
+        <datalist id="departments">
+          @foreach($departments as $dept)
+          <option value="{$dept->department}">{$dept->department}</option>
+          @endforeach
+        </datalist>
+      </div>  
+
+      <div class="two columns">
+        <label for="role" class="right inline">Role</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="role" id="role" class="five" value="{Input::old('role')}" list=""/>
+        <datalist id="it">
+          @foreach($it_roles as $a)
+            <option value="{$a->role}">{$a->role}</option>
+          @endforeach
+        </datalist>
+
+        <datalist id="defense">
+          @foreach($defense_roles as $b)
+            <option value="{$b->role}">{$b->role}</option>
+          @endforeach
+        </datalist>
+
+        <datalist id="marketing">
+          @foreach($marketing_roles as $c)
+            <option value="{$c->role}">{$c->role}</option>
+          @endforeach       
+        </datalist>
+      </div>  
+    </div>
+
+    <div class="row">
+      <div class="four columns">
+        
+      </div>
+      <div class="eight columns">
+        <button class="success medium button" href="#">Create User</button>
+      </div>
+    </div>
+  </form>
+  
+</div>
+@endsection
+```
+
+
+###Admin Controller
+
+As I have said earlier were now going to create the controller that will 
+contain the code to render and process the form that we've just created.
+
+```
+php artisan generate:controller admin restful
+```
+
+
+####Default Data
+
+Define the default data that will be used throughout the controller.
+
+```
+private $departments;
+private $it_roles;
+private $marketing_roles;
+private $defense_roles;
+```
+
+
+####Constructor
+
+On the constructor we first have to call ```parent::__construct();``` to make sure we won't be overriding what the base controller has on its constructor. 
+
+In the code below were using 1 new animal which is the ```Cache```. The ```Cache``` class is basically used
+for caching things or saving things temporarily to a location were access is faster. 
+This is commonly used for caching data from the database so the application won't have to hit the database
+everytime a particular page is accessed by a user.
+
+```php
+<?php
+public function __construct(){
+	parent::__construct();
+
+	if(Cache::has('admin_defaults')){ //check if the cache has already the ```admin_defaults``` item
+
+		$admin_defaults        = Cache::get('admin_defaults'); 	//get the admin defaults
+		$this->departments     = $admin_defaults['departments'];
+		$this->it_roles        = $admin_defaults['it_roles'];
+		$this->marketing_roles = $admin_defaults['marketing_roles'];
+		$this->defense_roles   = $admin_defaults['defense_roles'];
+
+	}else{ //if the cache doesn't have it yet
+
+		$this->departments     = DB::table('sys_departments')->get();
+		$this->it_roles        = DB::table('sys_roles')->where('department_id', '=', 1)->get('role');
+		$this->marketing_roles = DB::table('sys_roles')->where('department_id', '=', 2)->get('role');
+		$this->defense_roles   = DB::table('sys_roles')->where('department_id', '=', 3)->get('role');
+
+		//cache the database results so we won't need to fetch them again for 10 minutes at least
+		Cache::put(
+			'admin_defaults', 
+			array(
+				'departments'     => $this->departments, 
+				'it_roles'        => $this->it_roles,
+				'marketing_roles' => $this->marketing_roles, 
+				'defense_roles'   => $this->defense_roles
+			),
+			10
+		);
+	}
+
+	$this->filter('before', 'auth'); //run the auth filter before every request of this controller
+}
+?>
+```
+
+####Rendering Form for Creating New Users
+
+Going back to the method which will render the view for creating a new user. 
+We'll just have to pass in the data that we got earlier from the database.
+The data that were passing here is what we have loop through earlier when we created the view for creating a new user.
+
+```
+<?php
+public function get_new_user(){
+
+	return View::make('admin.create_user', 
+			array(
+				'departments'     => $this->departments, 
+				'it_roles'        => $this->it_roles,
+				'marketing_roles' => $this->marketing_roles, 
+				'defense_roles'   => $this->defense_roles
+			));
+}
+?>
+```
+
+
+####Saving Users into Database
+
+Now let's write the code for saving the new user into the database.
+
+```
+<?php
+public function post_new_user(){
+
+	//get user details
+	$firstname  = Input::get('firstname');
+	$middlename = Input::get('middlename');
+	$lastname   = Input::get('lastname');
+	$department = Input::get('department');
+	$role       = Input::get('role');
+	$username   = Input::get('username');
+	$password   = Input::get('password');
+
+	//check if the form is valid
+	if(!User::is_valid()){
+		
+		return Redirect::to('admin/new_user')
+			->with_errors(User::$validation)	//pass in errors
+			->with_input(); //pass in the data inputted by user 
+	
+	}else{
+		$password = Hash::make($password); //hash the password
+
+		//get the department id of the department selected by the user
+		$selected_department = Department::where('department', '=', $department)
+			->first('department_id');
+			
+
+		$department_id = $selected_department->department_id;
+
+		//get the role id of the role selected by user	
+		$selected_role = Role::where('role', '=', $role)->first('role_id'); 
+
+		$role_id = $selected_role->role_id;
+
+		$user_data = array(
+							'firstname' => $firstname,
+							'middlename' => $middlename,
+							'lastname' => $lastname,
+							'department_id' => $department_id,
+							'role_id' => $role_id,
+							'username' => $username,
+							'hashed_password' => $password 
+							);
+		
+		DB::table('users')->insert($user_data);
+		$user_id = DB::connection('mysql')->pdo->lastInsertId();
+
+		$cache_data = Input::all(); //get all user inputs
+
+		//additional data to be included in the cache
+		$cache_data['user_id'] = $user_id; 
+		$cache_data['status'] = 1;
+		add_cache_item('users', $cache_data); //add the new user to the cache
+
+		log_action("create new user"); //log the action into the database
+
+		//redirect to the create user form with the awesome success message
+		return Redirect::to('admin/new_user')
+			->with('success_message', 'User Successfully Created');
+	}
+}
+?>
+```
+
+Hopefully you've tried to go over the code because now I'll try to explain some of the code
+that the comments failed to explain.
+
+Here's a summary of what the above code does:
+
+1. Get the user input
+
+2. Validate the form. But here I've included the rules in the models. 
+I think this is a good practice, for any form that uses the model the same validation rules will be applied.
+Which then results to a more DRYer code. 
+
+3. If the user input is not valid we redirect it to the form with the errors and the old input.
+
+4. If the user input is valid then we get the department id and role id from the database based on what department and role is selected by the user.
+
+5. Save the user to the database.
+
+6. Get all user inputs and store it to ```$cache_data``` this will be added to the 
+cache using the ```add_cache_item()``` method which we will add as a helper function later.
+
+7. Call ```log_action()``` to save the users action into the database
+
+
+####Cache Helper
+
+As I have said earlier I added a helper that will utilize the ```Cache``` class to help me add cache items easier.
+It's a very simple function which checks if a cache item exists. 
+If it exists we store it in a variable ```$current_data``` . Then we add the new data to the current data using ```array_push()```. 
+Finally we put back the new one into the cache.
+Helper functions are stored in ```laravel/helpers.php```.
+
+```
+<?php
+function add_cache_item($key, $data){
+	if(Cache::has($key)){ //check if item exists in the cache
+		$current_data = Cache::get($key); //store it to a variable
+		array_push($current_data, (object)$data); //add the data to the variable
+		Cache::put($key, $current_data, 10); //replace the data which is currently on the cache with the new one
+	}
+}
+?>
+```
+
+####Log Action
+
+We've also used another helper function which is ```log_action()``` which is simply used to log what
+every user is doing into the database.
+
+```
+<?php
+function log_action($transaction){
+	$user_id = Session::get('current_user_id');
+	$user = Session::get('current_user');
+	$department = URI::segment(1); 
+
+	//save the log into the database
+	DB::table('userlogs')->insert(
+		array(
+			'user_id' => $user_id,
+			'user' => $user, 
+			'department' => $department, 
+			'transaction' => $transaction
+			)
+		);
+}
+?>
+```
+
+###Roles
+
+Just like in every application roles are used to group users. 
+Some examples of roles are: System Administrator, Supervisor, Clerk, Collector and just
+about anyone that will interact with the application. 
+Just like in the real world every user which has the same role will be able to do just about the same
+thing. This makes roles a good way to group users based on what they can and cannot do in an application.
+
+
+####Creating New Roles
+
+Create a new view called ```create_role``` where we will put the form for creating new roles. 
+This will have two fields: department and role. 
+The idea here is that for every department there are 1 or more roles that can be added.
+
+```html
+@layout('main')
+
+@section('content')
+	<div class="row">
+		<div class="twelve columns">
+			<h5>Create Role</h5>
+		</div>
+	</div>
+	<div class="row">
+		@render('errors')
+		@render('success')
+		<form method="post">
+			<div class="row">
+					<div class="two columns">
+			      <label for="department" class="right inline">Department</label>
+			    </div>
+			    <div class="ten columns">
+			      <input type="text" name="department" id="department" class="five" list="departments"/>
+			      <datalist id="departments">
+			      @foreach($departments as $dept)
+			      	<option value="{$dept->department}">{$dept->department}</option>
+			      @endforeach
+			      </datalist>
+			    </div>
+
+			    <div class="two columns">
+			      <label for="role" class="right inline">Role </label>
+			    </div>
+			    <div class="ten columns">
+			      <input type="text" name="role" id="role" class="five" />
+			    </div>
+			</div>
+
+		  <div class="row">
+		    <div class="four columns">
+		      
+		    </div>
+		    <div class="eight columns">
+		      <button class="success medium button" href="#">Create Role</button>
+		    </div>
+		  </div>
+		</form>
+		
+	</div>
+@endsection
+```
+
+Then add a new method in the ```admin``` controller which will render the view that we have created.
+Here were just passing in the departments that are already saved in the database.
+
+```php
+<?php
+public function get_new_role(){
+
+	$departments = DB::table('departments')->get();
+	return View::make('admin.create_role')
+		->with('departments', $this->departments);
+}
+?>
+```
+
+Just like for every form if there's a ```get``` there's also a ```post``` as I have said earlier
+methods with a prefix of ```get``` are used for rendering views while ```post``` are used
+for processing forms that are submitted.
+
+```
+<?php
+public function post_new_role(){
+
+	//get the data inputted by the user
+	$department = Input::get('department');
+	$role = Input::get('role');
+
+	if(!Role::is_valid()){ //check if submitted data is valid
+		
+		return Redirect::to('admin/new_role')
+			->with_errors(Role::$validation)
+			->with_input();
+	}else{
+		$selected_department = DB::table('sys_departments')
+			->where('department', '=', $department)
+			->first('department_id');
+			
+		$department_id = $selected_department->department_id;
+		
+		DB::table('sys_roles')->insert(
+			array(
+				'department_id' => $department_id, 
+				'role' => $role
+			));
+
+		$role_id = DB::connection('mysql')->pdo->lastInsertId(); //get the last inserted primary key
+
+		//select all the transactions (things that can be done for the selected department)
+		$transactions = DB::table('sys_transactions')
+			->where('department_id', '=', $department_id)
+			->get();
+		
+		//loop through the results	
+		foreach($transactions as $t){
+			$transaction_id = $t->transaction_id; //get the transaction id
+
+			//save to the rolestransactions table
+			DB::table('roletransactions')
+				->insert(array('role_id' => $role_id, 'transaction_id' => $transaction_id));
+		}
+
+		if(Cache::has('admin_defaults')){ //check if a cache item for admin_defaults already exists 
+			$admin_defaults = Cache::get('admin_defaults');
+			
+			//add the new role into the cache
+			array_push($admin_defaults[$department . '_roles'], (object)array('role' => $role)); 
+			Cache::put('admin_defaults', $admin_defaults, 10);
+		}
+
+		log_action("create new role"); //save the action to the database
+		
+		//redirect to the create role form with the success message 
+		return Redirect::to('admin/new_role')
+			->with('success_message', 'Role Successfully Created');
+	}
+}
+?>
+```
+
+###Select Users
+
+We'll also need to have a feature wherein the administrator can view a list of the users who are using the application.
+This will also serve as a link to the user update page where the administrator can 
+update user details. The administrator can also update the status of the user from this page.
+The status can either be ```enabled``` or ```disabled``` if the user is disabled then he cannot login to the application. Lastly, we'll also include a link to the user activity log so that the administrator can view
+all the transactions that the user has performed in the application. 
+
+```html
+@layout('main')
+
+@section('content')
+<div class="row">
+	<div class="twelve columns">
+		<h5>Users</h5>
+	</div>
+</div>
+
+<div class="row">
+	<table class="twelve dtable">
+	  <thead>
+	    <tr>
+	      <th>Username</th>
+	      <th>Name</th>
+	      <th>Department</th>
+	      <th>Role</th>
+	      <th>Logs</th>
+	      <th>Status</th>
+	      <th>Update</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	@foreach($users as $user)
+	  	<?php
+	  	$icons = ["foundicon-lock", "foundicon-unlock"];
+	  	$actions = [1, 0];
+	  	?>
+	    <tr>
+	     	<td>{$user->username}</td>
+	     	<td>{$user->firstname . " " . $user->lastname}</td>
+	     	<td>{$user->department}</td>
+	     	<td>{$user->role}</td>
+	     	<td class="pointer">
+					<i class="icons foundicon-address-book" data-url="{URL::to('admin/logs/' . $user->user_id)}"></i>
+	     	</td>
+	     	<td class="pointer">
+	     		<i class="icons {$icons[$user->status]}" data-action="{$actions[$user->status]}" data-uid="{$user->user_id}"></i>
+	     	</td>
+	     	<td class="pointer">
+	     		<i class="icons foundicon-refresh" data-url="{URL::to('admin/user/' . $user->user_id)}"></i>
+	     	</td>
+	    </tr>
+	    @endforeach
+	  </tbody>
+	</table>
+</div>
+@endsection
+
+@section('script')
+<script>
+$("td.pointer").live("click", function(){
+	//get the data-url value from the <i> tag
+	//it feels weird to put data attributes to a table definition so 
+	//we have to do some selector-fu to get to the data that we want
+	var url = $(this).children().data('url'); 
+
+	if(url){ //just making sure that url is storing a truthy value
+
+		//cheap trick for changing page location
+		//I wouldn't actually do it this way
+		//if the anchor tag <a> works when its wrapping an <i> tag
+		window.location = url; 
+
+	}
+});
+
+$("td.pointer").hover(function(){
+	//on hover: make the user see that he's actually hovering on something by changing the color
+	$(this).children().css("color", "#0CAEE3");
+}, function(){
+	//on mouse out: change back to the original color
+	$(this).children().css("color", "#333");
+});
+
+$("td.pointer").click(function(){
+	var url = window.location; //get all the information of the current page (Eg. host, hostname, port, etc.)
+
+	//caching the information about the child of the clicked element so we won't have to select it again later 
+	var child = $(this).children();  
+
+	var user_id = child.data("uid"); //accessing the value of data-uid attribute using the cache item(child) as the base
+	var status = child.data("action"); //accessing the value of data-uid attribute using the cache item(child) as the base
+
+	//update user status using ajax
+	$.post(
+		url.origin + "/admin/update_userstatus/" + user_id + "/" + status,
+		function(response){ //the response is either 1 or 0, if the admin disabled the user the response would be the opposite which is 1. If the admin enabled the user the response would be 0
+
+			var icons = ["foundicon-unlock", "foundicon-lock"]; 
+			child.removeClass(); 
+			child.addClass("icons " + icons[response]); //change the icon based on the response
+			child.data("action", response); //change the data-action attribute based on response
+		}
+	);
+});
+</script>
+@endsection
+```
+
+Back to the ```admin``` controller. Create a new method and call it ```post_update_userstatus``` it will 
+accept two arguments: user_id and status. 
+
+```php
+<?php
+public function post_update_userstatus($user_id, $status){
+
+	//update user status
+	DB::table('tbl_users')
+		->where('user_id', '=', $user_id)
+		->update(array('status' => $status));
+
+	log_action("update user status");
+
+	//determine the new status 
+	$new_status = ($status == 1) ? 0 : 1;		//the new status will be equal to 0 if status is 1, it will be equal to 1 if status is 0
+
+	echo $new_status;	//echo it out, this is the response that were getting earlier from JavaScript
+}
+?>
+```
+
+To render the view for viewing the list of users, create another method.
+
+```
+<?php
+public function get_users(){
+
+	if(!Cache::has('users')){ //if the users has not already been cached
+
+		//get the users from the database
+		$users = DB::table('users')
+		->join('sys_departments', 'tbl_users.department_id', '=', 'sys_departments.department_id')
+		->join('sys_roles', 'tbl_users.role_id', '=', 'sys_roles.role_id')
+		->get(array('user_id', 'username', 'firstname', 'lastname', 'department', 'role', 'status'));
+
+    $users_data = $users;
+    Cache::put('users', $users_data, 10);  //put the users into the cache for 10 minutes
+	}else{ //if the users are already in the cache
+		$users_data = Cache::get('users'); //just get the users from the cache
+	}
+
+	//render the view for viewing the list of users
+	return View::make('admin.users')
+		->with('users', $users_data);
+}
+?>
+```
+
+###Updating a User
+
+Create another view for updating the user. 
+This is very similar to the view for creating users. 
+
+```html
+@layout('main')
+
+@section('content')
+<div class="row">
+  <div class="twelve columns">
+    <h5>Update User</h5>
+  </div>
+</div>
+<div class="row">
+  @render('errors')
+  @render('success')
+  <form method="post">    
+  	<div class="row">    
+      <div class="two columns">
+        <label for="firstname" class="right inline">First Name </label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="firstname" id="firstname" class="five" value="{$user->firstname}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="middlename" class="right inline">Middle Name </label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="middlename" id="middlename" class="five" value="{$user->middlename}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="lastname" class="right inline">Last Name</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="lastname" id="lastname" class="five" value="{$user->lastname}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="username" class="right inline">Username</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="username" id="username" class="five" value="{$user->username}"/>
+      </div>
+
+      <div class="two columns">
+        <label for="password" class="right inline">Password</label>
+      </div>
+      <div class="ten columns">
+        <input type="password" name="password" id="password" class="five"/>
+      </div>   
+
+      <div class="two columns">
+        <label for="department" class="right inline">Department</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="department" id="department" class="five" value="{$user->department}" list="departments"/>
+
+        <datalist id="departments">
+          @foreach($departments as $dept)
+          <option value="{$dept->department}">{$dept->department}</option>
+          @endforeach
+        </datalist>
+      </div>  
+
+      <div class="two columns">
+        <label for="role" class="right inline">Role</label>
+      </div>
+      <div class="ten columns">
+        <input type="text" name="role" id="role" class="five" value="{$user->role}" list=""/>
+        <datalist id="it">
+          @foreach($it_roles as $a)
+            <option value="{$a->role}">{$a->role}</option>
+          @endforeach
+        </datalist>
+
+        <datalist id="defense">
+          @foreach($defense_roles as $b)
+            <option value="{$b->role}">{$b->role}</option>
+          @endforeach
+        </datalist>
+
+        <datalist id="marketing">
+          @foreach($marketing_roles as $c)
+            <option value="{$c->role}">{$c->role}</option>
+          @endforeach
+        </datalist>
+      </div>  
+    </div>
+
+    <div class="row">
+      <div class="four columns">
+        
+      </div>
+      <div class="eight columns">
+        <button class="success medium button" href="#">Update User</button>
+      </div>
+    </div>
+  </form>
+</div>
+@endsection
+```
+
+Create another method in the ```admin``` controller that will render the user update form.
+
+```php
+<?php
+public function get_user($user_id){
+	$user = $this->_get_userdata($user_id);
+
+	return View::make(
+		'admin.user', 
+		array(
+			'user' => $user,
+			'departments' => $this->departments,
+			'it_roles' => $this->it_roles,
+			'marketing_roles' => $this->marketing_roles,
+			'defense_roles' => $this->defense_roles
+			)
+	);
+}
+?>
+```
+
+You will notice that we have used a method called ```_get_userdata()``` which takes the users id as
+an argument. This method returns the user details based on the id that is specified.
+We are joining the ```departments``` and ```roles``` table as well to get the department and the role to which the user belongs. Then we use the ```where()``` method to specify that we only want to get the user 
+which has a specific id. Then we use the ```first()``` method to let Laravel know that we only want to fetch a single record. Because when we just use ```get()``` Laravel(fluent) will return an array and we'll have to access 
+the results later on by doing something like ```$user_data[0]->user_id``` which isn't that bad but we'll have two type more characters.
+
+```
+<?php
+private function _get_userdata($user_id){
+	$user_data = DB::table('users')
+		->join('departments', 'users.department_id', '=', 'departments.id')
+		->join('roles', 'users.role_id', '=', 'roles.id')
+		->where('user_id', '=', $user_id)
+		->first(array('user_id', 'username', 'firstname', 'middlename', 'lastname', 'department', 'role', 'status'));
+	return $user_data;	
+}
+?>
+```
+
+Then the code for updating the user details.
+
+```
+<?php
+public function post_user($user_id){
+	$firstname = Input::get('firstname');
+	$middlename = Input::get('middlename');
+	$lastname = Input::get('lastname');
+	$department = Input::get('department');
+	$role = Input::get('role');
+	$username = Input::get('username');
+	$password = Input::get('password');
+
+	//bend the rules for updating user data
+	User::$rules['username'] = 'required|unique:tbl_users,username,' .$user_id . ',user_id'; //username is still unique but we need to exclude the user that were currently updating by specifying the user id
+
+	User::$rules['password'] = ''; //by default password is required now it isn't
+
+	if(!User::is_valid()){
+		
+		return Redirect::to('admin/user/' . $user_id)
+			->with_errors(User::$validation)
+			->with_input();
+	}else{
+		$selected_department = DB::table('sys_departments')
+			->where('department', '=', $department)
+			->first('department_id');
+
+		$department_id = $selected_department->department_id;
+
+		$selected_role = DB::table('sys_roles')
+			->where('role', '=', $role)->first('role_id');
+
+		$role_id = $selected_role->role_id;
+
+
+		if(!empty($password)){ //data if password is updated
+			$password = Hash::make($password);
+			$user_data = array(
+				'firstname' => $firstname,
+				'middlename' => $middlename,
+				'lastname' => $lastname,
+				'department_id' => $department_id,
+				'role_id' => $role_id,
+				'username' => $username,
+				'hashed_password' => $password 
+			);
+		}else{ //data if password is not update
+			$user_data = array(
+				'firstname' => $firstname,
+				'middlename' => $middlename,
+				'lastname' => $lastname,
+				'department_id' => $department_id,
+				'role_id' => $role_id,
+				'username' => $username
+			);	
+		}
+
+		//update user details
+		DB::table('tbl_users')
+			->where('user_id', '=', $user_id)
+			->update($user_data);
+
+		log_action("update user");	
+
+		return Redirect::to('admin/user/' . $user_id)
+			->with('success_message', 'User Successfully Updated');	
+	}
+}
+?>
+```	
+
+###User Logs
+
+Create another view and call it ```userlogs```. Nothing fancy here, this will just list out all the activities/transactions performed by a specific user or all users on the current day.
+
+```html
+@layout('main')
+
+@section('content')
+<div class="row">
+  <div class="twelve columns">
+    <h5>User Logs - {$scope}</h5>
+  </div>
+</div>
+<div class="row">
+	<div class="twelve columns">
+		<table class="twelve dtable">
+		  <thead>
+		    <tr>
+		      <th>Username</th>
+		      <th>Department</th>
+		      <th>Activity</th>
+		      <th>Timestamp</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	@foreach($userlogs as $logs)
+		  	<tr>
+			  	<td>{$logs->user}</td>
+			  	<td>{$logs->department}</td>
+			  	<td>{$logs->transaction}</td>
+			  	<td>{date("M d, Y @ g:i A", strtotime($logs->dateandtime))}</td>
+		  	</tr>
+		  	@endforeach
+		  </tbody>
+	  </table>
+	</div>
+</div>
+@endsection
+```
+
+Going back to the ```admin``` controller we create another method for rendering the user logs.
+Nothing fancy here except for the usage of a raw query which can be done by using the ```query()``` method 
+from the ```DB``` class.
+If there's a user id supplied then its only going to select the logs for a specific user which has that id.
+If there's no user id then its going to select all the transactions performed by every user on that day.
+
+```php
+<?php
+public function get_logs($user_id = ''){
+	$scope = '';
+	if(!empty($user_id)){
+		$userlogs = DB::query("
+			SELECT * FROM tbl_userlog 
+			WHERE user_id = '$user_id'
+			ORDER BY dateandtime DESC
+		");
+		if(!empty($userlogs)){
+			$scope = $userlogs[0]->user;
+		}
+	}else{
+		$userlogs = DB::query('
+			SELECT * FROM tbl_userlog 
+			WHERE DATE(dateandtime) = CURRENT_DATE
+			ORDER BY dateandtime DESC
+		');
+		$scope = 'All Users';
+	}
+
+	return View::make('admin.userlogs', array('userlogs' => $userlogs, 'scope' => $scope));
+}
+?>
+```
+
+
+###Updating Transaction Status
+
+Create another view and call it ```transactions``` this will be used to update the transactions
+that can be performed by each role. 
+
+I guess its about time to give a little bit of explanation on what these transactions really are in this project that were creating.
+
+Transactions are the things that the users can do in the application. In this project the navigation is representing the transactions. So disabling a transaction will hide the equivalent menu in the navigation so that the user won't be able to access it. But what we need to do is more than just hiding the menu item. What if the user has already memorized the actual route to access that specific page and he just types it in the address bar? 
+He will still be able to access the page only this time he didn't have to use the menu. 
+
+That's what were going to do later. For now let's put our minds back to the updating of transactions that can be performed by users.
+
+Again there's nothing special about the form below. 
+The admin will just have to select the role that he wants to update.
+After that he'll just click on the ```view``` button to load the transactions for that role.
+Then he'll just have to deselect the transactions that cannot be performed by the role and select all the transactions that can be performed by the role. Were using ```ajax``` to submit the status of the transaction to the server-side that's why we don't have something like a submit button to commit the changes.
+
+```html
+@layout('main')
+
+@section('content')
+<div class="row">
+	<div class="twelve columns">
+		<h5>Roles and Transactions</h5>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="two columns">
+		<label for="role" class="right inline">Role</label>
+	</div>
+	<div class="nine columns">
+		<select name="" id="role" class="seven">
+		@foreach($roles as $r)
+			<option 
+				data-deptid="{$r->department_id}" 
+				data-roleid="{$r->role_id}" 
+				value="{$r->role}"
+				@if($role_id == $r->role_id)
+				{"selected"}
+				@endif
+			>
+				{$r->role}
+			</option>
+		@endforeach
+		</select>
+		<a href="" id="view_transactions" class="success medium button two">View</a>
+	</div>
+</div>
+
+
+<div id="transactions" class="row transactions">
+	<div class="twelve columns">
+		<ul>
+		@foreach($transactions as $t)
+			<li> 
+				<?php 
+				$status = "";
+				if($t->status == 1){
+					$status = "checked";
+				}
+				?>
+				<input type="checkbox" data-id="{$t->roletransaction_id}" {$status}>
+				{$t->menu_text} 
+			</li>			
+		@endforeach	
+		</ul>
+	</div>
+</div>
+@endsection
+
+@section('script')
+<script>
+	$("#role").change(function(){ //if the role is changed
+		var url = window.location;
+		var selected_role = $("#role").find(":selected"); //its a good practice to cache a selector if you're going to use it more than once
+
+		var department_id = selected_role.data("deptid");
+		var role_id = selected_role.data("roleid");
+
+		//change the url of the view button(well not actually a button, its a link) based on the role id
+		$("#view_transactions").attr("href", url.origin + "/admin/roles/" + role_id);
+
+	});
+
+
+	$("input[data-id]").click(function(){
+		var roletransaction_id = $(this).data("id");
+		var status = $(this).attr("checked") ? 1 : 0; //if the box is check the status is 1 if not then its 0
+
+		var url = window.location; //get all the information about the current url
+
+		//update transaction status via ajax
+		$.post(
+			url.origin + "/admin/update_transactionstatus/" + roletransaction_id + "/" + status,
+			function(response){
+
+			}
+		);
+	});
+</script>
+@endsection
+```
+
+
+Then render the transactions view.
+
+```php
+<?php
+public function get_roles($role_id){
+	$roles = DB::table('roles')->get();
+	$transactions = DB::table('transactions')
+		->join(
+			'roletransactions', 
+			'transactions.transaction_id', '=', 'roletransactions.transaction_id'
+			)
+		->where('id', '=', $role_id)
+		->get(array(
+			'roletransaction_id', 'role_id',
+			'department_id', 'menu_text', 'status'
+			)
+		);
+
+	return View::make(
+		'admin.transactions', 
+		array('roles' => $roles, 'transactions' => $transactions, 'role_id' => $role_id)
+	);
+}
+?>
+```
+
+Create another method called ```post_update_transactionstatus```. This is the method that 
+we have specified earlier in the ```transactions``` view 
+where the ```roletransaction_id``` and ```status``` is submitted.
+As you can see were just accessing those submitted values through the parameters which represents the third and fourth segment of the route.
+
+```
+<?php
+public function post_update_transactionstatus($roletransaction_id, $status){
+	DB::table('roletransactions')
+		->where('id', '=', $roletransaction_id)
+		->update(array('status' => $status));
+
+		log_action("update transaction status");
+}
+?>
+```
+
+
+###Generating the User Navigation
+
+Yep! you heard that right, were generating the navigation everytime the user logs in.
+Were going to fetch what transactions the user can perform in the application and loop through the results.
+
+This means that for every user, different menu items will be generated. 
+But of course were not going to have a feature wherein the admin updates the transactions for a particular role and it will automatically update the UI of all the users who are currently logged in to the application. 
+That would be uber-cool but I don't currently know how to do those real-time applications.
+
+So we'll just stick with old-school for now. 
+The menu will just change once the user has logged out and logged back in again.
+And this is just fine its not like the admin is going to update the transactions that the users can perform every second of the day. We don't need to over-engineer things for the sake of being cool.
+
+
+####View Composers
+
+Before anything else I'd like to introduce another templating concept in Laravel which is the view composers.
+View composers are simply used to nest or attach data or a view into another view. 
+
+This is perfect for our purpose since we want the user navigation to be different for each role.
+
+View composers takes 2 parameters. 
+The first parameter is the view in which you want to attach a specific data. 
+But of course you can use an array to specify multiple views.
+
+The second parameter is what you want to do to those views. 
+Here were just attaching data that is fetched from the database. 
+
+Go ahead and open up ```routes.php``` inside the ```application``` directory and add the following code:
+
+```
+<?php
+View::composer(
+//specify the views where the data will be attached
+  array(
+    'admin.home',
+    'admin.create_role', 'admin.create_user', 
+    'admin.user', 'admin.users',
+    'admin.userlogs', 'admin.transactions'
+  ), 
+	function($view){
+
+    $role_id = Session::get('role_id'); //load role id of current user from session
+
+    if(Session::get('navigation')){
+      $nav = Session::get('navigation');
+
+    }else{
+      $transactions = DB::table('roletransactions')
+        ->join(
+          'transactions', 
+          'roletransactions.transaction_id', '=', 'transactions.id'
+          )
+        ->where('role_id', '=', $role_id)
+        ->where('status', '=', 1)
+        ->order_by('position', 'ASC')
+        ->get(array(
+            'menu_text', 'main_menu', 'address', 'status'
+          )
+        );
+
+      $nav = array();
+      foreach($transactions as $t){
+        
+        $nav[$t->main_menu][$t->menu_text] = $t->address; //fill in the array with the results from the database
+      }
+      
+      //save it into the session to make it accessible later 
+      //on pages which needs this information
+      Session::put('navigation', $nav); 
+    }
+
+    //attach the data that was fetched from the database into the navigation view
+    //first parameter is the name that you want to give the view
+    //second parameter is the actual name of the view. In this case the name is navigation.blade.php
+    //third is the data that you wish to pass in to the navigation view
+		$view->nest('navigation', 'navigation', array('navigation' => $nav));
+	}
+);
+?>
+```
+
+####Navigation View
+
+Create a new view just inside the root of the ```view``` directory and name it ```navigation``` this will serve as the template for the navigation.
+
+If you can still remember from the main template that we created earlier. 
+We have a variable called ```navigation``` and that variable is storing the template below.
+
+It might not click right away but that's how view nesting works.
+
+```html
+<ul class="left">
+  <li class="divider"></li>
+    @foreach($navigation as $key => $nav)
+      <li class="has-dropdown">
+        <a href="#" class="active">{$key}</a>
+        <ul class="dropdown">
+          @foreach($nav as $subnav => $link)
+          <li>
+            <a href="{URL::to($link)}">{$subnav}</a>
+          </li>
+          @endforeach
+        </ul>
+      </li>
+    @endforeach
+</ul>
+```
+
+####Check User Access
+
+Going back to the ```routes.php``` file. Create a filter and call it ```check_roles``` we will use this filter to check if the current user has the authority/privilege to access the page that he is trying to access.
+
+```php
+<?php
+Route::filter('check_roles', function()
+{
+    $current_url = URI::current();	//get current url excluding the domain.
+    $current_page = URI::segment(2); //get current page which is stored in the second uri segment. Just a refresher: //the first uri segment is the controller, the second is the method, 
+    	//third and up are the parameters that you wish to pass in
+
+    $access = 0;
+    $nav = Session::get('navigation'); //get menu items from session
+
+    //excluded pages are the pages we don't want to execute this filter 
+    //since they should always be accessible for a logged in user
+    $excluded_pages = array('login', 'it/home', 'defense/home', 'marketing/home');
+    
+    if(!in_array($current_url, $excluded_pages)){//if current page is not an excluded pages
+      foreach($nav as $addresses){
+        foreach($addresses as $address){
+          if(strpos($address, "/")){
+            $full = explode("/", $address);
+            $page = $full[1];
+            if($current_page == $page){
+              $access = 1;
+              return; 
+            }
+          }
+        }
+      }
+
+      if($access == 0){ //if user doesn't have access to the page that he's trying to access
+        $departments = array('it', 'defense', 'marketing'); 
+        $department_id = Session::get('department_id'); //get department id of the current user
+        
+        //redirect the user to the homepage of that 
+        //department along with some error message that he cannot access that page
+        return Redirect::to($departments[$department_id - 1].'/home') 
+          ->with('error', 'You don\'t have permission to access the following page: ' . $current_url);
+      }
+    }
+
+});
+?>
+```
+
+You can just use the filter for every route which meets the pattern that you have specified:
+This will ensure that the users can't actually access the page they're trying to access if its not allowed by the administrator. 
+
+```
+<?php
+Route::filter('pattern: admin/*', 'check_roles');
+?>
+```
+
+
+####Controller Detect
+
+Instead of specifying the controllers one by one we can just use ```Controller::detect()``` which 
+returns an array of all the controllers that we have created (pretty sweet right?). 
+
+```
+<?php
+Route::Controller(Controller::detect()); //create a route for every controller so that its accessible
+?>
+```
+
+####Logout
+
+Finally, the logout. Were just going to call two methods then redirect to the login page.
+
+```
+<?php
+Route::get('logout', function(){
+  Auth::logout(); //logout the current user
+  Session::flush(); //delete the session
+  return Redirect::to('login'); //redirect to login page
+});
+?>
+```
+
+###Conclusion
+
+That's pretty much it. I hope you've learned a bunch about Laravel by building this project.
+Be sure to check out the resources below if you want to learn more about Laravel.
+
+
+###Resources
+
+Here are some resources that you can use if ever you get stuck on building this project or if there's something you don't totally understand.
+
+- [Laravel Tutorials by Dayle Rees](http://daylerees.com/category/laravel-tutorials/)
+- [Ins and Outs of Laravel](http://laravel.io/)
+- [Laravel Tutorials by Jason Lewis](http://jasonlewis.me/laravel-tutorials)
+- [Official Laravel Documentation](http://laravel.com/docs)
+- [Laravel Forums](http://forums.laravel.com/)
+- [Nettuts - Laravel](http://net.tutsplus.com/tag/laravel/)

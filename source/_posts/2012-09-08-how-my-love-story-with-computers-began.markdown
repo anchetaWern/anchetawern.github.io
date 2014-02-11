@@ -1,0 +1,131 @@
+---
+layout: post
+title: "A Computer Love Story"
+date: 2012-09-08 19:48
+comments: true
+categories: [computers]
+published: true
+---
+
+####Elementary Days
+
+My first encounter with computers was when I was in Grade 1, probably around 6 or 7 years of age.
+Back then the computer subject was part of the curriculum and I was probably lucky that we had a
+computer subject at such a young age. And I can still vividly remember that we were running Windows 98 back then. 
+Back then I didn't have this particular spark and shine on my eyes whenever I see a computer. 
+I can still remember that it was hate that I feel about the subject. Because most of
+my classmates had probably have their own computers at home and they seemed like they already
+know what they're doing. But it wasn't probably the case, maybe I've just missed most of my classes
+because I was a sickly little boy back then. You could say that the hospital was my second home.
+So that might have created the illusion that I didn't know anything about computers because
+my classmates were ahead of me since I always missed my classes.
+
+I don't remember having developed any interest in computers when I was in Grade 1. But who the hell 
+does right? Most boys of that age might only be thinking of play time and not really into serious, passionate
+stuff.
+
+I remember having studied about bits and bytes and that they were just a bunch of 0's and 1's that 
+didn't really made sense to me back then. 
+There's also the basic of computers which I probably studied for my 6 years in elementary. Things like
+software, hardware, and peopleware. And that the hardware composes of the monitor, CPU, mouse, keyboard.
+My definition of a CPU back then was that its a Central Processing Unit which is probably true since its
+the box where all the magic happens. Yeah I believe that the CPU was the box were all the computer parts
+were connected and that its the brain of the computer. But no, I probably only realize when I was in high school
+or college that the CPU is not the box. The CPU is the processor, a small square shaped object that 
+is latched into the motherboard. That was probably the first aha! moment that I had regarding computers.
+
+It was probably around Grade 4 or 5 that I got my first computer (at last something to play with).
+But yeah I was still easy going back then. I wasn't even aware that there's this whole new world
+called the internet and I was pretty much just playing around with the applications that I had
+on my first machine. If I remember correctly it was running Windows ME(Millenium Edition). 
+It had some sort of a tetris pokemon game which I played around all the time. 
+It also had this voice synthesizer software(I didn't know it was called that back then) that converts
+text to speech which you can then tune who speaks(robot, guy, girl, big man, etc.).
+There's also this encyclopedia software called Hutchinson's Encyclopedia which was pretty much my Google back then since
+it had most of the information that I needed. And one of those was some quotes from popular people in the world.
+I remember having to type every single quote on MS Word 2003 I didn't know that CTRL + C(copy) and CTRL + V(paste) exists.
+My computer was mostly for play and those days didn't really last and my computer broke.
+
+Then came Grade 6(or probably Grade 5) the final level of my elementary education. Where I got to experience connecting 
+the cables from different devices(keyboard, mouse, etc) to the back of the computer. 
+I also got to experience this whole new world called the internet. I'm not really sure about the browser
+but it was probably good old Internet Explorer 1. The only thing that I remember is that it had this Windows 98 Logo on the upper right side. 
+Here's a picture I got from [Wikipedia](http://en.wikipedia.org/wiki/File:Internet_Explorer_1.0.png):
+
+![ie1](/images/posts/computer_love_story/Internet_Explorer_1.0.jpg)
+
+Google probably existed back then but I think we were using AskJeeves or Altavista (hmmm pretty good memory I got huh,)
+those were the prime search engines back then.
+
+
+####HighSchool Days
+
+Fast forward to high school we also had some sort of a computer subject(but not really). But I didn't
+get the chance to use the computers since they're limited and I'm just not interested in spreadsheet software
+which is what we were using in our statistics subject since the book that we were using had a computer application part 
+where we got to type in a bunch of numbers and statistical symbols. But that didn't really make much sense to me I was as easy going as ever.
+
+Then on 3rd year or maybe 4th year in high school I had my second computer(still a second hand desktop). 
+It was nothing special(probably less than 256Mb of RAM and a 54Gb hard drive). 
+It was this computer that had a great impact on me. It had started my first real computer journey where I got to experience solving problems
+which most Windows computers have: Viruses, Malware, Spyware, Trojans and stuff.
+I had tried installing a lot of antivirus software like AVG, Kaspersky, Norton. And antispyware applications like Super-antispyware, malwarebytes, and 
+many others. I performed a lot of virus scanning, updating, and using those application which made my computer more slow.
+I also tried to make the computer fast by using software like Tune Up utilities, CCleaner, and Iobit advanced system care. I didn't realize
+that most of these software were just snake oil and didn't really improve real world performance of computers so I kept using them.
+But thanks to the illusion that they created that I was able to use my slow computer without complaining.
+Most of my experience with my second computer was downloading, installing and uninstalling a bunch of software. That was pretty much the cycle 
+that I have gone through and I had really fun doing it but then my second computer had to say goodbye.
+
+
+####College Days
+
+Fast forward to college I took Information Technology but it wasn't really planned I didn't really developed that much interest in computers for me
+to want to take a computer course. Believe it or not my first choice back then was nursing.
+First year college was pretty much my first programming experience where I got to play around c++. 
+We were using Borland Turbo C++ compiler and it totally rocked my world. I was amazed that you can actually tell the computer what to do.
+We were just doing a bunch of ```cout``` , ```cin``` , arithmetic operations, condition statements(if, switch), bubble sorting
+but it was really a fun experience. I can still remember programming on weekends. We didn't have internet at that time so
+my learning was pretty limited to the notes that I got from my teacher.
+
+First year college was also my first time to write html and css. I can still remember that we were using most of the stuff that web developers despise or
+refuse to use these days: frames, bold tags, italic tags, tables for layouts. 
+But that pretty much started everything for me. I turned from a grey person(energy conservationist) to a passionate one.
+
+Second year college I experienced writing code using the .net framework specifically VB.Net. 
+This was a huge leap from the console based programs on C++. The addition of a Graphical User Interface into the program had
+put more spark on me and again I wrote a bunch of vb.net code(applications that reads and writes to text file, connect to access, ms sql, and mysql databases).
+Second year college was also my first encounter with PHP, I was so cocky back then and didn't try to learn the basics first. 
+I tried connecting to a mysql database immediately and that took me almost weeks to finally figure out how it all works. I learned about Wampserver, SQL and more
+html along the way. Most of the stuff that I learned were from [w3schools](http://www.w3schools.com/) but now it rather not recommended by developers at [w3fools](http://w3fools.com/).
+Since most of their tutorials aren't up to date and downright wrong. Well don't take my word for it, go ahead and read up the text at w3fools and decide for yourself
+whether or not to use w3schools as a reference again.
+
+Third year college was pretty much the prime time. I already realized that this is it, this is what I really want to do as my job. I'm gonna be a web developer.
+So I started reading up blogs, tutorials, and books on programming and web development. I started reading tech news(tech crunch, lifehacker, makeuseof, mashable, neowin, addictive tips, cybernet news, ghacks and many others).
+Which pretty much consumed most of my time but I got pretty enlightened with what's happening on the world of technology and stuff that I needed to know
+if I want to become a web developer.
+
+Then came 4th year college which means on the job training and thesis(Capstone Project). On our on the job training we also had this project called the alternative solution
+which is pretty much an application that we need to build to be utilize by the agency or company where we had our training. I learned a lot about jQuery, PHP, and overall software
+engineering by building the Business Permits and Licensing which was our project. Just to give a bit of an overview our project was a business transaction software that allows
+for processing business applications which includes 3 modules: Business Permits, Treasury(Collection), and System Administration.
+
+
+####After College
+
+After college I continued learning more about programming and web development. I started subscribing to newsletters which are by the way a pretty good information aggregator 
+they send the news that you need directly into your email. I recently compiled [some of the news sources](http://anchetawern.github.com/blog/2012/08/16/how-to-stay-updated-as-a-developer/)
+that every developer needs to know so go ahead and check that out, you might already know some of those but that's a big list so its certain that you will find something new in there.
+
+I also read books like [JavaScript Enlightenment](http://www.javascriptenlightenment.com/), [Clean Code](http://www.amazon.com/gp/product/0132350882/), [Beginning Database Design](http://www.amazon.com/gp/product/1590597699/), [Dive into HTML5](http://diveintohtml5.info/), and [Pragmatic Programmer](http://pragprog.com/book/tpp/the-pragmatic-programmer).
+JavaScript is pretty much in its Renaissance period so I felt the need to learn more about JavaScript. I learned that there's only one scope in JavaScript and its the function scope, 
+I learned about [doing ajax calls in Dojo and Mootools](http://wernancheta.wordpress.com/2012/08/03/performing-ajax-calls-on-jquery-dojo-and-mootools/), 
+I learned about closures and how you can use them to store variable state. I learned about hoisting and that if you don't use ```var``` when declaring your variables it goes into the global scope which is pretty much evil, 
+[automatic semi-colon insertion](http://wernancheta.wordpress.com/2012/08/03/performing-ajax-calls-on-jquery-dojo-and-mootools/) ,this is the reason why our JavaScript code doesn't break our page when we forgot to place a semi-colon.
+The only advice that I can give you if you want to learn JavaScript is that don't use libraries like jQuery and Dojo, they make JavaScript easy but its important that you
+should learn plain JavaScript first before learning the abstractions. This is for you to understand the concepts behind the language. 
+The chrome console is a good starting place since you will immediately see the output of the code that you have written(just press shift + enter if you have to write 2 or more lines of code).
+
+That's my love story with computers so far. I know I have lots more to learn before I can truly call myself a full-fledged web developer who truly knows his craft.
+But there's no hurry, what's important is that you learn new stuff each day.
