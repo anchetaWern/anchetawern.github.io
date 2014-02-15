@@ -4,7 +4,7 @@
   <title><![CDATA[Category: web-development | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/web-development/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-02-15T13:42:33+08:00</updated>
+  <updated>2014-02-15T21:35:06+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A whirlwind Tour of Web Developer Tools: Text Editors]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors/"/>
+    <updated>2014-02-15T11:00:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors</id>
+    <content type="html"><![CDATA[<p>This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I&rsquo;ll be talking about text editors and related tools.</p>
+
+<p>Text editors are used by web developers to write code. Text editors are not the same thing as word processors because anything written on a text editor is saved as a plain text file and it normally uses a simple character set such as ASCII to represent different characters (letters, numbers, etc). On the other hand word processors saves formatted text which enables tables, symbols and other form of graphical information to be represented without having to use any form of markup like HTML.</p>
+
+<!--more-->
+
+
+<h3>Sublime Text</h3>
+
+<p>When you say text editor the first thing that comes to mind these days is <a href="http://www.sublimetext.com/">Sublime Text</a>. It&rsquo;s like the sexiest text editor these days. So this whole blog post is primarily going to be about Sublime Text and some of the plugins that I found useful.</p>
+
+<h3>Plugins</h3>
+
+<p>In order to install plugins for Sublime Text you first have to install <a href="https://sublime.wbond.net/">package control</a> which is a package manager for Sublime Text that allows you to easily install plugins. To install package manager copy the following code in the Sublime Text console which can be accessed by pressing <code>ctrl + back tick</code> on your keyboard. After that restart the editor to finish the installation:</p>
+
+<p><code>
+import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')
+</code></p>
+
+<p>Note that the code above is for Sublime Text 2, if you&rsquo;re using Sublime Text 3 then use the following code:</p>
+
+<p><code>
+import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+</code></p>
+
+<p>After restarting sublime text you can now press <code>ctrl + shift + p</code>, select &lsquo;install package&rsquo; and press <code>enter</code>, this will load all the available plugins from the plugin repository. From there you can just search for the plugin that you want to install.</p>
+
+<p>And now for the plugins:</p>
+
+<ul>
+<li><a href="https://github.com/benmatselby/sublime-phpcs">PHPCS</a> &ndash; a PHP code quality tool.</li>
+<li><a href="http://emmet.io/">Emmet</a> &ndash; previously known as Zen Coding. If that doesn&rsquo;t ring a bell then Emmet is basically a tool for improving productivity by implementing shortcuts for generating code that you would normally write out by hand. All you have to do is to write something like this:</li>
+</ul>
+
+
+<p><code>
+html:5
+</code></p>
+
+<p>And right after pressing <code>tab</code> you get a whole bunch of code written out for you:</p>
+
+<p>```html
+&lt;!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body></p>
+
+<p></body>
+</html>
+```</p>
+
+<ul>
+<li><a href="https://github.com/titoBouzout/SideBarEnhancements">Sidebar Enhancements</a> &ndash; allows you to create a new file and it will immediately ask you the filename, duplicating or copying files and folders from the sidebar, and a bunch of other good stuff that the default sublime text sidebar doesn&rsquo;t allow you to do.</li>
+<li><a href="https://github.com/facelessuser/BracketHighlighter">Bracket Highlighter</a> &ndash; allows for easier visualization of where the ending bracket is.</li>
+<li><a href="https://github.com/kemayo/sublime-text-2-clipboard-history">Clipboard History</a> &ndash; keeps a history of clipboard items so you can just paste them in later.</li>
+<li><a href="https://github.com/spadgos/sublime-jsdocs">Docblockr</a> &ndash; pretty much like emmet but only for document blocks. Useful for writing comments.</li>
+<li><a href="https://github.com/wbond/sublime_alignment">Alignment</a> &ndash; allows for easy alignment of code. All you have to do is press <code>ctrl + alt + a</code> on your keyboard.</li>
+<li><a href="https://github.com/SublimeLinter/SublimeLinter-for-ST2">Sublime Linter</a> &ndash; inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don&rsquo;t know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you&rsquo;re using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable <code>z</code> isn&rsquo;t actually used in your code.</li>
+</ul>
+
+
+<h3>IDE</h3>
+
+<p>There&rsquo;s also this thing called the IDE or Integrated Development Environment which is basically text editors on steroids. They have huge install size since they allow you to do more than just writing code. IDE&rsquo;s packs a bunch of features which you would not normally find in a text editor such as compiling code. Some IDE&rsquo;s such as Visual Studio also allows you to build the GUI of applications by simply dragging and dropping GUI elements (text boxes, buttons, etc.) from a toolbox. Other features include code completion (intellisense), debugger, integrated services (allows viewing and manipulating the database right from the IDE).</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.hongkiat.com/blog/sublime-text-tips/">Sublime Text Tips and Tricks</a></li>
+<li><a href="https://sublime.wbond.net/browse/popular">Popular Sublime Text Plugins</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_text_editors">Compariosn of Text Editors</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments">Comparison of Integrated Development Environments</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: In-Browser Tools]]></title>
@@ -46,12 +131,12 @@
 
 <h4>Chrome Developer Tools</h4>
 
-<p>One of the most popular browser tool today is the Chrome Developer Tool. You can access the Chrome Developer by pressing <code>Ctrl</code> + <code>Shift</code> + <code>I</code> or <code>Cmd</code> + <code>Opt</code> + <code>I</code> on your keyboard. By default this opens up the last panel that you have accessed.</p>
+<p>One of the most popular browser tool today is the Chrome Developer Tools. You can access it by pressing <code>Ctrl + Shift + I</code> or <code>Cmd + Opt + I</code> on your keyboard. By default this opens up the last panel that you have accessed.</p>
 
 <ul>
-<li><strong>Elements</strong> &ndash; allows DOM inspection and modification, changes are reflected to the page as you update.</li>
+<li><strong>Elements</strong> &ndash; allows DOM inspection and modification, changes are reflected on the page as you update.</li>
 <li><strong>Network</strong> &ndash; this is where you can view all of the HTTP requests made by your web project. The size and time it took to download each requested file are also viewable so the network panel is mostly used for evaluating the performance of your web project in terms of the HTTP requests that are made.</li>
-<li><strong>Sources</strong> &ndash; used for viewing and updating the source files used by your web project. If you selected a JavaScript file</li>
+<li><strong>Sources</strong> &ndash; used for viewing and updating the source files used by your web project. If you selected a JavaScript file it will also allow you to debug it.</li>
 <li><strong>Timeline</strong> &ndash; used for evaluating the performance of your web project in terms of frames and memory consumed</li>
 <li><strong>Profiles</strong> &ndash; used for profiling JavaScript performance</li>
 <li><strong>Resources</strong> &ndash; kind of similar with the sources panel, but it doesn&rsquo;t allow you to edit the source files. It also allows you to view and modify cookie and local storage information.</li>
@@ -64,7 +149,7 @@
 
 <ul>
 <li><strong>Web Developer</strong> &ndash; packs various extensions and tools to help in testing web pages <a href="https://chrome.google.com/webstore/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm">[chrome]</a> <a href="https://addons.mozilla.org/en-US/firefox/addon/web-developer/">[firefox]</a></li>
-<li><strong>Tincr</strong> &ndash; allows live reloading of web pages as you make changes to the source file. The saving of changes is also bi-directional which means that if you edit the file in the sources panel of the Chrome Developer Tools the changes will also get saved in the original source file. <a href="https://chrome.google.com/webstore/detail/tincr/lfjbhpnjiajjgnjganiaggebdhhpnbih?hl=en">[chrome]</a></li>
+<li><strong>Tincr</strong> &ndash; allows live reloading of web pages as you make changes to the source file. The saving of changes is also bi-directional which means that if you edit the file in the sources panel of the Chrome Developer Tools the changes will also get saved to the source file. Pretty sweet! <a href="https://chrome.google.com/webstore/detail/tincr/lfjbhpnjiajjgnjganiaggebdhhpnbih?hl=en">[chrome]</a></li>
 <li><strong>Pagespeed Insights</strong> &ndash; used for evaluating the performance of web pages based on industry best practices. It will give you some suggestions on how you can improve the performance of your website based on its evaluation. <a href="https://chrome.google.com/webstore/detail/pagespeed-insights-by-goo/gplegfbjlmmehdoakndmohflojccocli?hl=en">[chrome]</a></li>
 <li><strong>YSlow</strong> &ndash; the same as Pagespeed Insights. <a href="https://chrome.google.com/webstore/detail/yslow/ninejjcohidippngpapiilnmkgllmakh">[chrome]</a> <a href="https://addons.mozilla.org/en-US/firefox/addon/yslow/">[firefox]</a></li>
 </ul>
