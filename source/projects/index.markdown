@@ -132,6 +132,25 @@ Birthday Freebies shouts is a web application used for automatically sending out
 
 ##Side Projects
 
+
+###Octo-WYSIWYG
+
+A Markdown to HTML UI for creating posts in Octopress.
+
+{% img right /images/pages/projects/octo-wysiwyg/small-octowysiwyg.png 'octo wysiwyg' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript (jQuery)
+- Ruby
+- Sinatra
+
+[View More Details](/projects/octo-wysiwyg)
+
+## 
+
 ###Amethyst
 
 Amethyst is a project that I created in order to manage and monitor the internet usage. 
