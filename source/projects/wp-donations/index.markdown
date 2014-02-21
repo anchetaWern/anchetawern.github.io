@@ -18,7 +18,6 @@ Company Project
 
 A Wordpress plugin that handles site subscriptions. It integrates with the Bitpay and Paypal API to handle processing of payments.
 
-
 ####Technologies Used
 
 - HTML
@@ -28,6 +27,11 @@ A Wordpress plugin that handles site subscriptions. It integrates with the Bitpa
 - Wordpress
 - Paypal API
 - Bitpay API
+
+
+####Demo
+
+[WP-Donations](http://boxingmanager.co.uk/subscribe/)
 
 
 ####Screenshots

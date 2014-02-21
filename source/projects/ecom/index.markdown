@@ -45,6 +45,11 @@ It's main features are:
 - Wordpress
 
 
+####Demo
+
+[ecom](http://digitalprices.com/)
+
+
 ####Screenshots
 
 {% portfolio ecom %}
