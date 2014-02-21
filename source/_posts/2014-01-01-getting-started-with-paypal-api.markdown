@@ -17,21 +17,13 @@ In this tutorial I'm going to show you how you can get started with using the Pa
 Here are some of the concepts that you have to remember when working with the Paypal API in any of your projects:
 
 - **Sandbox** - this is used for testing requests to the Paypal API. Sandbox Paypal accounts can be assigned with funds of up to 5000 USD and then you can use it for testing. 
-
 - **Live** - the live Paypal website. You can switch your API calls to use the live endpoints upon deploying your project.
-
 - **API Request** - you can use either NVP (Name-Value Pair) or SOAP when making request to the API. We will use name-value pairs in this tutorial.
-
 - **API Credentials** - the credentials that you will use in order to make API calls. 
-
 - **API** - short for Application Programming Interface. Paypal is composed of different APIs such as the adaptive accounts, adaptive payments, invoicing, merchant APIs and permissions. In this tutorial I'm going to discuss about the merchant API.
-
 - **Service Endpoint** - this simply refers to the URL of the server that will handle a specific request. Note that the endpoints used for testing (sandbox) and production (live) are different. So you have to update the endpoints after you're done with the testing.
-
 - **Call Payload** - the minimum data required by paypal that you have to submit as part of the request to the API.
-
 - **Request and Response Formats** - the format in which your API request and the response that's going to be returned after a successful call.
-
 - **HTTP Headers** - the HTTP request header information that you have to specify in each API call.
 
 
@@ -89,7 +81,6 @@ class Paypal{
 Next declare the constructor. This will take 3 required arguments and two optional arguments:
 
 - **user** - the API username that you got from paypal. Note that this should correspond with the endpoint that you use. If the endpoint is a sandbox endpoint then use the sandbox credentials otherwise use the live credentials.
-
 - **pass** - the API password
 - **signature** - the API signature
 - **paypal server** - this can either be set to sandbox or live. This is set to sandbox by default so its using the sandbox endpoint. Setting this to live will set the endpoint to the live endpoint.
