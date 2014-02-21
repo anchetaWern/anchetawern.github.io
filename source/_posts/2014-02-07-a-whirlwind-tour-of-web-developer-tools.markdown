@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A Whirlwind Tour of Web Developer Tools - In-Browser Tools"
+title: "A Whirlwind Tour of Web Developer Tools: In-Browser Tools"
 date: 2014-02-09 12:30
 comments: true
 categories: [web-development, tools, browser-tools]
@@ -32,11 +32,11 @@ First on the list is the browser tools. Browser tools are a set of tools that li
 
 ####Chrome Developer Tools
 
-One of the most popular browser tool today is the Chrome Developer Tool. You can access the Chrome Developer by pressing `Ctrl` + `Shift` + `I` or `Cmd` + `Opt` + `I` on your keyboard. By default this opens up the last panel that you have accessed. 
+One of the most popular browser tool today is the Chrome Developer Tools. You can access it by pressing `Ctrl + Shift + I` or `Cmd + Opt + I` on your keyboard. By default this opens up the last panel that you have accessed. 
  
- - **Elements** - allows DOM inspection and modification, changes are reflected to the page as you update.
+ - **Elements** - allows DOM inspection and modification, changes are reflected on the page as you update.
  - **Network** - this is where you can view all of the HTTP requests made by your web project. The size and time it took to download each requested file are also viewable so the network panel is mostly used for evaluating the performance of your web project in terms of the HTTP requests that are made.
- - **Sources** - used for viewing and updating the source files used by your web project. If you selected a JavaScript file
+ - **Sources** - used for viewing and updating the source files used by your web project. If you selected a JavaScript file it will also allow you to debug it.
  - **Timeline** - used for evaluating the performance of your web project in terms of frames and memory consumed 
  - **Profiles** - used for profiling JavaScript performance
  - **Resources** - kind of similar with the sources panel, but it doesn't allow you to edit the source files. It also allows you to view and modify cookie and local storage information.
@@ -47,7 +47,7 @@ One of the most popular browser tool today is the Chrome Developer Tool. You can
 ####Useful Extensions and Plugins
 
  - **Web Developer** - packs various extensions and tools to help in testing web pages [[chrome]](https://chrome.google.com/webstore/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm) [[firefox]](https://addons.mozilla.org/en-US/firefox/addon/web-developer/)
- - **Tincr** - allows live reloading of web pages as you make changes to the source file. The saving of changes is also bi-directional which means that if you edit the file in the sources panel of the Chrome Developer Tools the changes will also get saved in the original source file. [[chrome]](https://chrome.google.com/webstore/detail/tincr/lfjbhpnjiajjgnjganiaggebdhhpnbih?hl=en)
+ - **Tincr** - allows live reloading of web pages as you make changes to the source file. The saving of changes is also bi-directional which means that if you edit the file in the sources panel of the Chrome Developer Tools the changes will also get saved to the source file. Pretty sweet! [[chrome]](https://chrome.google.com/webstore/detail/tincr/lfjbhpnjiajjgnjganiaggebdhhpnbih?hl=en)
  - **Pagespeed Insights** - used for evaluating the performance of web pages based on industry best practices. It will give you some suggestions on how you can improve the performance of your website based on its evaluation. [[chrome]](https://chrome.google.com/webstore/detail/pagespeed-insights-by-goo/gplegfbjlmmehdoakndmohflojccocli?hl=en) 
  - **YSlow** - the same as Pagespeed Insights. [[chrome]](https://chrome.google.com/webstore/detail/yslow/ninejjcohidippngpapiilnmkgllmakh) [[firefox]](https://addons.mozilla.org/en-US/firefox/addon/yslow/)
 
