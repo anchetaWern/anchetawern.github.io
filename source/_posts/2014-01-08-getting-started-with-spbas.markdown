@@ -7,13 +7,13 @@ categories: [php, business-automation, spbas]
 published: true
 ---
 
-As developers we often need to sell the applications that were creating. Places like the Google Web Store, Codecanyon, Apple Store, Shopify App Store exist for that matter. These repositories are good places to start with but it often requires you to upload your work and have it reviewed by other developers so they are ensured that the app that you submitted meets their criteria.
+As developers we often need to sell the applications that were creating. Places like the Google Web Store, Codecanyon, Apple Store, Shopify App Store exist for that matter. These repositories are good places to start but it often requires you to upload your work and have it reviewed by other developers so they are ensured that the app that you submitted meets their criteria.
 
 <!-- more -->
 
 This is often a tedious process and sometimes you have to wait for a specific period of time before your app gets approved.
 With SPBAS you can skip that process altogether and host your own business automation software on a server of your choice. 
-In this post I'll be walking you through SPBAS, short for SolidPHP Business Automation Software. With SPBAS you can easily host the apps that you have created and have people who wants to buy your app pay you via the payment method of your choice. Note that I won't be discussing about the specific features of this business automation software as the [official documentation](https://solidphp.atlassian.net/wiki/display/docs/Home) has a plenty of information on that. Rather I'd like to focus on the developer's perspective. Things like setting up SPBAS and how to actually get up and running with it. I'm not going to go in-depth with the concepts such as licensing and the different options that are available. Instead I'm going to stick with only the necessary parts in order to get up and running quickly with SPBAS.
+In this post I'll be walking you through SPBAS, short for SolidPHP Business Automation Software. With SPBAS you can easily host the apps that you have created and have people who wants to buy your app pay you via the payment method of your choice. Note that I won't be discussing about the specific features of this business automation software as the [official documentation](https://solidphp.atlassian.net/wiki/display/docs/Home) already has a plenty of that information available. Rather I'd like to focus on the developer's perspective. Things like setting up SPBAS and how to actually get up and running with it. I'm not going to go in-depth with the concepts such as licensing and the different options that are available. Instead I'm going to stick with only the necessary parts in order to get up and running quickly with SPBAS.
 
 
 ###Getting SPBAS
@@ -38,16 +38,16 @@ After that you will be ask to enter your business details. Once you're done ente
 
 ![order complete](/images/posts/getting_started_with_business_automation_software/order-complete.png)
 
-At that point your product license will have been emailed to you by SPBAS. You can use the product license on your SPBAS installation later on. If you didn't receive your license details you can also access it from the customer area. To access your license details from the customer area, just click on the dashboard link and under the My Packages section click on the licenses link. This will redirect you to the My Packages page which you will see the product that you ordered earlier. Just click on the view details link once you're on that page to view the details for that specific package. Once you're on the package details page just click on the licenses tab to view your license key. Copy your license key and store it somewhere safe, a password manager like keepass or lastpass will do. You will be using the license key later.
+At that point your product license will have been emailed to you by SPBAS. You can use the product license on your SPBAS installation later on. If you didn't receive your license details you can also access it from the customer area. To access your license details from the customer area, just click on the dashboard link and under the My Packages section click on the licenses link. This will redirect you to the 'My Packages' page which you will see the product that you ordered earlier. Just click on the view details link once you're on that page to view the details for that specific package. Once you're on the package details page just click on the licenses tab to view your license key. Copy your license key and store it somewhere safe, a password manager like keepass or lastpass will do. You will be using the license key later.
 
 Once you're done saving the license key, click on the downloads tab then select the current release. At the time of writing of this post the current SPBAS version is 3.2.0. If they already have anything higher than that by the time you read this simply stick with that version instead. Under the current release directory is the SPBAS zip file, download the zip file and extract it on your machine then copy it to your web directory or upload it to a server somewhere using Filezilla or other FTP clients. 
 
 
 ###Installing Ioncube
 
-SPBAS has been encoded with Ioncube so it requires the ioncube PHP module to be installed on the server before you can make use of it. In case you don't know what encoding is, its used to obfuscate code so that when its source file is opened it cannot be understood by a human. Its a way to protect intellectual property. Because as you already know PHP is an interpreted language so the code that you write is pretty much exposed to anyone which has access to your web directory.
+SPBAS has been encoded with Ioncube so it requires the ioncube PHP module to be installed on the server before you can make use of it. In case you don't know what encoding is, its used to obfuscate code so that when its source file is opened it cannot be understood by a human. Its a way to protect intellectual property. Because as you already know PHP is an interpreted language so the code that you write is pretty much exposed to anyone who has access to the source files.
 
-You can install ioncube by downloading the ioncube loader from the [ioncube website](http://www.ioncube.com/loaders.php). All you have to do is select the loader that's applicable to your machine. The first step is to determine the Operating System that you're using and the version of PHP installed. You can do that by executing the `phpinfo()` function:
+You can install ioncube by downloading the ioncube loader from the [ioncube website](http://www.ioncube.com/loaders.php). All you have to do is select the loader that's applicable for your machine. The first step is to determine the Operating System that you're using and the version of PHP installed. You can do that by executing the `phpinfo()` function:
 
 ```php
 <?php
@@ -113,11 +113,8 @@ After installing SPBAS you're now ready for configuration. Configuring SPBAS can
 
 ####Products
 
-To add products all you have to do is click on the following links in order:
+To add products all you have to do is click on the following links in order: settings -> storefronts & products -> products -> add product
 
-```
-settings > storefronts & products > products > add product
-```
 
 Once you're in the add product page simply enter the details for the application that you're trying to sell:
 
@@ -126,22 +123,15 @@ Once you're in the add product page simply enter the details for the application
 
 ####Pricing Tier
 
-After adding a product you have to add a pricing tier. Things such as the minimum quantity, maximum quantity and price can be added here. You can add a price tier by going to:
+After adding a product you have to add a pricing tier. Things such as the minimum quantity, maximum quantity and price can be added here. You can add a price tier by going to: settings -> storefronts & products -> products -> find the product that you want -> manage -> product price tier -> add price tier	
 
-```
-settings > storefronts & products > products > find the product that you want > manage > product price tier > add price tier	
-```
 
 ![add pricing tier](/images/posts/getting_started_with_business_automation_software/2-Add-pricing-tier.png)
 
 
 ####System Configuration
 
-After adding the pricing tier for a specific product you may also want to configure the overall system settings. Things such as the date format, time format, default upload path and your SPBAS license key can be added from here. The system configuration page can be accessed by going to:
-
-```
-admin > system > application > system configuration
-```
+After adding the pricing tier for a specific product you may also want to configure the overall system settings. Things such as the date format, time format, default upload path and your SPBAS license key can be added from here. The system configuration page can be accessed by going to: admin -> system -> application -> system configuration
 
 If you still remember that license key that you got from the SPBAS website earlier that's the one that you should supply in the SPBAS license key field. Another important configuration is the media upload path. This is where the product files are going to be uploaded. 
 
@@ -151,11 +141,7 @@ If you still remember that license key that you got from the SPBAS website earli
 ####Licensing Method
 
 Next is the optional licensing method. I said optional because not all products requires a license in order to work. If the application that you're trying to sell is a one-time payment only then there's no need to setup a licensing method. But if you're application requires a license in order to work then read on.
-The licensing method is the type of licensing that you want to use for the products that you're selling. A licensing method can be added by going to:
-
-```
-settings > licensing > licensing methods > add a new method
-```
+The licensing method is the type of licensing that you want to use for the products that you're selling. A licensing method can be added by going to: settings -> licensing -> licensing methods -> add a new method
 
 Note that the SPBAS is the recommended licensing method as its the only licensing method that's actively developed.
 
@@ -171,21 +157,14 @@ As I have said earlier I'm only going to discuss about the necessary parts in or
 ####Download Category
 
 Next is the download category. Download categories is part of the group of settings for setting up downloads for your products.
-To add a new download category go to:
-
-```
-settings > media > downloads > new category
-``` 
+To add a new download category go to: settings -> media -> downloads -> new category
 
 From there you can create a new download category. Simply click on the add category button once you're done giving the download category a name.
 
 ![add download category](/images/posts/getting_started_with_business_automation_software/6-add-download-category.png)
 
-Once you're done with that you can now add a specific media or the archive version of the product that you're trying to sell to that download category. You can do that by going to:
+Once you're done with that you can now add a specific media or the archive version of the product that you're trying to sell to that download category. You can do that by going to: settings -> media -> downloads -> media
 
-```
-settings > media > downloads > media
-```
 
 Then simply supply the display name and the actual file name. Note that the file should exist in the media upload path that you supplied earlier in the system configuration page. If this doesn't work, simply use the web upload feature in which you can manually upload the files. After that click on the add media to category button to add the files to a specific download category.
 
@@ -194,13 +173,10 @@ Then simply supply the display name and the actual file name. Note that the file
 
 ####Media Set
 
-Media sets are categories of downloads that can be assigned to product price tiers as assets. In simple terms they are used to link pricing tiers to the files for a specific product. You can add a media set by going to:
+Media sets are categories of downloads that can be assigned to product price tiers as assets. In simple terms they are used to link pricing tiers to the files for a specific product. You can add a media set by going to: settings -> media -> media sets -> add media set
 
-```
-settings > media > media sets > add media set
-```
 
-Give the media set a name that can be easily recognizable as part of a specific price tier and click on the add new button.
+Give the media set a name that can be easily recognized as part of a specific price tier and click on the add new button.
 
 ![add media set](/images/posts/getting_started_with_business_automation_software/8-addmedia-set.png)
 
@@ -208,11 +184,7 @@ Once you're done with that simply assign the media set to a specific product pri
 
 ![assign asset to media set](/images/posts/getting_started_with_business_automation_software/9-assign-asset-pricing-tier-to-media-set.png)
 
-After that you can now assign a media category to the media set. You can do this by going to:
-
-```
-settings > media > media sets > assign media to sets
-```
+After that you can now assign a media category to the media set. You can do this by going to: settings -> media -> media sets -> assign media to sets
 
 ![assign media category to media set](/images/posts/getting_started_with_business_automation_software/10-assign-media-category-to-media-set.png)
 
@@ -225,11 +197,8 @@ In order to create new license keys you must first assign the licensing method t
 
 ####Assigning Product Order to Form
 
-Finally you can now assign a specific product to the order form. This will allow customer to see your product listed on the order page of your SPBAS installation. You can do that by going to:
+Finally you can now assign a specific product to the order form. This will allow customers to see your product listed on the order page of your SPBAS installation. You can do that by going to: settings -> storefronts & products -> order forms
 
-```
-settings > storefronts & products > order forms
-```
 
 Once you are there simply check the checkbox beside the Products to assign your products to your order form.
 
@@ -283,12 +252,7 @@ if(!empty($license_key)){
 ?>
 ```
 
-You may want to encode this specific part of the code using something like Ioncube so the implementation details are protected. The only downside is that the ioncube loader should also be installed anywhere where your app is going to run so its not really feasible in most cases.
-
-
-###Conclusion
-
-SPBAS is a nice way in which you can automate your business but it is by no means an alternative to an app store. 
+You may want to encode this specific part of the code using something like Ioncube so the implementation details are protected. One final thing to note is that the ioncube loader should also be installed on the server where you plan to deploy.
 
 
 ###Resources
