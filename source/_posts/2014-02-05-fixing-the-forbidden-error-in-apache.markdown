@@ -45,7 +45,7 @@ Now change it to your preferred location. For me its in the `web_files` director
 </Directory>
 ```
 
-Next edit the the `000-default.conf` file inside the `etc/apache2/sites-available directory and add the same directives that we added on the `apache2.conf` file:
+Next edit the the `000-default.conf` file inside the `etc/apache2/sites-available` directory and add the same directives that we added on the `apache2.conf` file:
 
 ```
 DocumentRoot /home/wern/web_files
