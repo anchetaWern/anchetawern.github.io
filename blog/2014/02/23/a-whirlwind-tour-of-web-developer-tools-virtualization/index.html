@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A Whirlwind Tour of Web Developer Tools: Virtualization - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this third part of the series A Whirlwind Tour of Web Developer Tools I&rsquo;ll walk you through virtualization.
+But before we dive in let&rsquo; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">A Whirlwind Tour of Web Developer Tools: Virtualization</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-23T08:16:00+08:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this third part of the series <a href="http://anchetawern.github.io/blog/2014/02/09/a-whirlwind-tour-of-web-developer-tools/">A Whirlwind Tour of Web Developer Tools</a> I&rsquo;ll walk you through virtualization.
+But before we dive in let&rsquo;s first define what virtualization is. According to Wikipedia:</p>
+
+<blockquote><p>Virtualization is the act of creating a virtual (rather than actual) version of something, including but not limited to a virtual computer hardware platform, operating system, storage device, or computer network resources.</p></blockquote>
+
+
+<p></p>
+
+<p>In simple terms virtualization is creating a virtual copy of something. Virtual meaning that its not actually real but you can actually do things just like you do with the real thing.</p>
+
+<p>The first thing that comes to mind when you say virtualization in the world of computing is Virtualbox, VMWare and other virtualization software. And that&rsquo;s exactly what I&rsquo;m going to talk about in this blog post but of course in relation to web development.</p>
+
+<h3>VirtualBox</h3>
+
+<p>Virtualbox is a free cross-platform virtualization platform. Cross-platform meaning you can run it on every major operating system (Windows, Linux, Mac). And yeah if you haven&rsquo;t catch it the first time its free so you can use it however you want without paying for it.
+Virtualbox allows you to run a copy of the operating system that you don&rsquo;t currently have on your machine. For example if you&rsquo;re currently using Ubuntu then you can run Windows or Mac on Virtualbox. And the same is true with whatever operating system you have currently installed physically.</p>
+
+<p>This blog post isn&rsquo;t going to be a whole tutorial about Virtualbox. There&rsquo;s already a bunch of information about that in the <a href="https://www.virtualbox.org/manual/ch01.html">official documentation</a> so use that if you don&rsquo;t know how to use Virtualbox yet. But one thing to keep in mind when using Virtualbox is that you should acquire an installer of the operating system that you want virtualize using Virtualbox just like you do when you want to install it on your machine.</p>
+
+<h3>Emulation Software</h3>
+
+<p>One subject that&rsquo;s related to Virtualization is Emulation. They&rsquo;re sort of similar but they&rsquo;re not. Basically the main difference is the environment (hardware) where the software runs. When you say emulation the environment doesn&rsquo;t necessarily have to be the same to that of the original piece of software that you&rsquo;re trying to run. For example when playing an <a href="http://en.wikipedia.org/wiki/Nintendo_DS">NDS</a> game in your computer. That is possible through the use of an emulator. Your computer doesn&rsquo;t have the same hardware to that of an NDS but the emulator software makes it as if the game is running on an actual NDS hardware.</p>
+
+<p>Whereas Virtualization is running a piece of software, in this case the operating system in the same type of environment.</p>
+
+<p>So why did I just go over the difference between Emulation and Virtualization? That&rsquo;s because emulation is another piece of this whole blog post. You can also use emulation software as a substitute if Virtualization isn&rsquo;t feasible in your case.</p>
+
+<p>Emulation software allows you to run software that you can only run on a specific operating system. For example if you only want to test out the website that you created in Internet Explorer and you&rsquo;re currently running Linux then you can use an emulation software instead of installing a copy of the Windows operating system on Virtualbox. Again I won&rsquo;t be walking you through how to install an emulation software. Instead I&rsquo;ll just provide you with some links to get you started:</p>
+
+<ul>
+<li><a href="http://www.winehq.org/">Wine</a> &ndash; windows software emulator for Linux, BSD, Solaris and Mac OS X.</li>
+<li><a href="http://www.codeweavers.com/products/crossover-mac/">Crossover</a> &ndash; windows software emulator for Mac.</li>
+<li><a href="http://winebottler.kronenberg.org/">Winebottler</a> &ndash; run windows-based programs on Mac.</li>
+<li><a href="http://www.cygwin.com/">Cygwin</a> &ndash; provides a unix-like environment and command-line interface for Windows.</li>
+<li><a href="http://www.finkproject.org/">Fink</a> &ndash; run unix-based software on Mac.</li>
+</ul>
+
+
+<h3>Vagrant</h3>
+
+<p>Using Virtualbox or emulation software for testing the websites that you have created is nice but what if you need to test it out on a machine with exactly the same environment? Developers are known for making the excuse &ldquo;It works on my machine&rdquo; when the application that they have developed suddenly stops working or acts weird. With Vagrant you can now say goodbye to that excuse. What Vagrant allows you to do is create a virtual copy of a specific operating system and access and modify its files right from the host operating system (the operating system that you&rsquo;re currently running).
+It also allows you to install software into the virtual operating system directly from your terminal through the use of <code>ssh</code>.
+But what is the advantage of this over using Virtualbox? Its true that you can do any of the things that I&rsquo;ve mentioned above without using Vagrant. But the main advantage I think is the performance. Vagrant allows you to perform the installation of software and manipulating of files right from your host operating system so its a lot faster than booting up your virtual machine and doing your modifications from there. That is especially true if your machine doesn&rsquo;t have the most badass processor, solid state drive, and a bazillion of memory.</p>
+
+<h4>Installing Vagrant</h4>
+
+<p>Vagrant depends on Virtualbox in order to work so you need to have Virtualbox installed before installing Vagrant. The current version of Vagrant at the time of writing of this post is 1.4.3 and its only compatible with version 4.2.16 of Virtualbox. This poses some trouble for Linux users since the official repository for Virtualbox only serves the latest version of Virtualbox which is 4.3.6. For Windows and Mac users there&rsquo;s no problem since you can just download an older version of Virtualbox from <a href="https://www.virtualbox.org/wiki/Download_Old_Builds_4_2">this page</a> and install it using the installer. For Linux users the installers for old versions are also available from that page and you can also try installing Virtualbox using those installers. But as for my personal experience I didn&rsquo;t have any luck with any of those installers. I get an error whenever I try to install it. Thankfully I found a good tutorial on <a href="http://linuxg.net/how-to-install-virtualbox-4-2-16-on-ubuntu-linux-mint-debian-and-fedora/">how to install Virtualbox 4.2.16</a> on some of the most popular Linux distributions. If you didn&rsquo;t have any luck with the installers provided from the Virtualbox site then you might as well try that link.</p>
+
+<p>Once you&rsquo;re done installing Virtualbox you can now download the Vagrant installer from the <a href="http://www.vagrantup.com/downloads">Vagrant downloads page</a> just select the installer that applies for you then install it. The installer will automatically add <code>vagrant</code> to your system path so you can simply use the <code>vagrant</code> command from your terminal without having to specify the path.</p>
+
+<h3>Using Vagrant</h3>
+
+<p>After installing Vagrant you should already have access to the <code>vagrant</code> command from your terminal. You can execute the following command to test out if Vagrant was successfully installed:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant --version</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If it returns something like <code>vagrant version 1.2.2</code> then Vagrant was successfully installed on your machine.</p>
+
+<p>The next step is a pretty long wait if you do not have a fast internet connection and the server that is serving the vagrant box files are busy. As for me it took a whole afternoon (around 6-8 hours) for the vagrant box to be fully downloaded.</p>
+
+<p>But before we move on I believe a little background on what a vagrant box is is necessary. Basically vagrant boxes are virtual copies of an operating system. Pretty much like the <code>.vdi</code> or <code>.vmdk</code> file that&rsquo;s being created by Virtualbox or VMWare when you create a virtual machine.</p>
+
+<p>Vagrant boxes can be downloaded from <a href="http://www.vagrantbox.es/">vagrantbox.es</a>. You can add a box to Vagrant by executing the following command from the terminal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant box add box_name url_from_vagrantboxes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where <code>box_name</code> is any machine friendly title (use underscores or dashes instead of spaces) that you want to use to refer to your box later on. And the <code>url_from_vagrantboxes</code> is the URL that you get from the vagrantboxes site. For this tutorial were going to work with the Ubuntu precise 32 box:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant box add precise32 http://files.vagrantup.com/precise32.box</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After executing the command above you might want to go out a bit or watch a whole season of your favorite TV show unless your download speed is blazingly fast.</p>
+
+<p>Once that&rsquo;s done you can now start using the box as a template for the machine that you need to build. First create your working directory and open up a terminal and execute the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant init</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create a vagrant init file. This file will contain the configuration for the box that you&rsquo;re going to build. The <code>Vagrantfile</code> generated by using <code>vagrant init</code> will just contain comments and some sample configuration. You can read through those comments if you want. But to avoid confusion simply create your own vagrant configuration file by creating a new file and putting the following contents:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Vagrant.configure("2") do |config|
+</span><span class='line'>  config.vm.box = "precise32" #the box_name that you used earlier
+</span><span class='line'>  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+</span><span class='line'>  config.vm.network :forwarded_port, guest: 80, host: 8080
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just name the file <code>Vagrantfile</code> so it can be recognized by vagrant when you execute any vagrant commands. Note that for the value for the <code>config.vm.box</code> it should be the <code>box_name</code> that you used earlier when you executed the <code>vagrant box add</code> command. If you&rsquo;re not sure what the name of your box is then simply execute <code>vagrant box list</code> to list all the boxes that&rsquo;s currently available on your machine. The <code>config.vm.box_url</code> is the url in which vagrant will download the box if it hasn&rsquo;t already been installed in your machine. We already installed the box earlier so vagrant will simply ignore this option. The last setting is the <code>config.vm.network</code> this simply tells vagrant to forward port 80 from the guest machine to port 8080 on the host machine. I&rsquo;ll explain more on this later.</p>
+
+<p>Now you can execute <code>vagrant up</code> to initialize the box. You can see something similar to the following when vagrant has successfully brought up the box:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-up.png" alt="vagrant up" /></p>
+
+<p>Once this is executed for the first time you will notice that vagrant automatically creates a virtual machine on virtualbox:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-box.png" alt="virtual machine" /></p>
+
+<p>You can perfectly access this machine from virtualbox if you want to do anything manually from the guest operating system.</p>
+
+<p>Next execute <code>vagrant ssh</code>. This will allow you to login to the box. After executing that you will see something similar to the following:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-login.png" alt="vagrant ssh" /></p>
+
+<p>Now you can run wild and go crazy. Install all the applications that you need to install. As for me I&rsquo;m primarily working on a LAMP (Linux, Apache, MySQL, PHP) stack so I&rsquo;m going to install PHP, MySQL, and Apache on this box. But first we need to download the package lists from the software repositories and update the existing ones to get information on the latest versions of packages and their dependencies. You can do that by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done we can now install the things that we need:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apt-get install -y apache2 
+</span><span class='line'>apt-get install curl
+</span><span class='line'>apt-get install libcurl3 php5-curl
+</span><span class='line'>apt-get install php5
+</span><span class='line'>apt-get install libapache2-mod-php5
+</span><span class='line'>apt-get install mysql-server
+</span><span class='line'>apt-get install php5-mysql</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Once those are done delete the <code>/var/www</code> directory and all of its contents and create a soft link between the the <code>/vagrant</code> directory and the <code>/var/www</code> directory.  You can do that by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rm -rf /var/www
+</span><span class='line'>ln -fs /vagrant /var/www</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You may ask we just deleted the <code>/var/www</code> directory and all of its contents so why are we creating a link to something that&rsquo;s already deleted? Good question! Making a soft link to a non-existent directory has the side-effect of creating that directory. We deleted it so we become the owner of that directory.</p>
+
+<p>Once that&rsquo;s done you can now treat your working directory as if its the <code>/var/www</code> directory in your box. Don&rsquo;t believe me? You can go ahead and create a new file in your working directory (open up a new terminal since the current terminal is referring to your box):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>touch newfile.txt </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now go back to the terminal window in which you have logged in to your box using <code>vagrant ssh</code>. Go back two directories and enter the <code>vagrant</code> directory (this assumes that you&rsquo;re currently in the directory that&rsquo;s listing the <code>postinstall.sh</code> file when you execute the <code>ls</code> command) :</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ../../vagrant</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now execute the <code>ls</code> command to list out all the files in that directory. You&rsquo;ll see that your <code>newfile.txt</code> is listed. Yes you can go ahead on go crazy and create a whole bunch of files through your host operating system in your working directory. Once you&rsquo;re satisfied come back to this blog post. I&rsquo;ll wait.</p>
+
+<p>Now if you remember earlier on the <code>Vagrantfile</code> that you created we have this particular line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>config.vm.network :forwarded_port, guest: 80, host: 8080</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is forwarding the port 80 of the guest (your box) to port 8080 of your host operating system. As you might already know port 80 is the default port used by Apache so if we access <code>http://localhost:8080</code> from the browser in the host OS it will actually give us what&rsquo;s in <code>http://localhost:80</code> in the box.
+You can test it out by creating an <code>index.php</code> file on your working directory (host OS) and put the following contents:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;hello world from vagrant box&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now access <code>http://localhost:8080</code> from your browser and it will output &lsquo;hello world from vagrant box&rsquo;.</p>
+
+<p>Once you&rsquo;re done playing with Vagrant you can now execute <code>exit</code> to logout from the box. After that you can either execute <code>vagrant halt</code> to shutdown the box or <code>vagrant suspend</code> to save the state of the machine, its like doing a hibernate so the box won&rsquo;t have to do a full boot when you access the box again. To work with your box again the <code>vagrant resume</code> command is used when you do <code>vagrant suspend</code> and the <code>vagrant up</code> is used when you do a <code>vagrant halt</code>. An important thing to remember is that you should do a <code>vagrant suspend</code> whenever you do not have any changes in your <code>Vagrantfile</code>. This makes it faster to get your guest machine running. However if you have some changes to your <code>Vagrantfile</code> you should do a <code>vagrant halt</code> for the changes to take effect when you do a <code>vagrant up</code>.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.virtualbox.org/">Virtualbox</a></li>
+<li><a href="http://docs.vagrantup.com/v2/">Vagrant Documentation</a></li>
+<li><a href="http://www.vagrantbox.es/">Vagrant Boxes</a></li>
+<li><a href="http://rove.io/">Rove</a> &ndash; you can use this for easily creating vagrant files</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-23T08:16:00+08:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/tools/'>tools</a>, <a class='category' href='/blog/categories/vagrant/'>vagrant</a>, <a class='category' href='/blog/categories/virtualization/'>virtualization</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/20/introduction-to-octo-wysiwyg/" title="Previous Post: Introduction to Octo-wysiwyg">&laquo; Introduction to Octo-wysiwyg</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/">A Whirlwind Tour of Web Developer Tools: Virtualization</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/20/introduction-to-octo-wysiwyg/">Introduction to Octo-wysiwyg</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors/">A whirlwind Tour of Web Developer Tools: Text Editors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/09/a-whirlwind-tour-of-web-developer-tools/">A Whirlwind Tour of Web Developer Tools: In-Browser Tools</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">Fixing the Forbidden Error in Apache</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
