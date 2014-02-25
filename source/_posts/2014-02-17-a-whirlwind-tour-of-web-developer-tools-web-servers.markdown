@@ -1,13 +1,15 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Web Servers"
-date: 2014-02-17 14:35
+date: 2014-03-02 14:35
 comments: true
 categories: [web-servers, web-development, tools]
 published: false
 ---
 
-In this part four of the series A Whirlwind Tour of Web Developer Tools I'm going to walk you through web servers. Web servers are computers that commonly delivers web pages. But when talking about web development web server refers to the software used for serving up the web pages. In this blog post I'm going to talk about 4 web servers that you can use in serving up your projects online.
+In this part four of the series A Whirlwind Tour of Web Developer Tools I'm going to walk you through web servers. Web servers are computers that commonly delivers web pages. But when talking about web development web server refers to the software used for serving up the web pages. In this blog post I'm going to talk about 4 web servers that you can use in serving up your web projects.
+
+<!--more-->
 
 ###Python Simple HTTP Server
 
@@ -61,7 +63,7 @@ Note that if you do not have a default file (either `index.html` or `index.php` 
 
 ![php-server](/images/posts/whirlwind_tour_webservers/php-server.png)
 
-The advantage of using the PHP server over simple http server is that you can actually create some php files in the directory that you are serving, write some code in it and it will also be able to interpret it for you. 
+The advantage of using the PHP server over simple http server is that you can actually create some php files in the directory that you are serving, write some code in it and the server will also be able to interpret it for you. 
 
 ###Apache
 
@@ -72,7 +74,7 @@ sudo apt-get install apache2
 sudo /etc/init.d/apache2 restart
 ```
 
-For Windows users there is this thing called [WAMP](http://www.wampserver.com/en/) which you can install. Apache is packaged with it along with MySQL and PHP so you can start playing with it immediately without doing a lot of configuration. You can also have them installed separately but you will have to do some configuration before you can start playing with it. I've written a tutorial about it before: [How to install and configure apache, php, and mysql](http://kyokasuigetsu25.wordpress.com/2012/04/12/how-to-install-and-configure-apache-php-and-mysql/). 
+For Windows users there is this thing called [WAMP](http://www.wampserver.com/en/) which you can install. Apache is packaged with it along with MySQL and PHP so you can start playing with it immediately without doing a lot of configuration. You can also have them installed separately but you will have to do some configuration before you can start playing with it. I've written a tutorial about it before: [How to install and configure apache, php, and mysql](http://kyokasuigetsu25.wordpress.com/2012/04/12/how-to-install-and-configure-apache-php-and-mysql/) so check that out if you do not want to use packaged versions. 
 
 For MAC OS there's [MAMP](http://www.mamp.info/en/index.html).
 
@@ -87,7 +89,7 @@ After configuring the default web directory used by Apache you can now put some 
 ```html
 <h1>Hello World from Apache!</h1>
 ```
-Now if you go to [http://localhost](http://localhost) you can now see the `index.html` being served by Apache. Apache serves everything on port 80 by default so we didn't have to add the port when we access it from the browser. This is because the browser knows by default that web pages are served at port 80.
+Now if you go to [http://localhost](http://localhost) you can now see the `index.html` being served by Apache. Apache serves everything on port 80 by default so we didn't have to add the port when we access it from the browser. This is because the browser knows by default that web pages are served at port 80. If you already have PHP installed you can also serve php files. Apache already knows how to serve those by default so there's no need for further configuration.
 
 ###Nginx
 
@@ -133,7 +135,7 @@ server {
 	index index.html index.htm;
 ```
 
-There are 2 things that you can do from here. First replace the 2 instances of `80` which is the default port used by Nginx into something like `6789`. Then you can also change the default web directory. Nginx uses `/usr/share/nginx/html` as its default, you can change it to something like `/home/your_user_name/nginx_web_files`. After updating the `default` file it should now look like this:
+There are 2 things that you can do from here. First replace the 2 instances of `80` which is the default port used by Nginx to something like `6789`. Then you can also change the default web directory. Nginx uses `/usr/share/nginx/html` as its default, you can change it to something like `/home/your_user_name/nginx_web_files`. After updating the `default` file it should now look like this:
 
 ```
 server {
@@ -206,7 +208,7 @@ fastcgi_split_path_info ^(.+\.php)(/.+)$;
 }
 ```
 
-Save the changes and restart php5-fmp and Nginx:
+Save the changes and restart php5-fpm and Nginx:
 
 ```
 sudo service php5-fpm restart
@@ -215,9 +217,20 @@ nginx -s reload
 
 You can now request a PHP file from Nginx.
 
+###Conclusion
+
+You've learned how to serve up web pages using the following http servers:
+
+- SimpleHTTPServer
+- PHP Server
+- Apache HTTP Server
+- Nginx
+
+Web Servers are flexible by default. They can serve up different types of content and they can also serve up interpreted language such as PHP. You can pretty much live with the just the defaults but if your web project is something that's used by many people across the world then its important that you configure your web server to accommodate the needs of every user. And that is to be able to access your website fast and securely.   
+
 ###Resources
 
 - [Simple HTTP Server](http://docs.python.org/2/library/simplehttpserver.html)
 - [PHP Built-in Web Server](http://www.php.net/manual/en/features.commandline.webserver.php)
 - [Apache HTTP Server](http://httpd.apache.org/docs/)
-- [Nginx](http://nginx.org/en/docs/)
+- [Nginx](http://nginx.org/en/docs/
