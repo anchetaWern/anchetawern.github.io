@@ -88,6 +88,8 @@ But before we dive in let&rsquo; &hellip;">
   
 
 
+
+  
 <time datetime="2014-02-23T08:16:00+08:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
@@ -106,6 +108,9 @@ But before we dive in let&rsquo;s first define what virtualization is. According
 <p></p>
 
 <p>In simple terms virtualization is creating a virtual copy of something. Virtual meaning that its not actually real but you can actually do things just like you do with the real thing.</p>
+
+<!--more-->
+
 
 <p>The first thing that comes to mind when you say virtualization in the world of computing is Virtualbox, VMWare and other virtualization software. And that&rsquo;s exactly what I&rsquo;m going to talk about in this blog post but of course in relation to web development.</p>
 
@@ -161,6 +166,8 @@ But what is the advantage of this over using Virtualbox? Its true that you can d
 
 <p>But before we move on I believe a little background on what a vagrant box is is necessary. Basically vagrant boxes are virtual copies of an operating system. Pretty much like the <code>.vdi</code> or <code>.vmdk</code> file that&rsquo;s being created by Virtualbox or VMWare when you create a virtual machine.</p>
 
+<h4>Adding Vagrant Boxes</h4>
+
 <p>Vagrant boxes can be downloaded from <a href="http://www.vagrantbox.es/">vagrantbox.es</a>. You can add a box to Vagrant by executing the following command from the terminal:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -174,6 +181,8 @@ But what is the advantage of this over using Virtualbox? Its true that you can d
 
 
 <p>After executing the command above you might want to go out a bit or watch a whole season of your favorite TV show unless your download speed is blazingly fast.</p>
+
+<h4>Vagrant Box Configuration File</h4>
 
 <p>Once that&rsquo;s done you can now start using the box as a template for the machine that you need to build. First create your working directory and open up a terminal and execute the following:</p>
 
@@ -207,9 +216,13 @@ But what is the advantage of this over using Virtualbox? Its true that you can d
 
 <p>You can perfectly access this machine from virtualbox if you want to do anything manually from the guest operating system.</p>
 
+<h4>Logging in to the box</h4>
+
 <p>Next execute <code>vagrant ssh</code>. This will allow you to login to the box. After executing that you will see something similar to the following:</p>
 
 <p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-login.png" alt="vagrant ssh" /></p>
+
+<h4>Installing Software</h4>
 
 <p>Now you can run wild and go crazy. Install all the applications that you need to install. As for me I&rsquo;m primarily working on a LAMP (Linux, Apache, MySQL, PHP) stack so I&rsquo;m going to install PHP, MySQL, and Apache on this box. But first we need to download the package lists from the software repositories and update the existing ones to get information on the latest versions of packages and their dependencies. You can do that by executing the following command:</p>
 
@@ -226,16 +239,18 @@ But what is the advantage of this over using Virtualbox? Its true that you can d
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>apt-get install -y apache2 
-</span><span class='line'>apt-get install curl
-</span><span class='line'>apt-get install libcurl3 php5-curl
-</span><span class='line'>apt-get install php5
-</span><span class='line'>apt-get install libapache2-mod-php5
-</span><span class='line'>apt-get install mysql-server
-</span><span class='line'>apt-get install php5-mysql</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo "Y" | apt-get install -y apache2 
+</span><span class='line'>echo "Y" | apt-get install curl
+</span><span class='line'>echo "Y" | apt-get install libcurl3 php5-curl
+</span><span class='line'>echo "Y" | apt-get install php5
+</span><span class='line'>echo "Y" | apt-get install libapache2-mod-php5
+</span><span class='line'>echo "Y" | apt-get install mysql-server
+</span><span class='line'>echo "Y" | apt-get install php5-mysql</span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
+<p>Note that the <code>echo "Y"</code> here simply means that we supply <code>Y</code> as the answer if ever the installer asks for a response on whether to install the software or not. <code>Y</code> means yes in this case.</p>
+
+<h4>Linking Up Directories</h4>
 
 <p>Once those are done delete the <code>/var/www</code> directory and all of its contents and create a soft link between the the <code>/vagrant</code> directory and the <code>/var/www</code> directory.  You can do that by executing the following command:</p>
 
@@ -261,6 +276,8 @@ But what is the advantage of this over using Virtualbox? Its true that you can d
 
 <p>Now execute the <code>ls</code> command to list out all the files in that directory. You&rsquo;ll see that your <code>newfile.txt</code> is listed. Yes you can go ahead on go crazy and create a whole bunch of files through your host operating system in your working directory. Once you&rsquo;re satisfied come back to this blog post. I&rsquo;ll wait.</p>
 
+<h4>Port-Forwarding</h4>
+
 <p>Now if you remember earlier on the <code>Vagrantfile</code> that you created we have this particular line:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -281,7 +298,59 @@ You can test it out by creating an <code>index.php</code> file on your working d
 
 <p>Now access <code>http://localhost:8080</code> from your browser and it will output &lsquo;hello world from vagrant box&rsquo;.</p>
 
+<h4>Logging out of the box</h4>
+
 <p>Once you&rsquo;re done playing with Vagrant you can now execute <code>exit</code> to logout from the box. After that you can either execute <code>vagrant halt</code> to shutdown the box or <code>vagrant suspend</code> to save the state of the machine, its like doing a hibernate so the box won&rsquo;t have to do a full boot when you access the box again. To work with your box again the <code>vagrant resume</code> command is used when you do <code>vagrant suspend</code> and the <code>vagrant up</code> is used when you do a <code>vagrant halt</code>. An important thing to remember is that you should do a <code>vagrant suspend</code> whenever you do not have any changes in your <code>Vagrantfile</code>. This makes it faster to get your guest machine running. However if you have some changes to your <code>Vagrantfile</code> you should do a <code>vagrant halt</code> for the changes to take effect when you do a <code>vagrant up</code>.</p>
+
+<h4>Packaging the box</h4>
+
+<p>Another useful thing that you could do is packaging up the box so that you can share it with your team if you have any. This ensures that you have the same configuration with the rest of your team. This allows you to avoid any incompatibility issues like missing software or a different configuration of the <code>php.ini</code> file if you&rsquo;re primarily working with PHP.</p>
+
+<p>To package up a box, navigate to your working directory and then execute the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vagrant package --output package.box --vagrantfile Vagrantfile</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the command above will power of the box so you&rsquo;ll have to do <code>vagrant up</code> the next time you want to use the box even if you used <code>vagrant suspend</code> the last time you used it. The command above will also take a bit of time to finish depending on the amount of customization that you have done on the box. You may also end up with a larger <code>.box</code> file than the one that you previously downloaded from vagrantbox.es since all the software that you installed on the box will also be in the <code>.box</code> file that will be generated by vagrant.</p>
+
+<p>Once vagrant is done you will have a <code>package.box</code> file under your working directory. You can then share this file along with the <code>Vagrantfile</code> to the rest of your team so that they can make use of the box. Another team member can just create his working directory and then copy the <code>package.box</code> file to that directory and then execute the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vagrant box add box_name package.box</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure to change the <code>box_name</code> to a more recognizable name. You can also tell your team mate to just name it to be the same as the name of the box that you originally created so they won&rsquo;t need to update the <code>Vagrantfile</code> to use the new box name.</p>
+
+<p>Once that&rsquo;s done they can just use <code>vagrant up</code> to boot up the box.</p>
+
+<h4>Destroying the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the virtual machine that is generated when you executed <code>vagrant up</code>)  you can execute the following from your working directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vagrant destroy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will delete the virtual machine and free up all the resources (hard disk space, memory, etc.) that it consumed when you created it.</p>
+
+<h4>Removing the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the box that is created when you executed <code>vagrant box add</code>, in other words the box where your box originated from) execute the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vagrant box remove box_name provider</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where the <code>box_name</code> refers to the name that you used when you created the box using <code>vagrant box add box_name</code>. And the provider refers to the virtualization software. If you do not know the box name and the provider simply execute <code>vagrant box list</code>. This will list out all the vagrant boxes installed on your machine. The one enclosed in parenthesis is the provider. In our case its virtualbox.</p>
+
+<h3>Conclusion</h3>
+
+<p>Virtualization is a great way to experiment on different technologies if you want to avoid messing up your current system configuration. Its also a good way to test out your web projects on different machines without having to install it physically on your current machine.</p>
 
 <h3>Resources</h3>
 
@@ -289,7 +358,7 @@ You can test it out by creating an <code>index.php</code> file on your working d
 <li><a href="https://www.virtualbox.org/">Virtualbox</a></li>
 <li><a href="http://docs.vagrantup.com/v2/">Vagrant Documentation</a></li>
 <li><a href="http://www.vagrantbox.es/">Vagrant Boxes</a></li>
-<li><a href="http://rove.io/">Rove</a> &ndash; you can use this for easily creating vagrant files</li>
+<li><a href="http://rove.io/">Rove</a> &ndash; you can use this for easily creating Vagrant files</li>
 </ul>
 
 </div>
@@ -314,7 +383,9 @@ You can test it out by creating an <code>index.php</code> file on your working d
   
 
 
-<time datetime="2014-02-23T08:16:00+08:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2014</time>
+
+  
+<time datetime="2014-02-25T00:00:00+08:00" class="updated">Updated Feb 25<span>th</span>, 2014</time>
       
 
 <span class="categories">
