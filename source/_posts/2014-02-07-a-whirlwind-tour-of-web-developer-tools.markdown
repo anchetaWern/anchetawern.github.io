@@ -5,7 +5,7 @@ date: 2014-02-09 12:30
 comments: true
 categories: [web-development, tools, browser-tools]
 published: true
-updated: 2014-02-11 
+updated: 2014-02-25 
 ---
 
 In this series of blog posts I'm going to give you an overview of some of the tools that are commonly used by web developers to get their work done. You can expect some examples on how to install and use each tool but I won't be going too deep. The main purpose is to simply give you an idea on what tools are available, how to use them and encourage you to integrate them into your workflow. Note that the tools that will be mentioned in this blog post aren't platform specific so you can use them whether you're developing in Windows, Linux or Mac. Over the coming weeks I'm going to walk you through the following:
@@ -15,14 +15,17 @@ In this series of blog posts I'm going to give you an overview of some of the to
  - Virtualization
  - Web Servers
  - Command Line Utilities
- - Boilerplates
- - Front-end Frameworks
- - Compilers
- - Templating 
+ - Package Managers
+ - Source Control
+ - Build Tools
  - Linting
  - Testing
- - Source Control
+ - Language Compilers
+ - Coding Standards
+ - Boilerplates and Front-end Frameworks
+ - Templating
  - Deployment
+ - Miscellaneous
 
 <!-- more -->
 
@@ -63,6 +66,9 @@ Pretty much the same with the Chrome Developer Tools. It also allows you to insp
 
 The in-browser tool that started it all. It was already around before Chrome Dev Tools and Firefox Dev Tools came out. Most of the features are also the same with that of Chrome Dev Tools and Firefox Dev Tools. 
 
+###Conclusion
+
+In-browser tools are a nice way to easily design and test websites. They allow you to do almost everything right from the browser itself. The main benefit of this is instant feedback. You get to see what effect your changes have on the website right after making the change. Tools like tincr even make it possible to commit your changes to your source files so you won't have to go back to the text-editor and commit your changes.
 
 ###Resources
 
