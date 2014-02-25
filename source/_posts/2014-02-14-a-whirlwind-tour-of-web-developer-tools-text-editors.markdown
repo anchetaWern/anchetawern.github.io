@@ -5,6 +5,7 @@ date: 2014-02-15 11:00
 comments: true
 categories: [text-editors, web-development, tools]
 published: true
+updated: 2014-02-25
 ---
 
 This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I'll be talking about text editors and related tools.
@@ -14,12 +15,12 @@ Text editors are used by web developers to write code. Text editors are not the 
 <!--more-->
 
 
-###Sublime Text
+####Sublime Text
 
 When you say text editor the first thing that comes to mind these days is [Sublime Text](http://www.sublimetext.com/). It's like the sexiest text editor these days. So this whole blog post is primarily going to be about Sublime Text and some of the plugins that I found useful.
 
 
-###Plugins
+#####Plugins
 
 In order to install plugins for Sublime Text you first have to install [package control](https://sublime.wbond.net/) which is a package manager for Sublime Text that allows you to easily install plugins. To install package manager copy the following code in the Sublime Text console which can be accessed by pressing `ctrl + back tick` on your keyboard. After that restart the editor to finish the installation:
 
@@ -67,14 +68,19 @@ And right after pressing `tab` you get a whole bunch of code written out for you
 - [Sublime Linter](https://github.com/SublimeLinter/SublimeLinter-for-ST2) - inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don't know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you're using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable `z` isn't actually used in your code.
 
 
-###IDE
+####IDE
 
 There's also this thing called the IDE or Integrated Development Environment which is basically text editors on steroids. They have huge install size since they allow you to do more than just writing code. IDE's packs a bunch of features which you would not normally find in a text editor such as compiling code. Some IDE's such as Visual Studio also allows you to build the GUI of applications by simply dragging and dropping GUI elements (text boxes, buttons, etc.) from a toolbox. Other features include code completion (intellisense), debugger, integrated services (allows viewing and manipulating the database right from the IDE).
 
 
+###Conclusion
+
+Text editors and IDEs are the main weapons of every web developer. Without it they won't be able to produce any code. So its important to learn the ins and outs of the text-editor or IDE that you are using to maximize your productivity when using it. Be sure to check out the resources below for more Sublime Text awesomeness.
+
 ###Resources
 
 - [Sublime Text Tips and Tricks](http://www.hongkiat.com/blog/sublime-text-tips/)
+- [Perfect Workflow in Sublime Text 2](https://tutsplus.com/course/improve-workflow-in-sublime-text-2/)
 - [Popular Sublime Text Plugins](https://sublime.wbond.net/browse/popular)
 - [Compariosn of Text Editors](http://en.wikipedia.org/wiki/Comparison_of_text_editors)
 - [Comparison of Integrated Development Environments](http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments)
