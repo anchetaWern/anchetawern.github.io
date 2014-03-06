@@ -19,7 +19,7 @@ So the command line is basically an interface where you can type in a bunch of c
 
 ###Command Line Basics
 
-Before we jump into the tools its important that we first understand the basics of using the command line. To access the command line in Linux press `ctrl + alt + t` on your keyboard. For Mac just look for the terminal from your menu. And for Windows just press `window + r` and then type in `cmd`.
+Before we jump into the tools its important that we first understand the basics of using the command line. To access the command line in Linux press `ctrl + alt + t` on your keyboard. For Mac just look for the terminal from your menu. And for Windows just press `window + r` and then type in `cmd` then press `enter`.
 
 ####Commonly used Commands
 
@@ -68,7 +68,7 @@ As you can see you can pretty much scan through the results and determine the co
 
 ####Aliases
 
-Once you've gotten comfortable with the default commands you can now use shortcuts in order to make typing commands faster and easier. You can add aliases by creating a `.bash_aliases` file inside your home directory then add contents similar to the following:
+Once you've gotten comfortable with the default commands you can start using shortcuts in order to make typing commands faster and easier. You can add aliases by creating a `.bash_aliases` file inside your home directory then add contents similar to the following:
 
 ```
 alias subl='/usr/bin/subl'
@@ -96,7 +96,7 @@ alias gs='git status'
 alias gl='git log'
 ```
 
-As you can see from the example above to add an alias simply put `alias` followed by the alias that you want to use, then `=` and followed by the path to the executable. If you do not know the path to the executable file you can use the `which` command followed by the command that you usually use. For example for the `less` command:
+As you can see from the example above to add an alias simply put `alias` followed by the alias that you want to use, then `=` and followed by the path to the executable wrapped in quotes. If you do not know the path to the executable file you can use the `which` command followed by the command that you usually use. For example for the `less` command:
 
 ```
 which less
@@ -120,7 +120,7 @@ Useful for pulling files from a server. For example you can use this to download
 wget http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js
 ```
 
-The command above will pull the file from the URL that you specified and copy it into the directory where your current terminal Window is opened.
+The command above will pull the file from the URL that you specified and copy it into the directory where your current terminal window is opened.
 
 ####Curl
 
@@ -259,13 +259,13 @@ curl --cookie "name=fred;age=22" http://localhost/tester/curl/cookie.php
 
 ####jq
 
-If you normally work with web API's in your job you might find the jq utility useful. What this does is formatting JSON strings, it also adds syntax highlighting so they become readable.  To install jq all you have to do is download the `jq` file from the [downloads page](http://stedolan.github.io/jq/download/) and then move it into your `bin` folder:
+If you normally work with web API's in your job, you might find the jq utility useful. What this does is formatting JSON strings, it also adds syntax highlighting so they become more readable.  To install jq all you have to do is download the `jq` file from the [downloads page](http://stedolan.github.io/jq/download/) and then move it into your `bin` folder:
 
 ```
 mv ~/Downloads/jq /bin/jq
 ```
 
-After that you can start using jq to process JSON strings that comes from curl requests by simply piping it to the `jq` command. For example we are making a request to the following file:
+After that you can start using jq to process JSON strings that comes from curl requests by simply piping it to the `jq` command. For example, we are making a request to the following file:
 
 ```php
 <?php
@@ -350,7 +350,7 @@ Pretty sweet! But you can do much more than that, check out the [manual page](ht
 
 ####Vim
 
-Vim is a text-editor that is based on Vi, which is a text-editor that's pre-installed on common Linux distributions. But hey you might say that the main topic of this blog post is command-line tools why are we suddenly talking about text-editors here? Well its because Vim is tightly coupled with the terminal. In fact its like you're inside a terminal when you launch Vim. And you can easily switch between Vim and the terminal. 
+Vim is a text-editor that is based on Vi, which is a text-editor that's pre-installed on common Linux distributions. But hey you might say that the main topic of this blog post is command-line tools why are we suddenly talking about text-editors here? Well its because Vim is tightly coupled with the terminal. It's like a terminal-text editor crossbreed. You can both execute commands and write code with it.
 
 You can download Vim from the [Vim downloads page](http://www.vim.org/download.php) simply select the version that's applicable to the operating system that you're currently using. But if you're on Linux mint, Ubuntu or other Linux distributions that uses `apt-get` then you simply execute the following command from the terminal:
 
@@ -408,8 +408,8 @@ Or switch to the previous file:
 
 Second thing that you need to know is that vim has 3 modes:
 
-- **command** - used for telling vim to do things. This is the default mode that vim is in when you open it. If you are on another mode other than the command mode you can press on `esc`. 
-- **insert** - used for inserting things on the current file that you're working on.  You can only get to this mode when you are currently on the command mode. To get to this mode press the `i` key.
+- **command** - used for telling vim to do things. This is the default mode that vim is in when you open it. If you are on another mode other than the command mode you can press on `esc` to go back to the command mode. 
+- **insert** - used for inserting things on the current file that you're working on. This is basically the text editor mode. You can only get to this mode when you are currently on the command mode. To get to this mode press the `i` key.
 - **visual** - used for selecting text. Just like the insert mode you can only get to this mode when you are in command mode. To get to this mode press the `v` key.
 
 **Basic Commands**
@@ -474,8 +474,6 @@ Here's a description of what each option does:
 - **set tabstop** - you can use this to specify the tab size. In the example above I've set it to `2` so when you press tab vim will insert 2 spaces
 
 **Resources for learning Vim**
-
-Yep I just said earlier that its just going to be a little getting started guide to vim but hey there's just so much to cover even with just the basics. 
 
 Be sure to check out the resources below to learn more about Vim. Learning Vim is really a painful process since you have to memorize a whole bunch of commands and practice it like you're practicing how to play the piano. Learning Vim is not that easy, lots of practice is required before you can get productive with using it. You can easily get away with just using a text-editor when writing code but if you want some productivity boost then take the time to really learn Vim even if it is painful. Here are some resources for learning Vim:
 
@@ -628,7 +626,7 @@ Once ruby gems is installed you can now install gems like there's no tomorrow. H
 
 ####Tmux
 
-Tmux or terminal multiplexer is an application that allows you to multiplex server terminal consoles. It basically makes it easier to work on several related terminal windows. In Linux you can install tmux from the terminal by executing the following command:
+Tmux or terminal multiplexer is an application that allows you to multiplex several terminal windows. It basically makes it easier to work on several related terminal windows. In Linux you can install tmux from the terminal by executing the following command:
 
 ```
 sudo apt-get install tmux
@@ -712,7 +710,7 @@ You can then create project-based tmux sessions. To create a new project you can
 tmuxinator open name_of_project
 ```
 
-This will create a `name_of_project.yml` file under the `~/.tmuxinator` directory. You can then open up this file and modify the default configuration. For me I simply deleted the commented lines (except for the first one which is the path to the current file) and then specified the project path. In my case its the `octoopress` directory under the home directory. Then under the `windows` the `layout` is `main-vertical`, this means that the panes that I will specify would be divided vertically.  There would be 2 panes, one is empty so I can just type in whatever commands I wish to execute and the other is `rake preview` which is the command for previewing an octopress blog locally:
+This will create a `name_of_project.yml` file under the `~/.tmuxinator` directory. You can then open up this file and modify the default configuration. For me I simply deleted the commented lines (except for the first one which is the path to the current file) and then specified the project path. In my case its the `octopress` directory under the home directory. Then under the `windows` the `layout` is `main-vertical`, this means that the panes that I will specify would be divided vertically.  There would be 2 panes, one is empty so I can just type in whatever commands I wish to execute and the other is `rake preview` which is the command for previewing an octopress blog locally:
 
 ```
 # ~/.tmuxinator/blog.yml
@@ -818,7 +816,7 @@ Check if the `id_rsa.pub` has indeed been copied by using the following command:
 ls -al id_rsa.pub
 ```
 
-If it returns `there's no such file or directory` return to the other terminal window (local machine) and execute the `scp` command again.
+If it returns "there's no such file or directory" return to the other terminal window (local machine) and execute the `scp` command again.
 
 Once that's done the next step is to copy all the contents of the `id_rsa.pub` file into the `authorized_keys` file inside the `.~/ssh` directory:
 
@@ -832,7 +830,7 @@ Next update the `/etc/ssh/sshd_config` file using either `vi` or `nanoc`:
 vi /etc/ssh/sshd_config
 ```
 
-Uncomment the line where it says `# AuthorizedKeysFile`, to uncomment all you have to do is remove the `#` symbol right before it. Vi is basically like vim so the key strokes that you use are pretty much the same. So first you place the cursor right above the `#` symbol, then go to insert mode by pressing `i` and then press `x` to delete the `#` symbol. And then press the `esc` key to go back to command mode and then type in `:wq` to save and quit editing the file:
+Uncomment the line where it says `# AuthorizedKeysFile`, to uncomment all you have to do is remove the `#` symbol right before it. Vi is basically like vim so the key strokes that you use are pretty much the same. So first you place the cursor right above the `#` symbol then press `x` to delete the `#` symbol. And then press the `esc` key to go back to command mode and then type in `:wq` to save and quit editing the file:
 
 ```
 AuthorizedKeysFile %h/.ssh/authorized_keys
@@ -851,8 +849,9 @@ There's a lot more command line tools that I haven't covered in this blog post. 
 ###Resources
 
 - [Command Line Crash Course](http://cli.learncodethehardway.org/book/)
+- [Cool but Obscure Unix Tools](http://kkovacs.eu/cool-but-obscure-unix-tools/)
 - [Command Line Fu](http://www.commandlinefu.com/commands/browse)
 - [Powerful Command Line Tools for Developers](http://coding.smashingmagazine.com/2012/10/29/powerful-command-line-tools-developers)
 - [Linux Terminal Command Reference](http://community.linuxmint.com/tutorial/view/244)
 - [Mac OS Command Reference](http://ss64.com/osx/)
-- [Windows Command Reference](http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds.mspx?mfr=true
+- [Windows Command Reference](http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds.mspx?mfr=true)
