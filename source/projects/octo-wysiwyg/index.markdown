@@ -16,7 +16,8 @@ Personal Project
 
 ####Project Description
 
-A Markdown to HTML UI for Octopress. This project attempts to make it easier to compose new blog posts by providing keyboard shortcuts for common markdown syntax. It also makes inserting of images to a post easier. Images will be automatically copied into the Octopress image source directory of your choice and the markdown syntax is automatically generated for you. Lastly an HTML preview is also generated as you type.
+A Markdown to HTML UI for Octopress. This project attempts to make it easier to compose new blog posts by providing keyboard shortcuts for common markdown syntax. It also makes inserting of images to a post easier. Images will be automatically copied into the Octopress image source directory of your choice and the markdown syntax is automatically generated for you.
+A version control feature is also available if you want to manage the updates in your blog posts. Lastly an HTML preview is also generated as you type.
 
 
 ####Technologies Used
@@ -39,6 +40,7 @@ Note that I have limited the features to avoid usage abuse. The following featur
 - image upload
 - markdown upload
 - creating of new post
+- version control
 
 Visit the [Github Repo](https://github.com/anchetaWern/octo-wysiwyg) for more information.
 
