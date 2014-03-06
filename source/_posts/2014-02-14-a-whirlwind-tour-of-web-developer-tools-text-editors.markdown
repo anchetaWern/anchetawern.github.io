@@ -5,7 +5,7 @@ date: 2014-02-15 11:00
 comments: true
 categories: [text-editors, web-development, tools]
 published: true
-updated: 2014-02-25
+updated: 2014-03-02
 ---
 
 This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I'll be talking about text editors and related tools.
@@ -66,7 +66,36 @@ And right after pressing `tab` you get a whole bunch of code written out for you
 - [Docblockr](https://github.com/spadgos/sublime-jsdocs) - pretty much like emmet but only for document blocks. Useful for writing comments.
 - [Alignment](https://github.com/wbond/sublime_alignment) - allows for easy alignment of code. All you have to do is press `ctrl + alt + a` on your keyboard.
 - [Sublime Linter](https://github.com/SublimeLinter/SublimeLinter-for-ST2) - inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don't know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you're using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable `z` isn't actually used in your code.
+- [EditorConfig](https://github.com/sindresorhus/editorconfig-sublime) - tool for implementing coding conventions. You can use this to specify whether to use tabs or spaces for specific file types (`.js`, `.css`) or whether to use double quotes or single quotes for the quote type. You can do all that by installing the editorconfig plugin for the text editor that you're using. Then create a `.editorconfig` file in the root of your project directory or any directory in your project if you want to use different rules for different directories. Here's a sample `.editorconfig` file:
 
+```
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = false
+charset = utf-8
+trim_trailing_whitespace = true
+quote_type = double
+
+[*.php]
+indent_style = space
+indent_size = 4
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.js]
+indent_style = space
+indent_size = 2
+
+[*.css]
+indent_style = space
+indent_size = 5
+```
+
+As you can see from the sample above you can specify a whole bunch of settings. You can also have different rules for different file types.
 
 ####IDE
 
