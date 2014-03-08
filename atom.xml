@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-03-07T14:12:34+08:00</updated>
+  <updated>2014-03-08T20:06:13+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,1073 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Command Line Utilities]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/"/>
+    <updated>2014-03-08T14:45:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities</id>
+    <content type="html"><![CDATA[<p>In this part four of the series A Whirlwind Tour of Web Developer Tools I&rsquo;ll walk you through some of the tools that you can use in the command line.  But before we dive in to some of the tools lets first define what a command line is. According to <a href="http://en.wikipedia.org/wiki/Command-line_interface">Wikipedia</a>:</p>
+
+<blockquote><p>A command-line interface (CLI), also known as command-line user interface, console user interface, and character user interface (CUI), is a means of interacting with a computer program where the user (or client) issues commands to the program in the form of successive lines of text (command lines).</p></blockquote>
+
+
+<p>So the command line is basically an interface where you can type in a bunch of commands to interact with the computer.</p>
+
+<!--more-->
+
+
+<h3>Command Line Basics</h3>
+
+<p>Before we jump into the tools its important that we first understand the basics of using the command line. To access the command line in Linux press <code>ctrl + alt + t</code> on your keyboard. For Mac just look for the terminal from your menu. And for Windows just press <code>window + r</code> and then type in <code>cmd</code> then press <code>enter</code>.</p>
+
+<h4>Commonly used Commands</h4>
+
+<p>Here are some of the commands that you&rsquo;ll commonly used on a day to day basis:</p>
+
+<ul>
+<li><strong>cd</strong> &ndash; change directory</li>
+<li><strong>mkdir</strong> &ndash; create a new directory</li>
+<li><strong>rmdir</strong> &ndash; delete an existing directory</li>
+<li><strong>touch</strong> &ndash; create an empty file</li>
+<li><strong>pushd</strong> &ndash; push directory</li>
+<li><strong>popd</strong> &ndash; pop directory</li>
+<li><strong>ls</strong> &ndash; list files in a specific directory</li>
+<li><strong>grep</strong> &ndash; find specific text inside files</li>
+<li><strong>man</strong> &ndash; read a manual page</li>
+<li><strong>apropos</strong> &ndash; lists outs commands that does a specific action</li>
+<li><strong>cat</strong> &ndash; print out all the contents of a file</li>
+<li><strong>less</strong> &ndash; view the contents of a file (with pagination)</li>
+<li><strong>sudo</strong> &ndash; execute command as super user</li>
+<li><strong>chmod</strong> &ndash; modify the file permissions</li>
+<li><strong>chown</strong> &ndash; change file ownership</li>
+<li><strong>find</strong> &ndash; find files from a specific directory</li>
+<li><strong>pwd</strong> &ndash; print working directory</li>
+<li><strong>history</strong> &ndash; returns a list of the commands that you have previously executed</li>
+<li><strong>tar</strong> &ndash; creates a tar archive from a list of files</li>
+</ul>
+
+
+<p>If you are on Windows some commands might not be available to you. The solution would be to either switch to Linux, I definitely recommend Linux Mint or Ubuntu if you&rsquo;re planning to switch. Or if you want to stick with Windows you can install <a href="http://www.cygwin.com/">Cygwin</a> or the <a href="http://unxutils.sourceforge.net/">GNU utilities</a> for Windows.</p>
+
+<p>I won&rsquo;t go ahead and provide you with a tutorial on how to use the commands above. There&rsquo;s tons of tutorials out there so use Google to your advantage. You also have the <code>man</code> command to help you out. Here&rsquo;s how to use the <code>man</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>man cd</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will output all the information related to the <code>cd</code> command and how to use it.
+The <code>man</code> command is useful if you already know the name of the command. But in case you do not already know you also have access to the <code>apropos</code> command which lists out commands that matches a specific action. Here&rsquo;s how to use it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apropos delete</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Executing the command above produces an output similar to the following:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/apropos.png" alt="apropos" /></p>
+
+<p>As you can see you can pretty much scan through the results and determine the command that you need to use based on the description provided.  So if you want to delete a file you can just call the <code>unlink</code> command.</p>
+
+<h4>Aliases</h4>
+
+<p>Once you&rsquo;ve gotten comfortable with the default commands you can start using shortcuts in order to make typing commands faster and easier. You can add aliases by creating a <code>.bash_aliases</code> file inside your home directory then add contents similar to the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>alias subl='/usr/bin/subl'
+</span><span class='line'>alias c='clear'
+</span><span class='line'>alias install='sudo apt-get install'
+</span><span class='line'>alias cp='cp -iv'
+</span><span class='line'>alias mv='mv -iv'
+</span><span class='line'>alias md='mkdir'
+</span><span class='line'>alias t='touch'
+</span><span class='line'>alias rm='rm -i'
+</span><span class='line'>alias la='ls -alh'
+</span><span class='line'>alias web-dir='cd ~/web_files'
+</span><span class='line'>alias e='exit'
+</span><span class='line'>alias s='sudo'
+</span><span class='line'>alias a='echo "------------Your aliases------------";alias'
+</span><span class='line'>alias ni='sudo npm install'
+</span><span class='line'>alias snemo='sudo nemo'
+</span><span class='line'>alias gi='git init'
+</span><span class='line'>alias ga='git add'
+</span><span class='line'>alias gc='git commit -m'
+</span><span class='line'>alias gca='git commit --amend -m'
+</span><span class='line'>alias gu='git push'
+</span><span class='line'>alias gd='git pull'
+</span><span class='line'>alias gs='git status'
+</span><span class='line'>alias gl='git log'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the example above to add an alias simply put <code>alias</code> followed by the alias that you want to use, then <code>=</code> and followed by the path to the executable wrapped in quotes. If you do not know the path to the executable file you can use the <code>which</code> command followed by the command that you usually use. For example for the <code>less</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>which less</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It will then output the path to the executable file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/bin/less</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the path that you can add in the specific alias.</p>
+
+<h3>Command Line Tools</h3>
+
+<h4>Wget</h4>
+
+<p>Useful for pulling files from a server. For example you can use this to download a specific library or asset for your project into your current working directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above will pull the file from the URL that you specified and copy it into the directory where your current terminal window is opened.</p>
+
+<h4>Curl</h4>
+
+<p>Curl is used for making HTTP request. I&rsquo;d like to describe it as a browser but for the command line. You can do all sorts of stuff with Curl. For example you can use it to request a specific page from the web:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://anchetawern.github.io</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Basic HTTP Authentication</h5>
+
+<p>If the page uses basic HTTP authentication you can also specify a user name and a password. In the example below I am using Curl to request my recently bookmarked links from the delicious API:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -u username:password  https://api.del.icio.us/v1/posts/recent</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Saving the Results to a File</h5>
+
+<p>This will return an XML string. If you want to copy the result to a file you can simply redirect the output to a file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -u username:password  https://api.del.icio.us/v1/posts/recent &gt; recent-bookmarks.xml</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Getting Header Information</h5>
+
+<p>If you only want to get the header information from a specific request you can add the <code>-I</code> option:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -I http://google.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will output a result similar to the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Location: http://www.google.com/
+</span><span class='line'>Content-Type: text/html; charset=UTF-8
+</span><span class='line'>Date: Fri, 21 Feb 2014 10:16:19 GMT
+</span><span class='line'>Expires: Sun, 23 Mar 2014 10:16:19 GMT
+</span><span class='line'>Cache-Control: public, max-age=2592000
+</span><span class='line'>Server: gws
+</span><span class='line'>Content-Length: 219
+</span><span class='line'>X-XSS-Protection: 1; mode=block
+</span><span class='line'>X-Frame-Options: SAMEORIGIN
+</span><span class='line'>Alternate-Protocol: 80:quic</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the same as the one that you see under the network tab in Chrome Developer Tools under the headers section.</p>
+
+<h5>Interacting with Forms</h5>
+
+<p>You can also perform actions on forms. So for example if you have the following form from a web page somewhere:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;form.php&quot;</span> <span class="na">method=</span><span class="s">&quot;GET&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;query&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can fill up the form and perform the action as if you&rsquo;re in a browser by simply getting the required inputs and supplying them from your command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>curl http://localhost/tester/curl/form.php?query=dogs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For forms which has its method set to <code>POST</code>. You can also make the request using curl. All you have to do is add a <code>--data</code> option followed by the name-value pair. With the name being the name assigned to the input and the value is the value that you want to supply:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>curl --data &quot;query=cats&quot; http://loca/form.php?query=cats
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Spoofing the HTTP referrer</h5>
+
+<p>You can also spoof the http-referrer when making a request:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>curl --referer http://somesite.com http://anothersite.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This reminds us that using the HTTP referrer as a means of checking whether to perform a specific action or not is really useless as it can be easily spoofed.</p>
+
+<h5>Follow Redirects</h5>
+
+<p>Curl also allows you to follow redirects. So for example if you&rsquo;re accessing a page which has a redirect like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: anotherfile.php&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;zup yo!&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simply using the following command will result in the execution of the <code>echo</code> statement below the redirect:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl http://localhost/tester/curl/file.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But if you add the <code>--location</code> option curl will follow the page that is specified in the redirect:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl --location http://localhost/tester/curl/file.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the output of the command above will be the contents of the <code>anotherfile.php</code>.</p>
+
+<h5>Cookies</h5>
+
+<p>You can also supply cookie information on the requests that you make. So for example you are requesting a page which uses cookies as a means of determining if a user is logged in or not (note: you shouldn&rsquo;t use this kind of code in production):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$_COOKIE</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM tbl_users WHERE name = &#39;</span><span class="si">$name</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">num_rows</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;logged in!&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;sorry user does not exist&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To request from the page above just add the <code>--cookie</code> option followed by the cookies that the page needs:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl --cookie &quot;name=fred&quot; http://localhost/tester/curl/cookie.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you need to specify more than one cookie simply separate them with a semi-colon:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl --cookie &quot;name=fred;age=22&quot; http://localhost/tester/curl/cookie.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>jq</h4>
+
+<p>If you normally work with web API&rsquo;s in your job, you might find the jq utility useful. What this does is formatting JSON strings, it also adds syntax highlighting so they become more readable.  To install jq all you have to do is download the <code>jq</code> file from the <a href="http://stedolan.github.io/jq/download/">downloads page</a> and then move it into your <code>bin</code> folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">mv ~/Downloads/jq /bin/jq</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that you can start using jq to process JSON strings that comes from curl requests by simply piping it to the <code>jq</code> command. For example, we are making a request to the following file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$names</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Gon&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Freecs&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;nen_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;enhancement&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;abilities&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Killua&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Zoldyc&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;nen_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;transmutation&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;abilities&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;lightning bolt&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;thunderbolt&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;godspeed&#39;</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Kurapika&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;nen_type&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;conjuration&#39;</span><span class="p">,</span> <span class="s1">&#39;specialization&#39;</span><span class="p">),</span>
+</span><span class='line'>      <span class="s1">&#39;abilities&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;holy chain&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;dowsing chain&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;chain jail&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;judgement chain&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;emperor time&#39;</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Isaac&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Netero&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;nen_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;enhancement&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;abilities&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;100-Type Guanyin Bodhisattva&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;First Hand&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;Third Hand&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;Ninety-Ninth Hand&#39;</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;fname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Neferpitou&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;nen_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;specialization&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;abilities&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;Terpsichora&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;Doctor Blythe&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;Puppeteering&#39;</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$names</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Normally we would do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl http://localhost/tester/curl/json.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But this returns a result that looks like this:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/json-string.png" alt="json string" /></p>
+
+<p>Piping the result to <code>jq</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl http://localhost/tester/curl/json.php | jq &quot;.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We get a result similar to the following:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/jq.png" alt="jq formatted" /></p>
+
+<p>Pretty sweet! But you can do much more than that, check out the <a href="http://stedolan.github.io/jq/manual/">manual page</a> for the jq project for more information.</p>
+
+<h4>Vim</h4>
+
+<p>Vim is a text-editor that is based on Vi, which is a text-editor that&rsquo;s pre-installed on common Linux distributions. But hey you might say that the main topic of this blog post is command-line tools why are we suddenly talking about text-editors here? Well its because Vim is tightly coupled with the terminal. It&rsquo;s like a terminal-text editor crossbreed. You can both execute commands and write code with it.</p>
+
+<p>You can download Vim from the <a href="http://www.vim.org/download.php">Vim downloads page</a> simply select the version that&rsquo;s applicable to the operating system that you&rsquo;re currently using. But if you&rsquo;re on Linux mint, Ubuntu or other Linux distributions that uses <code>apt-get</code> then you simply execute the following command from the terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install vim</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are lots of tutorials in the web that can help you with learning vim (I&rsquo;ll link to them later). But for now I&rsquo;m going to give you a quick tutorial to get you started.</p>
+
+<p>First thing that you need to know is how to open up files with vim. You can do it by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vim file_that_you_want_to_edit.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also open up more than one file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vim file1.txt file2.txt file3.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then switch between the files while on command mode. First list out the files that are currently opened in vim:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">:ls</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will give you an output of the list of files with an id that you can use to refer to them when switching:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/ls.png" alt="list of files" /></p>
+
+<p>To switch to <code>file2.txt</code> you can use the <code>:b</code> command followed by its id:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">:b2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>An alternative would be to use the file name itself:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">:b file2.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or you can also just switch to the next file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">:bn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or switch to the previous file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">:bp</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Second thing that you need to know is that vim has 3 modes:</p>
+
+<ul>
+<li><strong>command</strong> &ndash; used for telling vim to do things. This is the default mode that vim is in when you open it. If you are on another mode other than the command mode you can press on <code>esc</code> to go back to the command mode.</li>
+<li><strong>insert</strong> &ndash; used for inserting things on the current file that you&rsquo;re working on. This is basically the text editor mode. You can only get to this mode when you are currently on the command mode. To get to this mode press the <code>i</code> key.</li>
+<li><strong>visual</strong> &ndash; used for selecting text. Just like the insert mode you can only get to this mode when you are in command mode. To get to this mode press the <code>v</code> key.</li>
+</ul>
+
+
+<p><strong>Basic Commands</strong></p>
+
+<p>Here are some of the basic commands that you would commonly use when working with a file. Note that you can only type in these commands while you are in command mode.</p>
+
+<ul>
+<li><code>:w</code> &ndash; save file</li>
+<li><code>:wq</code> &ndash; save file and quit</li>
+<li><code>:q!</code> &ndash; quit vim without saving the changes</li>
+<li><code>u</code> &ndash; undo last action</li>
+<li><code>ctrl + r</code> &ndash; redo</li>
+<li><code>x</code> &ndash; delete character under the cursor</li>
+<li><code>dd</code> &ndash; delete current line</li>
+<li><code>D</code> &ndash; delete to the end of the line. The main difference between this and the <code>dd</code> command is that the <code>dd</code> command deletes even the line breaks but the <code>D</code> command simply deletes to the end of the line leaving the line break behind.</li>
+</ul>
+
+
+<p><strong>Basic Navigation</strong></p>
+
+<p>You can navigate a file while you&rsquo;re in the command mode or insert mode by pressing the arrow keys. You can also use the following keys for navigating but only when you are in command mode:</p>
+
+<ul>
+<li><code>h</code> &ndash; left</li>
+<li><code>l</code> &ndash; right</li>
+<li><code>j</code> &ndash; down</li>
+<li><code>k</code> &ndash; up</li>
+<li><code>0</code> &ndash; move to the beginning of the line</li>
+<li><code>$</code> &ndash; move to the end of the line</li>
+<li><code>w</code> &ndash; move forward by one word</li>
+<li><code>b</code> &ndash; move backward by one word</li>
+<li><code>gg</code> &ndash; move to the top of the screen</li>
+<li><code>G</code> &ndash; move to the bottom of the screen</li>
+<li><code>line_numberH</code> &ndash; move to a specific line number</li>
+</ul>
+
+
+<p><strong>Searching Text</strong></p>
+
+<p>You can search for a specific text while you are in command mode by pressing the <code>/</code> key and entering the text that you want to search for and then press enter to execute the command. Vim will then highlight each instance of the text. You can move to the next instance by pressing the <code>n</code> key or <code>N</code> to go back to the previous instance.</p>
+
+<p><strong>Modifying Text</strong></p>
+
+<p>You can modify text by switching to insert mode. You can switch to insert mode by first going to command mode (<code>esc</code> key) then press the <code>i</code> key.  Once you are on insert mode you can now start typing text just like you do with a normal text editor. While inside this mode and you want to select specific text to copy press the <code>esc</code> key to go back to command mode and then press the <code>v</code> key to switch to visual mode. From the visual mode you can then start selecting the text. To copy the text switch to the command mode then press the <code>y</code> key. To paste the copied text press the <code>p</code> key. You can do the same thing when you want to cut and paste. Simply use the <code>d</code> key instead of the <code>y</code> key.</p>
+
+<p><strong>Vim Configuration</strong></p>
+
+<p>You can use the <code>.vimrc</code> file to configure vim settings. It doesn&rsquo;t exist by default so you have to create it under the home directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">touch ~/.vimrc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Some of the most common configuration that you would want to add:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">syntax on</span>
+</span><span class='line'><span class="x">set number</span>
+</span><span class='line'><span class="x">set wrap</span>
+</span><span class='line'><span class="x">set tabstop=2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a description of what each option does:</p>
+
+<ul>
+<li><strong>syntax on</strong> &ndash; this enables syntax highlighting</li>
+<li><strong>set number</strong> &ndash; this enables line numbers</li>
+<li><strong>set wrap</strong> &ndash; this tells vim to word wrap visually</li>
+<li><strong>set tabstop</strong> &ndash; you can use this to specify the tab size. In the example above I&rsquo;ve set it to <code>2</code> so when you press tab vim will insert 2 spaces</li>
+</ul>
+
+
+<p><strong>Resources for learning Vim</strong></p>
+
+<p>Be sure to check out the resources below to learn more about Vim. Learning Vim is really a painful process since you have to memorize a whole bunch of commands and practice it like you&rsquo;re practicing how to play the piano. Learning Vim is not that easy, lots of practice is required before you can get productive with using it. You can easily get away with just using a text-editor when writing code but if you want some productivity boost then take the time to really learn Vim even if it is painful. Here are some resources for learning Vim:</p>
+
+<ul>
+<li><a href="http://www.danielmiessler.com/study/vim/">Vim Tutorial and Primer</a></li>
+<li><a href="http://vim.wikia.com/wiki/Vim_Tips_Wiki">Vim Wikia Page</a></li>
+<li><a href="http://vimcasts.org/">Vimcasts</a> &ndash; screencasts on Vim</li>
+<li><a href="http://code.tutsplus.com/articles/25-vim-tutorials-screencasts-and-resources--net-14631">25 Vim Tutorials, Screencasts and Resources</a></li>
+<li><a href="http://www.openvim.com/tutorial.html">Vim Interactive Tutorial</a></li>
+<li><a href="http://yannesposito.com/Scratch/en/blog/Learn-Vim-Progressively/">Learning Vim Progressively</a></li>
+<li><a href="http://www.cs.swarthmore.edu/help/vim/home.html">Vim Tips and Tricks</a></li>
+<li><strong>Vimtutor</strong> &ndash; not really a website, this is the vim guide that comes with installing vim. You can access it by executing <code>vimtutor</code> from your terminal</li>
+</ul>
+
+
+<h4>Siege</h4>
+
+<p>Siege is an HTTP load testing and benchmarking utility. You can mainly use this tool to stress test your web project with a bunch of requests to see how it holds up. Execute the following command to install siege:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install siege</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use it you can execute:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">siege -b -t60S -c30 http://url-of-the-web-project-that-you-want-to-test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>-b</code> option tells siege to run the tests without delay. By default siege runs the test with a one second delay between each requests. Adding the <code>-b</code> option makes sure that the requests are made concurrently.</p>
+
+<p>The <code>-t60S</code> option tells siege to run the tests in 60 seconds (60S). If you want to run it for 30 minutes you can do <code>30M</code>. Or <code>1H</code> for an hour.</p>
+
+<p>The <code>-c30</code> option tells siege to have 30 concurrent connections.</p>
+
+<p>The last part of the command is the url that you want to test. If you only want to test out one url you can directly specify it in the command. But if you want to test out more than one url then you can create a new text file with the urls that you want to test out (one url per line) and then add the <code>-f</code> option followed by the path to the text file that you created to tell siege that you want to make use of a file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">siege -b -t60S -c30 ~/test/urls.text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s an example usage of siege:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/siege.png" alt="siege" /></p>
+
+<p>Interpreting the results above:</p>
+
+<ul>
+<li><strong>transactions</strong> &ndash; the total number of hits to the server.</li>
+<li><strong>availability</strong> &ndash; This is the availability of your web project to users. Ideally you would want the availability to be 100%. Anything below it would mean that some users accessing your web project won&rsquo;t be able to access it because of the load.</li>
+<li><strong>elapsed time</strong> &ndash; this is the time you specified in your options when you executed siege. It wouldn&rsquo;t be perfect though, as you can see from the results above we only got 59.37 seconds but we specified 60 seconds.</li>
+<li><strong>data transferred</strong> &ndash; the size of transferred data for each request</li>
+<li><strong>response time</strong> &ndash; the average response time for each request</li>
+<li><strong>transaction rate</strong> &ndash; the number of hits to the server per second</li>
+<li><strong>throughput</strong> &ndash; the average number of bytes transferred every second from the server to all the simulated users</li>
+<li><strong>concurrency</strong> &ndash; the average number of simultaneous connections</li>
+<li><strong>successful transactions</strong> &ndash; the number of successful transactions</li>
+<li><strong>failed transactions</strong> &ndash; the number of failed transactions</li>
+<li><strong>longest transaction</strong> &ndash; the total number of seconds the longest transaction took to finish</li>
+<li><strong>shortest transaction</strong> &ndash; the total number of seconds the shortest transaction took to finish</li>
+</ul>
+
+
+<h4>Sed</h4>
+
+<p>Sed is a tool for automatically modifying files. You can basically use this for writing scripts that does search and replace on multiple files. A common use case for developers would be for writing scripts that automatically formats source code according to a specific <a href="http://en.wikipedia.org/wiki/Coding_conventions">coding standard</a>.</p>
+
+<p>Yes you can do this sort of task using the built-in search and replace utility on text-editors like Sublime Text. But if you want something that lets you specify a lot of options and offers a lot of flexibility then sed is the tool for the job.
+Sed is pre-installed on most Linux distributions and also on Mac OS so you won&rsquo;t really have to do any installation. For windows users there&rsquo;s also <a href="http://gnuwin32.sourceforge.net/packages/sed.htm">Sed for Windows</a> which you can install.</p>
+
+<p>Here&rsquo;s an example on how to use sed. For example you have the following file (<code>sed-test.php</code>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$superStars</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$rockStars</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$keyboardNinjas</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And you want to modify all variable declarations to be all in lowercase. You would do something like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sed &#39;s/\$\([A-Za-z]*\([\$A-Za-z_,\s]*\)\)/$\L\1/&#39; sed-test.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sed will then output the following result in the terminal screen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$superstars</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$rockstars</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$keyboardninjas</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To save the changes to the same file you need to do a little bit of a trick since sed doesn&rsquo;t have the functionality to commit the changes to the input file. The trick would be to temporarily save the results to a new file (<code>sed-test.new.php</code>) and then use <code>mv</code> to rename the new file (<code>sed-test.new.php</code>) to the old file name (<code>sed-test.php</code>) :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sed &#39;s/\$\([A-Za-z]*\([\$A-Za-z_,\s]*\)\)/$\L\1/&#39; sed-test.php &gt; sed-test.new.php</span>
+</span><span class='line'><span class="x">mv sed-test.new.php sed-test.php</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to learn more about sed check out the following resources:
+&ndash; <a href="http://www.grymoire.com/Unix/Sed.html">Sed &ndash; An Introduction and Tutorial</a>
+&ndash; <a href="http://sed.sourceforge.net/local/docs/An_introduction_to_sed.html">Getting Started with Sed</a></p>
+
+<p>You can also check out the following related tools:</p>
+
+<ul>
+<li><a href="http://www.tutorialspoint.com/unix_commands/tr.htm">tr</a></li>
+<li><a href="http://www.grymoire.com/Unix/Awk.html">awk</a></li>
+</ul>
+
+
+<h4>Ruby Gems</h4>
+
+<p>There&rsquo;s also lots of command line tools in the Ruby world. And you can have access to those tools by installing Ruby.</p>
+
+<p>In Linux and in Mac OS you can install Ruby by using RVM (Ruby Version Manager). First make sure that all the packages are up to date by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get update</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We will get RVM by using Curl so we also have to install it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install curl</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once curl is installed, download rvm using curl and then pipe it to <code>bash</code> so we can use it immediately right after the download is finished:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">curl -L https://get.rvm.io | bash -s stable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Install Ruby version <code>1.9.3</code> using rvm. For this step you don&rsquo;t really have to stick with version <code>1.9.3</code>. If there is already a later and stable version available you can use that as well:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">rvm install 1.9.3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tell rvm to use Ruby version <code>1.9.3</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">rvm use 1.9.3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then install the latest version of <code>rubygems</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">rvm rubygems latest</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For Windows users you can just use the <a href="http://rubyinstaller.org/">ruby installer for Windows</a>.</p>
+
+<p>Once ruby gems is installed you can now install gems like there&rsquo;s no tomorrow. Here&rsquo;s a starting point: <a href="http://www.awesomecommandlineapps.com/gems.html">Ruby Gems for Command-line Apps</a>. On the next section there&rsquo;s a gem called <code>tmuxinator</code> that you can install to manage tmux projects easily.</p>
+
+<h4>Tmux</h4>
+
+<p>Tmux or terminal multiplexer is an application that allows you to multiplex several terminal windows. It basically makes it easier to work on several related terminal windows. In Linux you can install tmux from the terminal by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install tmux</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For Mac OS you can install tmux through brew:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">brew install tmux</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And on Windows tmux is not really directly supported. You first have to install <a href="http://cygwin.org/">cygwin</a> and then add <a href="http://sourceforge.net/mailarchive/message.php?msg_id=30850840">this patch</a> to install tmux. Or if you don&rsquo;t want to go through all the trouble you can install <a href="http://sourceforge.net/projects/console/files/">console2</a> which is a tmux alternative for Windows.</p>
+
+<p>Once you&rsquo;re done installing tmux you can now go ahead and play with it. To start tmux first create a new named session:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmux new -s name_of_session</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create a new tmux session with the name that you supplied:
+<img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux.png" alt="tmux session" /></p>
+
+<p>You can then execute commands just like you do with a normal terminal window.
+If you want to create a new window press <code>ctrl + b</code> then release and then press <code>c</code>. This will create a new window under the current session:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-new-window.png" alt="tmux new window" /></p>
+
+<p>As you can see from the screenshot above we now have two windows (see the text highlighted in green on the lower part of the terminal window on the left side). One is named <code>0:bash</code> and the other is <code>1:bash*</code>. The one with the <code>*</code> is the current window.</p>
+
+<p>You can rename the current window by pressing <code>ctrl + b</code> then release and then <code>,</code>. This will prompt you to enter a new name for the window. You can just press enter once you&rsquo;re done renaming it:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-rename-window.png" alt="tmux rename window" /></p>
+
+<p>To switch between the windows you can either press <code>ctrl + b</code> then release and then the index of the window that you want to switch to. You can determine the index by looking at the lower left part of the terminal screen. So if you have only two windows opened the index can either be 0 or 1. You can also press <code>ctrl + b</code> then release and then <code>p</code> for previous or <code>n</code> for next window.</p>
+
+<p>You can also further divide each window into multiple panes by pressing <code>ctrl + b</code> then release and then the <code>%</code> key to divide the current window vertically or the <code>"</code> key to divide it horizontally. This will give you a screen similar to the following:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-panes.png" alt="tmux panes" /></p>
+
+<p>You can then switch between those panes by pressing <code>ctrl + b</code> then release and then the <code>o</code> key.</p>
+
+<p>What&rsquo;s good about tmux is that it allows you to keep multiple terminal sessions and you&rsquo;ll be able to access them even after restarting your computer. To list out available sessions you can execute the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmux ls</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will list out all the sessions that you created using the <code>tmux new - s</code> command or simply <code>tmux</code>. You can then open up the specific session by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmux attach -t name_of_session</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you no longer want to work with a particular session you can just do the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmux kill-session -t name_of_session</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or if you want to kill all sessions:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmux kill-server</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&rsquo;s also this ruby gem called <a href="http://rubygems.org/gems/tmuxinator">tmuxinator</a> which allows you to create and manage complex tmux sessions easily. You can install it via ruby gems:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">gem install tmuxinator</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or if you&rsquo;re like me and you installed Ruby via RVM:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">rvmsudo gem install tmuxinator</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then create project-based tmux sessions. To create a new project you can do:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmuxinator open name_of_project</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create a <code>name_of_project.yml</code> file under the <code>~/.tmuxinator</code> directory. You can then open up this file and modify the default configuration. For me I simply deleted the commented lines (except for the first one which is the path to the current file) and then specified the project path. In my case its the <code>octopress</code> directory under the home directory. Then under the <code>windows</code> the <code>layout</code> is <code>main-vertical</code>, this means that the panes that I will specify would be divided vertically.  There would be 2 panes, one is empty so I can just type in whatever commands I wish to execute and the other is <code>rake preview</code> which is the command for previewing an octopress blog locally:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x"># ~/.tmuxinator/blog.yml</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">name: blog</span>
+</span><span class='line'><span class="x">root: ~/octopress</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">windows:</span>
+</span><span class='line'><span class="x">  - editor:</span>
+</span><span class='line'><span class="x">      layout: main-vertical</span>
+</span><span class='line'><span class="x">      panes:</span>
+</span><span class='line'><span class="x">        - #empty</span>
+</span><span class='line'><span class="x">        - rake preview</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To open up the project at a later time you execute the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmuxinator start name_of_project</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you do not know the name of a specific project, you can list out all projects using the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmuxinator list</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you no longer wish to work with a project in the future:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">tmuxinator delete name_of_project</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>SSH</h4>
+
+<p>SSH can be used to login to remote servers. SSH is pre-installed on both Linux and Mac OS. But for Windows you can use the alternative which is <a href="http://sshwindows.sourceforge.net/">open SSH</a> since SSH isn&rsquo;t installed on Windows by default.</p>
+
+<h5>Logging in to remote server</h5>
+
+<p>Once you have SSH installed you can now login to a remote server by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">ssh username@hostname</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where the username is the <code>username</code> given to you by your web host. While the <code>hostname</code> can be a domain name, public dns or an IP address. For <a href="https://www.openshift.com/">Openshift</a> its something like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">xxxxxxxxxxxxxxxxxxxxxxxxxxxx@somesite-username.rhcloud.com</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where <code>x</code> is a random string of number and letters.</p>
+
+<p>Executing the <code>ssh</code> command with the correct username and hostname combination will prompt you to enter your password. Again, the password here is the password given to you by your web host.</p>
+
+<h5>SSH Keys</h5>
+
+<p>You can also make use of SSH keys to authenticate yourself to a remote server. This will allow you to login without entering your password.</p>
+
+<p>To setup an ssh key navigate to the <code>.ssh</code> directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">cd ~/.ssh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you don&rsquo;t have already one, create it by executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">mkdir ~/.ssh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done with that, check if you already have a private and public key pair in the <code>~/.ssh</code> directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">ls</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It would look something like <code>id_rsa</code> and <code>id_rsa.pub</code>.
+If you don&rsquo;t already have those 2 files generate it by executing:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">ssh-keygen -t rsa -C &quot;your_email@provider.com&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This generates the <code>id_rsa</code> and <code>id_rsa.pub</code> files using your email address as the label. You can also use other information as the label.</p>
+
+<p>Next copy the public key (<code>id_rsa.pub</code>) into the remote server by using secure copy (<code>scp</code>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">scp -p id_rsa.pub username@hostname</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now open up a new terminal window and login to the remote server.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">ssh username@hostname</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check if the <code>id_rsa.pub</code> has indeed been copied by using the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">ls -al id_rsa.pub</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If it returns &ldquo;there&rsquo;s no such file or directory&rdquo; return to the other terminal window (local machine) and execute the <code>scp</code> command again.</p>
+
+<p>Once that&rsquo;s done the next step is to copy all the contents of the <code>id_rsa.pub</code> file into the <code>authorized_keys</code> file inside the <code>.~/ssh</code> directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">cat id_rsa.pub &gt; ~/.ssh/authorized_keys</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next update the <code>/etc/ssh/sshd_config</code> file using either <code>vi</code> or <code>nanoc</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">vi /etc/ssh/sshd_config</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Uncomment the line where it says <code># AuthorizedKeysFile</code>, to uncomment all you have to do is remove the <code>#</code> symbol right before it. Vi is basically like vim so the key strokes that you use are pretty much the same. So first you place the cursor right above the <code>#</code> symbol then press <code>x</code> to delete the <code>#</code> symbol. And then press the <code>esc</code> key to go back to command mode and then type in <code>:wq</code> to save and quit editing the file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">AuthorizedKeysFile %h/.ssh/authorized_keys</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just make sure the path that its pointing to is the same path as the file that we updated earlier.
+The <code>%h</code> refers to the host so its basically the same as saying <code>~/.ssh/authorized_keys</code>.</p>
+
+<p>Once all of that is done you can now test it out by logging in once again. Note that for the first time after the update is done it will still ask you the password. But for the next one&rsquo;s it will no longer ask you the password.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! The command line is a must-use tool for every developer. In this blog post we&rsquo;ve covered the essentials of using the command line along with some tools that can help you become more productive when it comes to using it.
+There&rsquo;s a lot more command line tools that I haven&rsquo;t covered in this blog post. I believe those tools deserves a blog post of their own so I&rsquo;ll be covering each of those in a future part of this series. For now I recommend that you check out the resources below for more command-line ninja skills.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://cli.learncodethehardway.org/book/">Command Line Crash Course</a></li>
+<li><a href="http://kkovacs.eu/cool-but-obscure-unix-tools/">Cool but Obscure Unix Tools</a></li>
+<li><a href="http://www.commandlinefu.com/commands/browse">Command Line Fu</a></li>
+<li><a href="http://coding.smashingmagazine.com/2012/10/29/powerful-command-line-tools-developers">Powerful Command Line Tools for Developers</a></li>
+<li><a href="http://community.linuxmint.com/tutorial/view/244">Linux Terminal Command Reference</a></li>
+<li><a href="http://ss64.com/osx/">Mac OS Command Reference</a></li>
+<li><a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds.mspx?mfr=true">Windows Command Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Web Servers]]></title>
@@ -7765,83 +8832,6 @@ What it does is to simply append another row which contains the sender name and 
 
 <p>You&rsquo;ve learned how to create a simple chat application using NodeJS, ExpressJs, Socket.IO, Redis and jQuery.
 As you can see from the code that we&rsquo;ve written its very easy to create real-time applications with these technologies.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How I use Git as a Solo Developer]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/08/25/how-i-use-git-as-a-solo-developer/"/>
-    <updated>2013-08-25T11:31:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/08/25/how-i-use-git-as-a-solo-developer</id>
-    <content type="html"><![CDATA[<p>Git is a distributed version control system mostly used by software teams to manage and maintain snapshots of their code. It has benefits like avoiding overwriting changes of another member of the team since you have to <code>pull</code> in their changes before you can <code>push</code> your changes. Git automatically merges your changes with the changes made by another member. If Git encounters a problem, for example when the other member in your team has updated the same line that you have updated. Git prompts you to resolve the issue by letting you decide which specific change to commit.</p>
-
-<p>This is all well and good but what about for the solo developer?
-In this article I&rsquo;m going to share to you some of the practices that I&rsquo;m observing while working with Git as a solo developer.</p>
-
-<p>In our company, I&rsquo;m currently working on a Wordpress project alone. In the sense that I&rsquo;m the only one whose actually building the project. Here are some of the practices that I&rsquo;m currently observing:</p>
-
-<ul>
-<li>Create a branch for every big feature</li>
-<li>Commit for every logical update</li>
-<li>Commit for every bug fix</li>
-<li>Delete feature branch after merging to master</li>
-<li>A separate branch for unit testing code</li>
-<li>Master branch is for stable code</li>
-</ul>
-
-
-<h3>Create a branch for every big feature</h3>
-
-<p>I create a new branch for every big feature. But how do I determine if something is a big feature or not?
-If something actually takes a week or more to code.</p>
-
-<h3>Commit for every logical update</h3>
-
-<p>Once I&rsquo;m done with a specific logical update to the code and I&rsquo;m happy with the changes I commit it.
-But what makes a logical update? For me a logical update is a change in the code that can be explained in a single sentence. Here are some examples:</p>
-
-<ul>
-<li>add a method for saving images</li>
-<li>add an location indicator using Google Maps</li>
-<li>update cart code to include an image of the product added to the cart</li>
-</ul>
-
-
-<h3>Commit for every bug fix</h3>
-
-<p>I also commit the code for every bug fix. Here are some examples:</p>
-
-<ul>
-<li>fix bug on the form for creating of users</li>
-<li>fix bug on creating a new blog post</li>
-</ul>
-
-
-<p>Services like <a href="https://bitbucket.org">Bitbucket</a> makes bug tracking a bit easier since they have integrated an issue tracker along with their DVCS hosting. I can just have a commit message like <code>solved issue #10</code> and the details are already in Bitbucket.</p>
-
-<h3>Delete feature branch after merging to master</h3>
-
-<p>Once I&rsquo;m done with a big feature I merge it to the master branch then delete the feature branch.
-I only merge it once I&rsquo;ve thoroughly tested all the possible actions for a specific feature.</p>
-
-<h3>A separate branch for unit testing code</h3>
-
-<p>I also create a separate branch for unit testing code. Unit testing code is not actually a feature but I feel like its huge enough to be on its own separate branch. Once I&rsquo;m done writing the unit testing code I also merge it back to the master branch then delete it.</p>
-
-<h3>Master branch is for stable code</h3>
-
-<p>The master branch is only for stable and thoroughly tested code. This means that when I start development of a project I immediately create a new branch for development and then commit code on it. Once I&rsquo;ve throughly tested the code I then merge it into the master branch.</p>
-
-<p>Those are just some of the practices that I&rsquo;m currently observing when using Git. How about you? What practices do you observe when using Git? Do you also use it as a solo developer?</p>
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="http://sethrobertson.github.io/GitBestPractices/">Git Best Practices</a></li>
-<li><a href="http://programmers.stackexchange.com/questions/129407/best-version-control-habits-for-solo-developer">Best Version Control Habits for Solo Developer</a></li>
-<li><a href="A%20successful%20git%20branching%20model">http://nvie.com/posts/a-successful-git-branching-model/</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
