@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-03-12T17:43:21+08:00</updated>
+  <updated>2014-03-20T17:16:25+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,274 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started With Zillow API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api/"/>
+    <updated>2014-03-20T14:01:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial were going to have a quick look at the Zillow API. But before we move on with actually writing some code lets first define what Zillow is. Taken from the <a href="http://www.zillow.com/corp/About.htm">Zillow about page</a> itself:</p>
+
+<p><blockquote><p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.</p></blockquote></p>
+
+<p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
+
+<h4>Getting a Zillow Web Service ID</h4>
+
+<p>In order to start making requests to the Zillow API you must first register an account with them. Registering with zillow is free, all you have to do is visit the <a href="http://www.zillow.com/">zillow homepage</a> and click on the join link. After that just enter all the information that is being asked. Once registered go to the <a href="http://www.zillow.com/webservice/Registration.htm">API registration page</a> and enter the necessary information:</p>
+
+<p><img src="/images/posts/2014-03-20-getting-started-with-zillow-api/api-signup.png" alt="zillow api registration" /></p>
+
+<p>Just check the specific API that you will need for your project, agree to the terms of use then click on the submit button. Zillow will also ask about a sample URL where you will use the API, if you do not have a specific URL in mind you can just place <code>http://localhost</code> or some other URL which you can use for testing purposes.</p>
+
+<p>Once that&rsquo;s done zillow will email you the API details. All you need here is the value for the Zillow Web Services Identification (ZWSID).</p>
+
+<h4>GetSearchResults API</h4>
+
+<p>Now that we have a zillow web service ID its time to test out some of the API methods that are available. First on the list is the <code>GetSearchResults API</code> which you can use to find real estate information for a specific address. Note that an address must be posted first by an owner or an agent in the <a href="http://www.zillow.com/for-sale-by-owner/">Zillow site</a> before it can be viewed.</p>
+
+<p>The URL for requesting search results is <code>http://www.zillow.com/webservice/GetSearchResults.htm</code>.</p>
+
+<p>It requires 3 url encoded arguments to be passed in:</p>
+
+<ul>
+<li><strong>zws-id</strong> &ndash; the zillow web service id</li>
+<li><strong>address</strong> &ndash; the address of the property to search (e.g. 3799 S Las Vegas Blvd, Las Vegas, NV 89109, United States)</li>
+<li><strong>citystatezip</strong> &ndash; the city + state combination or the zip code of the address that you specified in the <code>address</code> field.</li>
+</ul>
+
+
+<p>A successful request will return an XML file containing all the search results. Here&rsquo;s a JSON string representation of the XML file that will be returned:</p>
+
+<p>```json
+{</p>
+
+<pre><code>request: {
+    address: '',
+    citystatezip: ''
+},
+message: {
+    text: '',
+    code: ''
+},
+response: {
+    results: {
+        result: [
+            {
+                zpid: '',
+                link: {
+                    homedetails: '',
+                    graphsanddata: '',
+                    comparables: ''
+                },
+                address: {
+                    street: '',
+                    zipcode: '',
+                    city: '',
+                    state: '',
+                    latitude: '',
+                    longitude: ''
+                },
+                zestimate: {
+                    amount: '',
+                    last-updated: '',
+                    oneWeekChange: {
+                        @attributes: {
+                            deprecated: ''
+                        }
+                    },
+                    valueChange: '',
+                    valuationRange: {
+                        low: '',
+                        high: ''
+                    },
+                    percentile: ''
+                },
+                localRealEstate: {
+                    region: {
+                        @attributes: {
+                            id: '',
+                            type: '',
+                            name: ''
+                        },
+                        links: {
+                            overview: '',
+                            forSaleByOwner: '',
+                            forSale: ''
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And no the results doesn&rsquo;t exactly return empty strings for the values of each of the properties. I just did it that way so you can focus on the actual properties that are returned.</p>
+
+<p>Here&rsquo;s an example PHP code that makes a request to the zillow API using <code>file_get_contents</code>. You can also use <code>curl</code> to have the benefit of error handling but to keep things simple lets stick with <code>file_get_contents</code> for this tutorial:</p>
+
+<p>```php
+$zillow_id = &lsquo;xxx&rsquo;; //the zillow web service ID that you got from your email</p>
+
+<p>$search = $<em>GET[&lsquo;address&rsquo;];
+$citystate = $</em>GET[&lsquo;citystate&rsquo;];
+$address = urlencode($search);
+$citystatezip = urlencode($citystate);</p>
+
+<p>$url = &ldquo;<a href="http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip">http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip</a>&rdquo;;</p>
+
+<p>$result = file_get_contents($url);
+$data = simplexml_load_string($result);
+```</p>
+
+<p>Once the request is completed you can just access individual properties using the arrow notation. In the example below were accessing the <code>zpid</code> property:</p>
+
+<p><code>
+echo $data-&gt;response-&gt;results-&gt;result[0]-&gt;zpid;
+</code></p>
+
+<p>But what happens when we enter an address which doesn&rsquo;t exist in the zillow database? For that you can check the value for the <code>message.code</code>:</p>
+
+<p><code>
+$code = $data-&gt;message-&gt;code;
+</code></p>
+
+<p>This contains a 1-3 digit number. <code>0</code> basically means that the request was successful and that there are results that are returned. <code>507</code> or <code>508</code> means that there&rsquo;s no exact match for the inputted address. There are a bunch of other error codes which you can use so check out the messages and codes section in the <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">search results api page</a> for more information.</p>
+
+<p>For more information regarding the search results API check out <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">this page</a></p>
+
+<h4>GetZestimate API</h4>
+
+<p>Another API Method that we can use is the <code>GetZestimate</code>. This returns information regarding the zestimate of a specific property. A Zestimate is Zillow&rsquo;s estimated market value, computed using a proprietary formula. You can use the <code>GetZestimate</code> method by making a request to this URL: <code>http://www.zillow.com/webservice/GetZestimate.htm</code>.</p>
+
+<p>The <code>GetZestimate</code> method only requires 2 arguments: the <code>zws-id</code> and the <code>zpid</code>. Of this 2 arguments the <code>zpid</code> is of interest since we didn&rsquo;t use it in the previous method. The <code>zpid</code> is basically a unique ID assigned by zillow to a specific property.</p>
+
+<p>If you might have noticed earlier the <code>SearchResults</code> method already returns some zestimate data:</p>
+
+<p>```
+zestimate: {</p>
+
+<pre><code>amount: '',
+last-updated: '',
+oneWeekChange: {
+    @attributes: {
+        deprecated: ''
+    }
+},
+valueChange: '',
+valuationRange: {
+    low: '',
+    high: ''
+},
+percentile: ''
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You can pretty much use this one if you don&rsquo;t need detailed information about a specific zestimate of a property. But if need more detailed information the <code>GetZestimate</code> method is the one that you need to use. Here&rsquo;s the JSON string representation of the result that it returns:</p>
+
+<p>```
+{</p>
+
+<pre><code>request: {
+    zpid: ''
+},
+message: {
+   text: '',
+   code: ''
+},
+response: {
+    zpid: '',
+    links: {
+        homedetails: '',
+        graphsanddata: '',
+        mapthishome: '',
+        comparables: ''
+    },
+    address: {
+        street: '',
+        zipcode: '',
+        city: '',
+        state: '',
+        latitude: '',
+        longitude: ''
+    },
+    zestimate: {
+        amount: '',
+        last-update: '',
+        oneWeekChange: '',
+        valueChange: '',
+        valuationRange: {
+            low: '',
+            high: ''
+        },
+        percentile: ''
+    },
+    localRealEstate: {
+        region: {
+            links: {
+                overview: '',
+                forSaleByOwner: '',
+                forSale
+            }
+        }
+    },
+    regions: {
+        zipcode-id: '',
+        city-id: '',
+        county-id: '',
+        state-id: ''
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The one caveat about the <code>GetZestimate</code> method is that it cannot be used without having information on the <code>zpid</code>. And you can only get the <code>zpid</code> with the <code>GetSearchResults</code> method so the <code>GetZestimate</code> method is always used in tandem with the <code>GetSearchResults</code> method unless you&rsquo;re saving <code>zpid</code>&rsquo;s in your database.</p>
+
+<p>If you want to know more about the <code>GetZestimate</code> method check out the <a href="http://www.zillow.com/howto/api/GetZestimate.htm">documentation</a></p>
+
+<h4>GetChart</h4>
+
+<p>The last method that I&rsquo;m going to talk about in this tutorial is the <code>GetChart</code> method. You can use the <code>GetChart</code> method to get a URL to an image which shows the historical zestimates for a specific property. You can make a request to this method by using this URL: <code>http://www.zillow.com/webservice/GetChart.htm</code></p>
+
+<p>The <code>GetChart</code> method requires the following argument to be passed in:</p>
+
+<ul>
+<li><code>zws-id</code></li>
+<li><code>zpid</code> &ndash; the unique ID assigned by zillow to the specific property</li>
+<li><code>unit-type</code> &ndash; you can either use <code>dollar</code> or <code>percent</code> as the value. This is basically use for specifying whether to display the dollar changed or the percent changed of a specific property</li>
+<li><code>height</code> &ndash; the height of the image to return in pixels</li>
+<li><code>width</code> &ndash; the width of the image to return in pixels</li>
+</ul>
+
+
+<p>Here&rsquo;s a sample image that this method returns:</p>
+
+<p><img src="/images/posts/2014-03-20-getting-started-with-zillow-api/historical-zestimate.gif" alt="historical zestimate" /></p>
+
+<p>You can pretty much guess the <code>unit-type</code> that was used for this image. Yep that&rsquo;s right its in dollars. So the image above is basically showing that the value for the specific property went up from 96,000 dollars to 104,000 dollars over a period of about one year. You can actually specify this value by passing in the <code>chartDuration</code> argument. Then you can have values like <code>1year</code>, <code>2years</code> or <code>10years</code>. If you don&rsquo;t specify anything it defaults to &lsquo;1year&rsquo;.</p>
+
+<p>For more information regarding the <code>GetChart</code> method check out its <a href="http://www.zillow.com/howto/api/GetChart.htm">documentation</a>.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! Like with any other getting started guide we&rsquo;ve only scratched the surface with this tutorial. There&rsquo;s a lot more that you can do with Zillow API so be sure to check out the resources below to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.zillow.com/howto/api/APIOverview.htm">Zillow API Documentation</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with SPBAS]]></title>
@@ -1597,374 +1865,6 @@ try{</p>
 <li><a href="http://www.php.net/manual/en/security.php">PHP.Net Security Manual</a></li>
 <li><a href="http://phpsec.org/">PHP Security Guide</a></li>
 <li><a href="http://www.cyberciti.biz/tips/php-security-best-practices-tutorial.html">PHP Security Best Practices for Sys Admins</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api/"/>
-    <updated>2013-12-01T11:49:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api</id>
-    <content type="html"><![CDATA[<p>Bitcoin is really trending these days with its value now over <a href="http://www.extremetech.com/extreme/171762-bitcoin-hits-1000-but-how-far-can-it-go">$1000 per coin</a>. I think its timely to explore some of the services which uses Bitcoin as a form of payment. Last time I also showed you how to <a href="http://anchetawern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/">get started with the Coinbase API</a> which is also another service which allows you to use Bitcoins as a means of payment for goods and services. This time we will be exploring Bitpay. But first lets determine what&rsquo;s the difference between the Coinbase and Bitpay. Here&rsquo;s a really good answer to <a href="http://bitcoin.stackexchange.com/questions/7544/what-are-the-differences-and-similarities-among-paymium-bitpay-coinbase-etc">this question</a>:</p>
-
-<p><blockquote><p>BitPay is a payment processor for E-Commerce as well as for bricks and mortar / point-of-sale. This allows a business to accept bitcoins for payment and the proceeds are delivered to the merchant as directed. This could be 100% fiat (e.g., all bitcoin sales get converted to USDs immediately, or a mix, .. like 30% USD, 70% BTCs, etc.) The currently can send payments to merchants in U.S., Mexico, Canada and several nations in Europe.</p></blockquote></p>
-
-<p><blockquote><p>Coinbase is an EWallet provider and provides a service for buying and selling bitcoins. They do not operate a market, but instead use the exchange rate from the leading exchange (Mt. Gox) for customer buying and selling. They charge just 1% to buy or sell, but they have low limits (i.e., buy a max of $100 USD per-day) for new customers still in the 30-day probationary period.</p></blockquote></p>
-
-<p>So what service you use basically depends on what you need.</p>
-
-<!-- more -->
-
-
-<h3>Signing Up</h3>
-
-<p>First you need to <a href="https://bitpay.com/start">sign up at Bitpay</a> in order to get an API key which you can use for interacting with their API. Bitpay is really strict when it comes to the registration so you really have to provide real information about your business so that you can actually confirm it when they need some confirmation.</p>
-
-<h3>Connecting to Bitpay API</h3>
-
-<p>The Bitpay API only requires basic HTTP authentication so the process of connecting to the API is really simple.
-All you have to do is to call the <code>base64_encode()</code> method on the API key that you acquire from Bitpay and then pass it as one of the HTTP header fields. Under the <code>Authorization</code> field use <code>Basic</code> followed by the base 64 encoded string representation of the API key. Here&rsquo;s how to do it using <code>file_get_contents()</code>:</p>
-
-<p>```php
-&lt;?php
-$user = base64_encode($api_key);</p>
-
-<p>$context_options = array(</p>
-
-<pre><code>"http" =&gt; array(
-    "method" =&gt; $method,
-    "header"  =&gt; "Content-type: application/json\r\n" . 
-        "Content-Length: $length\r\n" .
-        "Authorization: Basic $user\r\n"
-)
-</code></pre>
-
-<p>);</p>
-
-<p>$context = stream_context_create($context_options);</p>
-
-<p>//the $url here is the API resource that you&rsquo;re trying to request from
-$response = file_get_contents($url, false, $context);
-$response = json_decode($response, true);
-?>
-```</p>
-
-<h3>Creating an Invoice</h3>
-
-<p>You can create an Invoice via by using the following resource in the Bitpay API:</p>
-
-<p><code>
-https://bitpay.com/api/invoice
-</code></p>
-
-<p>Then passing in all the fields required by the resource:</p>
-
-<ul>
-<li><strong>price</strong> &ndash; the price of the service or good.</li>
-<li><strong>currency</strong> &ndash; any valid currency short name (USD, GBP, EUR, JPY). Here&rsquo;s a <a href="http://www.casi.org.uk/info/1051list/annexd.html">full list of valid currency short names</a>. This will be automatically converted to the corresponding value in Bitcoins (BTC) depending on the <a href="https://bitpay.com/bitcoin-exchange-rates">current Bitcoin exchange rates</a>.</li>
-</ul>
-
-
-<p>You can also pass in some optional fields:</p>
-
-<ul>
-<li><strong>posData</strong> &ndash; this is normally used for passing in some additional information regarding the service or good that a customer is trying to purchase</li>
-<li><p><strong>notificationURL</strong> &ndash; the URL that will be pinged by Bitpay everytime the transaction status changes. Note that a change from <code>new</code> to <code>expired</code> doesn&rsquo;t count as a transaction status change. Bitpay will only ping the URL when the transaction status changes from <code>new</code> to <code>paid</code>, <code>confirmed</code>, or<code>complete</code>.</p></li>
-<li><p><strong>transactionSpeed</strong> &ndash; this can be set to <code>high</code>, <code>medium</code> or <code>low</code>. High means that the invoice is considered to be confirmed after a payment has been received. Medium means it will be considered confirmed after 10 minutes. And low means it will be considered confirmed after an hour.</p></li>
-<li><p><strong>fullNotifications</strong> &ndash; this can be set to <code>true</code> or <code>false</code>. If you want Bitpay to notify via email or via the notification url that you have set every time the transaction status changes then use <code>true</code>. If you only want Bitpay to notify once the transaction status becomes confirmed then set to <code>false</code>.</p></li>
-<li><p><strong>notificationEmail</strong> &ndash; the email address that Bitpay will notify on every transaction status change.</p></li>
-<li><strong>redirectURL</strong> &ndash; the URL in which Bitpay will display in the receipt after a payment has been made.</li>
-</ul>
-
-
-<p>And here are some fields which you can use to supply information regarding the product or the customer:</p>
-
-<ul>
-<li><strong>orderID</strong></li>
-<li><strong>itemDesc</strong></li>
-<li><strong>itemCode</strong></li>
-<li><strong>physical</strong></li>
-<li><strong>buyerName</strong></li>
-<li><strong>buyerAddress1</strong></li>
-<li><strong>buyerAddress2</strong></li>
-<li><strong>buyerCity</strong></li>
-<li><strong>buyerState</strong></li>
-<li><strong>buyerZip</strong></li>
-<li><strong>buyerCountry</strong></li>
-<li><strong>buyerEmail</strong></li>
-<li><strong>buyerPhone</strong></li>
-</ul>
-
-
-<h3>Invoice Status</h3>
-
-<p>The invoice status is the status of the invoice at any given time. Here are some of the invoice states:</p>
-
-<ul>
-<li><strong>new</strong> &ndash; Initially the invoice status is <code>new</code>. This means that someone can still initiate a payment to the Bitcoin address that is associated with the invoice.</li>
-<li><strong>paid</strong> &ndash; when an invoice becomes fully paid its status changes to <code>paid</code></li>
-<li><strong>confirmed</strong> &ndash; an invoice is considered confirmed depending on the transaction speed that was set on the creation of invoice. If the transaction speed is set to low then it will be confirmed after an hour or 6 blocks in the Bitcoin network, if the transaction speed is set to medium then it will be confirmed after 1 block (10 minutes) in the Bitcoin network, if its set to high then it will be confirmed right after full payment has been made.</li>
-<li><strong>complete</strong> &ndash; this means that Bitpay has credited the merchant&rsquo;s account for the invoice.</li>
-<li><strong>expired</strong> &ndash; this means that no payment has been received after the 15 minute limit alloted by Bitpay.</li>
-<li><strong>invalid</strong> &ndash; this means that the invoice has been paid but has not been confirmed after an hour.</li>
-</ul>
-
-
-<p>Now were ready to actually make a request to the Bitpay API. You can start by downloading the official <a href="https://github.com/bitpay/php-client">PHP client</a> provided by Bitpay for interacting with the Bitpay API. There&rsquo;s also a <a href="https://github.com/bitpay/ruby-client">Ruby</a> and <a href="https://github.com/bitpay/nodejs-client">Node.js</a> client if you&rsquo;re developing for those.</p>
-
-<p>Once you&rsquo;ve downloaded it on your working directory open up the <code>bp_options.php</code> file and supply a value for the <code>apiKey</code>, <code>currency</code> or any of the optional fields that you would like to supply.</p>
-
-<p>Create a new PHP file which we will be using to call the methods from <code>bp_lib.php</code>. To create an invoice call the <code>bpCreateInvoice()</code> method. It needs 4 arguments. The first one is the order ID which we will just supply <code>null</code> since we really don&rsquo;t have a system for generating order IDs. The second is the amount or the cost of the product or service.
-The third is the optional post data in which we can provide additional information for the product or service in key-value pairs. The fourth is the additional options which is primarily used for supplying information regarding the product or the customer.</p>
-
-<p>```
-&lt;?php
-require &lsquo;bp_lib.php&rsquo;;</p>
-
-<p>$amount = 10;
-$post_data = array(</p>
-
-<pre><code>'name' =&gt; 'excalibur',
-'level' =&gt; '999'
-</code></pre>
-
-<p>);
-$addl_options = array(</p>
-
-<pre><code>'itemDesc' =&gt; 'Anime Figurine'
-</code></pre>
-
-<p>);</p>
-
-<p>$response = bpCreateInvoice(null, $amount, $post_data, $addl_options);                <br/>
-if(!empty($response)){</p>
-
-<pre><code>//do something
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Bitpay returns a response similar to the following:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[id] =&gt; xxx
-[url] =&gt; https://bitpay.com/invoice?id=xxx
-[posData] =&gt; {"posData":{"name":"excalibur","level":999},"hash":"xxxx-xx"}
-[status] =&gt; new
-[btcPrice] =&gt; 0.0009
-[price] =&gt; 1
-[currency] =&gt; USD
-[invoiceTime] =&gt; 1385885490958
-[expirationTime] =&gt; 1385886390958
-[currentTime] =&gt; 1385885491133
-</code></pre>
-
-<p>)
-```</p>
-
-<ul>
-<li><strong>id</strong> &ndash; the unique id of the invoice</li>
-<li><strong>url</strong> &ndash; the URL in which the invoice can be viewed</li>
-<li><strong>posData</strong> &ndash; the additional data that we provided earlier</li>
-<li><strong>status</strong> &ndash; the invoice status</li>
-<li><strong>btcPrice</strong> &ndash; the corresponding amount in Bitcoins of the amount supplied earlier</li>
-<li><strong>price</strong> &ndash; the amount that was supplied earlier when the invoice was created</li>
-<li><strong>currency</strong> &ndash; the currency of the price</li>
-<li><strong>invoiceTime</strong> &ndash; the time the invoice was created since January 1, 1970 midnight. This is in a UNIX timestamp format.</li>
-<li><strong>expirationTime</strong> &ndash; the time in which the invoice will expire. When the invoice expires payments can no longer be accepted.</li>
-<li><strong>currentTime</strong> &ndash; the current time in the Bitpay server. This is primarily used for determining the time remaining before the invoice expires.</li>
-</ul>
-
-
-<p>Accessing the invoice URL will give you a page similar to the following:</p>
-
-<p><img src="/images/posts/getting_started_with_bitpay/bitpay-donation.png" alt="invoice url" /></p>
-
-<p>Customers can then use a Bitcoin client such as <a href="http://bitcoin.org/en/download">Bitcoin Qt</a>, <a href="http://electrum.org/">Electrum</a>, <a href="https://multibit.org/">Multibit</a>, or <a href="https://bitcoinarmory.com/">Armory</a> to pay you the merchant.</p>
-
-<h3>Getting Invoice Status</h3>
-
-<p>You can also get the status of an invoice by calling the <code>bpGetInvoice()</code> method and supplying the invoice ID as the argument:</p>
-
-<p><code>php
-&lt;?php
-$invoice = bpGetInvoice('85AHEqCRaT2aZ3xAMpK8fQ');
-?&gt;
-</code></p>
-
-<p>The method will return something like this:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[id] =&gt; xxx
-[url] =&gt; https://bitpay.com/invoice?id=xxx
-[posData] =&gt; Array
-    (
-        [name] =&gt; excalibur
-        [age] =&gt; 27
-    )
-
-[status] =&gt; new
-[btcPrice] =&gt; 0.0009
-[price] =&gt; 1
-[currency] =&gt; USD
-[invoiceTime] =&gt; 1385885490958
-[expirationTime] =&gt; 1385886390958
-[currentTime] =&gt; 1385886420720
-</code></pre>
-
-<p>)
-```</p>
-
-<p>Its basically the same as the response that we get when creating an invoice.</p>
-
-<h3>Bitpay Class</h3>
-
-<p>Before I end this tutorial here&rsquo;s the modified version of the Bitpay client provided by Bitpay that works with servers without CURL support:</p>
-
-<p>```php
-&lt;?php
-class Bitpay{</p>
-
-<pre><code>private $options;
-
-public function __construct($options){
-    $this-&gt;options = $options;
-}
-
-public function bpLog($contents){
-    $file = dirname(__FILE__).'/bplog.txt';
-    file_put_contents($file, date('m-d H:i:s').": ", FILE_APPEND);
-
-    if (is_array($contents))
-        $contents = var_export($contents, true);    
-    else if (is_object($contents))
-        $contents = json_encode($contents);
-
-    file_put_contents($file, $contents."\n", FILE_APPEND);          
-}
-
-public function bpfilegetcontents($url, $apiKey, $post = false) {
-    global $bpOptions;  
-
-    $length = 0;
-    $method = "GET";
-    if($post){  
-        $length = strlen($post);
-        $method = "POST";
-    }
-
-    $uname = base64_encode($apiKey);
-
-    $context_options = array(
-        "http" =&gt; array(
-            "method" =&gt; $method,
-            "header"  =&gt; "Content-type: application/json\r\n" . 
-                "Content-Length: $length\r\n" .
-                "Authorization: Basic $uname\r\n"
-        )
-    );      
-
-    if($method == 'POST'){
-        $context_options["http"]["content"] = $post;
-    }
-
-    $context = stream_context_create($context_options);
-    $response = file_get_contents($url, false, $context);
-    $response = json_decode($response, true);
-
-    return $response;
-}
-
-public function bpCreateInvoice($orderId, $price, $posData, $options = array()) {   
-
-    $options = array_merge($this-&gt;options, $options);
-
-    $pos = array('posData' =&gt; $posData);
-    if ($this-&gt;options['verifyPos'])
-        $pos['hash'] = $this-&gt;bpHash(serialize($posData), $options['apiKey']);
-    $options['posData'] = json_encode($pos);
-
-    $options['orderID'] = $orderId;
-    $options['price'] = $price;
-
-    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL', 
-        'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName', 
-        'buyerAddress1', 'buyerAddress2', 'buyerCity', 'buyerState', 'buyerZip', 'buyerEmail', 'buyerPhone');
-    foreach($postOptions as $o)
-        if (array_key_exists($o, $options))
-            $post[$o] = $options[$o];
-    $post = json_encode($post);
-
-    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/', $options['apiKey'], $post);
-
-    return $response;
-}
-
-
-public function bpVerifyNotification($apiKey = false) {
-
-    if (!$apiKey)
-        $apiKey = $this-&gt;options['apiKey'];     
-
-    $post = file_get_contents("php://input");
-    if (!$post)
-        return 'No post data';
-
-    $json = json_decode($post, true);
-
-    if (is_string($json))
-        return $json;
-
-    if (!array_key_exists('posData', $json)) 
-        return 'no posData';
-
-    $posData = json_decode($json['posData'], true);
-    if($this-&gt;options['verifyPos'] and $posData['hash'] != $this-&gt;bpHash(serialize($posData['posData']), $apiKey))
-        return 'authentication failed (bad hash)';
-    $json['posData'] = $posData['posData'];
-
-    return $json;
-}
-
-public function bpGetInvoice($invoiceId, $apiKey = false) {
-
-    if (!$apiKey)
-        $apiKey = $this-&gt;options['apiKey'];     
-
-    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/'.$invoiceId, $apiKey);
-    if (is_string($response))
-        return $response; 
-    $response['posData'] = json_decode($response['posData'], true);
-    $response['posData'] = $response['posData']['posData'];
-
-    return $response;   
-}
-
-public function bpHash($data, $key) {
-    $hmac = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-    return strtr($hmac, array('+' =&gt; '-', '/' =&gt; '_', '=' =&gt; ''));
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
-<li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
 </ul>
 
 ]]></content>

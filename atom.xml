@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-03-12T17:43:21+08:00</updated>
+  <updated>2014-03-20T17:16:25+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,407 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started With Zillow API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api/"/>
+    <updated>2014-03-20T14:01:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial were going to have a quick look at the Zillow API. But before we move on with actually writing some code lets first define what Zillow is. Taken from the <a href="http://www.zillow.com/corp/About.htm">Zillow about page</a> itself:</p>
+
+<blockquote><p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.</p></blockquote>
+
+
+<p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
+
+<h4>Getting a Zillow Web Service ID</h4>
+
+<p>In order to start making requests to the Zillow API you must first register an account with them. Registering with zillow is free, all you have to do is visit the <a href="http://www.zillow.com/">zillow homepage</a> and click on the join link. After that just enter all the information that is being asked. Once registered go to the <a href="http://www.zillow.com/webservice/Registration.htm">API registration page</a> and enter the necessary information:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-03-20-getting-started-with-zillow-api/api-signup.png" alt="zillow api registration" /></p>
+
+<p>Just check the specific API that you will need for your project, agree to the terms of use then click on the submit button. Zillow will also ask about a sample URL where you will use the API, if you do not have a specific URL in mind you can just place <code>http://localhost</code> or some other URL which you can use for testing purposes.</p>
+
+<p>Once that&rsquo;s done zillow will email you the API details. All you need here is the value for the Zillow Web Services Identification (ZWSID).</p>
+
+<h4>GetSearchResults API</h4>
+
+<p>Now that we have a zillow web service ID its time to test out some of the API methods that are available. First on the list is the <code>GetSearchResults API</code> which you can use to find real estate information for a specific address. Note that an address must be posted first by an owner or an agent in the <a href="http://www.zillow.com/for-sale-by-owner/">Zillow site</a> before it can be viewed.</p>
+
+<p>The URL for requesting search results is <code>http://www.zillow.com/webservice/GetSearchResults.htm</code>.</p>
+
+<p>It requires 3 url encoded arguments to be passed in:</p>
+
+<ul>
+<li><strong>zws-id</strong> &ndash; the zillow web service id</li>
+<li><strong>address</strong> &ndash; the address of the property to search (e.g. 3799 S Las Vegas Blvd, Las Vegas, NV 89109, United States)</li>
+<li><strong>citystatezip</strong> &ndash; the city + state combination or the zip code of the address that you specified in the <code>address</code> field.</li>
+</ul>
+
+
+<p>A successful request will return an XML file containing all the search results. Here&rsquo;s a JSON string representation of the XML file that will be returned:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">request:</span> <span class="err">{</span>
+</span><span class='line'>      <span class="err">address:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>      <span class="err">citystatezip:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>  <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>  <span class="err">message:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="err">text:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>      <span class="err">code:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>  <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>  <span class="err">response:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="err">results:</span> <span class="err">{</span>
+</span><span class='line'>          <span class="err">result:</span> <span class="err">[</span>
+</span><span class='line'>              <span class="err">{</span>
+</span><span class='line'>                  <span class="err">zpid:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                  <span class="err">link:</span> <span class="err">{</span>
+</span><span class='line'>                      <span class="err">homedetails:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">graphsanddata:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">comparables:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                  <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>                  <span class="err">address:</span> <span class="p">{</span>
+</span><span class='line'>                      <span class="err">street:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">zipcode:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">city:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">state:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">latitude:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">longitude:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                  <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>                  <span class="err">zestimate:</span> <span class="p">{</span>
+</span><span class='line'>                      <span class="err">amount:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">last-updated:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">oneWeekChange:</span> <span class="err">{</span>
+</span><span class='line'>                          <span class="err">@attributes:</span> <span class="err">{</span>
+</span><span class='line'>                              <span class="err">deprecated:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                          <span class="p">}</span>
+</span><span class='line'>                      <span class="err">},</span>
+</span><span class='line'>                      <span class="err">valueChange:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                      <span class="err">valuationRange:</span> <span class="p">{</span>
+</span><span class='line'>                          <span class="err">low:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                          <span class="err">high:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                      <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>                      <span class="err">percentile:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                  <span class="err">},</span>
+</span><span class='line'>                  <span class="err">localRealEstate:</span> <span class="p">{</span>
+</span><span class='line'>                      <span class="err">region:</span> <span class="err">{</span>
+</span><span class='line'>                          <span class="err">@attributes:</span> <span class="err">{</span>
+</span><span class='line'>                              <span class="err">id:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                              <span class="err">type:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                              <span class="err">name:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                          <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>                          <span class="err">links:</span> <span class="p">{</span>
+</span><span class='line'>                              <span class="err">overview:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                              <span class="err">forSaleByOwner:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                              <span class="err">forSale:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>                          <span class="p">}</span>
+</span><span class='line'>                      <span class="err">}</span>
+</span><span class='line'>                  <span class="err">}</span>
+</span><span class='line'>              <span class="err">}</span>
+</span><span class='line'>          <span class="err">]</span>
+</span><span class='line'>      <span class="err">}</span>
+</span><span class='line'>  <span class="err">}</span>
+</span><span class='line'><span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And no the results doesn&rsquo;t exactly return empty strings for the values of each of the properties. I just did it that way so you can focus on the actual properties that are returned.</p>
+
+<p>Here&rsquo;s an example PHP code that makes a request to the zillow API using <code>file_get_contents</code>. You can also use <code>curl</code> to have the benefit of error handling but to keep things simple lets stick with <code>file_get_contents</code> for this tutorial:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$zillow_id = &#39;xxx&#39;; //the zillow web service ID that you got from your email</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">$search = $_GET[&#39;address&#39;];</span>
+</span><span class='line'><span class="x">$citystate = $_GET[&#39;citystate&#39;];</span>
+</span><span class='line'><span class="x">$address = urlencode($search);</span>
+</span><span class='line'><span class="x">$citystatezip = urlencode($citystate);</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">$url = &quot;http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">$result = file_get_contents($url);</span>
+</span><span class='line'><span class="x">$data = simplexml_load_string($result);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the request is completed you can just access individual properties using the arrow notation. In the example below were accessing the <code>zpid</code> property:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">echo $data-&gt;response-&gt;results-&gt;result[0]-&gt;zpid;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But what happens when we enter an address which doesn&rsquo;t exist in the zillow database? For that you can check the value for the <code>message.code</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$code = $data-&gt;message-&gt;code;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This contains a 1-3 digit number. <code>0</code> basically means that the request was successful and that there are results that are returned. <code>507</code> or <code>508</code> means that there&rsquo;s no exact match for the inputted address. There are a bunch of other error codes which you can use so check out the messages and codes section in the <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">search results api page</a> for more information.</p>
+
+<p>For more information regarding the search results API check out <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">this page</a></p>
+
+<h4>GetZestimate API</h4>
+
+<p>Another API Method that we can use is the <code>GetZestimate</code>. This returns information regarding the zestimate of a specific property. A Zestimate is Zillow&rsquo;s estimated market value, computed using a proprietary formula. You can use the <code>GetZestimate</code> method by making a request to this URL: <code>http://www.zillow.com/webservice/GetZestimate.htm</code>.</p>
+
+<p>The <code>GetZestimate</code> method only requires 2 arguments: the <code>zws-id</code> and the <code>zpid</code>. Of this 2 arguments the <code>zpid</code> is of interest since we didn&rsquo;t use it in the previous method. The <code>zpid</code> is basically a unique ID assigned by zillow to a specific property.</p>
+
+<p>If you might have noticed earlier the <code>SearchResults</code> method already returns some zestimate data:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">zestimate: {</span>
+</span><span class='line'><span class="x">    amount: &#39;&#39;,</span>
+</span><span class='line'><span class="x">    last-updated: &#39;&#39;,</span>
+</span><span class='line'><span class="x">    oneWeekChange: {</span>
+</span><span class='line'><span class="x">        @attributes: {</span>
+</span><span class='line'><span class="x">            deprecated: &#39;&#39;</span>
+</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">    },</span>
+</span><span class='line'><span class="x">    valueChange: &#39;&#39;,</span>
+</span><span class='line'><span class="x">    valuationRange: {</span>
+</span><span class='line'><span class="x">        low: &#39;&#39;,</span>
+</span><span class='line'><span class="x">        high: &#39;&#39;</span>
+</span><span class='line'><span class="x">    },</span>
+</span><span class='line'><span class="x">    percentile: &#39;&#39;</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can pretty much use this one if you don&rsquo;t need detailed information about a specific zestimate of a property. But if need more detailed information the <code>GetZestimate</code> method is the one that you need to use. Here&rsquo;s the JSON string representation of the result that it returns:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">{</span>
+</span><span class='line'><span class="x">    request: {</span>
+</span><span class='line'><span class="x">        zpid: &#39;&#39;</span>
+</span><span class='line'><span class="x">    },</span>
+</span><span class='line'><span class="x">    message: {</span>
+</span><span class='line'><span class="x">       text: &#39;&#39;,</span>
+</span><span class='line'><span class="x">       code: &#39;&#39;</span>
+</span><span class='line'><span class="x">    },</span>
+</span><span class='line'><span class="x">    response: {</span>
+</span><span class='line'><span class="x">        zpid: &#39;&#39;,</span>
+</span><span class='line'><span class="x">        links: {</span>
+</span><span class='line'><span class="x">            homedetails: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            graphsanddata: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            mapthishome: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            comparables: &#39;&#39;</span>
+</span><span class='line'><span class="x">        },</span>
+</span><span class='line'><span class="x">        address: {</span>
+</span><span class='line'><span class="x">            street: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            zipcode: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            city: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            state: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            latitude: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            longitude: &#39;&#39;</span>
+</span><span class='line'><span class="x">        },</span>
+</span><span class='line'><span class="x">        zestimate: {</span>
+</span><span class='line'><span class="x">            amount: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            last-update: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            oneWeekChange: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            valueChange: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            valuationRange: {</span>
+</span><span class='line'><span class="x">                low: &#39;&#39;,</span>
+</span><span class='line'><span class="x">                high: &#39;&#39;</span>
+</span><span class='line'><span class="x">            },</span>
+</span><span class='line'><span class="x">            percentile: &#39;&#39;</span>
+</span><span class='line'><span class="x">        },</span>
+</span><span class='line'><span class="x">        localRealEstate: {</span>
+</span><span class='line'><span class="x">            region: {</span>
+</span><span class='line'><span class="x">                links: {</span>
+</span><span class='line'><span class="x">                    overview: &#39;&#39;,</span>
+</span><span class='line'><span class="x">                    forSaleByOwner: &#39;&#39;,</span>
+</span><span class='line'><span class="x">                    forSale</span>
+</span><span class='line'><span class="x">                }</span>
+</span><span class='line'><span class="x">            }</span>
+</span><span class='line'><span class="x">        },</span>
+</span><span class='line'><span class="x">        regions: {</span>
+</span><span class='line'><span class="x">            zipcode-id: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            city-id: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            county-id: &#39;&#39;,</span>
+</span><span class='line'><span class="x">            state-id: &#39;&#39;</span>
+</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">    }</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The one caveat about the <code>GetZestimate</code> method is that it cannot be used without having information on the <code>zpid</code>. And you can only get the <code>zpid</code> with the <code>GetSearchResults</code> method so the <code>GetZestimate</code> method is always used in tandem with the <code>GetSearchResults</code> method unless you&rsquo;re saving <code>zpid</code>&rsquo;s in your database.</p>
+
+<p>If you want to know more about the <code>GetZestimate</code> method check out the <a href="http://www.zillow.com/howto/api/GetZestimate.htm">documentation</a></p>
+
+<h4>GetChart</h4>
+
+<p>The last method that I&rsquo;m going to talk about in this tutorial is the <code>GetChart</code> method. You can use the <code>GetChart</code> method to get a URL to an image which shows the historical zestimates for a specific property. You can make a request to this method by using this URL: <code>http://www.zillow.com/webservice/GetChart.htm</code></p>
+
+<p>The <code>GetChart</code> method requires the following argument to be passed in:</p>
+
+<ul>
+<li><code>zws-id</code></li>
+<li><code>zpid</code> &ndash; the unique ID assigned by zillow to the specific property</li>
+<li><code>unit-type</code> &ndash; you can either use <code>dollar</code> or <code>percent</code> as the value. This is basically use for specifying whether to display the dollar changed or the percent changed of a specific property</li>
+<li><code>height</code> &ndash; the height of the image to return in pixels</li>
+<li><code>width</code> &ndash; the width of the image to return in pixels</li>
+</ul>
+
+
+<p>Here&rsquo;s a sample image that this method returns:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-03-20-getting-started-with-zillow-api/historical-zestimate.gif" alt="historical zestimate" /></p>
+
+<p>You can pretty much guess the <code>unit-type</code> that was used for this image. Yep that&rsquo;s right its in dollars. So the image above is basically showing that the value for the specific property went up from 96,000 dollars to 104,000 dollars over a period of about one year. You can actually specify this value by passing in the <code>chartDuration</code> argument. Then you can have values like <code>1year</code>, <code>2years</code> or <code>10years</code>. If you don&rsquo;t specify anything it defaults to &lsquo;1year&rsquo;.</p>
+
+<p>For more information regarding the <code>GetChart</code> method check out its <a href="http://www.zillow.com/howto/api/GetChart.htm">documentation</a>.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! Like with any other getting started guide we&rsquo;ve only scratched the surface with this tutorial. There&rsquo;s a lot more that you can do with Zillow API so be sure to check out the resources below to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.zillow.com/howto/api/APIOverview.htm">Zillow API Documentation</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Being a dark matter developer must be nice]]></title>
@@ -7288,788 +7689,6 @@ We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn 
 <li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Unit Testing Wordpress Plugins]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins/"/>
-    <updated>2013-09-29T15:30:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how to do unit testing in Wordpress plugins.
-Previously I&rsquo;ve written an article on <a href="http://anchetawern.github.io/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a> and in that article I&rsquo;ve created a simple Wordpress plugin that saves some tweets in the Wordpress database and displays them on a widget.
-This time I&rsquo;m going to walk you through setting up unit testing in Wordpress then write some tests for that specific plugin. If you want to follow along you can download the source from <a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/zam.7z">here</a>.</p>
-
-<h3>Installing Composer</h3>
-
-<p>First you have to install composer. From your terminal execute the following command to install composer:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -s https://getcomposer.org/installer | php</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Installing PHPUnit</h3>
-
-<p>Next on your project directory. In my case its in:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>home/wern/web_files/wordpress/wp-content/plugins/zam</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Create a <code>composer.json</code> file then put the following contents:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>    "require": {
-</span><span class='line'>        "EHER/PHPUnit": "dev-master"
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once you&rsquo;re done, save the file then execute the following command from your terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will install PHPUnit which we will be using for unit testing.</p>
-
-<h3>Setting Up Wordpress Tests</h3>
-
-<p>Another prerequisite before we can start writing our unit tests is installing <a href="https://github.com/nb/wordpress-tests">Wordpress Tests</a> which is a tool that was created to help in unit testing Wordpress plugins. The main benefit of using this tool is that it has access to all the Wordpress classes so the unit testing environment is pretty much the same as the environment where your Wordpress plugins runs.</p>
-
-<p>Next create a <code>src</code> folder from the root directory of your plugin.
-Then install Wordpress Tests inside of it. You can install by cloning the repo by executing the following command from the terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/nb/wordpress-tests.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Or simply download the <code>master.zip</code> file from the master branch of the project if you don&rsquo;t have <a href="http://git-scm.com/">Git</a> installed.</p>
-
-<p>Next create a <code>tests</code> directory (still on the root directory of your plugin). Then inside it create another directory and name it the same name where your Wordpress plugin is stored. In this case I&rsquo;ve named it <code>zam</code> since its the name of the directory where the main plugin file is located.</p>
-
-<p>Then create a <code>bootstrap.php</code> file just beside the directory that you&rsquo;ve just created and put the following contents:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$path</span> <span class="o">=</span> <span class="s1">&#39;/home/wern/web_files/wordpress/wp-content/plugins/zam/src/wordpress-tests/bootstrap.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span><span class="p">(</span> <span class="nb">file_exists</span><span class="p">(</span> <span class="nv">$path</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">require_once</span> <span class="nv">$path</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">exit</span><span class="p">(</span> <span class="s2">&quot;Couldn&#39;t find path to wordpress-tests/bootstrap.php</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok not exactly the same contents but at least the same format. All you&rsquo;re going to need to have to change here is the value for the <code>$path</code>. It should be where the main <code>bootstrap.php</code> file is stored. Not the <code>bootstrap.php</code> that you&rsquo;ve just created but the <code>bootstrap.php</code> file that&rsquo;s inside the <code>wordpress-tests</code> project which you cloned earlier.</p>
-
-<p>Next inside the <code>tests/zam</code> directory create the file were we are going to write all the tests later on. As a convention the naming should be the name of the plugin followed by the word <code>Test</code>. So for the sample plugin that were going to test the name would be <code>zamTest.php</code>.</p>
-
-<p>Next navigate to the root directory of your plugin and create a <code>phpunit.xml</code> file and put the following contents:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;phpunit</span> <span class="na">backupGlobals=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>         <span class="na">backupStaticAttributes=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>         <span class="na">colors=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>         <span class="na">convertErrorsToExceptions=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>         <span class="na">convertNoticesToExceptions=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>         <span class="na">convertWarningsToExceptions=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>         <span class="na">processIsolation=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>         <span class="na">stopOnFailure=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>         <span class="na">syntaxCheck=</span><span class="s">&quot;false&quot;</span>
-</span><span class='line'>         <span class="na">bootstrap=</span><span class="s">&quot;tests/bootstrap.php&quot;</span>
-</span><span class='line'><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;testsuites&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;testsuite</span> <span class="na">name=</span><span class="s">&quot;Ecom Test Suite&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;directory&gt;</span>tests/<span class="nt">&lt;/directory&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/testsuite&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/testsuites&gt;</span>
-</span><span class='line'><span class="nt">&lt;/phpunit&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>phpunit.xml</code> file simply points out where the test directory is located and some options for PHPUnit.
-In the <code>phpunit.xml</code> file above we&rsquo;ve used the following options:</p>
-
-<ul>
-<li><strong>backupGlobals</strong> &ndash; setting this to <code>false</code> tells PHPUnit to disable global state between tests</li>
-<li><strong>backupStaticAttributes</strong> &ndash; setting this to <code>false</code> disables the backup and restore operations for static class attributes</li>
-<li><strong>colors</strong> &ndash; setting this to <code>true</code> enables syntax highlighting when running tests on the terminal</li>
-<li><strong>convertErrorsToExceptions</strong> &ndash; setting this to <code>true</code> converts errors to exceptions</li>
-<li><strong>convertNoticesToExceptions</strong> &ndash; setting this to <code>true</code> converts notices to exceptions</li>
-<li><strong>convertWarningsToExceptions</strong> &ndash; setting this to <code>true</code> converts warnings to exceptions</li>
-<li><strong>processIsolation</strong> &ndash; setting this to <code>false</code> disables running each test in a separate PHP process</li>
-<li><strong>stopOnFailure</strong> &ndash; setting this to <code>false</code> disables stopping of execution upon first error or failure. This means that the test will continue to run even after encountering a failure</li>
-<li><strong>syntaxCheck</strong> &ndash; setting this to <code>false</code> disables checking of syntax</li>
-<li><strong>bootstrap</strong> &ndash; where the <code>bootstrap.php</code> file is located</li>
-</ul>
-
-
-<h3>Setting Up the Test Database</h3>
-
-<p>If your plugin uses the Wordpress database then its a requirement that you also have to setup the testing database so that running the tests won&rsquo;t affect your actual database.</p>
-
-<p>To do that go ahead and backup your Wordpress database using a tool like <a href="http://www.phpmyadmin.net/home_page/index.php">Phpmyadmin</a>.
-Then restore the backup this time giving it a different name, something like <code>wp_db_tests</code> to indicate that its a database that will be used for testing.
-Next modify <code>wp-config.php</code> to make use of the test database temporarily.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;wp_db_tests&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After that you can install the <a href="http://wordpress.org/plugins/wordpress-reset/">Wordpress reset plugin</a> to reset the database that will be used for testing.</p>
-
-<p>Once the test database has been successfully reset you can now revert the changes to <code>wp-config.php</code> and use your old database:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;wp_db&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Unit Test Configuration</h3>
-
-<p>Next we can now specify the options to the unit test configuration file (<code>unittests-config.php</code>) which you can find inside the <code>src/wordpress-tests</code> directory.
-The only things that you might want to change here are the values for <code>ABSPATH</code>, <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_HOST</code>, <code>WP_TESTS_DOMAIN</code>, <code>WP_TESTS_EMAIL</code>, <code>WP_TESTS_TITLE</code>, and <code>WP_TESTS_NETWORK_TITLE</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cm">/* Path to the WordPress codebase you&#39;d like to test. Add a backslash in the end. */</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;ABSPATH&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/wern/web_files/wordpress/&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;wp_db_tests&#39;</span> <span class="p">);</span> <span class="c1">//the database that will be used for testing</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;root&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_PASSWORD&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_CHARSET&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DB_COLLATE&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_DEBUG&#39;</span><span class="p">,</span> <span class="k">true</span> <span class="p">);</span> <span class="c1">//display all errors, warnings and notices</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_DEBUG_DISPLAY&#39;</span><span class="p">,</span> <span class="k">true</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_TESTS_DOMAIN&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost/wordpress&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_TESTS_EMAIL&#39;</span><span class="p">,</span> <span class="s1">&#39;youremail@gmail.com&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_TESTS_TITLE&#39;</span><span class="p">,</span> <span class="s1">&#39;Some Site&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_TESTS_NETWORK_TITLE&#39;</span><span class="p">,</span> <span class="s1">&#39;Test Network&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_TESTS_SUBDOMAIN_INSTALL&#39;</span><span class="p">,</span> <span class="k">true</span> <span class="p">);</span>
-</span><span class='line'><span class="nv">$base</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/* Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only */</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;DISABLE_WP_CRON&#39;</span><span class="p">,</span> <span class="k">true</span> <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$table_prefix</span>  <span class="o">=</span> <span class="s1">&#39;wp_&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span> <span class="s1">&#39;WP_PHP_BINARY&#39;</span><span class="p">,</span> <span class="s1">&#39;php&#39;</span> <span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Examining the Testing Suite</h3>
-
-<p>Now were ready to write some unit tests. Go ahead and navigate to the following directory:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">/home/wern/web_files/wordpress/wp-content/plugins/zam/tests/zam/zamTest.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Open up the <code>zamTest.php</code> file and put the following contents:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Zam Tests</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;/home/wern/web_files/wordpress/wp-content/plugins/zam/zam.php&#39;</span><span class="p">);</span> <span class="c1">//path to the main plugin file</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">ZamTest</span> <span class="k">extends</span> <span class="nx">WP_UnitTestCase</span><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$zam</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nv">$plugin_slug</span> <span class="o">=</span> <span class="s1">&#39;zam&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nv">$options</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">tearDown</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//unit tests here</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The unit testing class will simply extend the <code>WP_UnitTestCase</code> class which is inside the <code>src/wordpress-tests/lib/testcase.php</code> file.</p>
-
-<p>Let&rsquo;s take a moment to inspect it before proceeding with writing our tests.
-As you can see the <code>WP_UnitTestCase</code> class is simply extending the <code>PHPUnit_Framework_TestCase</code> which is the main testing suite that is used for most PHPUnit based test classes.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">WP_UnitTestCase</span> <span class="k">extends</span> <span class="nx">PHPUnit_Framework_TestCase</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">suppress_errors</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">show_errors</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">db_connect</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">ini_set</span><span class="p">(</span><span class="s1">&#39;display_errors&#39;</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">clean_up_global_scope</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">start_transaction</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">tearDown</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span> <span class="s1">&#39;ROLLBACK&#39;</span> <span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">clean_up_global_scope</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$_GET</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$_POST</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flush_cache</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">flush_cache</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">global</span> <span class="nv">$wp_object_cache</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wp_object_cache</span><span class="o">-&gt;</span><span class="na">group_ops</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$wp_object_cache</span><span class="o">-&gt;</span><span class="na">stats</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$wp_object_cache</span><span class="o">-&gt;</span><span class="na">memcache_debug</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$wp_object_cache</span><span class="o">-&gt;</span><span class="na">cache</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span> <span class="nb">method_exists</span><span class="p">(</span> <span class="nv">$wp_object_cache</span><span class="p">,</span> <span class="s1">&#39;__remoteset&#39;</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nv">$wp_object_cache</span><span class="o">-&gt;</span><span class="na">__remoteset</span><span class="p">();</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="nx">wp_cache_flush</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">start_transaction</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span> <span class="s1">&#39;SET autocommit = 0;&#39;</span> <span class="p">);</span>
-</span><span class='line'>      <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span> <span class="s1">&#39;START TRANSACTION;&#39;</span> <span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">assertWPError</span><span class="p">(</span> <span class="nv">$actual</span><span class="p">,</span> <span class="nv">$message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span> <span class="nx">is_wp_error</span><span class="p">(</span> <span class="nv">$actual</span> <span class="p">),</span> <span class="nv">$message</span> <span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">assertEqualFields</span><span class="p">(</span> <span class="nv">$object</span><span class="p">,</span> <span class="nv">$fields</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span> <span class="nv">$fields</span> <span class="k">as</span> <span class="nv">$field_name</span> <span class="o">=&gt;</span> <span class="nv">$field_value</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span> <span class="nv">$object</span><span class="o">-&gt;</span><span class="nv">$field_name</span> <span class="o">!=</span> <span class="nv">$field_value</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">fail</span><span class="p">();</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">assertDiscardWhitespace</span><span class="p">(</span> <span class="nv">$expected</span><span class="p">,</span> <span class="nv">$actual</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span> <span class="nb">preg_replace</span><span class="p">(</span> <span class="s1">&#39;/\s*/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$expected</span> <span class="p">),</span> <span class="nb">preg_replace</span><span class="p">(</span> <span class="s1">&#39;/\s*/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$actual</span> <span class="p">)</span> <span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">checkAtLeastPHPVersion</span><span class="p">(</span> <span class="nv">$version</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span> <span class="nb">version_compare</span><span class="p">(</span> <span class="k">PHP_VERSION</span><span class="p">,</span> <span class="nv">$version</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">markTestSkipped</span><span class="p">();</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">go_to</span><span class="p">(</span> <span class="nv">$url</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="c1">// note: the WP and WP_Query classes like to silently fetch parameters</span>
-</span><span class='line'>      <span class="c1">// from all over the place (globals, GET, etc), which makes it tricky</span>
-</span><span class='line'>      <span class="c1">// to run them more than once without very carefully clearing everything</span>
-</span><span class='line'>      <span class="nv">$_GET</span> <span class="o">=</span> <span class="nv">$_POST</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;query_string&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;postdata&#39;</span><span class="p">,</span> <span class="s1">&#39;authordata&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;currentmonth&#39;</span><span class="p">,</span> <span class="s1">&#39;page&#39;</span><span class="p">,</span> <span class="s1">&#39;pages&#39;</span><span class="p">,</span> <span class="s1">&#39;multipage&#39;</span><span class="p">,</span> <span class="s1">&#39;more&#39;</span><span class="p">,</span> <span class="s1">&#39;numpages&#39;</span><span class="p">,</span> <span class="s1">&#39;pagenow&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="nv">$v</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="nb">unset</span><span class="p">(</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="nv">$v</span><span class="p">]</span> <span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="nv">$parts</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;scheme&#39;</span><span class="p">]))</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nv">$req</span> <span class="o">=</span> <span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">];</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]))</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nv">$req</span> <span class="o">.=</span> <span class="s1">&#39;?&#39;</span> <span class="o">.</span> <span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">];</span>
-</span><span class='line'>              <span class="c1">// parse the url query vars into $_GET</span>
-</span><span class='line'>              <span class="nb">parse_str</span><span class="p">(</span><span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">],</span> <span class="nv">$_GET</span><span class="p">);</span>
-</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nv">$req</span> <span class="o">=</span> <span class="nv">$url</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REQUEST_URI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$req</span><span class="p">;</span>
-</span><span class='line'>      <span class="nb">unset</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flush_cache</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">unset</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp_query&#39;</span><span class="p">],</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp_the_query&#39;</span><span class="p">]);</span>
-</span><span class='line'>      <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp_the_query&#39;</span><span class="p">]</span> <span class="o">=&amp;</span> <span class="k">new</span> <span class="nx">WP_Query</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp_query&#39;</span><span class="p">]</span> <span class="o">=&amp;</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp_the_query&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span> <span class="o">=&amp;</span> <span class="k">new</span> <span class="nx">WP</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">// clean out globals to stop them polluting wp and wp_query</span>
-</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">public_query_vars</span> <span class="k">as</span> <span class="nv">$v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nb">unset</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="nv">$v</span><span class="p">]);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">private_query_vars</span> <span class="k">as</span> <span class="nv">$v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nb">unset</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="nv">$v</span><span class="p">]);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">main</span><span class="p">(</span><span class="nv">$parts</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>setUp</code> method sets the <code>supress_errors</code> attribute of the <code>$wpdb</code> object to <code>false</code> this means that all database errors will be displayed if there are any. The <code>$wpdb</code> variable is an instance of the Wordpress database class. It&rsquo;s also setting the <code>show_errors</code> attribute to <code>true</code>. Then it connects to the database that we have set on the <code>unittests-config.php</code> file earlier using the <code>db_connect()</code> method. It also sets <code>display_errors</code> to <code>1</code> which basically means that all errors, warnings and notices will be displayed if there are any.
-Then the <code>clean_up_global_scope()</code> method is called, this simply empties out global variables such as <code>$_GET</code> or <code>$_POST</code>. This method also calls up another method which is the <code>flush_cache()</code> which simply resets the Wordpress object cache. All of this is done to prevent any external variable or cached data from interfering with the values used for the current test. The <code>setUp</code> method also calls up the <code>start_transaction()</code> method which sets database <code>autocommit</code> to <code>0</code>. This means that even if you execute a query like:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">INSERT INTO wp_tbl_users SET name = &#39;matthew&#39;, age = 21</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It won&rsquo;t actually commit the changes to the database. This means that the changes aren&rsquo;t permanently added into the database. After that it also starts a transaction using the <code>START_TRANSACTION</code> command. What this does is to ensure that the <code>autocommit</code> remains disabled while the transaction hasn&rsquo;t been ended yet. You can only end a transaction using either the <code>COMMIT</code> or <code>ROLLBACK</code> command. The <code>COMMIT</code> command simply commits all the changes in the database. The <code>ROLLBACK</code> command rolls back everything that was done after the <code>START_TRANSACTION</code> command.</p>
-
-<p>When you check out the <code>tearDown()</code> method you will see that the <code>WP_UnitTestCase</code> class uses the <code>ROLLBACK</code> command. This means that every change brought by each test is rolled back to its previous state.</p>
-
-<p>So even if a test method does a couple of queries:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;INSERT INTO wp_postmeta SET post_id = &#39;23&#39;, meta_key = &#39;somekey&#39;, meta_value = &#39;somevalue&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;INSERT INTO wp_options SET option_name = &#39;some_option&#39;, option_value = &#39;some_optionvalue&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once the the execution of the test method ends, the <code>tearDown()</code> method will be called and the database will be rolled back to its previous state before any of the queries above were executed.
-This effectively brings back the test database to a state similar to that of when your first installed Wordpress on every test.</p>
-
-<p>There&rsquo;s also the <code>assertWPError()</code> method which simply asserts a Wordpress error if its <code>true</code>.</p>
-
-<p>The <code>assertEqualFields()</code> method simply checks if each key-value pair that you supply it has equal values. If not the test will fail.</p>
-
-<p>The <code>assertDiscardWhitespace()</code> method simply removes all the whitespace from 2 strings and compare it with each other.</p>
-
-<p>The <code>checkAtLeastPHPVersion()</code> method checks if the PHP Version number that you specify as its argument is higher than that of PHP Version in the machine where you are running the tests.</p>
-
-<p>Lastly there&rsquo;s the <code>go_to()</code> method which sets up the objects which you might want to check when navigating a specific URL. For example if you want to assert the title of a specific page you do something like:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$this-&gt;go_to(&#39;http://mysite.me/?p=125&#39;);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then you simply use an instance of the <code>$wp_query</code> class to get the queried objects from that specific URL.
-This will then contain some attributes like the <code>post_title</code> or <code>post_content</code> which you can assert:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">testPostTitle</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">global</span> <span class="nv">$wp_query</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$post</span> <span class="o">=</span> <span class="nv">$wp_query</span><span class="o">-&gt;</span><span class="na">get_queried_object</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="s1">&#39;Zup World!&#39;</span><span class="p">,</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">post_title</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Writing Unit Tests</h3>
-
-<p>Now that we know what the <code>WP_UnitTestCase</code> class does we can now proceed with writing the actual tests for our simple plugin.</p>
-
-<h4>The Setup</h4>
-
-<p>The <code>setUp</code> method is where we setup the things that the plugin needs during its runtime. For example if the plugin that you are testing involves creating database tables or adding new entries to the <code>wp_options</code> table then you set those all up in the <code>setUp</code> method. Think of it as emulating what would usually happen once the plugin is activated on a Wordpress site. The same thing should happen in the <code>setUp</code> method.</p>
-
-<p>The first thing that we need to do inside the <code>setUp</code> method is call the <code>setUp</code> method in the <code>WP_UnitTestCase</code> class. This simply cleans up the global scope and start a database transaction as we discussed earlier.</p>
-
-<p>Next we create a new object for the <code>Zam</code> plugin class and call its <code>installation_housekeeping()</code> method which creates the tables that will be needed by the plugin. Finally, we set the option that will be used by the plugin.
-Here were setting the <code>zam_twitter_id</code> under the <code>zam_options</code> option group to be equal to <code>Wern_Ancheta</code>. This should be a valid twitter username otherwise it wouldn&rsquo;t work.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">parent</span><span class="o">::</span><span class="na">setUp</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$z</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Zam</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$z</span><span class="o">-&gt;</span><span class="na">installation_housekeeping</span><span class="p">();</span>
-</span><span class='line'>  <span class="nx">update_option</span><span class="p">(</span><span class="s1">&#39;zam_options&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s1">&#39;zam_twitter_id&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Wern_Ancheta&#39;</span>
-</span><span class='line'>  <span class="p">));</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<blockquote><p>Remember that the `setUp` method runs before every test is executed.</p></blockquote>
-
-
-<h4>Teardown</h4>
-
-<p>Next is the <code>tearDown()</code> method. This is the opposite of the <code>setUp</code> method in that it is run after every test has been executed. What it does is to simply clean up the things which aren&rsquo;t cleaned up by the <code>setUp</code> method. In this case were simply calling the <code>uninstall_housekeeping()</code> method which drops the tables that are used by the plugin.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">tearDown</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">Zam</span><span class="o">::</span><span class="na">uninstall_housekeeping</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now were ready to test the actual methods in the plugin. For this tutorial were only going to test 2 core methods which the plugin uses, the <code>get_tweets()</code> and <code>save_tweets()</code> method.</p>
-
-<p>The convention that I&rsquo;ve used in the following methods is to prefix the actual name of the methods that I&rsquo;m testing with the word <code>test_</code>. Of course you can use other conventions but remember to use one that&rsquo;s already followed by your plugin. For example here I&rsquo;ve used underscores to separate each word in the method. You can also use camel casing or hungarian notation if you&rsquo;re already using it. What&rsquo;s important is that the test should follow the convention used by the actual class that you&rsquo;re testing.</p>
-
-<h4>Get Tweets Test</h4>
-
-<p>To test the <code>get_tweets()</code> method first you have to instantiate the plugin.
-This should be true for every method to avoid storing of values in the class itself.
-Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> method using the object that you&rsquo;ve used.</p>
-
-<p>We expect the <code>get_tweets()</code> method to return 11 tweets by default so we use <code>assertCount</code> to assert that the number of items stored in the <code>$tweets</code> variable is indeed 11.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">test_get_tweets</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$z</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Zam</span><span class="p">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="nv">$tweets</span> <span class="o">=</span> <span class="nv">$z</span><span class="o">-&gt;</span><span class="na">get_tweets</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertCount</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="nv">$tweets</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Save Tweets Test</h4>
-
-<p>Finally we test the <code>save_tweet</code> method. This method saves a random tweet from a page specified by the user in a specific Wordpress post.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">test_save_tweets</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">global</span> <span class="nv">$wpdb</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$z</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Zam</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$page</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$post</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;post_title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;sample save tweet&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;post_content&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;[zam_tweets page=&#39;</span> <span class="o">.</span> <span class="nv">$page</span> <span class="o">.</span> <span class="s1">&#39;]&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;post_type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;post&#39;</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$post_id</span> <span class="o">=</span> <span class="nx">wp_insert_post</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$tweets_table</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">prefix</span> <span class="o">.</span> <span class="s1">&#39;zam_tweets&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$wpdb</span><span class="o">-&gt;</span><span class="na">get_var</span><span class="p">(</span><span class="s2">&quot;SELECT tweet FROM </span><span class="si">$tweets_table</span><span class="s2"> WHERE post_id = &#39;</span><span class="si">$post_id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$tweets</span> <span class="o">=</span> <span class="nv">$z</span><span class="o">-&gt;</span><span class="na">get_tweets</span><span class="p">(</span><span class="nv">$page</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">in_array</span><span class="p">(</span><span class="nv">$content</span><span class="p">,</span> <span class="nv">$tweets</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This method is using the <a href="http://codex.wordpress.org/Shortcode_API">Shortcode API</a> which has a general syntax similar to this one:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">[zam_tweets page=3]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Where <code>zam_tweets</code> is the specific shortcode ID used by the plugin. And <code>page</code> is the attribute and <code>3</code> is the value for that attribute.</p>
-
-<p>What were doing here is simply emulating what would actually happen in an actual scenario. First the user creates a new post, puts in the shortcode then publish the post. But when testing we can take shortcuts as we don&rsquo;t need to navigate to the post page and click on the add new post. All that we need to do is to publish the actual post and that is done by calling the <code>wp_insert_post()</code> method. This takes a couple of arguments but here were only specify the <code>post_title</code> or the actual title of the post, the <code>post_content</code> or the shortcode itself, and the <code>post_type</code> which is <code>post</code>.</p>
-
-<p>Then we get the tweet from the tweets table, call the <code>get_tweets()</code> method, this time specifying the same page that was used in the shortcode. Finally we simply assert that the <code>in_array()</code> method which checks if the tweet that was found in the database is in the array of tweets returned by the <code>get_tweets()</code> method is <code>true</code>.</p>
-
-<h3>Running the Tests</h3>
-
-<p>Once you&rsquo;re done writing the tests you can simply open up the terminal on the root directory of the plugin and execute the following command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">phpunit</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once its done running you will see a screen similar to this:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/unit_testing_wordpress_plugins/terminal.png" alt="passing tests" /></p>
 ]]></content>
   </entry>
   
