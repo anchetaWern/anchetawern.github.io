@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Web Servers"
-date: 2014-03-02 14:35
+date: 2014-03-01 8:35
 comments: true
 categories: [web-servers, web-development, tools]
-published: false
+published: true
 ---
 
 In this part four of the series A Whirlwind Tour of Web Developer Tools I'm going to walk you through web servers. Web servers are computers that commonly delivers web pages. But when talking about web development web server refers to the software used for serving up the web pages. In this blog post I'm going to talk about 4 web servers that you can use in serving up your web projects.
@@ -233,4 +233,4 @@ Web Servers are flexible by default. They can serve up different types of conten
 - [Simple HTTP Server](http://docs.python.org/2/library/simplehttpserver.html)
 - [PHP Built-in Web Server](http://www.php.net/manual/en/features.commandline.webserver.php)
 - [Apache HTTP Server](http://httpd.apache.org/docs/)
-- [Nginx](http://nginx.org/en/docs/
+- [Nginx](http://nginx.org/en/docs/)
