@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-03-23T16:42:03+08:00</updated>
+  <updated>2014-03-30T09:01:28+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -23,6 +23,9 @@
 <p><blockquote><p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.</p></blockquote></p>
 
 <p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
+
+<!-- more -->
+
 
 <h4>Getting a Zillow Web Service ID</h4>
 
@@ -123,6 +126,7 @@ response: {
 <p>Here&rsquo;s an example PHP code that makes a request to the zillow API using <code>file_get_contents</code>. You can also use <code>curl</code> to have the benefit of error handling but to keep things simple lets stick with <code>file_get_contents</code> for this tutorial:</p>
 
 <p>```php
+&lt;?php
 $zillow_id = &lsquo;xxx&rsquo;; //the zillow web service ID that you got from your email</p>
 
 <p>$search = $<em>GET[&lsquo;address&rsquo;];
@@ -134,18 +138,23 @@ $citystatezip = urlencode($citystate);</p>
 
 <p>$result = file_get_contents($url);
 $data = simplexml_load_string($result);
+?>
 ```</p>
 
 <p>Once the request is completed you can just access individual properties using the arrow notation. In the example below were accessing the <code>zpid</code> property:</p>
 
 <p><code>
+&lt;?php
 echo $data-&gt;response-&gt;results-&gt;result[0]-&gt;zpid;
+?&gt;
 </code></p>
 
 <p>But what happens when we enter an address which doesn&rsquo;t exist in the zillow database? For that you can check the value for the <code>message.code</code>:</p>
 
 <p><code>
+&lt;?php
 $code = $data-&gt;message-&gt;code;
+?&gt;
 </code></p>
 
 <p>This contains a 1-3 digit number. <code>0</code> basically means that the request was successful and that there are results that are returned. <code>507</code> or <code>508</code> means that there&rsquo;s no exact match for the inputted address. There are a bunch of other error codes which you can use so check out the messages and codes section in the <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">search results api page</a> for more information.</p>
@@ -160,7 +169,7 @@ $code = $data-&gt;message-&gt;code;
 
 <p>If you might have noticed earlier the <code>SearchResults</code> method already returns some zestimate data:</p>
 
-<p>```
+<p>```json
 zestimate: {</p>
 
 <pre><code>amount: '',

@@ -103,6 +103,9 @@
 
 <p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
 
+<!-- more -->
+
+
 <h4>Getting a Zillow Web Service ID</h4>
 
 <p>In order to start making requests to the Zillow API you must first register an account with them. Registering with zillow is free, all you have to do is visit the <a href="http://www.zillow.com/">zillow homepage</a> and click on the join link. After that just enter all the information that is being asked. Once registered go to the <a href="http://www.zillow.com/webservice/Registration.htm">API registration page</a> and enter the necessary information:</p>
@@ -270,31 +273,43 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$zillow_id = &#39;xxx&#39;; //the zillow web service ID that you got from your email</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$zillow_id</span> <span class="o">=</span> <span class="s1">&#39;xxx&#39;</span><span class="p">;</span> <span class="c1">//the zillow web service ID that you got from your email</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$search = $_GET[&#39;address&#39;];</span>
-</span><span class='line'><span class="x">$citystate = $_GET[&#39;citystate&#39;];</span>
-</span><span class='line'><span class="x">$address = urlencode($search);</span>
-</span><span class='line'><span class="x">$citystatezip = urlencode($citystate);</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$citystate</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;citystate&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$address</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$search</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$citystatezip</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$citystate</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$url = &quot;http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip&quot;;</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=</span><span class="si">$zillow_id</span><span class="s2">&amp;address=</span><span class="si">$address</span><span class="s2">&amp;citystatezip=</span><span class="si">$citystatezip</span><span class="s2">&quot;</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$result = file_get_contents($url);</span>
-</span><span class='line'><span class="x">$data = simplexml_load_string($result);</span>
+</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">simplexml_load_string</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Once the request is completed you can just access individual properties using the arrow notation. In the example below were accessing the <code>zpid</code> property:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">echo $data-&gt;response-&gt;results-&gt;result[0]-&gt;zpid;</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$data</span><span class="o">-&gt;</span><span class="na">response</span><span class="o">-&gt;</span><span class="na">results</span><span class="o">-&gt;</span><span class="na">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">zpid</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>But what happens when we enter an address which doesn&rsquo;t exist in the zillow database? For that you can check the value for the <code>message.code</code>:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$code = $data-&gt;message-&gt;code;</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$code</span> <span class="o">=</span> <span class="nv">$data</span><span class="o">-&gt;</span><span class="na">message</span><span class="o">-&gt;</span><span class="na">code</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -325,21 +340,21 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">zestimate: {</span>
-</span><span class='line'><span class="x">    amount: &#39;&#39;,</span>
-</span><span class='line'><span class="x">    last-updated: &#39;&#39;,</span>
-</span><span class='line'><span class="x">    oneWeekChange: {</span>
-</span><span class='line'><span class="x">        @attributes: {</span>
-</span><span class='line'><span class="x">            deprecated: &#39;&#39;</span>
-</span><span class='line'><span class="x">        }</span>
-</span><span class='line'><span class="x">    },</span>
-</span><span class='line'><span class="x">    valueChange: &#39;&#39;,</span>
-</span><span class='line'><span class="x">    valuationRange: {</span>
-</span><span class='line'><span class="x">        low: &#39;&#39;,</span>
-</span><span class='line'><span class="x">        high: &#39;&#39;</span>
-</span><span class='line'><span class="x">    },</span>
-</span><span class='line'><span class="x">    percentile: &#39;&#39;</span>
-</span><span class='line'><span class="x">}</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">zestimate:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="err">amount:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>    <span class="err">last-updated:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>    <span class="err">oneWeekChange:</span> <span class="err">{</span>
+</span><span class='line'>        <span class="err">@attributes:</span> <span class="err">{</span>
+</span><span class='line'>            <span class="err">deprecated:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="err">},</span>
+</span><span class='line'>    <span class="err">valueChange:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>    <span class="err">valuationRange:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="err">low:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>        <span class="err">high:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>    <span class="err">percentile:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'><span class="err">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -397,58 +412,58 @@
 <span class='line-number'>50</span>
 <span class='line-number'>51</span>
 <span class='line-number'>52</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">{</span>
-</span><span class='line'><span class="x">    request: {</span>
-</span><span class='line'><span class="x">        zpid: &#39;&#39;</span>
-</span><span class='line'><span class="x">    },</span>
-</span><span class='line'><span class="x">    message: {</span>
-</span><span class='line'><span class="x">       text: &#39;&#39;,</span>
-</span><span class='line'><span class="x">       code: &#39;&#39;</span>
-</span><span class='line'><span class="x">    },</span>
-</span><span class='line'><span class="x">    response: {</span>
-</span><span class='line'><span class="x">        zpid: &#39;&#39;,</span>
-</span><span class='line'><span class="x">        links: {</span>
-</span><span class='line'><span class="x">            homedetails: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            graphsanddata: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            mapthishome: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            comparables: &#39;&#39;</span>
-</span><span class='line'><span class="x">        },</span>
-</span><span class='line'><span class="x">        address: {</span>
-</span><span class='line'><span class="x">            street: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            zipcode: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            city: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            state: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            latitude: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            longitude: &#39;&#39;</span>
-</span><span class='line'><span class="x">        },</span>
-</span><span class='line'><span class="x">        zestimate: {</span>
-</span><span class='line'><span class="x">            amount: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            last-update: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            oneWeekChange: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            valueChange: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            valuationRange: {</span>
-</span><span class='line'><span class="x">                low: &#39;&#39;,</span>
-</span><span class='line'><span class="x">                high: &#39;&#39;</span>
-</span><span class='line'><span class="x">            },</span>
-</span><span class='line'><span class="x">            percentile: &#39;&#39;</span>
-</span><span class='line'><span class="x">        },</span>
-</span><span class='line'><span class="x">        localRealEstate: {</span>
-</span><span class='line'><span class="x">            region: {</span>
-</span><span class='line'><span class="x">                links: {</span>
-</span><span class='line'><span class="x">                    overview: &#39;&#39;,</span>
-</span><span class='line'><span class="x">                    forSaleByOwner: &#39;&#39;,</span>
-</span><span class='line'><span class="x">                    forSale</span>
-</span><span class='line'><span class="x">                }</span>
-</span><span class='line'><span class="x">            }</span>
-</span><span class='line'><span class="x">        },</span>
-</span><span class='line'><span class="x">        regions: {</span>
-</span><span class='line'><span class="x">            zipcode-id: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            city-id: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            county-id: &#39;&#39;,</span>
-</span><span class='line'><span class="x">            state-id: &#39;&#39;</span>
-</span><span class='line'><span class="x">        }</span>
-</span><span class='line'><span class="x">    }</span>
-</span><span class='line'><span class="x">}</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="err">request:</span> <span class="err">{</span>
+</span><span class='line'>        <span class="err">zpid:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>    <span class="err">message:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="err">text:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>       <span class="err">code:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>    <span class="err">response:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="err">zpid:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>        <span class="err">links:</span> <span class="err">{</span>
+</span><span class='line'>            <span class="err">homedetails:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">graphsanddata:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">mapthishome:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">comparables:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>        <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>        <span class="err">address:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="err">street:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">zipcode:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">city:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">state:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">latitude:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">longitude:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>        <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>        <span class="err">zestimate:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="err">amount:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">last-update:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">oneWeekChange:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">valueChange:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">valuationRange:</span> <span class="err">{</span>
+</span><span class='line'>                <span class="err">low:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                <span class="err">high:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>            <span class="p">}</span><span class="err">,</span>
+</span><span class='line'>            <span class="err">percentile:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>        <span class="err">},</span>
+</span><span class='line'>        <span class="err">localRealEstate:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="err">region:</span> <span class="err">{</span>
+</span><span class='line'>                <span class="err">links:</span> <span class="err">{</span>
+</span><span class='line'>                    <span class="err">overview:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                    <span class="err">forSaleByOwner:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>                    <span class="err">forSale</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="err">}</span>
+</span><span class='line'>        <span class="err">},</span>
+</span><span class='line'>        <span class="err">regions:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="err">zipcode-id:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">city-id:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">county-id:</span> <span class="err">&#39;&#39;,</span>
+</span><span class='line'>            <span class="err">state-id:</span> <span class="err">&#39;&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="err">}</span>
+</span><span class='line'><span class="err">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
