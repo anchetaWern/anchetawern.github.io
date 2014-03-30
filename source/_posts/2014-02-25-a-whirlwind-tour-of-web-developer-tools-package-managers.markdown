@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Package Managers"
-date: 2014-03-17 12:10
+date: 2014-03-30 2:10
 comments: true
 categories: [tools, package-managers]
-published: false
+published: true
 ---
 
 In this part of the series I'll walk you through package managers. I believe the definition available at [Wikipedia](http://en.wikipedia.org/wiki/Package_management_system) really gives a good overview on what package managers are:
@@ -15,9 +15,11 @@ In software, a package management system, also called package manager, is a coll
 
 In simple terms package managers make it easy to install and modify software. In this blog post we'll be walking through some of the package managers available for Linux, Mac and Windows. And also package managers for easily installing front-end dependencies like jQuery or Twitter Bootstrap.
 
+<!-- more -->
+
 ####Advanced Package Tool
 
-Advanced Package Tool is the package manager used in Ubuntu and other Debian based Linux Distributions. You can use it to install new software, upgrade existing software or updating the package list index.
+First on the list is the Advanced Package Tool. It is the package manager used in Ubuntu and other Debian based Linux Distributions. You can use it to install new software, upgrade existing software or updating the package list index.
 
 
 #####Searching for Packages
@@ -92,7 +94,7 @@ To upgrade a specific package:
 sudo apt-get upgrade package_name
 ```
 
-Executing the command above will list out all the available upgrades to the package. Just select `y` to install the upgrades.
+Executing the command above will list out all the available upgrades to the package. Just select `y` to confirm the installation of the upgrades when its being asked.
 
 #####Alternatives
 
@@ -103,6 +105,12 @@ If you are using a Linux distribution that is not Debian based. You might want t
 - urpmi
 - rpm
 - dpkg
+
+They basically have the same idea with `apt`. And most of them even have almost the same commands in order to accomplish something. All you have to do is substitute. So for example if you have `yum` installed on your system and you want to install filezilla, you simply use the `yum install` command:
+
+```
+yum install filezilla
+```
 
 ####Chocolatey
 
@@ -263,7 +271,7 @@ brew install wget
 
 ####NPM
 
-NPM is the package manager that comes with Node. Its commonly used for installing JavaScript tools that runs on the command line such as Grunt, Bower and Yeoman. Or JavaScript libraries or frameworks that you can use on your project such as Express, Underscore or Socket.IO.
+NPM is the package manager that comes with Node. Its commonly used for installing JavaScript tools that runs on the command line such as Grunt, Bower and Yeoman. Or JavaScript libraries or frameworks that you can use on your project such as Express, Underscore and Socket.IO.
 
 #####Installing Node
 
@@ -329,7 +337,7 @@ npm install package_name
 
 This installs the package under the `node_modules` folder in your working directory. 
 
-You can install packages using the above method but the preferred method is to create a `package.json` file in which you specify all the dependencies of your current project:
+You can install packages using the above method but the preferred method is to create a `package.json` file in which you specify all the dependencies of your current project. This allows you to easily install and manage the dependencies of your project using only the `npm install` command. Here's an example `package.json` file which depends on `express` and `jade`:
 
 ```
 {
@@ -374,7 +382,7 @@ You can also search for packages using the `npm search`:
 npm search grunt
 ```
 
-This might take a while the first time you execute it since it will be downloading an index of all the packages that are available in the npm repository.
+This might take a while the first time you execute it since it will be downloading an index of all the packages that are available in the npm repository. But if you're on Google Fiber there's no problem. 
 
 **Uninstalling Packages**
 
@@ -509,13 +517,9 @@ You can also uninstall packages by using the `uninstall` command. This can take 
 bower uninstall bootstrap moment
 ```
 
-####Bower and AMD
-
-All of the previously mentioned features were good but what if we want to load up our dependencies asynchronously? Were pretty much out of luck with Bower since 
-
 ####Jam
 
-Another front-end dependency package manager is Jam. What's nice about Jam is that it was built with script modularity in mind. It uses AMD (Asynchronous Module Definition) for loading up the dependencies of your app. 
+Another front-end dependency package manager is Jam. What's nice about Jam is that it was built with asynchronous module loading in mind. It uses AMD (Asynchronous Module Definition) for loading up the dependencies of your app asynchronously. 
 
 Just like Bower you can install Jam using npm:
 
@@ -531,7 +535,9 @@ You can install packages using the `install` command followed by the name of the
 jam install jquery
 ```
 
-This will install your dependencies on the `jam` directory. Notice that a `require.config.js` and `require.js` file is also created. This is because Jam uses [requireJS](http://requirejs.org/) to asynchronously load your dependencies. This means that you can load your dependencies by requiring them instead of using script tags and specifying the source. The `require.js` file created by Jam is customized based on the packages that you have installed on your project directory. You'll have to include it first before trying to require your dependencies:
+This will install your dependencies on the `jam` directory. Notice that a `require.config.js` and `require.js` file is also created. This is because Jam uses [requireJS](http://requirejs.org/) to asynchronously load your dependencies. This means that you can load your dependencies by requiring them instead of using script tags and specifying the source. 
+
+The `require.js` file created by Jam is customized based on the packages that you have installed on your project directory. You'll have to include it first before trying to require your dependencies:
 
 ```
 <script src="jam/require.js"></script>
@@ -554,7 +560,7 @@ Do note that installing a package using the method above isn't recommended since
     	"bootstrap" : "~2.3.2",
     	"jquery" : "~2.0.0",
     	"moment" : "~1.7.2",
-	"underscore" : "~1.3.3"
+        "underscore" : "~1.3.3"
     }
   }
 }
@@ -563,7 +569,7 @@ Do note that installing a package using the method above isn't recommended since
 The `packageDir` is where packages are installed.
 The `baseUrl` is the directory in which to make relative package paths from.
 The `dependencies` is where you specify the name and version of a package to install.
-Once you're ready to install just execute the `jam install` command in the root of your projects directory.
+Once you're ready to install just execute the `jam install` command in the root of your project directory.
 
 If at a later time you decide to add another dependency you can just add it to the `package.json` file. In the example below were adding `knockout` version `2.2.0` as a dependency:
 
@@ -682,7 +688,7 @@ The `compile` command assumes that you have a `package.json` file where you spec
 
 ####Browserify
 
-Unlike npm, bower or jam its not really considered a full-fledged package manager since it doesn't allow you to install or manage packages. However it allows you to write node.js-style modules in the front-end.
+Unlike npm, bower or jam browserify is not really considered a full-fledged package manager since it doesn't allow you to install or manage packages. However it allows you to write node.js-style modules in the front-end.
 
 Browserify is also preffered to be installed globally since you can use it on multiple projects:
 
