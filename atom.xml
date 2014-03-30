@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetaWern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetaWern.github.io/"/>
-  <updated>2014-03-30T09:01:28+08:00</updated>
+  <updated>2014-03-30T09:02:59+08:00</updated>
   <id>http://anchetaWern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,1051 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Package Managers]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/"/>
+    <updated>2014-03-30T02:10:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers</id>
+    <content type="html"><![CDATA[<p>In this part of the series I&rsquo;ll walk you through package managers. I believe the definition available at <a href="http://en.wikipedia.org/wiki/Package_management_system">Wikipedia</a> really gives a good overview on what package managers are:</p>
+
+<blockquote><p>In software, a package management system, also called package manager, is a collection of software tools to automate the process of installing, upgrading, configuring, and removing software packages for a computer&#8217;s operating system in a consistent manner. It typically maintains a database of software dependencies and version information to prevent software mismatches and missing prerequisites.</p></blockquote>
+
+
+<p>In simple terms package managers make it easy to install and modify software. In this blog post we&rsquo;ll be walking through some of the package managers available for Linux, Mac and Windows. And also package managers for easily installing front-end dependencies like jQuery or Twitter Bootstrap.</p>
+
+<!-- more -->
+
+
+<h4>Advanced Package Tool</h4>
+
+<p>First on the list is the Advanced Package Tool. It is the package manager used in Ubuntu and other Debian based Linux Distributions. You can use it to install new software, upgrade existing software or updating the package list index.</p>
+
+<h5>Searching for Packages</h5>
+
+<p>You can search for packages using the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apt-cache search package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>package_name</code> here doesn&rsquo;t have to be exact as the package manager itself will list out all possible matches and not exact one&rsquo;s.  So for example if you&rsquo;re trying to install filezilla:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/apt-cache-searchfilezilla.png" alt="apt-cache search" /></p>
+
+<p>An alternative for doing a search is directly addressing a specific package from the terminal. So if you want to use install <code>php</code> you simply execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the package which adds this specific command to your system path is not installed yet. Apt will make a suggestion on which package to install along with the command on how to install it.</p>
+
+<h5>Installing Packages</h5>
+
+<p>To install a package all you have to do is execute <code>sudo apt-get install</code> followed by the name of the package that you want to install:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install filezilla</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>List Package Dependencies</h5>
+
+<p>Dependencies are the packages that needs to be installed before you can use the package that you want to install. These are installed by default so you won&rsquo;t really need to install them manually. If you want to know the dependencies of a specific package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>apt-cache depends package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Removing Packages</h5>
+
+<p>To remove installed packages:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get remove filezilla</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you also want to remove the configuration files for a specific package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get remove --purge package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Updating Package List</h5>
+
+<p>To download the package lists from the repositories and updates those to get information on the most recent versions of packages and their dependencies:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Upgrading Installed Packages</h5>
+
+<p>To upgrade all existing packages:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get upgrade</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To upgrade a specific package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get upgrade package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Executing the command above will list out all the available upgrades to the package. Just select <code>y</code> to confirm the installation of the upgrades when its being asked.</p>
+
+<h5>Alternatives</h5>
+
+<p>If you are using a Linux distribution that is not Debian based. You might want to use the following:</p>
+
+<ul>
+<li>zypper</li>
+<li>yum</li>
+<li>urpmi</li>
+<li>rpm</li>
+<li>dpkg</li>
+</ul>
+
+
+<p>They basically have the same idea with <code>apt</code>. And most of them even have almost the same commands in order to accomplish something. All you have to do is substitute. So for example if you have <code>yum</code> installed on your system and you want to install filezilla, you simply use the <code>yum install</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install filezilla</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Chocolatey</h4>
+
+<p>Chocolatey is a package manager for Windows. Its pretty much the equivalent of <code>apt-get</code> in Windows.</p>
+
+<p>To install chocolatey, open up the command line and execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%systemdrive%\chocolatey\bin</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is to download the chocolatey installer and copies it into the Windows path so it can be called from anywhere.</p>
+
+<p>Here&rsquo;s a list of all the available <a href="https://chocolatey.org/packages">chocolatey packages</a>.
+As you can see, chocolatey is built with programmers in mind so there are packages for easily installing git, nodejs, ruby, python, phantomjs, vim and any other developer tool that you can think of. For your convenience, I&rsquo;ve compiled some development tools and their corresponding install command below:</p>
+
+<p><strong>Sublime Text 2</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst sublimetext2</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Fiddler</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst fiddler</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Node JS</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst nodejs</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Console2</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst Console2</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Putty</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst putty</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Git</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst git.install</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Ruby</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst ruby</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Python</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst python</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Vim</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst vim</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Mercurial</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst hg</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Curl</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst curl</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Wget</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst Wget</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Yeoman</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst Yeoman</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Easy Install</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst easy.install</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Cygwin</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst Cygwin</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Expresso</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst expresso</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Vagrant</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst vagrant</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>MySQL</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst mysql</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>PHP</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst php</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Everything</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst Everything</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Homebrew</h4>
+
+<p>Homebrew is a package manager for Mac OS. You can install it by executing the following command from the terminal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the command above uses ruby. Ruby is already pre-installed on Mac OS so you can just execute it without installing Ruby.</p>
+
+<p>Once homebrew is installed you can then start installing packages by using the <code>brew</code> command. So for example if you want to install git:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a <a href="https://github.com/Homebrew/homebrew/tree/master/Library/Formula">list of homebrew packages</a> that you can install. Note that you will have to omit the <code>.rb</code> extension. So when installing the <code>wget.rb</code> package you only have to execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install wget</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>NPM</h4>
+
+<p>NPM is the package manager that comes with Node. Its commonly used for installing JavaScript tools that runs on the command line such as Grunt, Bower and Yeoman. Or JavaScript libraries or frameworks that you can use on your project such as Express, Underscore and Socket.IO.</p>
+
+<h5>Installing Node</h5>
+
+<p>Like I said earlier NPM comes with Node so you have to install Node before you can use NPM.
+The first choice for installing Node would be to <a href="http://nodejs.org/download/">download the installer</a> that was built for the operating system that you&rsquo;re using. If that doesn&rsquo;t work you can try any of the methods below:</p>
+
+<p>In Linux you can install Node from the terminal by executing the following commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install python-software-properties python g++ make
+</span><span class='line'>sudo add-apt-repository ppa:chris-lea/node.js
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install nodejs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For Windows, you can install <a href="https://chocolatey.org/">chocolatey</a> then install Node by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cinst nodejs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For Mac OS, you install <a href="http://brew.sh/">homebrew</a> then install Node by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install node</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If all else fails, be sure to do a google search on each error that pops out and follow through any solution that you might find.</p>
+
+<h5>Installing NVM</h5>
+
+<p>Another option would be to install Node using NVM (Node Version Manager). A bash script that allows you to install and manage multiple versions of Node. Note that the following method requires Git to be installed, so if you don&rsquo;t have it already installed on your machine you can download the available installers from the <a href="http://git-scm.com/downloads">Git Download Page</a>. After downloading check out the <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">guide on how to install git</a>.</p>
+
+<p>Going back to installing nvm. You can do that by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl https://raw.github.com/creationix/nvm/master/install.sh | sh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above copies nvm binaries into your system path so you can just call <code>nvm</code> from any directory after the installation is done.</p>
+
+<p>You can install any version of Node by using the <code>nvm install</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>nvm install 0.10</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the installation is done you can then tell nvm to use the specific version that you installed:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>nvm use 0.10</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Using NPM</h5>
+
+<p><strong>Installing Packages Locally</strong></p>
+
+<p>Once that&rsquo;s done you can now install packages via npm by using the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This installs the package under the <code>node_modules</code> folder in your working directory.</p>
+
+<p>You can install packages using the above method but the preferred method is to create a <code>package.json</code> file in which you specify all the dependencies of your current project. This allows you to easily install and manage the dependencies of your project using only the <code>npm install</code> command. Here&rsquo;s an example <code>package.json</code> file which depends on <code>express</code> and <code>jade</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "name": "super-awesome-app",
+</span><span class='line'>    "version": "0.0.1",
+</span><span class='line'>    "private": true,
+</span><span class='line'>    "dependencies": {
+</span><span class='line'>      "express": "&gt;=3.0.0",
+</span><span class='line'>      "jade": "&gt;=1.1.5"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>name</code> &ndash; the name of your app, note that this should be a machine friendly name.</li>
+<li><code>version</code> &ndash; the version of your app</li>
+<li><code>private</code> &ndash; supplying a value of <code>true</code> tells npm that your app is private, therefore it shouldn&rsquo;t be listed in the npm registry.</li>
+<li><code>dependencies</code> &ndash; an object containing the name and version of packages in which your app depends. You can use the <a href="https://www.npmjs.org/">npm website</a> to search for packages that you can install.</li>
+</ul>
+
+
+<p>Once you have a valid <code>package.json</code> in the root of your project directory. You can just execute <code>npm install</code> from the root of your project directory. This will install all your dependencies under the <code>node_modules</code> folder:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/node-modules.png" alt="node modules" /></p>
+
+<p>The packages will be installed in their own folders. There&rsquo;s also the <code>.bin</code> folder where the executable file for each packages can be called.</p>
+
+<p><strong>Installing Packages Globally</strong></p>
+
+<p>If you want to install a specific package globally, simply add the <code>-g</code> option:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install the package under the <code>/usr/local/lib/node_modules</code> directory or the <code>node_modules</code> directory of wherever node is installed.</p>
+
+<p><strong>Searching for Packages</strong></p>
+
+<p>You can also search for packages using the <code>npm search</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm search grunt</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This might take a while the first time you execute it since it will be downloading an index of all the packages that are available in the npm repository. But if you&rsquo;re on Google Fiber there&rsquo;s no problem.</p>
+
+<p><strong>Uninstalling Packages</strong></p>
+
+<p>You can uninstall packages using the <code>uninstall</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm uninstall moment</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure to add the <code>-g</code> option if you installed the package globally:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm uninstall grunt -g</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Bower</h4>
+
+<p>Bower is the package manager for front-end dependencies of your app. Its specifically useful for easily installing libraries such as jQuery or Twitter Bootstrap. It is loader agnostic, which means that you can use any module loader such as AMD or CommonJS.</p>
+
+<p>Bower is available from npm so you can install it via nvm:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g bower</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A global install is recommended for bower so that you can use it from any project.</p>
+
+<h5>Installing Packages</h5>
+
+<p>Once bower is installed you can then start installing packages in your working directory by using the <code>bower install</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower install package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above will install the latest version by default. If you want to install a specific version you do:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower install package_name#version_number</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re not sure about the name of a specific package that you&rsquo;re trying to install you can visit the <a href="http://bower.io/search/">bower website</a> and search for it.</p>
+
+<p>The command above will install the package under the <code>bower_components</code> folder by default. But if you want it to install somewhere else you can do so by creating a <code>.bowerrc</code> file. So for example if you want bower to install your apps dependencies under the <code>libraries</code> folder:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "directory": "libraries"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Again there&rsquo;s more than one way to go with things. With bower you can also install your apps dependencies by creating a <code>bower.json</code> file where you will specify its dependencies. Note that this is very similar to that of the <code>package.json</code> file that we used earlier with npm, the only difference is that were requiring front-end dependencies:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "my-super-awesome-app",
+</span><span class='line'>  "version": "0.0.1",
+</span><span class='line'>  "dependencies": {
+</span><span class='line'>    "bootstrap": "~3.1.1",
+</span><span class='line'>    "moment": "~2.0.0",
+</span><span class='line'>    "jquery": "~1.10.2"
+</span><span class='line'>  },
+</span><span class='line'>  "private": true
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Listing Installed Packages</h5>
+
+<p>You can also list out packages that are currently installed by using the <code>list</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower list</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will list out all the packages and their dependencies:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/bower-packages.png" alt="bower list" /></p>
+
+<p>Inspecting the screenshot above you can see that bootstrap depends on jquery.
+And sure enough when we open up the <code>bower.json</code> file inside the <code>bootstrap</code> directory we can see that <code>jquery</code> is listed under the <code>dependencies</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "bootstrap",
+</span><span class='line'>  "version": "3.1.1",
+</span><span class='line'>  "main": [
+</span><span class='line'>    "./dist/css/bootstrap.css",
+</span><span class='line'>    "./dist/js/bootstrap.js",
+</span><span class='line'>    "./dist/fonts/glyphicons-halflings-regular.eot",
+</span><span class='line'>    "./dist/fonts/glyphicons-halflings-regular.svg",
+</span><span class='line'>    "./dist/fonts/glyphicons-halflings-regular.ttf",
+</span><span class='line'>    "./dist/fonts/glyphicons-halflings-regular.woff"
+</span><span class='line'>  ],
+</span><span class='line'>  "ignore": [
+</span><span class='line'>    "**/.*",
+</span><span class='line'>    "_config.yml",
+</span><span class='line'>    "CNAME",
+</span><span class='line'>    "composer.json",
+</span><span class='line'>    "CONTRIBUTING.md",
+</span><span class='line'>    "docs",
+</span><span class='line'>    "js/tests"
+</span><span class='line'>  ],
+</span><span class='line'>  "dependencies": {
+</span><span class='line'>    "jquery": "&gt;= 1.9.0"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bower automatically installs the dependencies of each of your dependencies. Pretty neat!
+Since we have specified <code>jquery</code> as a dependency under the <code>bower.json</code> file of our project bower already knows that it should install that version of jquery (<code>1.10.2</code>) instead of the one specified under the <code>bower.json</code> file under the <code>bootstrap</code> directory.</p>
+
+<h5>Updating Packages</h5>
+
+<p>You can also update installed packages using the <code>update</code> command. Be sure to update the <code>bower.json</code> file to use a later version of your apps dependencies and then execute the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower update</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will update all the installed packages in your project directory. You can also update specific packages by specifying the package name:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower update bootstrap</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Uninstalling Packages</h5>
+
+<p>You can also uninstall packages by using the <code>uninstall</code> command. This can take one or more packages. In the example below were uninstalling both <code>bootstrap</code> and <code>moment</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bower uninstall bootstrap moment</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Jam</h4>
+
+<p>Another front-end dependency package manager is Jam. What&rsquo;s nice about Jam is that it was built with asynchronous module loading in mind. It uses AMD (Asynchronous Module Definition) for loading up the dependencies of your app asynchronously.</p>
+
+<p>Just like Bower you can install Jam using npm:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g jam</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Installing Packages</strong></p>
+
+<p>You can install packages using the <code>install</code> command followed by the name of the package that you want to install:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>jam install jquery</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install your dependencies on the <code>jam</code> directory. Notice that a <code>require.config.js</code> and <code>require.js</code> file is also created. This is because Jam uses <a href="http://requirejs.org/">requireJS</a> to asynchronously load your dependencies. This means that you can load your dependencies by requiring them instead of using script tags and specifying the source.</p>
+
+<p>The <code>require.js</code> file created by Jam is customized based on the packages that you have installed on your project directory. You&rsquo;ll have to include it first before trying to require your dependencies:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script src="jam/require.js"&gt;&lt;/script&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;script&gt;
+</span><span class='line'>  require(['jquery'], function ($) {
+</span><span class='line'>    $('body').text('Zup world!');
+</span><span class='line'>  });
+</span><span class='line'>&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Do note that installing a package using the method above isn&rsquo;t recommended since you will most likely have to install other packages as your project grows. The recommended method is creating a <code>package.json</code> file where you specify all your apps dependencies:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "jam": {
+</span><span class='line'>    "packageDir": "public/vendor",
+</span><span class='line'>    "baseUrl": "public",
+</span><span class='line'>    "dependencies": {
+</span><span class='line'>      "bootstrap" : "~2.3.2",
+</span><span class='line'>      "jquery" : "~2.0.0",
+</span><span class='line'>      "moment" : "~1.7.2",
+</span><span class='line'>        "underscore" : "~1.3.3"
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>packageDir</code> is where packages are installed.
+The <code>baseUrl</code> is the directory in which to make relative package paths from.
+The <code>dependencies</code> is where you specify the name and version of a package to install.
+Once you&rsquo;re ready to install just execute the <code>jam install</code> command in the root of your project directory.</p>
+
+<p>If at a later time you decide to add another dependency you can just add it to the <code>package.json</code> file. In the example below were adding <code>knockout</code> version <code>2.2.0</code> as a dependency:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "jam": {
+</span><span class='line'>    "packageDir": "public/vendor",
+</span><span class='line'>    "baseUrl": "public",
+</span><span class='line'>    "dependencies": {
+</span><span class='line'>      "bootstrap" : "~2.3.2",
+</span><span class='line'>      "jquery" : "~2.0.0",
+</span><span class='line'>      "moment" : "~1.7.2",
+</span><span class='line'>  "underscore" : "~1.3.3",
+</span><span class='line'>        "knockout" : "~2.2.0"
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;ve added the new dependency simply execute the <code>jam install</code> command again. Jam will also update the <code>require.js</code> and <code>require.config.js</code> file to include your new dependency.</p>
+
+<p><strong>Require.js File</strong></p>
+
+<p>Inspecting the <code>require.js</code> file we can see that the following code has been added near the bottom of the file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var jam = {
+</span><span class='line'>    "packages": [
+</span><span class='line'>        {
+</span><span class='line'>            "name": "jquery",
+</span><span class='line'>            "location": "jam/jquery",
+</span><span class='line'>            "main": "dist/jquery.js"
+</span><span class='line'>        }
+</span><span class='line'>    ],
+</span><span class='line'>    "version": "0.2.17",
+</span><span class='line'>    "shim": {}
+</span><span class='line'>};
+</span><span class='line'>
+</span><span class='line'>if (typeof require !== "undefined" && require.config) {
+</span><span class='line'>    require.config({
+</span><span class='line'>    "packages": [
+</span><span class='line'>        {
+</span><span class='line'>            "name": "jquery",
+</span><span class='line'>            "location": "jam/jquery",
+</span><span class='line'>            "main": "dist/jquery.js"
+</span><span class='line'>        }
+</span><span class='line'>    ],
+</span><span class='line'>    "shim": {}
+</span><span class='line'>});
+</span><span class='line'>}
+</span><span class='line'>else {
+</span><span class='line'>    var require = {
+</span><span class='line'>    "packages": [
+</span><span class='line'>        {
+</span><span class='line'>            "name": "jquery",
+</span><span class='line'>            "location": "jam/jquery",
+</span><span class='line'>            "main": "dist/jquery.js"
+</span><span class='line'>        }
+</span><span class='line'>    ],
+</span><span class='line'>    "shim": {}
+</span><span class='line'>};
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>if (typeof exports !== "undefined" && typeof module !== "undefined") {
+</span><span class='line'>    module.exports = jam;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see it contains the name, location and the main file of the packages that you installed. So that when you require them later on on your script it knows exactly where to find them and which file to load. If you&rsquo;re new to the concept of module loading be sure to check out the following resources:</p>
+
+<ul>
+<li><a href="http://www.sitepoint.com/understanding-requirejs-for-effective-javascript-module-loading/">Understanding RequireJS for Effective Module Loading</a></li>
+<li><a href="http://addyosmani.com/writing-modular-js/">Writing Modular JavaScript With AMD, CommonJS &amp; ES Harmony</a></li>
+</ul>
+
+
+<p><strong>Searching for Packages</strong></p>
+
+<p>You can search for jam packages using the <code>search</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>jam search package_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also use the <a href="http://jamjs.org/packages/#/">jam packages page</a> to look for packages to install.</p>
+
+<p><strong>Uninstalling Packages</strong></p>
+
+<p>You can uninstall packages by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>jam remove jquery</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will also update the <code>require.config.js</code> and <code>require.js</code> file. Note that this won&rsquo;t update your <code>package.json</code> file so you have to remove the specific dependency in that file as well if you don&rsquo;t want it to get installed when you execute the <code>jam install</code> command later on. Also note that if the specific package that you are trying to remove is a dependency of another package jam won&rsquo;t remove it. Here&rsquo;s an example of removing a package in which another package is dependent on:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/remove-error.png" alt="jam remove error" /></p>
+
+<p><strong>Compiling Scripts</strong></p>
+
+<p>Jam also allows you to compile your script and its dependencies using the <code>compile</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>jam compile -i script -o main</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking the command down, we used the <code>-i</code> option to specify the input file. The input file is basically the main JavaScript file used by our app. Here&rsquo;s an example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require(['jquery'], function ($) {
+</span><span class='line'>  $('body').text('zup world!');
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>-o</code> is where we specify the output. By default jam saves the output file on the directory where the <code>compile</code> command is called.</p>
+
+<p>The <code>compile</code> command assumes that you have a <code>package.json</code> file where you specified the <code>baseUrl</code>. In the <code>package.json</code> file that we used earlier the <code>baseUrl</code> is set to <code>public</code>. This means that jam will look into the <code>public</code> directory for the <code>script.js</code> file. Note that we didn&rsquo;t have to specify the extension (<code>.js</code>) in the example since jam already assumes that the extension is <code>.js</code>.</p>
+
+<h4>Browserify</h4>
+
+<p>Unlike npm, bower or jam browserify is not really considered a full-fledged package manager since it doesn&rsquo;t allow you to install or manage packages. However it allows you to write node.js-style modules in the front-end.</p>
+
+<p>Browserify is also preffered to be installed globally since you can use it on multiple projects:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g browserify</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done installing you can then install the packages in which your app depends on:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install jquery</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then you can use the package that you just installed by requiring it into your main JavaScript file (<code>js/main.js</code>):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var $ = require('jquery');
+</span><span class='line'>$(function(){
+</span><span class='line'>  $('body').text('zup world from browserify!');
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that you won&rsquo;t be able to run this on the browser just yet. You first have to compile it using browserify. Execute the following command on the root of your apps directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>browserify js/main.js -o dist/js/main.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above assumes that you have your main JavaScript file inside the <code>js</code> directory which is under the root directory of your app. The <code>-o</code> option allows you to specify the output file. In this case the output file is under <code>dist/js/main.js</code>. This will be the file that you&rsquo;re going to link into the page where you plan to run the script (<code>index.html</code>):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script src="dist/js/main.js"&gt;&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When you run this file in the browser you will see the following output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>zup world from browserify!</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to minify the output of browserify you can also install uglify js:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g uglify-js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then pipe browserify&rsquo;s output to <code>uglify-js</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>browserify js/main.js | uglify-js &gt; dist/js/main.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that in the above command we didn&rsquo;t supply the <code>-o</code> option so that browserify will simply return the output as a string. We then piped it to the <code>uglify-js</code> command and specifying the output file from there.</p>
+
+<p>Browserify is a good alternative to RequireJS for managing the front-end dependencies of your app.</p>
+
+<h4>Component</h4>
+
+<p>Lastly there&rsquo;s component, a package manager that allows you to write modular commonjs components.</p>
+
+<p>To install component:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g component</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Searching for Components</strong></p>
+
+<p>You can then find a list of components that you can install from this <a href="https://github.com/component/component/wiki/Components">page</a>. Or use the <code>search</code> command to search for existing components that matches your query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>component search jquery</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Installing a Component</strong></p>
+
+<p>Writing an app using component requires a <code>component.json</code> file to be created in the root of the app:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "component-tester",
+</span><span class='line'>  "description": "testing component",
+</span><span class='line'>  "dependencies": {
+</span><span class='line'>    "component/datepicker": "*"
+</span><span class='line'>  },
+</span><span class='line'>  "main": "main.js",
+</span><span class='line'>  "scripts": [
+</span><span class='line'>    "main.js"
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>component.json</code> file looks similar to the <code>package.json</code> and <code>bower.json</code> file that we&rsquo;ve seen so far. Remember that the <code>name</code> should be a machine-friendly name. There&rsquo;s also a bit difference in the name of the dependencies. The convention used by component is <code>author/component</code> in order to avoid naming collisions. In the example above we only have one dependency which is the <code>component/datepicker</code>. This allows us to add a datepicker on text fields.
+We also have to specify the main JavaScript file (<code>main.js</code>). There&rsquo;s also the <code>scripts</code> where we specify the other scripts that is used by the app. In this case we only have the main JavaScript file so its the only file that we put in.</p>
+
+<p>Once you&rsquo;re done building the <code>component.json</code> file execute the <code>install</code> command to install your dependencies:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>component install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install your dependencies under the <code>components</code> directory:</p>
+
+<p><img src="http://anchetaWern.github.io/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/components.png" alt="components directory" /></p>
+
+<p>As you can see from the screenshot above component creates a bunch of folders under the components directory. When you open up the folders you will see that there&rsquo;s a <code>component.json</code> file in each of them. Here&rsquo;s the contents of the <code>component.json</code> file under the <code>component/aurora</code> directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "aurora",
+</span><span class='line'>  "repo": "component/aurora",
+</span><span class='line'>  "description": "Aurora theme for Calendar, Popover, and Tip",
+</span><span class='line'>  "version": "0.0.1",
+</span><span class='line'>  "keywords": [
+</span><span class='line'>    "aurora",
+</span><span class='line'>    "theme",
+</span><span class='line'>    "bundle"
+</span><span class='line'>  ],
+</span><span class='line'>  "dependencies": {
+</span><span class='line'>    "component/aurora-popover": "*",
+</span><span class='line'>    "component/aurora-calendar": "*"
+</span><span class='line'>  },
+</span><span class='line'>  "development": {}
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see it also specifies its on dependency. There&rsquo;s also an additional <code>repo</code> property, this is the Github repository in which the component is hosted. To access it from the browser all you have to do is prefix it with github.com/{repo}.</p>
+
+<p>Checking out each of the dependencies you can see that they&rsquo;re also installed on your <code>components</code> directory each with their own assets (stylesheets, scripts and images).</p>
+
+<p>And that is the philosophy behind component. Splitting up packages into multiple distinct modules. This encourages code-reuse. This means that you will be able to easily import and add various dependencies in your app. But only those that are really needed. This means that a component can comprise of many different components that represent a single module.</p>
+
+<p>Going back to our example. In the <code>main.js</code> file put in the following code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var picker = require('datepicker');
+</span><span class='line'>var el = document.querySelector('[name=date]');
+</span><span class='line'>picker(el);</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>What this does is requiring the <code>datepicker</code> component that we installed earlier and transforms all the elements which has a <code>name</code> of <code>date</code> into a date picker.</p>
+
+<p>Once you&rsquo;re done with that execute the <code>build</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>component build</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will tell component to build the components that you installed. In simple terms this brings in all the components together in a single file. One main file for each file type. By default component saves these files into the <code>build</code> directory of your app. So the main stylesheet will be named <code>build.css</code> and the main script file will be named <code>build.js</code>. You can then use it from any page in your app:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!doctype html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>component test<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;build/build.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span> <span class="na">id=</span><span class="s">&quot;birthday&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Pick a date&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;build/build.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script&gt;</span>
+</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;component-tester&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the code above we&rsquo;re calling up what&rsquo;s in our main JavaScript file (<code>main.js</code>) by requiring it into the page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>require(&#39;component-tester&#39;);
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The name here is basically the name that you used in your <code>component.json</code> file earlier.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this blog post we&rsquo;ve gone over some of the package managers that we can use to easily install and manage software. We&rsquo;ve also gone over some of the front-end package managers. We have barely scratch the surface in this blog post. The next step would be to find a way in which these package managers will fit into your current workflow. Or you can also look at how to automate the building of the final script so you won&rsquo;t have to manually build the dependencies together with the main script of your app.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://tech.pro/tutorial/1190/package-managers-an-introductory-guide-for-the-uninitiated-front-end-developer">Package Managers: An Introductory Guide For The Uninitiated Front-End Developer</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started With Zillow API]]></title>
@@ -7409,303 +8454,6 @@ You can make use of this data however you want.</p>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Drupal.settings.searchapisolrmod.results</span>
 </span><span class='line'><span class="x">Drupal.settings.searchapisolrmod.locations</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Flickr API]]></title>
-    <link href="http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api/"/>
-    <updated>2013-10-13T11:00:00+08:00</updated>
-    <id>http://anchetaWern.github.io/blog/2013/10/13/getting-started-with-flickr-api</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get started with using the Flickr API.
-The Flickr API is a way to interact with data from Flickr Accounts.</p>
-
-<h3>Getting an API Key</h3>
-
-<p>First you have get an API Key from the <a href="http://www.flickr.com/services/apps/create/apply/">flickr developer website</a>.
-In order to get an API key you first have to create an app.
-The app is a way for flickr to track usage of their API. As you know, yahoo owns flickr so you first have to log in using your yahoo account in order to access the page for creating an app.</p>
-
-<p>For the purpose of this tutorial you can just apply for a non-commercial key.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_flickr_api/key_type.png" alt="key type" /></p>
-
-<p>Next, enter an app info. It can be anything you want, but be sure to provide more detailed information if you will be using the API for a project that you&rsquo;re building:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_flickr_api/app_info.png" alt="key type" /></p>
-
-<p>Check the two checkboxes to agree with <a href="http://www.flickr.com/services/api/tos/">Flickr API terms of use</a>.
-Be sure to read it so you will be informed of the limitations of the API.</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_flickr_api/app_key.png" alt="app key" /></p>
-
-<p>Once you&rsquo;re done with that you can now see the Flickr key and Secret.
-Copy those two as you will be needing it to interact with the API later.</p>
-
-<h3>Interacting with the API</h3>
-
-<p>Now were ready to actually interact with the API.
-For this tutorial were going to create a little library that will interact with the flickr API for us and then we can simply include it in our code and call the methods from there.</p>
-
-<p>Create a new php file and call it <code>class.flickr.php</code>. Declare 3 private variables which will store the flickr API key, the secret key and the format in which the results will be returned. In this case were using <code>json</code> so we can manipulate it with either JavaScript or PHP if we want. Under the constructor, simply assign the values for the <code>$flickr_key</code> and <code>$flickr_secret</code> to that of the arguments that will be passed later on when the <code>Flickr</code> class is instantiated.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Flickr</span><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">private</span> <span class="nv">$flickr_key</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">private</span> <span class="nv">$flickr_secret</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">private</span> <span class="nv">$format</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$flickr_key</span><span class="p">,</span> <span class="nv">$flickr_secret</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_key</span> <span class="o">=</span> <span class="nv">$flickr_key</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_secret</span> <span class="o">=</span> <span class="nv">$flickr_secret</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Searching of Public Photos</h4>
-
-<p>Now let&rsquo;s create a method for searching of public photos on Flickr.
-This method performs a call to the <code>flickr.photos.search</code> method from the API.
-You can read more about the arguments which you can pass to that method <a href="http://www.flickr.com/services/api/flickr.photos.search.html">here</a>.</p>
-
-<p>The <code>searchPhotos</code> method will take two arguments.
-The first one is the query or the image that you&rsquo;re looking for. It can be the image title, description or tags that has been attached to it. Note that the query can be a single word or a collection of words, you can also prepend the minus sign (&ndash;) to a word if you want to exclude it in the search results.</p>
-
-<p>The next argument is the tags, the tags is a comma-separated list of words that can be used to further describe the image that you&rsquo;re looking for.</p>
-
-<p>As you can see from the method below were using the <code>urlencode()</code> method to wrap all the user input. This includes the query and the tags. We need to do this in order to properly format the request url.</p>
-
-<p>Were also specifying a couple of arguments to the url aside from the <code>text</code> and the <code>tags</code>:</p>
-
-<ul>
-<li><p><strong>sort</strong> &ndash; the order in which to return the results, in this case I&rsquo;ve chosen <code>relevance</code> to be the value but it can also have a value of of <code>date-posted-asc</code>, <code>date-posted-desc</code>, <code>date-taken-asc</code>, <code>date-taken-desc</code>, <code>interestingness-desc</code>, and <code>interestingness-asc</code> all of which is self-explanatory.</p></li>
-<li><p><strong>safe_search</strong> &ndash; the safe search argument is a filter for results that are returned. You will usually want this to have a value of <code>1</code> which tells to the API to only return results that are safe for viewing for all ages.</p></li>
-<li><p><strong>content_type</strong> &ndash; the type of content, I&rsquo;ve selected the value of <code>4</code> for this to indicate that I want to return results that can be either photos or screenshots.</p></li>
-<li><p><strong>api_key</strong> &ndash; the API key that we got earlier from creating the app.</p></li>
-<li><p><strong>format</strong> &ndash; the format in which to return the results. In this case were using json.</p></li>
-<li><p><strong>per_page</strong> &ndash; this is the limit of images to return per page. In this case we only want the API to return 10 images per page.</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">searchPhotos</span><span class="p">(</span><span class="nv">$query</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$tags</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$urlencoded_tags</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$tags</span><span class="p">)){</span>    
-</span><span class='line'>      <span class="nv">$tags_r</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$tags</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$tags_r</span> <span class="k">as</span> <span class="nv">$tag</span><span class="p">){</span>
-</span><span class='line'>          <span class="nv">$urlencoded_tags</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$tag</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>    
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//construct the url</span>
-</span><span class='line'>  <span class="nv">$url</span>  <span class="o">=</span> <span class="s1">&#39;http://api.flickr.com/services/rest/?&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;method=flickr.photos.search&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;text=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;tags=&#39;</span> <span class="o">.</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$urlencoded_tags</span><span class="p">);</span> <span class="c1">//convert the array of url encoded tags back to a string</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;sort=relevance&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;safe_search=1&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;content_type=4&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;api_key=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flickr_key</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;format=&#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;per_page=10&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//get the results</span>
-</span><span class='line'>  <span class="nv">$result</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//remove the unneccessary strings that wraps the result returned from the API</span>
-</span><span class='line'>  <span class="nv">$json</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">),</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$result</span><span class="p">)</span> <span class="o">-</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">$photos</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$json</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//check if the status didn&#39;t fail</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fail&#39;</span><span class="p">){</span>
-</span><span class='line'>      <span class="c1">//return only the data for the photos as that&#39;s the only thing that we need</span>
-</span><span class='line'>      <span class="nv">$photos</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;photos&#39;</span><span class="p">][</span><span class="s1">&#39;photo&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$photos</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After constructing the url we simply use the <code>file_get_contents()</code> method to request the data from the API.
-The results will then be stored to the <code>$result</code> variable. But the API has wrapped up the data with a function named <code>jsonFlickrApi()</code> as you can see from the screenshot below:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_flickr_api/flickr_results.png" alt="flickr results" /></p>
-
-<p>Thus we cannot immediately convert it to a PHP array or even parse it with a json parser. So we need to use the <code>str_replace()</code> function to trim the unneccessary characters. And that&rsquo;s exactly what this particular line does:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$json</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">),</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$result</span><span class="p">)</span> <span class="o">-</span> <span class="nb">strlen</span><span class="p">(</span><span class="s2">&quot;jsonFlickrApi(&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we simply use the <code>json_decode()</code> function to convert the json string to an array.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$photos</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$json</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//check if the status didn&#39;t fail</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fail&#39;</span><span class="p">){</span>
-</span><span class='line'>  <span class="c1">//return only the data for the photos as that&#39;s the only thing that we need</span>
-</span><span class='line'>  <span class="nv">$photos</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;photos&#39;</span><span class="p">][</span><span class="s1">&#39;photo&#39;</span><span class="p">];</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nv">$photos</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But wait, were not really done yet. If you might have noticed from the screenshot of the results returned from the API earlier you might have noticed that there were no links to the images matching the query. The common purpose of using the flickr API is to fetch the image source of the images on the flickr website. So why are there no image sources as we can see from the parsed version of the results returned from the API below:</p>
-
-<p><img src="http://anchetaWern.github.io/images/posts/getting_started_with_flickr_api/jsonview.png" alt="json parse" /></p>
-
-<p>That&rsquo;s because we need to construct the url&rsquo;s ourselves using the data that has been returned from the API.
-All you have to do is to extract the <code>farm</code>, <code>server</code>, <code>id</code> and the <code>secret</code>. Here&rsquo;s how to construct the url:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$src</span> <span class="o">=</span> <span class="s2">&quot;http://farm&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;farm&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;.static.flickr.com/&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_m.jpg&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To call the method, you simply have to loop through the results returned from the <code>searchPhotos()</code> method and then construct the url from inside the loop:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;class.flickr.php&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$flickr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Flickr</span><span class="p">(</span><span class="nv">$api_key</span><span class="p">,</span> <span class="nv">$api_secret</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$flickr</span><span class="o">-&gt;</span><span class="na">searchPhotos</span><span class="p">(</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$tags</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$results</span><span class="p">)){</span>
-</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$results</span> <span class="k">as</span> <span class="nv">$photo</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$src</span> <span class="o">=</span> <span class="s2">&quot;http://farm&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;farm&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;.static.flickr.com/&quot;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_&#39;</span> <span class="o">.</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;_m.jpg&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">  &lt;img src=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$src</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&quot; alt=&quot;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&quot;&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>      
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>The flickr API is a great way to fetch and modify user data from the flickr website.
-We&rsquo;ve barely scratch the surface with this tutorial. If you want to learn more about the flickr API be sure to checko out the resources below.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://www.flickr.com/services/developer/">Flickr Developer Guide</a></li>
-<li><a href="http://www.flickr.com/services/api/">Flickr API Methods</a></li>
-</ul>
 
 ]]></content>
   </entry>
