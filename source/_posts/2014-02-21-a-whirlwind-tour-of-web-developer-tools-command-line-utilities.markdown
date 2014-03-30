@@ -1,13 +1,13 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Command Line Utilities"
-date: 2014-03-10 14:45
+date: 2014-03-08 14:45
 comments: true
 categories: [tools, command-line]
-published: false
+published: true
 ---
 
-In this part four of the series A Whirlwind Tour of Web Developer Tools I'll walk you through some of the tools that you can use in the command line.  But before we dive in to some of the tools lets first define what a command line is. According to [Wikipedia](http://en.wikipedia.org/wiki/Command-line_interface):
+In this part five of the series A Whirlwind Tour of Web Developer Tools I'll walk you through some of the tools that you can use in the command line.  But before we dive in to some of the tools lets first define what a command line is. According to [Wikipedia](http://en.wikipedia.org/wiki/Command-line_interface):
 
 {% blockquote %}
 A command-line interface (CLI), also known as command-line user interface, console user interface, and character user interface (CUI), is a means of interacting with a computer program where the user (or client) issues commands to the program in the form of successive lines of text (command lines).
