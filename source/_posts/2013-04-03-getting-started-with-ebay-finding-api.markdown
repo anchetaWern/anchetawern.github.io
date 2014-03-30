@@ -84,7 +84,7 @@ In this method were simply appending the different parameters to the `$url` that
 
 The parameters that we have used here are:
 
-- operation-name - the operation that you want to perform. In the example below were using the `findItemsByKeywords` operation. The type of operation will determine the other parameters that you will be including in your request.
+- **operation-name** - the operation that you want to perform. In the example below were using the `findItemsByKeywords` operation. The type of operation will determine the other parameters that you will be including in your request.
 In the case of `findItemsByKeywords` the required parameter is the `keywords`. There are also other operations which you can use you can find them at the [call reference page](http://developer.ebay.com/DevZone/finding/CallRef/index.html).
 
 - **service-version** - the version of the API that you would want to use. In our example were using version 	`1.0.0`
