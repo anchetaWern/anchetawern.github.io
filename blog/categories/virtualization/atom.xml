@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: virtualization | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/virtualization/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Virtualization]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/"/>
+    <updated>2014-02-23T08:16:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization</id>
+    <content type="html"><![CDATA[<p>In this third part of the series <a href="http://anchetawern.github.io/blog/2014/02/09/a-whirlwind-tour-of-web-developer-tools/">A Whirlwind Tour of Web Developer Tools</a> I&rsquo;ll walk you through virtualization.
+But before we dive in let&rsquo;s first define what virtualization is. According to Wikipedia:</p>
+
+<p><blockquote><p>Virtualization is the act of creating a virtual (rather than actual) version of something, including but not limited to a virtual computer hardware platform, operating system, storage device, or computer network resources.</p></blockquote></p>
+
+<p>In simple terms virtualization is creating a virtual copy of something. Virtual meaning that its not actually real but you can actually do things just like you do with the real thing.</p>
+
+<!--more-->
+
+
+<p>The first thing that comes to mind when you say virtualization in the world of computing is Virtualbox, VMWare and other virtualization software. And that&rsquo;s exactly what I&rsquo;m going to talk about in this blog post but of course in relation to web development.</p>
+
+<h3>VirtualBox</h3>
+
+<p>Virtualbox is a free cross-platform virtualization platform. Cross-platform meaning you can run it on every major operating system (Windows, Linux, Mac). And yeah if you haven&rsquo;t catch it the first time its free so you can use it however you want without paying for it.
+Virtualbox allows you to run a copy of the operating system that you don&rsquo;t currently have on your machine. For example if you&rsquo;re currently using Ubuntu then you can run Windows or Mac on Virtualbox. And the same is true with whatever operating system you have currently installed physically.</p>
+
+<p>This blog post isn&rsquo;t going to be a whole tutorial about Virtualbox. There&rsquo;s already a bunch of information about that in the <a href="https://www.virtualbox.org/manual/ch01.html">official documentation</a> so use that if you don&rsquo;t know how to use Virtualbox yet. But one thing to keep in mind when using Virtualbox is that you should acquire an installer of the operating system that you want virtualize using Virtualbox just like you do when you want to install it on your machine.</p>
+
+<h3>Emulation Software</h3>
+
+<p>One subject that&rsquo;s related to Virtualization is Emulation. They&rsquo;re sort of similar but they&rsquo;re not. Basically the main difference is the environment (hardware) where the software runs. When you say emulation the environment doesn&rsquo;t necessarily have to be the same to that of the original piece of software that you&rsquo;re trying to run. For example when playing an <a href="http://en.wikipedia.org/wiki/Nintendo_DS">NDS</a> game in your computer. That is possible through the use of an emulator. Your computer doesn&rsquo;t have the same hardware to that of an NDS but the emulator software makes it as if the game is running on an actual NDS hardware.</p>
+
+<p>Whereas Virtualization is running a piece of software, in this case the operating system in the same type of environment.</p>
+
+<p>So why did I just go over the difference between Emulation and Virtualization? That&rsquo;s because emulation is another piece of this whole blog post. You can also use emulation software as a substitute if Virtualization isn&rsquo;t feasible in your case.</p>
+
+<p>Emulation software allows you to run software that you can only run on a specific operating system. For example if you only want to test out the website that you created in Internet Explorer and you&rsquo;re currently running Linux then you can use an emulation software instead of installing a copy of the Windows operating system on Virtualbox. Again I won&rsquo;t be walking you through how to install an emulation software. Instead I&rsquo;ll just provide you with some links to get you started:</p>
+
+<ul>
+<li><a href="http://www.winehq.org/">Wine</a> &ndash; windows software emulator for Linux, BSD, Solaris and Mac OS X.</li>
+<li><a href="http://www.codeweavers.com/products/crossover-mac/">Crossover</a> &ndash; windows software emulator for Mac.</li>
+<li><a href="http://winebottler.kronenberg.org/">Winebottler</a> &ndash; run windows-based programs on Mac.</li>
+<li><a href="http://www.cygwin.com/">Cygwin</a> &ndash; provides a unix-like environment and command-line interface for Windows.</li>
+<li><a href="http://www.finkproject.org/">Fink</a> &ndash; run unix-based software on Mac.</li>
+</ul>
+
+
+<h3>Vagrant</h3>
+
+<p>Using Virtualbox or emulation software for testing the websites that you have created is nice but what if you need to test it out on a machine with exactly the same environment? Developers are known for making the excuse &ldquo;It works on my machine&rdquo; when the application that they have developed suddenly stops working or acts weird. With Vagrant you can now say goodbye to that excuse. What Vagrant allows you to do is create a virtual copy of a specific operating system and access and modify its files right from the host operating system (the operating system that you&rsquo;re currently running).
+It also allows you to install software into the virtual operating system directly from your terminal through the use of <code>ssh</code>.
+But what is the advantage of this over using Virtualbox? Its true that you can do any of the things that I&rsquo;ve mentioned above without using Vagrant. But the main advantage I think is the performance. Vagrant allows you to perform the installation of software and manipulating of files right from your host operating system so its a lot faster than booting up your virtual machine and doing your modifications from there. That is especially true if your machine doesn&rsquo;t have the most badass processor, solid state drive, and a bazillion of memory.</p>
+
+<h4>Installing Vagrant</h4>
+
+<p>Vagrant depends on Virtualbox in order to work so you need to have Virtualbox installed before installing Vagrant. The current version of Vagrant at the time of writing of this post is 1.4.3 and its only compatible with version 4.2.16 of Virtualbox. This poses some trouble for Linux users since the official repository for Virtualbox only serves the latest version of Virtualbox which is 4.3.6. For Windows and Mac users there&rsquo;s no problem since you can just download an older version of Virtualbox from <a href="https://www.virtualbox.org/wiki/Download_Old_Builds_4_2">this page</a> and install it using the installer. For Linux users the installers for old versions are also available from that page and you can also try installing Virtualbox using those installers. But as for my personal experience I didn&rsquo;t have any luck with any of those installers. I get an error whenever I try to install it. Thankfully I found a good tutorial on <a href="http://linuxg.net/how-to-install-virtualbox-4-2-16-on-ubuntu-linux-mint-debian-and-fedora/">how to install Virtualbox 4.2.16</a> on some of the most popular Linux distributions. If you didn&rsquo;t have any luck with the installers provided from the Virtualbox site then you might as well try that link.</p>
+
+<p>Once you&rsquo;re done installing Virtualbox you can now download the Vagrant installer from the <a href="http://www.vagrantup.com/downloads">Vagrant downloads page</a> just select the installer that applies for you then install it. The installer will automatically add <code>vagrant</code> to your system path so you can simply use the <code>vagrant</code> command from your terminal without having to specify the path.</p>
+
+<h3>Using Vagrant</h3>
+
+<p>After installing Vagrant you should already have access to the <code>vagrant</code> command from your terminal. You can execute the following command to test out if Vagrant was successfully installed:</p>
+
+<p><code>
+vagrant --version
+</code></p>
+
+<p>If it returns something like <code>vagrant version 1.2.2</code> then Vagrant was successfully installed on your machine.</p>
+
+<p>The next step is a pretty long wait if you do not have a fast internet connection and the server that is serving the vagrant box files are busy. As for me it took a whole afternoon (around 6-8 hours) for the vagrant box to be fully downloaded.</p>
+
+<p>But before we move on I believe a little background on what a vagrant box is is necessary. Basically vagrant boxes are virtual copies of an operating system. Pretty much like the <code>.vdi</code> or <code>.vmdk</code> file that&rsquo;s being created by Virtualbox or VMWare when you create a virtual machine.</p>
+
+<h4>Adding Vagrant Boxes</h4>
+
+<p>Vagrant boxes can be downloaded from <a href="http://www.vagrantbox.es/">vagrantbox.es</a>. You can add a box to Vagrant by executing the following command from the terminal:</p>
+
+<p><code>
+vagrant box add box_name url_from_vagrantboxes
+</code></p>
+
+<p>Where <code>box_name</code> is any machine friendly title (use underscores or dashes instead of spaces) that you want to use to refer to your box later on. And the <code>url_from_vagrantboxes</code> is the URL that you get from the vagrantboxes site. For this tutorial were going to work with the Ubuntu precise 32 box:</p>
+
+<p><code>
+vagrant box add precise32 http://files.vagrantup.com/precise32.box
+</code></p>
+
+<p>After executing the command above you might want to go out a bit or watch a whole season of your favorite TV show unless your download speed is blazingly fast.</p>
+
+<h4>Vagrant Box Configuration File</h4>
+
+<p>Once that&rsquo;s done you can now start using the box as a template for the machine that you need to build. First create your working directory and open up a terminal and execute the following:</p>
+
+<p><code>
+vagrant init
+</code></p>
+
+<p>This will create a vagrant init file. This file will contain the configuration for the box that you&rsquo;re going to build. The <code>Vagrantfile</code> generated by using <code>vagrant init</code> will just contain comments and some sample configuration. You can read through those comments if you want. But to avoid confusion simply create your own vagrant configuration file by creating a new file and putting the following contents:</p>
+
+<p><code>
+Vagrant.configure("2") do |config|
+  config.vm.box = "precise32" #the box_name that you used earlier
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+end
+</code></p>
+
+<p>Just name the file <code>Vagrantfile</code> so it can be recognized by vagrant when you execute any vagrant commands. Note that for the value for the <code>config.vm.box</code> it should be the <code>box_name</code> that you used earlier when you executed the <code>vagrant box add</code> command. If you&rsquo;re not sure what the name of your box is then simply execute <code>vagrant box list</code> to list all the boxes that&rsquo;s currently available on your machine. The <code>config.vm.box_url</code> is the url in which vagrant will download the box if it hasn&rsquo;t already been installed in your machine. We already installed the box earlier so vagrant will simply ignore this option. The last setting is the <code>config.vm.network</code> this simply tells vagrant to forward port 80 from the guest machine to port 8080 on the host machine. I&rsquo;ll explain more on this later.</p>
+
+<p>Now you can execute <code>vagrant up</code> to initialize the box. You can see something similar to the following when vagrant has successfully brought up the box:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-up.png" alt="vagrant up" /></p>
+
+<p>Once this is executed for the first time you will notice that vagrant automatically creates a virtual machine on virtualbox:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-box.png" alt="virtual machine" /></p>
+
+<p>You can perfectly access this machine from virtualbox if you want to do anything manually from the guest operating system.</p>
+
+<h4>Logging in to the box</h4>
+
+<p>Next execute <code>vagrant ssh</code>. This will allow you to login to the box. After executing that you will see something similar to the following:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-login.png" alt="vagrant ssh" /></p>
+
+<h4>Installing Software</h4>
+
+<p>Now you can run wild and go crazy. Install all the applications that you need to install. As for me I&rsquo;m primarily working on a LAMP (Linux, Apache, MySQL, PHP) stack so I&rsquo;m going to install PHP, MySQL, and Apache on this box. But first we need to download the package lists from the software repositories and update the existing ones to get information on the latest versions of packages and their dependencies. You can do that by executing the following command:</p>
+
+<p><code>
+apt-get update
+</code></p>
+
+<p>Once that&rsquo;s done we can now install the things that we need:</p>
+
+<p><code>
+echo "Y" | apt-get install -y apache2
+echo "Y" | apt-get install curl
+echo "Y" | apt-get install libcurl3 php5-curl
+echo "Y" | apt-get install php5
+echo "Y" | apt-get install libapache2-mod-php5
+echo "Y" | apt-get install mysql-server
+echo "Y" | apt-get install php5-mysql
+</code></p>
+
+<p>Note that the <code>echo "Y"</code> here simply means that we supply <code>Y</code> as the answer if ever the installer asks for a response on whether to install the software or not. <code>Y</code> means yes in this case.</p>
+
+<h4>Linking Up Directories</h4>
+
+<p>Once those are done delete the <code>/var/www</code> directory and all of its contents and create a soft link between the the <code>/vagrant</code> directory and the <code>/var/www</code> directory.  You can do that by executing the following command:</p>
+
+<p><code>
+rm -rf /var/www
+ln -fs /vagrant /var/www
+</code></p>
+
+<p>You may ask we just deleted the <code>/var/www</code> directory and all of its contents so why are we creating a link to something that&rsquo;s already deleted? Good question! Making a soft link to a non-existent directory has the side-effect of creating that directory. We deleted it so we become the owner of that directory.</p>
+
+<p>Once that&rsquo;s done you can now treat your working directory as if its the <code>/var/www</code> directory in your box. Don&rsquo;t believe me? You can go ahead and create a new file in your working directory (open up a new terminal since the current terminal is referring to your box):</p>
+
+<p><code>
+touch newfile.txt
+</code></p>
+
+<p>Now go back to the terminal window in which you have logged in to your box using <code>vagrant ssh</code>. Go back two directories and enter the <code>vagrant</code> directory (this assumes that you&rsquo;re currently in the directory that&rsquo;s listing the <code>postinstall.sh</code> file when you execute the <code>ls</code> command) :</p>
+
+<p><code>
+cd ../../vagrant
+</code></p>
+
+<p>Now execute the <code>ls</code> command to list out all the files in that directory. You&rsquo;ll see that your <code>newfile.txt</code> is listed. Yes you can go ahead on go crazy and create a whole bunch of files through your host operating system in your working directory. Once you&rsquo;re satisfied come back to this blog post. I&rsquo;ll wait.</p>
+
+<h4>Port-Forwarding</h4>
+
+<p>Now if you remember earlier on the <code>Vagrantfile</code> that you created we have this particular line:</p>
+
+<p><code>
+config.vm.network :forwarded_port, guest: 80, host: 8080
+</code></p>
+
+<p>What this does is forwarding the port 80 of the guest (your box) to port 8080 of your host operating system. As you might already know port 80 is the default port used by Apache so if we access <code>http://localhost:8080</code> from the browser in the host OS it will actually give us what&rsquo;s in <code>http://localhost:80</code> in the box.
+You can test it out by creating an <code>index.php</code> file on your working directory (host OS) and put the following contents:</p>
+
+<p><code>php
+&lt;?php
+echo 'hello world from vagrant box';
+?&gt;
+</code></p>
+
+<p>Now access <code>http://localhost:8080</code> from your browser and it will output &lsquo;hello world from vagrant box&rsquo;.</p>
+
+<h4>Logging out of the box</h4>
+
+<p>Once you&rsquo;re done playing with Vagrant you can now execute <code>exit</code> to logout from the box. After that you can either execute <code>vagrant halt</code> to shutdown the box or <code>vagrant suspend</code> to save the state of the machine, its like doing a hibernate so the box won&rsquo;t have to do a full boot when you access the box again. To work with your box again the <code>vagrant resume</code> command is used when you do <code>vagrant suspend</code> and the <code>vagrant up</code> is used when you do a <code>vagrant halt</code>. An important thing to remember is that you should do a <code>vagrant suspend</code> whenever you do not have any changes in your <code>Vagrantfile</code>. This makes it faster to get your guest machine running. However if you have some changes to your <code>Vagrantfile</code> you should do a <code>vagrant halt</code> for the changes to take effect when you do a <code>vagrant up</code>.</p>
+
+<h4>Packaging the box</h4>
+
+<p>Another useful thing that you could do is packaging up the box so that you can share it with your team if you have any. This ensures that you have the same configuration with the rest of your team. This allows you to avoid any incompatibility issues like missing software or a different configuration of the <code>php.ini</code> file if you&rsquo;re primarily working with PHP.</p>
+
+<p>To package up a box, navigate to your working directory and then execute the following command:</p>
+
+<p><code>
+vagrant package --output package.box --vagrantfile Vagrantfile
+</code></p>
+
+<p>Note that the command above will power of the box so you&rsquo;ll have to do <code>vagrant up</code> the next time you want to use the box even if you used <code>vagrant suspend</code> the last time you used it. The command above will also take a bit of time to finish depending on the amount of customization that you have done on the box. You may also end up with a larger <code>.box</code> file than the one that you previously downloaded from vagrantbox.es since all the software that you installed on the box will also be in the <code>.box</code> file that will be generated by vagrant.</p>
+
+<p>Once vagrant is done you will have a <code>package.box</code> file under your working directory. You can then share this file along with the <code>Vagrantfile</code> to the rest of your team so that they can make use of the box. Another team member can just create his working directory and then copy the <code>package.box</code> file to that directory and then execute the following command:</p>
+
+<p><code>
+vagrant box add box_name package.box
+</code></p>
+
+<p>Be sure to change the <code>box_name</code> to a more recognizable name. You can also tell your team mate to just name it to be the same as the name of the box that you originally created so they won&rsquo;t need to update the <code>Vagrantfile</code> to use the new box name.</p>
+
+<p>Once that&rsquo;s done they can just use <code>vagrant up</code> to boot up the box.</p>
+
+<h4>Destroying the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the virtual machine that is generated when you executed <code>vagrant up</code>)  you can execute the following from your working directory:</p>
+
+<p><code>
+vagrant destroy
+</code></p>
+
+<p>This will delete the virtual machine and free up all the resources (hard disk space, memory, etc.) that it consumed when you created it.</p>
+
+<h4>Removing the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the box that is created when you executed <code>vagrant box add</code>, in other words the box where your box originated from) execute the following command:</p>
+
+<p><code>
+vagrant box remove box_name provider
+</code></p>
+
+<p>Where the <code>box_name</code> refers to the name that you used when you created the box using <code>vagrant box add box_name</code>. And the provider refers to the virtualization software. If you do not know the box name and the provider simply execute <code>vagrant box list</code>. This will list out all the vagrant boxes installed on your machine. The one enclosed in parenthesis is the provider. In our case its virtualbox.</p>
+
+<h3>Conclusion</h3>
+
+<p>Virtualization is a great way to experiment on different technologies if you want to avoid messing up your current system configuration. Its also a good way to test out your web projects on different machines without having to install it physically on your current machine.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.virtualbox.org/">Virtualbox</a></li>
+<li><a href="http://docs.vagrantup.com/v2/">Vagrant Documentation</a></li>
+<li><a href="http://www.vagrantbox.es/">Vagrant Boxes</a></li>
+<li><a href="http://rove.io/">Rove</a> &ndash; you can use this for easily creating Vagrant files</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

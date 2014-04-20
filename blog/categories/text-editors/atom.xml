@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: text-editors | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/text-editors/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A whirlwind Tour of Web Developer Tools: Text Editors]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors/"/>
+    <updated>2014-02-15T11:00:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors</id>
+    <content type="html"><![CDATA[<p>This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I&rsquo;ll be talking about text editors and related tools.</p>
+
+<p>Text editors are used by web developers to write code. Text editors are not the same thing as word processors because anything written on a text editor is saved as a plain text file and it normally uses a simple character set such as ASCII to represent different characters (letters, numbers, etc). On the other hand word processors saves formatted text which enables tables, symbols and other form of graphical information to be represented without having to use any form of markup like HTML.</p>
+
+<!--more-->
+
+
+<h4>Sublime Text</h4>
+
+<p>When you say text editor the first thing that comes to mind these days is <a href="http://www.sublimetext.com/">Sublime Text</a>. It&rsquo;s like the sexiest text editor these days. So this whole blog post is primarily going to be about Sublime Text and some of the plugins that I found useful.</p>
+
+<h5>Plugins</h5>
+
+<p>In order to install plugins for Sublime Text you first have to install <a href="https://sublime.wbond.net/">package control</a> which is a package manager for Sublime Text that allows you to easily install plugins. To install package manager copy the following code in the Sublime Text console which can be accessed by pressing <code>ctrl + back tick</code> on your keyboard. After that restart the editor to finish the installation:</p>
+
+<p><code>
+import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')
+</code></p>
+
+<p>Note that the code above is for Sublime Text 2, if you&rsquo;re using Sublime Text 3 then use the following code:</p>
+
+<p><code>
+import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+</code></p>
+
+<p>After restarting sublime text you can now press <code>ctrl + shift + p</code>, select &lsquo;install package&rsquo; and press <code>enter</code>, this will load all the available plugins from the plugin repository. From there you can just search for the plugin that you want to install.</p>
+
+<p>And now for the plugins:</p>
+
+<ul>
+<li><a href="https://github.com/benmatselby/sublime-phpcs">PHPCS</a> &ndash; a PHP code quality tool.</li>
+<li><a href="http://emmet.io/">Emmet</a> &ndash; previously known as Zen Coding. If that doesn&rsquo;t ring a bell then Emmet is basically a tool for improving productivity by implementing shortcuts for generating code that you would normally write out by hand. All you have to do is to write something like this:</li>
+</ul>
+
+
+<p><code>
+html:5
+</code></p>
+
+<p>And right after pressing <code>tab</code> you get a whole bunch of code written out for you:</p>
+
+<p>```html
+&lt;!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body></p>
+
+<p></body>
+</html>
+```</p>
+
+<ul>
+<li><a href="https://github.com/titoBouzout/SideBarEnhancements">Sidebar Enhancements</a> &ndash; allows you to create a new file and it will immediately ask you the filename, duplicating or copying files and folders from the sidebar, and a bunch of other good stuff that the default sublime text sidebar doesn&rsquo;t allow you to do.</li>
+<li><a href="https://github.com/facelessuser/BracketHighlighter">Bracket Highlighter</a> &ndash; allows for easier visualization of where the ending bracket is.</li>
+<li><a href="https://github.com/kemayo/sublime-text-2-clipboard-history">Clipboard History</a> &ndash; keeps a history of clipboard items so you can just paste them in later.</li>
+<li><a href="https://github.com/spadgos/sublime-jsdocs">Docblockr</a> &ndash; pretty much like emmet but only for document blocks. Useful for writing comments.</li>
+<li><a href="https://github.com/wbond/sublime_alignment">Alignment</a> &ndash; allows for easy alignment of code. All you have to do is press <code>ctrl + alt + a</code> on your keyboard.</li>
+<li><a href="https://github.com/SublimeLinter/SublimeLinter-for-ST2">Sublime Linter</a> &ndash; inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don&rsquo;t know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you&rsquo;re using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable <code>z</code> isn&rsquo;t actually used in your code.</li>
+<li><a href="https://github.com/sindresorhus/editorconfig-sublime">EditorConfig</a> &ndash; tool for implementing coding conventions. You can use this to specify whether to use tabs or spaces for specific file types (<code>.js</code>, <code>.css</code>) or whether to use double quotes or single quotes for the quote type. You can do all that by installing the editorconfig plugin for the text editor that you&rsquo;re using. Then create a <code>.editorconfig</code> file in the root of your project directory or any directory in your project if you want to use different rules for different directories. Here&rsquo;s a sample <code>.editorconfig</code> file:</li>
+</ul>
+
+
+<p>```
+root = true</p>
+
+<p>[*]
+end_of_line = lf
+insert_final_newline = false
+charset = utf-8
+trim_trailing_whitespace = true
+quote_type = double</p>
+
+<p>[*.php]
+indent_style = space
+indent_size = 4</p>
+
+<p>[*.py]
+indent_style = space
+indent_size = 4</p>
+
+<p>[*.js]
+indent_style = space
+indent_size = 2</p>
+
+<p>[*.css]
+indent_style = space
+indent_size = 5
+```</p>
+
+<p>As you can see from the sample above you can specify a whole bunch of settings. You can also have different rules for different file types.</p>
+
+<h4>IDE</h4>
+
+<p>There&rsquo;s also this thing called the IDE or Integrated Development Environment which is basically text editors on steroids. They have huge install size since they allow you to do more than just writing code. IDE&rsquo;s packs a bunch of features which you would not normally find in a text editor such as compiling code. Some IDE&rsquo;s such as Visual Studio also allows you to build the GUI of applications by simply dragging and dropping GUI elements (text boxes, buttons, etc.) from a toolbox. Other features include code completion (intellisense), debugger, integrated services (allows viewing and manipulating the database right from the IDE).</p>
+
+<h3>Conclusion</h3>
+
+<p>Text editors and IDEs are the main weapons of every web developer. Without it they won&rsquo;t be able to produce any code. So its important to learn the ins and outs of the text-editor or IDE that you are using to maximize your productivity when using it. Be sure to check out the resources below for more Sublime Text awesomeness.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.hongkiat.com/blog/sublime-text-tips/">Sublime Text Tips and Tricks</a></li>
+<li><a href="https://tutsplus.com/course/improve-workflow-in-sublime-text-2/">Perfect Workflow in Sublime Text 2</a></li>
+<li><a href="https://sublime.wbond.net/browse/popular">Popular Sublime Text Plugins</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_text_editors">Compariosn of Text Editors</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments">Comparison of Integrated Development Environments</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: phpunit | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/phpunit/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing Wordpress Plugins]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins/"/>
+    <updated>2013-09-29T15:30:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how to do unit testing in Wordpress plugins.
+Previously I&rsquo;ve written an article on <a href="http://anchetawern.github.io/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a> and in that article I&rsquo;ve created a simple Wordpress plugin that saves some tweets in the Wordpress database and displays them on a widget.
+This time I&rsquo;m going to walk you through setting up unit testing in Wordpress then write some tests for that specific plugin. If you want to follow along you can download the source from <a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/zam.7z">here</a>.</p>
+
+<h3>Installing Composer</h3>
+
+<p>First you have to install composer. From your terminal execute the following command to install composer:</p>
+
+<p><code>
+curl -s https://getcomposer.org/installer | php
+</code></p>
+
+<h3>Installing PHPUnit</h3>
+
+<p>Next on your project directory. In my case its in:</p>
+
+<p><code>
+home/wern/web_files/wordpress/wp-content/plugins/zam
+</code></p>
+
+<p>Create a <code>composer.json</code> file then put the following contents:</p>
+
+<p>```
+{</p>
+
+<pre><code>"require": {
+    "EHER/PHPUnit": "dev-master"
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Once you&rsquo;re done, save the file then execute the following command from your terminal:</p>
+
+<p><code>
+composer install
+</code></p>
+
+<p>This will install PHPUnit which we will be using for unit testing.</p>
+
+<h3>Setting Up Wordpress Tests</h3>
+
+<p>Another prerequisite before we can start writing our unit tests is installing <a href="https://github.com/nb/wordpress-tests">Wordpress Tests</a> which is a tool that was created to help in unit testing Wordpress plugins. The main benefit of using this tool is that it has access to all the Wordpress classes so the unit testing environment is pretty much the same as the environment where your Wordpress plugins runs.</p>
+
+<p>Next create a <code>src</code> folder from the root directory of your plugin.
+Then install Wordpress Tests inside of it. You can install by cloning the repo by executing the following command from the terminal:</p>
+
+<p><code>
+git clone https://github.com/nb/wordpress-tests.git
+</code></p>
+
+<p>Or simply download the <code>master.zip</code> file from the master branch of the project if you don&rsquo;t have <a href="http://git-scm.com/">Git</a> installed.</p>
+
+<p>Next create a <code>tests</code> directory (still on the root directory of your plugin). Then inside it create another directory and name it the same name where your Wordpress plugin is stored. In this case I&rsquo;ve named it <code>zam</code> since its the name of the directory where the main plugin file is located.</p>
+
+<p>Then create a <code>bootstrap.php</code> file just beside the directory that you&rsquo;ve just created and put the following contents:</p>
+
+<p>```php
+&lt;?php
+$path = &lsquo;/home/wern/web_files/wordpress/wp-content/plugins/zam/src/wordpress-tests/bootstrap.php&rsquo;;</p>
+
+<p>if( file_exists( $path ) ) {</p>
+
+<pre><code>require_once $path;
+</code></pre>
+
+<p>} else {</p>
+
+<pre><code>exit( "Couldn't find path to wordpress-tests/bootstrap.php\n" );
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Ok not exactly the same contents but at least the same format. All you&rsquo;re going to need to have to change here is the value for the <code>$path</code>. It should be where the main <code>bootstrap.php</code> file is stored. Not the <code>bootstrap.php</code> that you&rsquo;ve just created but the <code>bootstrap.php</code> file that&rsquo;s inside the <code>wordpress-tests</code> project which you cloned earlier.</p>
+
+<p>Next inside the <code>tests/zam</code> directory create the file were we are going to write all the tests later on. As a convention the naming should be the name of the plugin followed by the word <code>Test</code>. So for the sample plugin that were going to test the name would be <code>zamTest.php</code>.</p>
+
+<p>Next navigate to the root directory of your plugin and create a <code>phpunit.xml</code> file and put the following contents:</p>
+
+<p>```xml
+&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?></p>
+
+<p>&lt;phpunit backupGlobals=&ldquo;false&rdquo;</p>
+
+<pre><code>     backupStaticAttributes="false"
+     colors="true"
+     convertErrorsToExceptions="true"
+     convertNoticesToExceptions="true"
+     convertWarningsToExceptions="true"
+     processIsolation="false"
+     stopOnFailure="false"
+     syntaxCheck="false"
+     bootstrap="tests/bootstrap.php"
+</code></pre>
+
+<blockquote><pre><code>&lt;testsuites&gt;
+    &lt;testsuite name="Ecom Test Suite"&gt;
+        &lt;directory&gt;tests/&lt;/directory&gt;
+    &lt;/testsuite&gt;
+&lt;/testsuites&gt;
+</code></pre>
+
+<p></phpunit>
+```</p></blockquote>
+
+<p>The <code>phpunit.xml</code> file simply points out where the test directory is located and some options for PHPUnit.
+In the <code>phpunit.xml</code> file above we&rsquo;ve used the following options:</p>
+
+<ul>
+<li><strong>backupGlobals</strong> &ndash; setting this to <code>false</code> tells PHPUnit to disable global state between tests</li>
+<li><strong>backupStaticAttributes</strong> &ndash; setting this to <code>false</code> disables the backup and restore operations for static class attributes</li>
+<li><strong>colors</strong> &ndash; setting this to <code>true</code> enables syntax highlighting when running tests on the terminal</li>
+<li><strong>convertErrorsToExceptions</strong> &ndash; setting this to <code>true</code> converts errors to exceptions</li>
+<li><strong>convertNoticesToExceptions</strong> &ndash; setting this to <code>true</code> converts notices to exceptions</li>
+<li><strong>convertWarningsToExceptions</strong> &ndash; setting this to <code>true</code> converts warnings to exceptions</li>
+<li><strong>processIsolation</strong> &ndash; setting this to <code>false</code> disables running each test in a separate PHP process</li>
+<li><strong>stopOnFailure</strong> &ndash; setting this to <code>false</code> disables stopping of execution upon first error or failure. This means that the test will continue to run even after encountering a failure</li>
+<li><strong>syntaxCheck</strong> &ndash; setting this to <code>false</code> disables checking of syntax</li>
+<li><strong>bootstrap</strong> &ndash; where the <code>bootstrap.php</code> file is located</li>
+</ul>
+
+
+<h3>Setting Up the Test Database</h3>
+
+<p>If your plugin uses the Wordpress database then its a requirement that you also have to setup the testing database so that running the tests won&rsquo;t affect your actual database.</p>
+
+<p>To do that go ahead and backup your Wordpress database using a tool like <a href="http://www.phpmyadmin.net/home_page/index.php">Phpmyadmin</a>.
+Then restore the backup this time giving it a different name, something like <code>wp_db_tests</code> to indicate that its a database that will be used for testing.
+Next modify <code>wp-config.php</code> to make use of the test database temporarily.</p>
+
+<p><code>php
+&lt;?php
+define('DB_NAME', 'wp_db_tests');
+?&gt;
+</code></p>
+
+<p>After that you can install the <a href="http://wordpress.org/plugins/wordpress-reset/">Wordpress reset plugin</a> to reset the database that will be used for testing.</p>
+
+<p>Once the test database has been successfully reset you can now revert the changes to <code>wp-config.php</code> and use your old database:</p>
+
+<p><code>
+&lt;?php
+define('DB_NAME', 'wp_db');
+?&gt;
+</code></p>
+
+<h3>Unit Test Configuration</h3>
+
+<p>Next we can now specify the options to the unit test configuration file (<code>unittests-config.php</code>) which you can find inside the <code>src/wordpress-tests</code> directory.
+The only things that you might want to change here are the values for <code>ABSPATH</code>, <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_HOST</code>, <code>WP_TESTS_DOMAIN</code>, <code>WP_TESTS_EMAIL</code>, <code>WP_TESTS_TITLE</code>, and <code>WP_TESTS_NETWORK_TITLE</code>.</p>
+
+<p>```
+&lt;?php
+/<em> Path to the WordPress codebase you&rsquo;d like to test. Add a backslash in the end. </em>/
+define(&lsquo;ABSPATH&rsquo;, &lsquo;/home/wern/web_files/wordpress/&rsquo;);</p>
+
+<p>define( &lsquo;DB_NAME&rsquo;, &lsquo;wp_db_tests&rsquo; ); //the database that will be used for testing
+define( &lsquo;DB_USER&rsquo;, &lsquo;root&rsquo; );
+define( &lsquo;DB_PASSWORD&rsquo;, &lsquo;&rsquo; );
+define( &lsquo;DB_HOST&rsquo;, &lsquo;localhost&rsquo; );
+define( &lsquo;DB_CHARSET&rsquo;, &lsquo;utf8&rsquo; );
+define( &lsquo;DB_COLLATE&rsquo;, &lsquo;&rsquo; );</p>
+
+<p>define( &lsquo;WP_DEBUG&rsquo;, true ); //display all errors, warnings and notices
+define( &lsquo;WP_DEBUG_DISPLAY&rsquo;, true );</p>
+
+<p>define( &lsquo;WP_TESTS_DOMAIN&rsquo;, &lsquo;localhost/wordpress&rsquo; );
+define( &lsquo;WP_TESTS_EMAIL&rsquo;, &lsquo;<a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#x79;&#111;&#x75;&#114;&#x65;&#109;&#x61;&#x69;&#x6c;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;">&#x79;&#111;&#117;&#114;&#x65;&#x6d;&#97;&#x69;&#108;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;</a>&rsquo; );
+define( &lsquo;WP_TESTS_TITLE&rsquo;, &lsquo;Some Site&rsquo; );
+define( &lsquo;WP_TESTS_NETWORK_TITLE&rsquo;, &lsquo;Test Network&rsquo; );
+define( &lsquo;WP_TESTS_SUBDOMAIN_INSTALL&rsquo;, true );
+$base = &lsquo;/&rsquo;;</p>
+
+<p>/<em> Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only </em>/
+define( &lsquo;DISABLE_WP_CRON&rsquo;, true );</p>
+
+<p>$table_prefix  = &lsquo;wp_&rsquo;;</p>
+
+<p>define( &lsquo;WP_PHP_BINARY&rsquo;, &lsquo;php&rsquo; );
+?>
+```</p>
+
+<h3>Examining the Testing Suite</h3>
+
+<p>Now were ready to write some unit tests. Go ahead and navigate to the following directory:</p>
+
+<p><code>
+/home/wern/web_files/wordpress/wp-content/plugins/zam/tests/zam/zamTest.php
+</code></p>
+
+<p>Open up the <code>zamTest.php</code> file and put the following contents:</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * Zam Tests
+ </em>/
+require_once(&lsquo;/home/wern/web_files/wordpress/wp-content/plugins/zam/zam.php&rsquo;); //path to the main plugin file</p>
+
+<p>class ZamTest extends WP_UnitTestCase{</p>
+
+<pre><code>public $zam;
+public $plugin_slug = 'zam';
+public $options;
+
+
+public function setUp() {
+
+}
+
+
+public function tearDown() {
+
+}
+
+//unit tests here
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>The unit testing class will simply extend the <code>WP_UnitTestCase</code> class which is inside the <code>src/wordpress-tests/lib/testcase.php</code> file.</p>
+
+<p>Let&rsquo;s take a moment to inspect it before proceeding with writing our tests.
+As you can see the <code>WP_UnitTestCase</code> class is simply extending the <code>PHPUnit_Framework_TestCase</code> which is the main testing suite that is used for most PHPUnit based test classes.</p>
+
+<p>```
+&lt;?php
+class WP_UnitTestCase extends PHPUnit_Framework_TestCase {</p>
+
+<pre><code>function setUp() {
+    global $wpdb;
+    $wpdb-&gt;suppress_errors = false;
+    $wpdb-&gt;show_errors = true;
+    $wpdb-&gt;db_connect();
+    ini_set('display_errors', 1 );
+    $this-&gt;clean_up_global_scope();
+    $this-&gt;start_transaction();
+}
+
+function tearDown() {
+    global $wpdb;
+    $wpdb-&gt;query( 'ROLLBACK' );
+}
+
+function clean_up_global_scope() {
+    $_GET = array();
+    $_POST = array();
+    $this-&gt;flush_cache();
+}
+
+function flush_cache() {
+    global $wp_object_cache;
+    $wp_object_cache-&gt;group_ops = array();
+    $wp_object_cache-&gt;stats = array();
+    $wp_object_cache-&gt;memcache_debug = array();
+    $wp_object_cache-&gt;cache = array();
+    if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
+        $wp_object_cache-&gt;__remoteset();
+    }
+    wp_cache_flush();
+}
+
+function start_transaction() {
+    global $wpdb;
+    $wpdb-&gt;query( 'SET autocommit = 0;' );
+    $wpdb-&gt;query( 'START TRANSACTION;' );
+}
+
+function assertWPError( $actual, $message = '' ) {
+    $this-&gt;assertTrue( is_wp_error( $actual ), $message );
+}
+
+function assertEqualFields( $object, $fields ) {
+    foreach( $fields as $field_name =&gt; $field_value ) {
+        if ( $object-&gt;$field_name != $field_value ) {
+            $this-&gt;fail();
+        }
+    }
+}
+
+function assertDiscardWhitespace( $expected, $actual ) {
+    $this-&gt;assertEquals( preg_replace( '/\s*/', '', $expected ), preg_replace( '/\s*/', '', $actual ) );
+}
+
+function checkAtLeastPHPVersion( $version ) {
+    if ( version_compare( PHP_VERSION, $version, '&lt;' ) ) {
+        $this-&gt;markTestSkipped();
+    }
+}
+
+function go_to( $url ) {
+    // note: the WP and WP_Query classes like to silently fetch parameters
+    // from all over the place (globals, GET, etc), which makes it tricky
+    // to run them more than once without very carefully clearing everything
+    $_GET = $_POST = array();
+    foreach (array('query_string', 'id', 'postdata', 'authordata', 'day', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages', 'pagenow') as $v) {
+        if ( isset( $GLOBALS[$v] ) ) unset( $GLOBALS[$v] );
+    }
+    $parts = parse_url($url);
+    if (isset($parts['scheme'])) {
+        $req = $parts['path'];
+        if (isset($parts['query'])) {
+            $req .= '?' . $parts['query'];
+            // parse the url query vars into $_GET
+            parse_str($parts['query'], $_GET);
+        } else {
+            $parts['query'] = '';
+        }
+    }
+    else {
+        $req = $url;
+    }
+
+    $_SERVER['REQUEST_URI'] = $req;
+    unset($_SERVER['PATH_INFO']);
+
+    $this-&gt;flush_cache();
+    unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
+    $GLOBALS['wp_the_query'] =&amp; new WP_Query();
+    $GLOBALS['wp_query'] =&amp; $GLOBALS['wp_the_query'];
+    $GLOBALS['wp'] =&amp; new WP();
+
+    // clean out globals to stop them polluting wp and wp_query
+    foreach ($GLOBALS['wp']-&gt;public_query_vars as $v) {
+        unset($GLOBALS[$v]);
+    }
+    foreach ($GLOBALS['wp']-&gt;private_query_vars as $v) {
+        unset($GLOBALS[$v]);
+    }
+
+    $GLOBALS['wp']-&gt;main($parts['query']);
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>The <code>setUp</code> method sets the <code>supress_errors</code> attribute of the <code>$wpdb</code> object to <code>false</code> this means that all database errors will be displayed if there are any. The <code>$wpdb</code> variable is an instance of the Wordpress database class. It&rsquo;s also setting the <code>show_errors</code> attribute to <code>true</code>. Then it connects to the database that we have set on the <code>unittests-config.php</code> file earlier using the <code>db_connect()</code> method. It also sets <code>display_errors</code> to <code>1</code> which basically means that all errors, warnings and notices will be displayed if there are any.
+Then the <code>clean_up_global_scope()</code> method is called, this simply empties out global variables such as <code>$_GET</code> or <code>$_POST</code>. This method also calls up another method which is the <code>flush_cache()</code> which simply resets the Wordpress object cache. All of this is done to prevent any external variable or cached data from interfering with the values used for the current test. The <code>setUp</code> method also calls up the <code>start_transaction()</code> method which sets database <code>autocommit</code> to <code>0</code>. This means that even if you execute a query like:</p>
+
+<p><code>
+INSERT INTO wp_tbl_users SET name = 'matthew', age = 21
+</code></p>
+
+<p>It won&rsquo;t actually commit the changes to the database. This means that the changes aren&rsquo;t permanently added into the database. After that it also starts a transaction using the <code>START_TRANSACTION</code> command. What this does is to ensure that the <code>autocommit</code> remains disabled while the transaction hasn&rsquo;t been ended yet. You can only end a transaction using either the <code>COMMIT</code> or <code>ROLLBACK</code> command. The <code>COMMIT</code> command simply commits all the changes in the database. The <code>ROLLBACK</code> command rolls back everything that was done after the <code>START_TRANSACTION</code> command.</p>
+
+<p>When you check out the <code>tearDown()</code> method you will see that the <code>WP_UnitTestCase</code> class uses the <code>ROLLBACK</code> command. This means that every change brought by each test is rolled back to its previous state.</p>
+
+<p>So even if a test method does a couple of queries:</p>
+
+<p><code>
+&lt;?php
+$wpdb-&gt;query("INSERT INTO wp_postmeta SET post_id = '23', meta_key = 'somekey', meta_value = 'somevalue'");
+$wpdb-&gt;query("INSERT INTO wp_options SET option_name = 'some_option', option_value = 'some_optionvalue'");
+?&gt;
+</code></p>
+
+<p>Once the the execution of the test method ends, the <code>tearDown()</code> method will be called and the database will be rolled back to its previous state before any of the queries above were executed.
+This effectively brings back the test database to a state similar to that of when your first installed Wordpress on every test.</p>
+
+<p>There&rsquo;s also the <code>assertWPError()</code> method which simply asserts a Wordpress error if its <code>true</code>.</p>
+
+<p>The <code>assertEqualFields()</code> method simply checks if each key-value pair that you supply it has equal values. If not the test will fail.</p>
+
+<p>The <code>assertDiscardWhitespace()</code> method simply removes all the whitespace from 2 strings and compare it with each other.</p>
+
+<p>The <code>checkAtLeastPHPVersion()</code> method checks if the PHP Version number that you specify as its argument is higher than that of PHP Version in the machine where you are running the tests.</p>
+
+<p>Lastly there&rsquo;s the <code>go_to()</code> method which sets up the objects which you might want to check when navigating a specific URL. For example if you want to assert the title of a specific page you do something like:</p>
+
+<p><code>
+$this-&gt;go_to('http://mysite.me/?p=125');
+</code></p>
+
+<p>Then you simply use an instance of the <code>$wp_query</code> class to get the queried objects from that specific URL.
+This will then contain some attributes like the <code>post_title</code> or <code>post_content</code> which you can assert:</p>
+
+<p>```
+&lt;?php</p>
+
+<p>public function testPostTitle() {</p>
+
+<pre><code>global $wp_query;
+$post = $wp_query-&gt;get_queried_object();
+$this-&gt;assertEquals('Zup World!', $post-&gt;post_title);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Writing Unit Tests</h3>
+
+<p>Now that we know what the <code>WP_UnitTestCase</code> class does we can now proceed with writing the actual tests for our simple plugin.</p>
+
+<h4>The Setup</h4>
+
+<p>The <code>setUp</code> method is where we setup the things that the plugin needs during its runtime. For example if the plugin that you are testing involves creating database tables or adding new entries to the <code>wp_options</code> table then you set those all up in the <code>setUp</code> method. Think of it as emulating what would usually happen once the plugin is activated on a Wordpress site. The same thing should happen in the <code>setUp</code> method.</p>
+
+<p>The first thing that we need to do inside the <code>setUp</code> method is call the <code>setUp</code> method in the <code>WP_UnitTestCase</code> class. This simply cleans up the global scope and start a database transaction as we discussed earlier.</p>
+
+<p>Next we create a new object for the <code>Zam</code> plugin class and call its <code>installation_housekeeping()</code> method which creates the tables that will be needed by the plugin. Finally, we set the option that will be used by the plugin.
+Here were setting the <code>zam_twitter_id</code> under the <code>zam_options</code> option group to be equal to <code>Wern_Ancheta</code>. This should be a valid twitter username otherwise it wouldn&rsquo;t work.</p>
+
+<p>```
+&lt;?php
+public function setUp() {</p>
+
+<pre><code>parent::setUp();
+$z = new Zam();
+
+$z-&gt;installation_housekeeping();
+update_option('zam_options', array(
+    'zam_twitter_id' =&gt; 'Wern_Ancheta'
+));
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p><blockquote><p>Remember that the <code>setUp</code> method runs before every test is executed.</p></blockquote></p>
+
+<h4>Teardown</h4>
+
+<p>Next is the <code>tearDown()</code> method. This is the opposite of the <code>setUp</code> method in that it is run after every test has been executed. What it does is to simply clean up the things which aren&rsquo;t cleaned up by the <code>setUp</code> method. In this case were simply calling the <code>uninstall_housekeeping()</code> method which drops the tables that are used by the plugin.</p>
+
+<p>```
+&lt;?php
+public function tearDown() {</p>
+
+<pre><code>Zam::uninstall_housekeeping();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Now were ready to test the actual methods in the plugin. For this tutorial were only going to test 2 core methods which the plugin uses, the <code>get_tweets()</code> and <code>save_tweets()</code> method.</p>
+
+<p>The convention that I&rsquo;ve used in the following methods is to prefix the actual name of the methods that I&rsquo;m testing with the word <code>test_</code>. Of course you can use other conventions but remember to use one that&rsquo;s already followed by your plugin. For example here I&rsquo;ve used underscores to separate each word in the method. You can also use camel casing or hungarian notation if you&rsquo;re already using it. What&rsquo;s important is that the test should follow the convention used by the actual class that you&rsquo;re testing.</p>
+
+<h4>Get Tweets Test</h4>
+
+<p>To test the <code>get_tweets()</code> method first you have to instantiate the plugin.
+This should be true for every method to avoid storing of values in the class itself.
+Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> method using the object that you&rsquo;ve used.</p>
+
+<p>We expect the <code>get_tweets()</code> method to return 11 tweets by default so we use <code>assertCount</code> to assert that the number of items stored in the <code>$tweets</code> variable is indeed 11.</p>
+
+<p>```
+&lt;?php
+public function test_get_tweets(){</p>
+
+<pre><code>$z = new Zam();
+
+$tweets = $z-&gt;get_tweets();
+$this-&gt;assertCount(11, $tweets);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Save Tweets Test</h4>
+
+<p>Finally we test the <code>save_tweet</code> method. This method saves a random tweet from a page specified by the user in a specific Wordpress post.</p>
+
+<p>```
+&lt;?php
+public function test_save_tweets(){</p>
+
+<pre><code>global $wpdb;
+$z = new Zam();
+
+$page = '1';
+$post = array(
+    'post_title' =&gt; 'sample save tweet',
+    'post_content' =&gt; '[zam_tweets page=' . $page . ']',
+    'post_type' =&gt; 'post'
+);
+
+$post_id = wp_insert_post($post);
+
+$tweets_table = $wpdb-&gt;prefix . 'zam_tweets';
+$content = $wpdb-&gt;get_var("SELECT tweet FROM $tweets_table WHERE post_id = '$post_id'");
+
+$tweets = $z-&gt;get_tweets($page);
+$result = in_array($content, $tweets);
+$this-&gt;assertTrue($result);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>This method is using the <a href="http://codex.wordpress.org/Shortcode_API">Shortcode API</a> which has a general syntax similar to this one:</p>
+
+<p><code>
+[zam_tweets page=3]
+</code></p>
+
+<p>Where <code>zam_tweets</code> is the specific shortcode ID used by the plugin. And <code>page</code> is the attribute and <code>3</code> is the value for that attribute.</p>
+
+<p>What were doing here is simply emulating what would actually happen in an actual scenario. First the user creates a new post, puts in the shortcode then publish the post. But when testing we can take shortcuts as we don&rsquo;t need to navigate to the post page and click on the add new post. All that we need to do is to publish the actual post and that is done by calling the <code>wp_insert_post()</code> method. This takes a couple of arguments but here were only specify the <code>post_title</code> or the actual title of the post, the <code>post_content</code> or the shortcode itself, and the <code>post_type</code> which is <code>post</code>.</p>
+
+<p>Then we get the tweet from the tweets table, call the <code>get_tweets()</code> method, this time specifying the same page that was used in the shortcode. Finally we simply assert that the <code>in_array()</code> method which checks if the tweet that was found in the database is in the array of tweets returned by the <code>get_tweets()</code> method is <code>true</code>.</p>
+
+<h3>Running the Tests</h3>
+
+<p>Once you&rsquo;re done writing the tests you can simply open up the terminal on the root directory of the plugin and execute the following command:</p>
+
+<p><code>
+phpunit
+</code></p>
+
+<p>Once its done running you will see a screen similar to this:</p>
+
+<p><img src="/images/posts/unit_testing_wordpress_plugins/terminal.png" alt="passing tests" /></p>
+]]></content>
+  </entry>
+  
+</feed>

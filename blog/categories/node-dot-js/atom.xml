@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: node.js | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/node-dot-js/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Creating a Real Time Chat Application With Socket.io]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io/"/>
+    <updated>2013-08-25T13:58:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/08/25/creating-a-real-time-chat-application-with-socket-dot-io</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to walk you through the process of building a real time chat application using Socket.io.
+I just said Socket.io but socket.io isn&rsquo;t the only technology that were going to use for this mini project. Basically were going to make use of the following technologies:</p>
+
+<ul>
+<li><strong>Node JS</strong> &ndash; this is the core technology that were gonna be using. Its basically just JavaScript on the server side</li>
+<li><strong>Redis</strong> &ndash; were going to use it to store the messages sent by each user</li>
+<li><strong>Socket.io</strong> &ndash; for real-time goodness!</li>
+<li><strong>Express JS</strong> &ndash; a framework for Node JS, were going to use express JS for a more cleaner and expressive syntax</li>
+</ul>
+
+
+<h3>Installation</h3>
+
+<p>First let&rsquo;s go ahead and install the things that we need for this project.</p>
+
+<h4>Redis</h4>
+
+<p>You can install redis by downloading the latest stable release from the <a href="http://redis.io/download">redis website</a>.
+After that you can use <code>tar</code> to extract its contents:</p>
+
+<p><code>
+tar xvzf redis-stable.tar.gz
+cd redis-stable
+make
+</code></p>
+
+<p>Then try if the build works by executing <code>make test</code> from the terminal to test if you have successfully installed redis.</p>
+
+<p>If you&rsquo;re on Windows you can follow the instructions from here: <a href="http://codingsteps.com/install-redis-on-windows/">install redis on Windows</a></p>
+
+<p>Once you have installed redis, you can test it out by opening a terminal and execute <code>redis-cli</code>.
+This will allow you to interact with redis. You can try inserting a new record by using the following command:</p>
+
+<p><code>
+set name "iron man"
+</code></p>
+
+<p>Then retrieve it using the following command:</p>
+
+<p><code>
+get name //outputs: iron man
+</code></p>
+
+<h4>Node JS</h4>
+
+<p>You can install node js through the terminal using <code>apt-get</code> if you&rsquo;re on linux:</p>
+
+<p><code>
+sudo apt-get install python-software-properties python g++ make
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install nodejs
+</code></p>
+
+<p>If you are on Windows you can simply download the installer from the <a href="http://nodejs.org/download/">node js website</a></p>
+
+<h3>Setting Up the Application</h3>
+
+<p>Next we can now create the directory where our little chat application will reside. You can create it anywhere you want since Node.js doesn&rsquo;t need a server like Apache or Nginx to work. But for me I&rsquo;ll just be putting it on the web accessible folder intended for my Apache server. This won&rsquo;t have any effect since we&rsquo;ll be serving the chat application in its own port.</p>
+
+<h4>Specify Dependencies</h4>
+
+<p>Next specify the dependencies of our little chat application. Simply create a <code>package.json</code> file and put in the following:</p>
+
+<p>```
+{
+   &ldquo;name&rdquo;: &ldquo;realtime_chat_app&rdquo;,
+   &ldquo;description&rdquo;: &ldquo;real time chat application&rdquo;,
+   &ldquo;version&rdquo;: &ldquo;0.0.1&rdquo;,
+   &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>  "express": "3.x",
+  "socketio" : "latest",
+  "redis" : "latest"
+</code></pre>
+
+<p>   }
+}
+```</p>
+
+<p>To break it down:</p>
+
+<ul>
+<li><strong>name</strong> &ndash; this is the name of the application that you&rsquo;re trying to create.</li>
+<li><strong>description</strong> &ndash; a short description of what the application is.</li>
+<li><strong>version</strong> &ndash; the version number of the application, you can have any version number you want.</li>
+<li><strong>dependencies</strong> &ndash; the node packages in which the application depends on in order to work. This takes up a set of key-value pairs. With the key being the name of the package and the value being the version number of the package. Here we&rsquo;ve specified <code>express</code>, <code>socketio</code>, and <code>redis</code> as the dependencies. It&rsquo;s a good practice to actually specify the actual version number of the dependency instead of just specifying <code>latest</code> since there might be some breaking changes to the API in the future and your application will simply refuse to work by that time. But I don&rsquo;t think <code>socketio</code> and the redis client for node js is going to change its API anytime soon so let&rsquo;s stick with using the latest version for now. If you are not sure of the name of the dependency that you are trying to install, you can always make use of the <a href="https://npmjs.org/">npm website</a> to find dependencies and their actual names.</li>
+</ul>
+
+
+<p><img src="/images/posts/realtime_chat_socketio/npm.png" alt="npm website" /></p>
+
+<p>Once you&rsquo;re done with that, save the file and open up the terminal in the same location where you have the <code>package.json</code> file then execute the following command:</p>
+
+<p><code>
+npm install
+</code></p>
+
+<p>This will install the dependencies under the <code>node_modules</code> directory.</p>
+
+<h3>Building the Application</h3>
+
+<h4>Directory Structure</h4>
+
+<p>Now were ready to build the application. But first go ahead and create the following files and directories in your working directory:</p>
+
+<p>```
+ &ndash; chat_app (your working directory)</p>
+
+<pre><code>- public
+    - css
+        - main.css (the main css file for styling the chat app)
+    - img
+    - js
+        - vendor
+            - jquery.min.js (you can download it from jquery.com or simply load it from a cdn)
+- views - index.html
+- app.js
+</code></pre>
+
+<p>```</p>
+
+<h4>Server-side Code</h4>
+
+<h5>Initializing the Application</h5>
+
+<p>Open up the <code>app.js</code> file and initialize the app by declaring the following variables:</p>
+
+<p>```javascript
+var app_port = 8000; //the port in which the application will run
+var io_port = 3333; //the port in which socket io will run</p>
+
+<p>var express = require(&lsquo;express&rsquo;); //include the express js framework
+var app = require(&lsquo;express&rsquo;)(); //create an app using express js
+var server = require(&lsquo;http&rsquo;).createServer(app); //create an express js server</p>
+
+<p>var io = require(&lsquo;socket.io&rsquo;).listen(server); //start socket io</p>
+
+<p>var redis = require(&ldquo;redis&rdquo;); //include the redis client
+var redis_client = redis.createClient(); //create a redis client
+```</p>
+
+<p>What you have just declared are the variables that&rsquo;s going to be used throughout the app.
+The <code>app_port</code> is the port in which our app will run. So if you start the app by executing the following command:</p>
+
+<p><code>
+node app.js
+</code></p>
+
+<p>You can access it by going to <code>http://localhost:8000</code>. You can also use other ports aside from <code>8000</code> as long as its not already used by another running process.</p>
+
+<p>The <code>io_port</code> is the port in which socket io will run. In this case were using port <code>3333</code>. Again you have to make sure that the port is not already in use by another process otherwise it wouldn&rsquo;t work.</p>
+
+<p>The <code>express</code> variable contains the reference to the express js framework.
+The <code>app</code> variable stores the reference to the new app created using express js.
+The <code>server</code> variable contains the reference to the server that we create using express js.</p>
+
+<p>The <code>io</code> variable contains the reference to socket io. We then immediately let it listen for events triggered from the express js server.</p>
+
+<p>The <code>redis</code> variable contains the reference to the redis client. The redis client is a means of interacting with the redis server that we installed earlier. Its like an interface between node js and the redis server.</p>
+
+<p>Then we create redis client and store it on the <code>redis_client</code> variable.</p>
+
+<p>Then we set our app to use the <code>bodyParser</code>. The main usage for the <code>bodyParser</code> in our app is for parsing the request parameters when were sending parameters to the server. We also set the directory for static files to be served by the server using the <code>static()</code> method. The <code>static()</code> method takes up the name of the directory which contains the static files that you want to serve. In this case its the <code>public</code> directory in the root of our app.</p>
+
+<p><code>
+app.use(express.bodyParser());
+app.use(express.static('public'));
+</code></p>
+
+<p>Next we create the variables that will store the names of the people who are currently on the chat and the chat messages.</p>
+
+<p><code>
+var chatters = [];
+var chat_messages = [];
+</code></p>
+
+<h5>Getting Users from Redis</h5>
+
+<p>Then we get the names of the people in the chat that are stored in the database. If it exists then we assign it to the <code>chatters</code> variable. We only store the stringified version of the JavaScript Object so we need to use <code>JSON.parse()</code> before assigning it to the variable.</p>
+
+<p>```
+redis_client.get(&ldquo;chat_app_chatters&rdquo;, function(err, reply){</p>
+
+<pre><code>if(reply){
+    chatters = JSON.parse(reply);
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Getting Messages from Redis</h5>
+
+<p>We also get the messages stored in the database and assign it to the <code>chat_messages</code> variable if it exists.</p>
+
+<p>```
+redis_client.get(&ldquo;chat_app_messages&rdquo;, function(err, reply){</p>
+
+<pre><code>if(reply){
+    chat_messages = JSON.parse(reply);
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Index Page</h5>
+
+<p>Next let&rsquo;s set what happens when users try to access the root url (<a href="http://localhost:8000">http://localhost:8000</a>).
+Here were using the <code>get()</code> method which takes up 2 arguments. The first argument is the path, and the second argument is the callback function in which the request (req) and response (res) are passed behind the scenes.
+All you need to remember here is that the <code>req</code> variable stores the request parameters such as the form data that you pass when requesting for the specified path (/). And the <code>res</code> variable contains methods which you can use for the response. In this case were simply sending the static <code>index.html</code> file. This means that when users request for <code>http://localhost:8000</code> the <code>index.html</code> under the <code>public/views</code> directory will be rendered in the browser.</p>
+
+<p>```
+app.get(&lsquo;/&rsquo;, function(req, res){</p>
+
+<pre><code>res.sendfile('./views/index.html');
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Initializing Socket.IO</h5>
+
+<p>Next we initialize socket io. Here were listening to 2 events, the <code>message</code> event and the <code>update_chatter_count</code> event. These 2 events are custom events so you can name it anything you want as long as it has a reciprocal event on the client side. When the <code>message</code> event happens we immediately emit the <code>send</code> event to each of the users that are currently on the chat room. The same is true with the <code>update_chatter_count</code> event, we immediately emit the <code>count_chatters</code> event to the rest of the clients when this event happens. But we don&rsquo;t just emit the event, we also pass in the data that come from the client who emmited the event.</p>
+
+<p>```
+io.sockets.on(&lsquo;connection&rsquo;, function(socket){</p>
+
+<p>  socket.on(&lsquo;message&rsquo;, function(data){</p>
+
+<pre><code>io.sockets.emit('send', data);
+</code></pre>
+
+<p>  });</p>
+
+<p>  socket.on(&lsquo;update_chatter_count&rsquo;, function(data){</p>
+
+<pre><code>io.sockets.emit('count_chatters', data);
+</code></pre>
+
+<p>  });
+});
+```</p>
+
+<p>Yes I know this is really confusing, I also got confused at first so I recommend you to just play around with the code until it finally ticks.
+What you have to remember is that both the server and the client should have the code that both listens and emit the events. What you emit in the client side you should listen for it on the server side, and what you listen for in the client side should be emitted from the server side.</p>
+
+<h5>Joining the Chat Room</h5>
+
+<p>Next is the code for joining the chat room. What were doing here is to get the username passed in from the client side, then check if the username already exists in the array of usernames by using the <code>indexOf()</code> method.
+The <code>indexOf()</code> method returns a value of <code>-1</code> if the value that you specified doesn&rsquo;t exists yet.
+If the user doesn&rsquo;t exists yet we simply push it into the <code>chatters</code> array which stores a list of usernames. Then we also save it into the database. The way we save into redis is to call the <code>set</code> method provided by the redis client for node. The <code>set</code> method takes up a <code>key</code> and a <code>value</code> as its arguments. Here were storing the stringified version of the <code>chatters</code> array. Finally we send a response to the client containing the current value of the <code>chatter</code> array and a <code>status</code> of <code>ok</code>. Otherwise we send a <code>failed</code> status if the user already exists.</p>
+
+<p>```
+app.post(&lsquo;/join_chat&rsquo;, function(req, res){</p>
+
+<pre><code>var username = req.param('username');
+if(chatters.indexOf(username) == -1){
+    chatters.push(username);
+    redis_client.set('chat_app_chatters', JSON.stringify(chatters));
+    res.send({'chatters' : chatters, 'status' : 'ok'});
+}else{
+    res.send({'status' : 'failed'});
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Leaving the Chat Room</h5>
+
+<p>Next is the code for leaving the chat room.
+This takes up the username of the user whose going to leave the chat room.
+We simply remove it from the array of chatters by using the <code>splice</code> method which takes up the index of the item that we want to remove in the array and the number of items that we want to remove. We then commit it back to the database and send an ok status to the client.</p>
+
+<p>```
+app.post(&lsquo;/leave_chat&rsquo;, function(req, res){</p>
+
+<pre><code>var username = req.param('username');
+chatters.splice(chatters.indexOf(username), 1); 
+redis_client.set('chat_app_chatters', JSON.stringify(chatters));
+res.send({'status' : 'ok'});
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Sending Messages</h5>
+
+<p>Next is the code that handles the messages that are sent from the client side.
+This takes up the username (sender) and the actual message. We then push these values to the <code>chat_messages</code> array which stores the sender names and their messages. Then we also commit the stringified version back to the database.</p>
+
+<p>```
+app.post(&lsquo;/send_message&rsquo;, function(req, res){</p>
+
+<pre><code>var username = req.param('username');
+var message = req.param('message');
+
+chat_messages.push({'sender' : username, 'message' : message});
+redis_client.set('chat_app_messages', JSON.stringify(chat_messages));
+res.send({'status' : 'ok'});
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Getting Messages</h5>
+
+<p>Next is the code that returns the messages. This doesn&rsquo;t take up any parameters from the client side, it simply returns the <code>chat_messages</code> array. This will be used in the client side to load the messages for a person who enters the chat room later than the others. If you remember earlier were updating the database every time a message is sent. And on every page load were assigning the value for the <code>chat_messages</code> array to be equal to the messages that are currently on the database. This means that all the messages that has been previously sent by other users in the chat room will be stored in the <code>chat_messages</code> array which we are returning here.</p>
+
+<p>```
+app.get(&lsquo;/get_messages&rsquo;, function(req, res){</p>
+
+<pre><code>res.send(chat_messages);
+</code></pre>
+
+<p>});
+```</p>
+
+<h5>Getting the People in the Chatroom</h5>
+
+<p>We also have this code for returning the people who are currently on the chat room.
+This will be used in the client side to determine the number of people who are currently on the chat room.</p>
+
+<p>```
+app.get(&lsquo;/get_chatters&rsquo;, function(req, res){</p>
+
+<pre><code>res.send(chatters);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Finally we make our server listen to port 8000 so that we actually see something once we access <code>http://localhost:8000</code> in the browser.</p>
+
+<p><code>
+server.listen(8000);
+</code></p>
+
+<h4>Client-side Code</h4>
+
+<h5>Markup</h5>
+
+<p>Next is the markup for our simple chat application. I tried to make it as simple as possible so we only have a simple form in here that asks for the username, then a join chat button to actually join the chat room. We also have this <code>.chat-info</code> div which we will use later on to show the number of users that are currently on the chat room. Then we have this <code>.chat</code> div which serves as a container for everything that has something to do with the chat.
+The <code>.messages</code> div which is directly inside of it will be used as a container for all the messages sent by each of the users in the chat room. Then we also have this <code>#message</code> textarea which will be used by users to input their messages. Then we have buttons for leaving the chat room and sending the message. Finally we include the socket io client side script, jquery, and our main JavaScript file.</p>
+
+<p>```html
+&lt;!doctype html>
+<html lang="en">
+<head></p>
+
+<pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Simple Chat Application&lt;/title&gt;
+&lt;link rel="stylesheet" href="http://anchetaWern.github.io/css/main.css"&gt;
+</code></pre>
+
+<p></head>
+<body></p>
+
+<pre><code>&lt;div class="container"&gt;
+    &lt;h1&gt;Simple Chat Application&lt;/h1&gt;
+    &lt;div class="join-chat"&gt;
+        &lt;label for="username"&gt;Username:&lt;/label&gt;
+        &lt;input type="text" id="username" name="username" /&gt;
+        &lt;input type="button" id="join-chat" value="Join Chat" /&gt;
+    &lt;/div&gt;
+    &lt;div class="chat-info"&gt;&lt;/div&gt;
+    &lt;div class="chat"&gt;      
+        &lt;div class="messages"&gt;
+
+        &lt;/div&gt;
+        &lt;textarea name="message" id="message" cols="93" rows="5"&gt;&lt;/textarea&gt;
+        &lt;input type="button" id="leave-chat" data-username="" value="Leave Chat"&gt;
+        &lt;input type="button" id="send-message" data-username="" value="Send Message"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;script src="http://anchetaWern.github.io/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script src="http://anchetaWern.github.io/js/vendor/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="http://anchetaWern.github.io/js/main.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p></body>
+</html>
+```</p>
+
+<h5>Styling</h5>
+
+<p>For the stylesheet. The main container would be at the center of the screen.
+The container for the messages will have a border of black.
+For the chat container its initially set to be not displayed as users would have to join the chat first before they can see what&rsquo;s going on in the chat room. The container for an individual message sent by a user is going to have a width which occupies the entire width of its parent which is the div with a class of <code>messages</code>.
+Finally, each <code>user</code> container would be floated to the left so that the username would always appear on the left side of the screen.</p>
+
+<p>```css
+.container {</p>
+
+<pre><code>width: 777px;
+margin: 0 auto;
+</code></pre>
+
+<p>}</p>
+
+<p>.messages {</p>
+
+<pre><code>border: 1px solid;
+width: 769px;
+height: 240px;
+</code></pre>
+
+<p>}</p>
+
+<p>.chat{</p>
+
+<pre><code>display: none;
+</code></pre>
+
+<p>}</p>
+
+<p>.msg {</p>
+
+<pre><code>width: 100%;
+</code></pre>
+
+<p>}</p>
+
+<p>.user {</p>
+
+<pre><code>float: left;
+margin-right: 10px;
+font-weight: bold;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>On our main JavaScript file <code>main.js</code> we declare the <code>socket</code> variable globally.
+It would be a good practice to actually enclose it inside an immediately invoked function expression so that it won&rsquo;t be accessed from the outside but for this tutorial let&rsquo;s just stick with declaring it globally.
+The <code>socket</code> variable is our means of connecting to the socket io server which is running on the server.</p>
+
+<p><code>javascript
+var socket = io.connect('http://localhost'); //connect to the socket io server
+var chatter_count; //stores the current number of users in the chat room
+</code></p>
+
+<h6>Getting Current Users</h6>
+
+<p>Next we get the users who are currently on the chat room. Here were using the <code>$.get</code> jQuery method to request the data from the server using the <code>GET</code> method. If you remember earlier we used <code>app.get('/get_chatters')</code> on our server-side code. Here were simply telling the server to give us the value returned from that function that we declared earlier. So the <code>response</code> here is actually the array of users that are currently on the chat room.
+We simply get the built-in attribute for arrays which is <code>length</code> to get the number of users who are currently in the chat room. We then use this value to update the contents of the <code>.chat-info</code> div and the <code>chatter_count</code> variable.</p>
+
+<p>```
+$.get(&lsquo;/get_chatters&rsquo;, function(response){</p>
+
+<pre><code>$('.chat-info').text("There are currently " + response.length + " people in the chat room");
+chatter_count = response.length; //update chatter count
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Joining the Chat Room</h6>
+
+<p>Next is the code for joining the chat room. Here were simply requesting for the <code>/join_chat</code> path that we declared earlier on the server. If you go back to that code you&rsquo;ll see that were getting <code>req.param('username')</code>. That&rsquo;s exactly what were passing in here, the username of the user who wants to join the chat room.
+If the username doesn&rsquo;t already exists  we emit the <code>update_chatter_count</code> event passing in an object which contains the specific action that we want to perform with the <code>chatter_count</code> variable. In this case were telling it to increase since a new user just joined the chat room. We also update the UI to show the chat container. We also update the buttons for leaving the chat room and sending a message to include a data attribute of <code>username</code> which simply stores the username of the user who just joined the chat room.
+After that we request for the chat messages from the server. If there&rsquo;s actually a message returned we update the chat box to include these messages. It&rsquo;s a good practice to store the html for updating the UI in a variable then updating the UI after you already got everything to reduce the need to update the browser. It&rsquo;s also a good practice to use templating engines such as Mustache or Handlebars but let&rsquo;s just stick with appending HTML this time to keep things simple. After that we simply hide the container for joining the chat room so that the user cannot join again.
+If the username already exists then we simply <code>alert</code> the user that the username that he inputted already exists, then we re-focus to the username input field to make it easier to input a username again.</p>
+
+<p>```
+$(&lsquo;#join-chat&rsquo;).click(function(){</p>
+
+<pre><code>var username = $.trim($('#username').val());
+$.ajax({
+    url: '/join_chat', 
+    type: 'POST',
+    dataType: 'json',
+    data: {
+        'username' : username
+    },
+    success: function(response){        
+        if(response.status == 'ok'){ //username doesn't already exists
+
+            socket.emit('update_chatter_count', {'action' : 'increase'});
+            $('.chat').show();
+            $('#leave-chat').data('username', username);
+            $('#send-message').data('username', username);
+
+            $.get('/get_messages', function(response){
+
+                if(response.length &gt; 0){
+                    var message_count = response.length;
+                    var html = '';
+                    for(var x = 0; x &lt; message_count; x++){
+                        html += "&lt;div class='msg'&gt;&lt;div class='user'&gt;" + response[x]['sender'] + "&lt;/div&gt;&lt;div class='txt'&gt;" + response[x]['message'] + "&lt;/div&gt;&lt;/div&gt;";
+                    }
+                    $('.messages').html(html);
+                }
+            });         
+
+            $('.join-chat').hide(); //hide the container for joining the chat room.
+
+        }else if(response.status == 'failed'){ //username already exists
+            alert("Sorry but the username already exists, please choose another one");
+            $('#username').val('').focus();
+        }
+    }
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Leaving the Chat Room</h6>
+
+<p>For the code for leaving the chat room, we simply pass in the <code>username</code> to the server side.
+If the response is <code>ok</code> we emit the <code>message</code> event containing an object that contains the <code>username</code> of the user who left the chat room along with a final message which simply says <code>user x has left the chat room</code> so that other users will also know that a specific user has already left. Then we also emit the <code>update_chatter_count</code> event and pass the object which simply tells to every listener to <code>decrease</code> the chatter count. Finally we simply hide the chat container, show the join chat container, empty the username field and alert the user that he has successfully left the chat room.</p>
+
+<p>```
+$(&lsquo;#leave-chat&rsquo;).click(function(){</p>
+
+<pre><code>var username = $(this).data('username');
+$.ajax({
+    url: '/leave_chat',
+    type: 'POST',
+    dataType: 'json',
+    data: {
+        'username' : username
+    },
+    success: function(response){
+        if(response.status == 'ok'){
+            socket.emit('message', {'username' : username, 'message' : username + " has left the chat room.."});
+            socket.emit('update_chatter_count', {'action' : 'decrease'});
+            $('.chat').hide();
+            $('.join-chat').show();
+            $('#username').val('');
+            alert('You have successfully left the chat room');
+        }
+    }
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Sending Messages</h6>
+
+<p>Next is the code for sending a message.
+Here were passing along the <code>username</code> of the user who sent the message along with his <code>message</code>.
+If the response from the server is <code>ok</code> then we simply emit the <code>message</code> event containing an object which contains the username of the sender and his actual message. All the listeners to this event would be able to get this data and do something with it.</p>
+
+<p>```
+$(&lsquo;#send-message&rsquo;).click(function(){</p>
+
+<pre><code>var username = $(this).data('username');
+var message = $.trim($('#message').val());
+
+$.ajax({
+    url: '/send_message',
+    type: 'POST',
+    dataType: 'json',
+    data: {
+        'username' : username,
+        'message' : message
+    },
+    success: function(response){
+        if(response.status == 'ok'){
+            socket.emit('message', {'username' : username, 'message' : message});
+            $('#message').val('');
+        }
+    }
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Updating the UI</h6>
+
+<p>Next is the code for listening to the <code>send</code> event.
+This is responsible for updating the UI every time the <code>message</code> event is emitted.
+What it does is to simply append another row which contains the sender name and the actual message to the chat box.</p>
+
+<p>```
+socket.on(&lsquo;send&rsquo;, function(data){</p>
+
+<pre><code>var username = data.username;
+var message = data.message;
+
+var html = "&lt;div class='msg'&gt;&lt;div class='user'&gt;" + username + "&lt;/div&gt;&lt;div class='txt'&gt;" + message + "&lt;/div&gt;&lt;/div&gt;";
+$('.messages').append(html);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Finally the code for listening for the <code>count_chatters</code> event. This is responsible for updating the UI every time the <code>update_chatter_count</code> event is emitted.</p>
+
+<p>```
+socket.on(&lsquo;count_chatters&rsquo;, function(data){</p>
+
+<pre><code>if(data.action == 'increase'){
+    chatter_count++;
+}else{
+    chatter_count--;
+}
+$('.chat-info').text("There are currently " + chatter_count + " people in the chat room");
+</code></pre>
+
+<p>});
+```</p>
+
+<p>This is what our simple chat application would look like once its done:</p>
+
+<p><img src="/images/posts/realtime_chat_socketio/simple-chat-app.png" alt="Simple Chat Application" /></p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://nodejs.org/">Node JS</a></li>
+<li><a href="http://expressjs.com/">ExpressJS</a></li>
+<li><a href="http://net.tutsplus.com/tutorials/javascript-ajax/introduction-to-express/">Introduction to Express</a></li>
+<li><a href="http://socket.io/">Socket IO</a></li>
+<li><a href="http://try.redis.io/">Try Redis</a></li>
+<li><a href="http://codertalks.com/long-polling-vs-short-polling/">Long Polling VS Short Polling</a></li>
+</ul>
+
+
+<h2>Conclusion</h2>
+
+<p>You&rsquo;ve learned how to create a simple chat application using NodeJS, ExpressJs, Socket.IO, Redis and jQuery.
+As you can see from the code that we&rsquo;ve written its very easy to create real-time applications with these technologies.</p>
+]]></content>
+  </entry>
+  
+</feed>

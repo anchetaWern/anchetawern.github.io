@@ -1,0 +1,2503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tools | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/tools/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Package Managers]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/"/>
+    <updated>2014-03-30T02:10:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers</id>
+    <content type="html"><![CDATA[<p>In this part of the series I&rsquo;ll walk you through package managers. I believe the definition available at <a href="http://en.wikipedia.org/wiki/Package_management_system">Wikipedia</a> really gives a good overview on what package managers are:</p>
+
+<p><blockquote><p>In software, a package management system, also called package manager, is a collection of software tools to automate the process of installing, upgrading, configuring, and removing software packages for a computer&rsquo;s operating system in a consistent manner. It typically maintains a database of software dependencies and version information to prevent software mismatches and missing prerequisites.</p></blockquote></p>
+
+<p>In simple terms package managers make it easy to install and modify software. In this blog post we&rsquo;ll be walking through some of the package managers available for Linux, Mac and Windows. And also package managers for easily installing front-end dependencies like jQuery or Twitter Bootstrap.</p>
+
+<!-- more -->
+
+
+<h4>Advanced Package Tool</h4>
+
+<p>First on the list is the Advanced Package Tool. It is the package manager used in Ubuntu and other Debian based Linux Distributions. You can use it to install new software, upgrade existing software or updating the package list index.</p>
+
+<h5>Searching for Packages</h5>
+
+<p>You can search for packages using the following command:</p>
+
+<p><code>
+apt-cache search package_name
+</code></p>
+
+<p>The <code>package_name</code> here doesn&rsquo;t have to be exact as the package manager itself will list out all possible matches and not exact one&rsquo;s.  So for example if you&rsquo;re trying to install filezilla:</p>
+
+<p><img src="/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/apt-cache-searchfilezilla.png" alt="apt-cache search" /></p>
+
+<p>An alternative for doing a search is directly addressing a specific package from the terminal. So if you want to use install <code>php</code> you simply execute the following command:</p>
+
+<p><code>
+php
+</code></p>
+
+<p>If the package which adds this specific command to your system path is not installed yet. Apt will make a suggestion on which package to install along with the command on how to install it.</p>
+
+<h5>Installing Packages</h5>
+
+<p>To install a package all you have to do is execute <code>sudo apt-get install</code> followed by the name of the package that you want to install:</p>
+
+<p><code>
+sudo apt-get install filezilla
+</code></p>
+
+<h5>List Package Dependencies</h5>
+
+<p>Dependencies are the packages that needs to be installed before you can use the package that you want to install. These are installed by default so you won&rsquo;t really need to install them manually. If you want to know the dependencies of a specific package:</p>
+
+<p><code>
+apt-cache depends package_name
+</code></p>
+
+<h5>Removing Packages</h5>
+
+<p>To remove installed packages:</p>
+
+<p><code>
+sudo apt-get remove filezilla
+</code></p>
+
+<p>If you also want to remove the configuration files for a specific package:</p>
+
+<p><code>
+sudo apt-get remove --purge package_name
+</code></p>
+
+<h5>Updating Package List</h5>
+
+<p>To download the package lists from the repositories and updates those to get information on the most recent versions of packages and their dependencies:</p>
+
+<p><code>
+sudo apt-get update
+</code></p>
+
+<h5>Upgrading Installed Packages</h5>
+
+<p>To upgrade all existing packages:</p>
+
+<p><code>
+sudo apt-get upgrade
+</code></p>
+
+<p>To upgrade a specific package:</p>
+
+<p><code>
+sudo apt-get upgrade package_name
+</code></p>
+
+<p>Executing the command above will list out all the available upgrades to the package. Just select <code>y</code> to confirm the installation of the upgrades when its being asked.</p>
+
+<h5>Alternatives</h5>
+
+<p>If you are using a Linux distribution that is not Debian based. You might want to use the following:</p>
+
+<ul>
+<li>zypper</li>
+<li>yum</li>
+<li>urpmi</li>
+<li>rpm</li>
+<li>dpkg</li>
+</ul>
+
+
+<p>They basically have the same idea with <code>apt</code>. And most of them even have almost the same commands in order to accomplish something. All you have to do is substitute. So for example if you have <code>yum</code> installed on your system and you want to install filezilla, you simply use the <code>yum install</code> command:</p>
+
+<p><code>
+yum install filezilla
+</code></p>
+
+<h4>Chocolatey</h4>
+
+<p>Chocolatey is a package manager for Windows. Its pretty much the equivalent of <code>apt-get</code> in Windows.</p>
+
+<p>To install chocolatey, open up the command line and execute the following command:</p>
+
+<p><code>
+@powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" &amp;&amp; SET PATH=%PATH%;%systemdrive%\chocolatey\bin
+</code></p>
+
+<p>What this does is to download the chocolatey installer and copies it into the Windows path so it can be called from anywhere.</p>
+
+<p>Here&rsquo;s a list of all the available <a href="https://chocolatey.org/packages">chocolatey packages</a>.
+As you can see, chocolatey is built with programmers in mind so there are packages for easily installing git, nodejs, ruby, python, phantomjs, vim and any other developer tool that you can think of. For your convenience, I&rsquo;ve compiled some development tools and their corresponding install command below:</p>
+
+<p><strong>Sublime Text 2</strong></p>
+
+<p><code>
+cinst sublimetext2
+</code></p>
+
+<p><strong>Fiddler</strong></p>
+
+<p><code>
+cinst fiddler
+</code></p>
+
+<p><strong>Node JS</strong></p>
+
+<p><code>
+cinst nodejs
+</code></p>
+
+<p><strong>Console2</strong></p>
+
+<p><code>
+cinst Console2
+</code></p>
+
+<p><strong>Putty</strong></p>
+
+<p><code>
+cinst putty
+</code></p>
+
+<p><strong>Git</strong></p>
+
+<p><code>
+cinst git.install
+</code></p>
+
+<p><strong>Ruby</strong></p>
+
+<p><code>
+cinst ruby
+</code></p>
+
+<p><strong>Python</strong></p>
+
+<p><code>
+cinst python
+</code></p>
+
+<p><strong>Vim</strong></p>
+
+<p><code>
+cinst vim
+</code></p>
+
+<p><strong>Mercurial</strong></p>
+
+<p><code>
+cinst hg
+</code></p>
+
+<p><strong>Curl</strong></p>
+
+<p><code>
+cinst curl
+</code></p>
+
+<p><strong>Wget</strong></p>
+
+<p><code>
+cinst Wget
+</code></p>
+
+<p><strong>Yeoman</strong></p>
+
+<p><code>
+cinst Yeoman
+</code></p>
+
+<p><strong>Easy Install</strong></p>
+
+<p><code>
+cinst easy.install
+</code></p>
+
+<p><strong>Cygwin</strong></p>
+
+<p><code>
+cinst Cygwin
+</code></p>
+
+<p><strong>Expresso</strong></p>
+
+<p><code>
+cinst expresso
+</code></p>
+
+<p><strong>Vagrant</strong></p>
+
+<p><code>
+cinst vagrant
+</code></p>
+
+<p><strong>MySQL</strong></p>
+
+<p><code>
+cinst mysql
+</code></p>
+
+<p><strong>PHP</strong></p>
+
+<p><code>
+cinst php
+</code></p>
+
+<p><strong>Everything</strong></p>
+
+<p><code>
+cinst Everything
+</code></p>
+
+<h4>Homebrew</h4>
+
+<p>Homebrew is a package manager for Mac OS. You can install it by executing the following command from the terminal:</p>
+
+<p><code>
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+</code></p>
+
+<p>Note that the command above uses ruby. Ruby is already pre-installed on Mac OS so you can just execute it without installing Ruby.</p>
+
+<p>Once homebrew is installed you can then start installing packages by using the <code>brew</code> command. So for example if you want to install git:</p>
+
+<p><code>
+brew install git
+</code></p>
+
+<p>Here&rsquo;s a <a href="https://github.com/Homebrew/homebrew/tree/master/Library/Formula">list of homebrew packages</a> that you can install. Note that you will have to omit the <code>.rb</code> extension. So when installing the <code>wget.rb</code> package you only have to execute the following command:</p>
+
+<p><code>
+brew install wget
+</code></p>
+
+<h4>NPM</h4>
+
+<p>NPM is the package manager that comes with Node. Its commonly used for installing JavaScript tools that runs on the command line such as Grunt, Bower and Yeoman. Or JavaScript libraries or frameworks that you can use on your project such as Express, Underscore and Socket.IO.</p>
+
+<h5>Installing Node</h5>
+
+<p>Like I said earlier NPM comes with Node so you have to install Node before you can use NPM.
+The first choice for installing Node would be to <a href="http://nodejs.org/download/">download the installer</a> that was built for the operating system that you&rsquo;re using. If that doesn&rsquo;t work you can try any of the methods below:</p>
+
+<p>In Linux you can install Node from the terminal by executing the following commands:</p>
+
+<p><code>
+sudo apt-get install python-software-properties python g++ make
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install nodejs
+</code></p>
+
+<p>For Windows, you can install <a href="https://chocolatey.org/">chocolatey</a> then install Node by executing the following command:</p>
+
+<p><code>
+cinst nodejs
+</code></p>
+
+<p>For Mac OS, you install <a href="http://brew.sh/">homebrew</a> then install Node by executing the following command:</p>
+
+<p><code>
+brew install node
+</code></p>
+
+<p>If all else fails, be sure to do a google search on each error that pops out and follow through any solution that you might find.</p>
+
+<h5>Installing NVM</h5>
+
+<p>Another option would be to install Node using NVM (Node Version Manager). A bash script that allows you to install and manage multiple versions of Node. Note that the following method requires Git to be installed, so if you don&rsquo;t have it already installed on your machine you can download the available installers from the <a href="http://git-scm.com/downloads">Git Download Page</a>. After downloading check out the <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">guide on how to install git</a>.</p>
+
+<p>Going back to installing nvm. You can do that by executing the following command:</p>
+
+<p><code>
+curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+</code></p>
+
+<p>The command above copies nvm binaries into your system path so you can just call <code>nvm</code> from any directory after the installation is done.</p>
+
+<p>You can install any version of Node by using the <code>nvm install</code> command:</p>
+
+<p><code>
+nvm install 0.10
+</code></p>
+
+<p>Once the installation is done you can then tell nvm to use the specific version that you installed:</p>
+
+<p><code>
+nvm use 0.10
+</code></p>
+
+<h5>Using NPM</h5>
+
+<p><strong>Installing Packages Locally</strong></p>
+
+<p>Once that&rsquo;s done you can now install packages via npm by using the following command:</p>
+
+<p><code>
+npm install package_name
+</code></p>
+
+<p>This installs the package under the <code>node_modules</code> folder in your working directory.</p>
+
+<p>You can install packages using the above method but the preferred method is to create a <code>package.json</code> file in which you specify all the dependencies of your current project. This allows you to easily install and manage the dependencies of your project using only the <code>npm install</code> command. Here&rsquo;s an example <code>package.json</code> file which depends on <code>express</code> and <code>jade</code>:</p>
+
+<p>```
+{</p>
+
+<pre><code>"name": "super-awesome-app",
+"version": "0.0.1",
+"private": true,
+"dependencies": {
+  "express": "&gt;=3.0.0",
+  "jade": "&gt;=1.1.5"
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>name</code> &ndash; the name of your app, note that this should be a machine friendly name.</li>
+<li><code>version</code> &ndash; the version of your app</li>
+<li><code>private</code> &ndash; supplying a value of <code>true</code> tells npm that your app is private, therefore it shouldn&rsquo;t be listed in the npm registry.</li>
+<li><code>dependencies</code> &ndash; an object containing the name and version of packages in which your app depends. You can use the <a href="https://www.npmjs.org/">npm website</a> to search for packages that you can install.</li>
+</ul>
+
+
+<p>Once you have a valid <code>package.json</code> in the root of your project directory. You can just execute <code>npm install</code> from the root of your project directory. This will install all your dependencies under the <code>node_modules</code> folder:</p>
+
+<p><img src="/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/node-modules.png" alt="node modules" /></p>
+
+<p>The packages will be installed in their own folders. There&rsquo;s also the <code>.bin</code> folder where the executable file for each packages can be called.</p>
+
+<p><strong>Installing Packages Globally</strong></p>
+
+<p>If you want to install a specific package globally, simply add the <code>-g</code> option:</p>
+
+<p><code>
+npm install -g package_name
+</code></p>
+
+<p>This will install the package under the <code>/usr/local/lib/node_modules</code> directory or the <code>node_modules</code> directory of wherever node is installed.</p>
+
+<p><strong>Searching for Packages</strong></p>
+
+<p>You can also search for packages using the <code>npm search</code>:</p>
+
+<p><code>
+npm search grunt
+</code></p>
+
+<p>This might take a while the first time you execute it since it will be downloading an index of all the packages that are available in the npm repository. But if you&rsquo;re on Google Fiber there&rsquo;s no problem.</p>
+
+<p><strong>Uninstalling Packages</strong></p>
+
+<p>You can uninstall packages using the <code>uninstall</code> command:</p>
+
+<p><code>
+npm uninstall moment
+</code></p>
+
+<p>Be sure to add the <code>-g</code> option if you installed the package globally:</p>
+
+<p><code>
+npm uninstall grunt -g
+</code></p>
+
+<h4>Bower</h4>
+
+<p>Bower is the package manager for front-end dependencies of your app. Its specifically useful for easily installing libraries such as jQuery or Twitter Bootstrap. It is loader agnostic, which means that you can use any module loader such as AMD or CommonJS.</p>
+
+<p>Bower is available from npm so you can install it via nvm:</p>
+
+<p><code>
+npm install -g bower
+</code></p>
+
+<p>A global install is recommended for bower so that you can use it from any project.</p>
+
+<h5>Installing Packages</h5>
+
+<p>Once bower is installed you can then start installing packages in your working directory by using the <code>bower install</code> command:</p>
+
+<p><code>
+bower install package_name
+</code></p>
+
+<p>The command above will install the latest version by default. If you want to install a specific version you do:</p>
+
+<p><code>
+bower install package_name#version_number
+</code></p>
+
+<p>If you&rsquo;re not sure about the name of a specific package that you&rsquo;re trying to install you can visit the <a href="http://bower.io/search/">bower website</a> and search for it.</p>
+
+<p>The command above will install the package under the <code>bower_components</code> folder by default. But if you want it to install somewhere else you can do so by creating a <code>.bowerrc</code> file. So for example if you want bower to install your apps dependencies under the <code>libraries</code> folder:</p>
+
+<p><code>
+{
+  "directory": "libraries"
+}
+</code></p>
+
+<p>Again there&rsquo;s more than one way to go with things. With bower you can also install your apps dependencies by creating a <code>bower.json</code> file where you will specify its dependencies. Note that this is very similar to that of the <code>package.json</code> file that we used earlier with npm, the only difference is that were requiring front-end dependencies:</p>
+
+<p>```
+{
+  &ldquo;name&rdquo;: &ldquo;my-super-awesome-app&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.1&rdquo;,
+  &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"bootstrap": "~3.1.1",
+"moment": "~2.0.0",
+"jquery": "~1.10.2"
+</code></pre>
+
+<p>  },
+  &ldquo;private&rdquo;: true
+}
+```</p>
+
+<h5>Listing Installed Packages</h5>
+
+<p>You can also list out packages that are currently installed by using the <code>list</code> command:</p>
+
+<p><code>
+bower list
+</code></p>
+
+<p>This will list out all the packages and their dependencies:</p>
+
+<p><img src="/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/bower-packages.png" alt="bower list" /></p>
+
+<p>Inspecting the screenshot above you can see that bootstrap depends on jquery.
+And sure enough when we open up the <code>bower.json</code> file inside the <code>bootstrap</code> directory we can see that <code>jquery</code> is listed under the <code>dependencies</code>:</p>
+
+<p>```
+{
+  &ldquo;name&rdquo;: &ldquo;bootstrap&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;3.1.1&rdquo;,
+  &ldquo;main&rdquo;: [</p>
+
+<pre><code>"./dist/css/bootstrap.css",
+"./dist/js/bootstrap.js",
+"./dist/fonts/glyphicons-halflings-regular.eot",
+"./dist/fonts/glyphicons-halflings-regular.svg",
+"./dist/fonts/glyphicons-halflings-regular.ttf",
+"./dist/fonts/glyphicons-halflings-regular.woff"
+</code></pre>
+
+<p>  ],
+  &ldquo;ignore&rdquo;: [</p>
+
+<pre><code>"**/.*",
+"_config.yml",
+"CNAME",
+"composer.json",
+"CONTRIBUTING.md",
+"docs",
+"js/tests"
+</code></pre>
+
+<p>  ],
+  &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"jquery": "&gt;= 1.9.0"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Bower automatically installs the dependencies of each of your dependencies. Pretty neat!
+Since we have specified <code>jquery</code> as a dependency under the <code>bower.json</code> file of our project bower already knows that it should install that version of jquery (<code>1.10.2</code>) instead of the one specified under the <code>bower.json</code> file under the <code>bootstrap</code> directory.</p>
+
+<h5>Updating Packages</h5>
+
+<p>You can also update installed packages using the <code>update</code> command. Be sure to update the <code>bower.json</code> file to use a later version of your apps dependencies and then execute the following command:</p>
+
+<p><code>
+bower update
+</code></p>
+
+<p>This will update all the installed packages in your project directory. You can also update specific packages by specifying the package name:</p>
+
+<p><code>
+bower update bootstrap
+</code></p>
+
+<h5>Uninstalling Packages</h5>
+
+<p>You can also uninstall packages by using the <code>uninstall</code> command. This can take one or more packages. In the example below were uninstalling both <code>bootstrap</code> and <code>moment</code>:</p>
+
+<p><code>
+bower uninstall bootstrap moment
+</code></p>
+
+<h4>Jam</h4>
+
+<p>Another front-end dependency package manager is Jam. What&rsquo;s nice about Jam is that it was built with asynchronous module loading in mind. It uses AMD (Asynchronous Module Definition) for loading up the dependencies of your app asynchronously.</p>
+
+<p>Just like Bower you can install Jam using npm:</p>
+
+<p><code>
+npm install -g jam
+</code></p>
+
+<p><strong>Installing Packages</strong></p>
+
+<p>You can install packages using the <code>install</code> command followed by the name of the package that you want to install:</p>
+
+<p><code>
+jam install jquery
+</code></p>
+
+<p>This will install your dependencies on the <code>jam</code> directory. Notice that a <code>require.config.js</code> and <code>require.js</code> file is also created. This is because Jam uses <a href="http://requirejs.org/">requireJS</a> to asynchronously load your dependencies. This means that you can load your dependencies by requiring them instead of using script tags and specifying the source.</p>
+
+<p>The <code>require.js</code> file created by Jam is customized based on the packages that you have installed on your project directory. You&rsquo;ll have to include it first before trying to require your dependencies:</p>
+
+<p>```</p>
+
+<script src="jam/require.js"></script>
+
+
+
+
+<script>
+  require(['jquery'], function ($) {
+    $('body').text('Zup world!');
+  });
+</script>
+
+
+<p>```</p>
+
+<p>Do note that installing a package using the method above isn&rsquo;t recommended since you will most likely have to install other packages as your project grows. The recommended method is creating a <code>package.json</code> file where you specify all your apps dependencies:</p>
+
+<p>```
+{
+  &ldquo;jam&rdquo;: {</p>
+
+<pre><code>"packageDir": "public/vendor",
+"baseUrl": "public",
+"dependencies": {
+    "bootstrap" : "~2.3.2",
+    "jquery" : "~2.0.0",
+    "moment" : "~1.7.2",
+    "underscore" : "~1.3.3"
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>The <code>packageDir</code> is where packages are installed.
+The <code>baseUrl</code> is the directory in which to make relative package paths from.
+The <code>dependencies</code> is where you specify the name and version of a package to install.
+Once you&rsquo;re ready to install just execute the <code>jam install</code> command in the root of your project directory.</p>
+
+<p>If at a later time you decide to add another dependency you can just add it to the <code>package.json</code> file. In the example below were adding <code>knockout</code> version <code>2.2.0</code> as a dependency:</p>
+
+<p>```
+{
+  &ldquo;jam&rdquo;: {</p>
+
+<pre><code>"packageDir": "public/vendor",
+"baseUrl": "public",
+"dependencies": {
+    "bootstrap" : "~2.3.2",
+    "jquery" : "~2.0.0",
+    "moment" : "~1.7.2",
+"underscore" : "~1.3.3",
+    "knockout" : "~2.2.0"
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Once you&rsquo;ve added the new dependency simply execute the <code>jam install</code> command again. Jam will also update the <code>require.js</code> and <code>require.config.js</code> file to include your new dependency.</p>
+
+<p><strong>Require.js File</strong></p>
+
+<p>Inspecting the <code>require.js</code> file we can see that the following code has been added near the bottom of the file:</p>
+
+<p>```
+var jam = {</p>
+
+<pre><code>"packages": [
+    {
+        "name": "jquery",
+        "location": "jam/jquery",
+        "main": "dist/jquery.js"
+    }
+],
+"version": "0.2.17",
+"shim": {}
+</code></pre>
+
+<p>};</p>
+
+<p>if (typeof require !== &ldquo;undefined&rdquo; &amp;&amp; require.config) {</p>
+
+<pre><code>require.config({
+"packages": [
+    {
+        "name": "jquery",
+        "location": "jam/jquery",
+        "main": "dist/jquery.js"
+    }
+],
+"shim": {}
+</code></pre>
+
+<p>});
+}
+else {</p>
+
+<pre><code>var require = {
+"packages": [
+    {
+        "name": "jquery",
+        "location": "jam/jquery",
+        "main": "dist/jquery.js"
+    }
+],
+"shim": {}
+</code></pre>
+
+<p>};
+}</p>
+
+<p>if (typeof exports !== &ldquo;undefined&rdquo; &amp;&amp; typeof module !== &ldquo;undefined&rdquo;) {</p>
+
+<pre><code>module.exports = jam;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As you can see it contains the name, location and the main file of the packages that you installed. So that when you require them later on on your script it knows exactly where to find them and which file to load. If you&rsquo;re new to the concept of module loading be sure to check out the following resources:</p>
+
+<ul>
+<li><a href="http://www.sitepoint.com/understanding-requirejs-for-effective-javascript-module-loading/">Understanding RequireJS for Effective Module Loading</a></li>
+<li><a href="http://addyosmani.com/writing-modular-js/">Writing Modular JavaScript With AMD, CommonJS &amp; ES Harmony</a></li>
+</ul>
+
+
+<p><strong>Searching for Packages</strong></p>
+
+<p>You can search for jam packages using the <code>search</code> command:</p>
+
+<p><code>
+jam search package_name
+</code></p>
+
+<p>You can also use the <a href="http://jamjs.org/packages/#/">jam packages page</a> to look for packages to install.</p>
+
+<p><strong>Uninstalling Packages</strong></p>
+
+<p>You can uninstall packages by executing the following command:</p>
+
+<p><code>
+jam remove jquery
+</code></p>
+
+<p>This will also update the <code>require.config.js</code> and <code>require.js</code> file. Note that this won&rsquo;t update your <code>package.json</code> file so you have to remove the specific dependency in that file as well if you don&rsquo;t want it to get installed when you execute the <code>jam install</code> command later on. Also note that if the specific package that you are trying to remove is a dependency of another package jam won&rsquo;t remove it. Here&rsquo;s an example of removing a package in which another package is dependent on:</p>
+
+<p><img src="/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/remove-error.png" alt="jam remove error" /></p>
+
+<p><strong>Compiling Scripts</strong></p>
+
+<p>Jam also allows you to compile your script and its dependencies using the <code>compile</code> command:</p>
+
+<p><code>
+jam compile -i script -o main
+</code></p>
+
+<p>Breaking the command down, we used the <code>-i</code> option to specify the input file. The input file is basically the main JavaScript file used by our app. Here&rsquo;s an example:</p>
+
+<p>```
+require([&lsquo;jquery&rsquo;], function ($) {</p>
+
+<pre><code>$('body').text('zup world!');
+</code></pre>
+
+<p>});
+```</p>
+
+<p>The <code>-o</code> is where we specify the output. By default jam saves the output file on the directory where the <code>compile</code> command is called.</p>
+
+<p>The <code>compile</code> command assumes that you have a <code>package.json</code> file where you specified the <code>baseUrl</code>. In the <code>package.json</code> file that we used earlier the <code>baseUrl</code> is set to <code>public</code>. This means that jam will look into the <code>public</code> directory for the <code>script.js</code> file. Note that we didn&rsquo;t have to specify the extension (<code>.js</code>) in the example since jam already assumes that the extension is <code>.js</code>.</p>
+
+<h4>Browserify</h4>
+
+<p>Unlike npm, bower or jam browserify is not really considered a full-fledged package manager since it doesn&rsquo;t allow you to install or manage packages. However it allows you to write node.js-style modules in the front-end.</p>
+
+<p>Browserify is also preffered to be installed globally since you can use it on multiple projects:</p>
+
+<p><code>
+npm install -g browserify
+</code></p>
+
+<p>Once you&rsquo;re done installing you can then install the packages in which your app depends on:</p>
+
+<p><code>
+npm install jquery
+</code></p>
+
+<p>Then you can use the package that you just installed by requiring it into your main JavaScript file (<code>js/main.js</code>):</p>
+
+<p>```
+var $ = require(&lsquo;jquery&rsquo;);
+$(function(){</p>
+
+<pre><code>$('body').text('zup world from browserify!');
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Note that you won&rsquo;t be able to run this on the browser just yet. You first have to compile it using browserify. Execute the following command on the root of your apps directory:</p>
+
+<p><code>
+browserify js/main.js -o dist/js/main.js
+</code></p>
+
+<p>The command above assumes that you have your main JavaScript file inside the <code>js</code> directory which is under the root directory of your app. The <code>-o</code> option allows you to specify the output file. In this case the output file is under <code>dist/js/main.js</code>. This will be the file that you&rsquo;re going to link into the page where you plan to run the script (<code>index.html</code>):</p>
+
+<p>```</p>
+
+<script src="dist/js/main.js"></script>
+
+
+<p>```</p>
+
+<p>When you run this file in the browser you will see the following output:</p>
+
+<p><code>
+zup world from browserify!
+</code></p>
+
+<p>If you want to minify the output of browserify you can also install uglify js:</p>
+
+<p><code>
+npm install -g uglify-js
+</code></p>
+
+<p>Then pipe browserify&rsquo;s output to <code>uglify-js</code>:</p>
+
+<p><code>
+browserify js/main.js | uglify-js &gt; dist/js/main.js
+</code></p>
+
+<p>Note that in the above command we didn&rsquo;t supply the <code>-o</code> option so that browserify will simply return the output as a string. We then piped it to the <code>uglify-js</code> command and specifying the output file from there.</p>
+
+<p>Browserify is a good alternative to RequireJS for managing the front-end dependencies of your app.</p>
+
+<h4>Component</h4>
+
+<p>Lastly there&rsquo;s component, a package manager that allows you to write modular commonjs components.</p>
+
+<p>To install component:</p>
+
+<p><code>
+npm install -g component
+</code></p>
+
+<p><strong>Searching for Components</strong></p>
+
+<p>You can then find a list of components that you can install from this <a href="https://github.com/component/component/wiki/Components">page</a>. Or use the <code>search</code> command to search for existing components that matches your query:</p>
+
+<p><code>
+component search jquery
+</code></p>
+
+<p><strong>Installing a Component</strong></p>
+
+<p>Writing an app using component requires a <code>component.json</code> file to be created in the root of the app:</p>
+
+<p>```
+{
+  &ldquo;name&rdquo;: &ldquo;component-tester&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;testing component&rdquo;,
+  &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"component/datepicker": "*"
+</code></pre>
+
+<p>  },
+  &ldquo;main&rdquo;: &ldquo;main.js&rdquo;,
+  &ldquo;scripts&rdquo;: [</p>
+
+<pre><code>"main.js"
+</code></pre>
+
+<p>  ]
+}
+```</p>
+
+<p>The <code>component.json</code> file looks similar to the <code>package.json</code> and <code>bower.json</code> file that we&rsquo;ve seen so far. Remember that the <code>name</code> should be a machine-friendly name. There&rsquo;s also a bit difference in the name of the dependencies. The convention used by component is <code>author/component</code> in order to avoid naming collisions. In the example above we only have one dependency which is the <code>component/datepicker</code>. This allows us to add a datepicker on text fields.
+We also have to specify the main JavaScript file (<code>main.js</code>). There&rsquo;s also the <code>scripts</code> where we specify the other scripts that is used by the app. In this case we only have the main JavaScript file so its the only file that we put in.</p>
+
+<p>Once you&rsquo;re done building the <code>component.json</code> file execute the <code>install</code> command to install your dependencies:</p>
+
+<p><code>
+component install
+</code></p>
+
+<p>This will install your dependencies under the <code>components</code> directory:</p>
+
+<p><img src="/images/posts/2014-02-25-a-whirlwind-tour-of-web-developer-tools-package-managers/components.png" alt="components directory" /></p>
+
+<p>As you can see from the screenshot above component creates a bunch of folders under the components directory. When you open up the folders you will see that there&rsquo;s a <code>component.json</code> file in each of them. Here&rsquo;s the contents of the <code>component.json</code> file under the <code>component/aurora</code> directory:</p>
+
+<p>```
+{
+  &ldquo;name&rdquo;: &ldquo;aurora&rdquo;,
+  &ldquo;repo&rdquo;: &ldquo;component/aurora&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;Aurora theme for Calendar, Popover, and Tip&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.1&rdquo;,
+  &ldquo;keywords&rdquo;: [</p>
+
+<pre><code>"aurora",
+"theme",
+"bundle"
+</code></pre>
+
+<p>  ],
+  &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"component/aurora-popover": "*",
+"component/aurora-calendar": "*"
+</code></pre>
+
+<p>  },
+  &ldquo;development&rdquo;: {}
+}
+```</p>
+
+<p>As you can see it also specifies its on dependency. There&rsquo;s also an additional <code>repo</code> property, this is the Github repository in which the component is hosted. To access it from the browser all you have to do is prefix it with github.com/{repo}.</p>
+
+<p>Checking out each of the dependencies you can see that they&rsquo;re also installed on your <code>components</code> directory each with their own assets (stylesheets, scripts and images).</p>
+
+<p>And that is the philosophy behind component. Splitting up packages into multiple distinct modules. This encourages code-reuse. This means that you will be able to easily import and add various dependencies in your app. But only those that are really needed. This means that a component can comprise of many different components that represent a single module.</p>
+
+<p>Going back to our example. In the <code>main.js</code> file put in the following code:</p>
+
+<p><code>
+var picker = require('datepicker');
+var el = document.querySelector('[name=date]');
+picker(el);
+</code></p>
+
+<p>What this does is requiring the <code>datepicker</code> component that we installed earlier and transforms all the elements which has a <code>name</code> of <code>date</code> into a date picker.</p>
+
+<p>Once you&rsquo;re done with that execute the <code>build</code> command:</p>
+
+<p><code>
+component build
+</code></p>
+
+<p>This will tell component to build the components that you installed. In simple terms this brings in all the components together in a single file. One main file for each file type. By default component saves these files into the <code>build</code> directory of your app. So the main stylesheet will be named <code>build.css</code> and the main script file will be named <code>build.js</code>. You can then use it from any page in your app:</p>
+
+<p>```html
+&lt;!doctype html>
+<html lang="en">
+<head></p>
+
+<pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;component test&lt;/title&gt;
+&lt;link rel="stylesheet" href="build/build.css"&gt;
+</code></pre>
+
+<p></head>
+<body></p>
+
+<pre><code>&lt;input type="text" name="date" id="birthday" placeholder="Pick a date"&gt;
+&lt;script src="build/build.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+require('component-tester');
+&lt;/script&gt;
+</code></pre>
+
+<p></body>
+</html>
+```</p>
+
+<p>As you can see from the code above we&rsquo;re calling up what&rsquo;s in our main JavaScript file (<code>main.js</code>) by requiring it into the page:</p>
+
+<p><code>
+require('component-tester');
+</code></p>
+
+<p>The name here is basically the name that you used in your <code>component.json</code> file earlier.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this blog post we&rsquo;ve gone over some of the package managers that we can use to easily install and manage software. We&rsquo;ve also gone over some of the front-end package managers. We have barely scratch the surface in this blog post. The next step would be to find a way in which these package managers will fit into your current workflow. Or you can also look at how to automate the building of the final script so you won&rsquo;t have to manually build the dependencies together with the main script of your app.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://tech.pro/tutorial/1190/package-managers-an-introductory-guide-for-the-uninitiated-front-end-developer">Package Managers: An Introductory Guide For The Uninitiated Front-End Developer</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Command Line Utilities]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/"/>
+    <updated>2014-03-08T14:45:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities</id>
+    <content type="html"><![CDATA[<p>In this part five of the series A Whirlwind Tour of Web Developer Tools I&rsquo;ll walk you through some of the tools that you can use in the command line.  But before we dive in to some of the tools lets first define what a command line is. According to <a href="http://en.wikipedia.org/wiki/Command-line_interface">Wikipedia</a>:</p>
+
+<p><blockquote><p>A command-line interface (CLI), also known as command-line user interface, console user interface, and character user interface (CUI), is a means of interacting with a computer program where the user (or client) issues commands to the program in the form of successive lines of text (command lines).</p></blockquote></p>
+
+<p>So the command line is basically an interface where you can type in a bunch of commands to interact with the computer.</p>
+
+<!--more-->
+
+
+<h3>Command Line Basics</h3>
+
+<p>Before we jump into the tools its important that we first understand the basics of using the command line. To access the command line in Linux press <code>ctrl + alt + t</code> on your keyboard. For Mac just look for the terminal from your menu. And for Windows just press <code>window + r</code> and then type in <code>cmd</code> then press <code>enter</code>.</p>
+
+<h4>Commonly used Commands</h4>
+
+<p>Here are some of the commands that you&rsquo;ll commonly used on a day to day basis:</p>
+
+<ul>
+<li><strong>cd</strong> &ndash; change directory</li>
+<li><strong>mkdir</strong> &ndash; create a new directory</li>
+<li><strong>rmdir</strong> &ndash; delete an existing directory</li>
+<li><strong>touch</strong> &ndash; create an empty file</li>
+<li><strong>pushd</strong> &ndash; push directory</li>
+<li><strong>popd</strong> &ndash; pop directory</li>
+<li><strong>ls</strong> &ndash; list files in a specific directory</li>
+<li><strong>grep</strong> &ndash; find specific text inside files</li>
+<li><strong>man</strong> &ndash; read a manual page</li>
+<li><strong>apropos</strong> &ndash; lists outs commands that does a specific action</li>
+<li><strong>cat</strong> &ndash; print out all the contents of a file</li>
+<li><strong>less</strong> &ndash; view the contents of a file (with pagination)</li>
+<li><strong>sudo</strong> &ndash; execute command as super user</li>
+<li><strong>chmod</strong> &ndash; modify the file permissions</li>
+<li><strong>chown</strong> &ndash; change file ownership</li>
+<li><strong>find</strong> &ndash; find files from a specific directory</li>
+<li><strong>pwd</strong> &ndash; print working directory</li>
+<li><strong>history</strong> &ndash; returns a list of the commands that you have previously executed</li>
+<li><strong>tar</strong> &ndash; creates a tar archive from a list of files</li>
+</ul>
+
+
+<p>If you are on Windows some commands might not be available to you. The solution would be to either switch to Linux, I definitely recommend Linux Mint or Ubuntu if you&rsquo;re planning to switch. Or if you want to stick with Windows you can install <a href="http://www.cygwin.com/">Cygwin</a> or the <a href="http://unxutils.sourceforge.net/">GNU utilities</a> for Windows.</p>
+
+<p>I won&rsquo;t go ahead and provide you with a tutorial on how to use the commands above. There&rsquo;s tons of tutorials out there so use Google to your advantage. You also have the <code>man</code> command to help you out. Here&rsquo;s how to use the <code>man</code> command:</p>
+
+<p><code>
+man cd
+</code></p>
+
+<p>This will output all the information related to the <code>cd</code> command and how to use it.
+The <code>man</code> command is useful if you already know the name of the command. But in case you do not already know you also have access to the <code>apropos</code> command which lists out commands that matches a specific action. Here&rsquo;s how to use it:</p>
+
+<p><code>
+apropos delete
+</code></p>
+
+<p>Executing the command above produces an output similar to the following:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/apropos.png" alt="apropos" /></p>
+
+<p>As you can see you can pretty much scan through the results and determine the command that you need to use based on the description provided.  So if you want to delete a file you can just call the <code>unlink</code> command.</p>
+
+<h4>Aliases</h4>
+
+<p>Once you&rsquo;ve gotten comfortable with the default commands you can start using shortcuts in order to make typing commands faster and easier. You can add aliases by creating a <code>.bash_aliases</code> file inside your home directory then add contents similar to the following:</p>
+
+<p><code>
+alias subl='/usr/bin/subl'
+alias c='clear'
+alias install='sudo apt-get install'
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias md='mkdir'
+alias t='touch'
+alias rm='rm -i'
+alias la='ls -alh'
+alias web-dir='cd ~/web_files'
+alias e='exit'
+alias s='sudo'
+alias a='echo "------------Your aliases------------";alias'
+alias ni='sudo npm install'
+alias snemo='sudo nemo'
+alias gi='git init'
+alias ga='git add'
+alias gc='git commit -m'
+alias gca='git commit --amend -m'
+alias gu='git push'
+alias gd='git pull'
+alias gs='git status'
+alias gl='git log'
+</code></p>
+
+<p>As you can see from the example above to add an alias simply put <code>alias</code> followed by the alias that you want to use, then <code>=</code> and followed by the path to the executable wrapped in quotes. If you do not know the path to the executable file you can use the <code>which</code> command followed by the command that you usually use. For example for the <code>less</code> command:</p>
+
+<p><code>
+which less
+</code></p>
+
+<p>It will then output the path to the executable file:</p>
+
+<p><code>
+/usr/bin/less
+</code></p>
+
+<p>This is the path that you can add in the specific alias.</p>
+
+<h3>Command Line Tools</h3>
+
+<h4>Wget</h4>
+
+<p>Useful for pulling files from a server. For example you can use this to download a specific library or asset for your project into your current working directory:</p>
+
+<p><code>
+wget http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js
+</code></p>
+
+<p>The command above will pull the file from the URL that you specified and copy it into the directory where your current terminal window is opened.</p>
+
+<h4>Curl</h4>
+
+<p>Curl is used for making HTTP request. I&rsquo;d like to describe it as a browser but for the command line. You can do all sorts of stuff with Curl. For example you can use it to request a specific page from the web:</p>
+
+<p><code>
+curl http://anchetawern.github.io
+</code></p>
+
+<h5>Basic HTTP Authentication</h5>
+
+<p>If the page uses basic HTTP authentication you can also specify a user name and a password. In the example below I am using Curl to request my recently bookmarked links from the delicious API:</p>
+
+<p><code>
+curl -u username:password  https://api.del.icio.us/v1/posts/recent
+</code></p>
+
+<h5>Saving the Results to a File</h5>
+
+<p>This will return an XML string. If you want to copy the result to a file you can simply redirect the output to a file:</p>
+
+<p><code>
+curl -u username:password  https://api.del.icio.us/v1/posts/recent &gt; recent-bookmarks.xml
+</code></p>
+
+<h5>Getting Header Information</h5>
+
+<p>If you only want to get the header information from a specific request you can add the <code>-I</code> option:</p>
+
+<p><code>
+curl -I http://google.com
+</code></p>
+
+<p>This will output a result similar to the following:</p>
+
+<p><code>
+Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Fri, 21 Feb 2014 10:16:19 GMT
+Expires: Sun, 23 Mar 2014 10:16:19 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Alternate-Protocol: 80:quic
+</code></p>
+
+<p>This is the same as the one that you see under the network tab in Chrome Developer Tools under the headers section.</p>
+
+<h5>Interacting with Forms</h5>
+
+<p>You can also perform actions on forms. So for example if you have the following form from a web page somewhere:</p>
+
+<p>```html
+<form action="form.php" method="GET"></p>
+
+<pre><code>&lt;input type="text" name="query"&gt;
+&lt;input type="submit"&gt;
+</code></pre>
+
+<p></form>
+```</p>
+
+<p>You can fill up the form and perform the action as if you&rsquo;re in a browser by simply getting the required inputs and supplying them from your command:</p>
+
+<p><code>
+curl http://localhost/tester/curl/form.php?query=dogs
+</code></p>
+
+<p>For forms which has its method set to <code>POST</code>. You can also make the request using curl. All you have to do is add a <code>--data</code> option followed by the name-value pair. With the name being the name assigned to the input and the value is the value that you want to supply:</p>
+
+<p><code>
+curl --data "query=cats" http://loca/form.php?query=cats
+</code></p>
+
+<h5>Spoofing the HTTP referrer</h5>
+
+<p>You can also spoof the http-referrer when making a request:</p>
+
+<p><code>
+curl --referer http://somesite.com http://anothersite.com
+</code></p>
+
+<p>This reminds us that using the HTTP referrer as a means of checking whether to perform a specific action or not is really useless as it can be easily spoofed.</p>
+
+<h5>Follow Redirects</h5>
+
+<p>Curl also allows you to follow redirects. So for example if you&rsquo;re accessing a page which has a redirect like this:</p>
+
+<p><code>php
+&lt;?php
+header('Location: anotherfile.php');
+echo 'zup yo!';
+?&gt;
+</code></p>
+
+<p>Simply using the following command will result in the execution of the <code>echo</code> statement below the redirect:</p>
+
+<p><code>
+curl http://localhost/tester/curl/file.php
+</code></p>
+
+<p>But if you add the <code>--location</code> option curl will follow the page that is specified in the redirect:</p>
+
+<p><code>
+curl --location http://localhost/tester/curl/file.php
+</code></p>
+
+<p>So the output of the command above will be the contents of the <code>anotherfile.php</code>.</p>
+
+<h5>Cookies</h5>
+
+<p>You can also supply cookie information on the requests that you make. So for example you are requesting a page which uses cookies as a means of determining if a user is logged in or not (note: you shouldn&rsquo;t use this kind of code in production):</p>
+
+<p>```
+&lt;?php
+$name = $_COOKIE[&ldquo;name&rdquo;];
+$db->query(&ldquo;SELECT id FROM tbl_users WHERE name = &lsquo;$name&rsquo;&rdquo;);
+if($db->num_rows > 0){</p>
+
+<pre><code>echo 'logged in!';
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'sorry user does not exist';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>To request from the page above just add the <code>--cookie</code> option followed by the cookies that the page needs:</p>
+
+<p><code>
+curl --cookie "name=fred" http://localhost/tester/curl/cookie.php
+</code></p>
+
+<p>If you need to specify more than one cookie simply separate them with a semi-colon:</p>
+
+<p><code>
+curl --cookie "name=fred;age=22" http://localhost/tester/curl/cookie.php
+</code></p>
+
+<h4>jq</h4>
+
+<p>If you normally work with web API&rsquo;s in your job, you might find the jq utility useful. What this does is formatting JSON strings, it also adds syntax highlighting so they become more readable.  To install jq all you have to do is download the <code>jq</code> file from the <a href="http://stedolan.github.io/jq/download/">downloads page</a> and then move it into your <code>bin</code> folder:</p>
+
+<p><code>
+mv ~/Downloads/jq /bin/jq
+</code></p>
+
+<p>After that you can start using jq to process JSON strings that comes from curl requests by simply piping it to the <code>jq</code> command. For example, we are making a request to the following file:</p>
+
+<p>```php
+&lt;?php
+$names = array(</p>
+
+<pre><code>array(
+    'fname' =&gt; 'Gon',
+    'lname' =&gt; 'Freecs',
+    'nen_type' =&gt; 'enhancement',
+    'abilities' =&gt; array(
+        'rock', 'paper', 'scissors'
+    )
+), 
+array(
+    'fname' =&gt; 'Killua',
+    'lname' =&gt; 'Zoldyc',
+    'nen_type' =&gt; 'transmutation',
+    'abilities' =&gt; array(
+        'lightning bolt',
+        'thunderbolt',
+        'godspeed'
+    )
+),
+array(
+    'fname' =&gt; 'Kurapika',
+    'lname' =&gt; '',
+    'nen_type' =&gt; array('conjuration', 'specialization'),
+    'abilities' =&gt; array(
+        'holy chain',
+        'dowsing chain',
+        'chain jail',
+        'judgement chain',
+        'emperor time'
+    )
+),
+array(
+    'fname' =&gt; 'Isaac',
+    'lname' =&gt; 'Netero',
+    'nen_type' =&gt; 'enhancement',
+    'abilities' =&gt; array(
+        '100-Type Guanyin Bodhisattva',
+        'First Hand',
+        'Third Hand',
+        'Ninety-Ninth Hand'
+    )
+),
+array(
+    'fname' =&gt; 'Neferpitou',
+    'lname' =&gt; '',
+    'nen_type' =&gt; 'specialization',
+    'abilities' =&gt; array(
+        'Terpsichora',
+        'Doctor Blythe',
+        'Puppeteering'
+    )
+)
+</code></pre>
+
+<p>);
+echo json_encode($names);
+```</p>
+
+<p>Normally we would do something like this:</p>
+
+<p><code>
+curl http://localhost/tester/curl/json.php
+</code></p>
+
+<p>But this returns a result that looks like this:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/json-string.png" alt="json string" /></p>
+
+<p>Piping the result to <code>jq</code>:</p>
+
+<p><code>
+curl http://localhost/tester/curl/json.php | jq "."
+</code></p>
+
+<p>We get a result similar to the following:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/jq.png" alt="jq formatted" /></p>
+
+<p>Pretty sweet! But you can do much more than that, check out the <a href="http://stedolan.github.io/jq/manual/">manual page</a> for the jq project for more information.</p>
+
+<h4>Vim</h4>
+
+<p>Vim is a text-editor that is based on Vi, which is a text-editor that&rsquo;s pre-installed on common Linux distributions. But hey you might say that the main topic of this blog post is command-line tools why are we suddenly talking about text-editors here? Well its because Vim is tightly coupled with the terminal. It&rsquo;s like a terminal-text editor crossbreed. You can both execute commands and write code with it.</p>
+
+<p>You can download Vim from the <a href="http://www.vim.org/download.php">Vim downloads page</a> simply select the version that&rsquo;s applicable to the operating system that you&rsquo;re currently using. But if you&rsquo;re on Linux mint, Ubuntu or other Linux distributions that uses <code>apt-get</code> then you simply execute the following command from the terminal:</p>
+
+<p><code>
+sudo apt-get install vim
+</code></p>
+
+<p>There are lots of tutorials in the web that can help you with learning vim (I&rsquo;ll link to them later). But for now I&rsquo;m going to give you a quick tutorial to get you started.</p>
+
+<p>First thing that you need to know is how to open up files with vim. You can do it by executing the following command:</p>
+
+<p><code>
+vim file_that_you_want_to_edit.txt
+</code></p>
+
+<p>You can also open up more than one file:</p>
+
+<p><code>
+vim file1.txt file2.txt file3.txt
+</code></p>
+
+<p>You can then switch between the files while on command mode. First list out the files that are currently opened in vim:</p>
+
+<p><code>
+:ls
+</code></p>
+
+<p>This will give you an output of the list of files with an id that you can use to refer to them when switching:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/ls.png" alt="list of files" /></p>
+
+<p>To switch to <code>file2.txt</code> you can use the <code>:b</code> command followed by its id:</p>
+
+<p><code>
+:b2
+</code></p>
+
+<p>An alternative would be to use the file name itself:</p>
+
+<p><code>
+:b file2.txt
+</code></p>
+
+<p>Or you can also just switch to the next file:</p>
+
+<p><code>
+:bn
+</code></p>
+
+<p>Or switch to the previous file:</p>
+
+<p><code>
+:bp
+</code></p>
+
+<p>Second thing that you need to know is that vim has 3 modes:</p>
+
+<ul>
+<li><strong>command</strong> &ndash; used for telling vim to do things. This is the default mode that vim is in when you open it. If you are on another mode other than the command mode you can press on <code>esc</code> to go back to the command mode.</li>
+<li><strong>insert</strong> &ndash; used for inserting things on the current file that you&rsquo;re working on. This is basically the text editor mode. You can only get to this mode when you are currently on the command mode. To get to this mode press the <code>i</code> key.</li>
+<li><strong>visual</strong> &ndash; used for selecting text. Just like the insert mode you can only get to this mode when you are in command mode. To get to this mode press the <code>v</code> key.</li>
+</ul>
+
+
+<p><strong>Basic Commands</strong></p>
+
+<p>Here are some of the basic commands that you would commonly use when working with a file. Note that you can only type in these commands while you are in command mode.</p>
+
+<ul>
+<li><code>:w</code> &ndash; save file</li>
+<li><code>:wq</code> &ndash; save file and quit</li>
+<li><code>:q!</code> &ndash; quit vim without saving the changes</li>
+<li><code>u</code> &ndash; undo last action</li>
+<li><code>ctrl + r</code> &ndash; redo</li>
+<li><code>x</code> &ndash; delete character under the cursor</li>
+<li><code>dd</code> &ndash; delete current line</li>
+<li><code>D</code> &ndash; delete to the end of the line. The main difference between this and the <code>dd</code> command is that the <code>dd</code> command deletes even the line breaks but the <code>D</code> command simply deletes to the end of the line leaving the line break behind.</li>
+</ul>
+
+
+<p><strong>Basic Navigation</strong></p>
+
+<p>You can navigate a file while you&rsquo;re in the command mode or insert mode by pressing the arrow keys. You can also use the following keys for navigating but only when you are in command mode:</p>
+
+<ul>
+<li><code>h</code> &ndash; left</li>
+<li><code>l</code> &ndash; right</li>
+<li><code>j</code> &ndash; down</li>
+<li><code>k</code> &ndash; up</li>
+<li><code>0</code> &ndash; move to the beginning of the line</li>
+<li><code>$</code> &ndash; move to the end of the line</li>
+<li><code>w</code> &ndash; move forward by one word</li>
+<li><code>b</code> &ndash; move backward by one word</li>
+<li><code>gg</code> &ndash; move to the top of the screen</li>
+<li><code>G</code> &ndash; move to the bottom of the screen</li>
+<li><code>line_numberH</code> &ndash; move to a specific line number</li>
+</ul>
+
+
+<p><strong>Searching Text</strong></p>
+
+<p>You can search for a specific text while you are in command mode by pressing the <code>/</code> key and entering the text that you want to search for and then press enter to execute the command. Vim will then highlight each instance of the text. You can move to the next instance by pressing the <code>n</code> key or <code>N</code> to go back to the previous instance.</p>
+
+<p><strong>Modifying Text</strong></p>
+
+<p>You can modify text by switching to insert mode. You can switch to insert mode by first going to command mode (<code>esc</code> key) then press the <code>i</code> key.  Once you are on insert mode you can now start typing text just like you do with a normal text editor. While inside this mode and you want to select specific text to copy press the <code>esc</code> key to go back to command mode and then press the <code>v</code> key to switch to visual mode. From the visual mode you can then start selecting the text. To copy the text switch to the command mode then press the <code>y</code> key. To paste the copied text press the <code>p</code> key. You can do the same thing when you want to cut and paste. Simply use the <code>d</code> key instead of the <code>y</code> key.</p>
+
+<p><strong>Vim Configuration</strong></p>
+
+<p>You can use the <code>.vimrc</code> file to configure vim settings. It doesn&rsquo;t exist by default so you have to create it under the home directory:</p>
+
+<p><code>
+touch ~/.vimrc
+</code></p>
+
+<p>Some of the most common configuration that you would want to add:</p>
+
+<p><code>
+syntax on
+set number
+set wrap
+set tabstop=2
+</code></p>
+
+<p>Here&rsquo;s a description of what each option does:</p>
+
+<ul>
+<li><strong>syntax on</strong> &ndash; this enables syntax highlighting</li>
+<li><strong>set number</strong> &ndash; this enables line numbers</li>
+<li><strong>set wrap</strong> &ndash; this tells vim to word wrap visually</li>
+<li><strong>set tabstop</strong> &ndash; you can use this to specify the tab size. In the example above I&rsquo;ve set it to <code>2</code> so when you press tab vim will insert 2 spaces</li>
+</ul>
+
+
+<p><strong>Resources for learning Vim</strong></p>
+
+<p>Be sure to check out the resources below to learn more about Vim. Learning Vim is really a painful process since you have to memorize a whole bunch of commands and practice it like you&rsquo;re practicing how to play the piano. Learning Vim is not that easy, lots of practice is required before you can get productive with using it. You can easily get away with just using a text-editor when writing code but if you want some productivity boost then take the time to really learn Vim even if it is painful. Here are some resources for learning Vim:</p>
+
+<ul>
+<li><a href="http://www.danielmiessler.com/study/vim/">Vim Tutorial and Primer</a></li>
+<li><a href="http://vim.wikia.com/wiki/Vim_Tips_Wiki">Vim Wikia Page</a></li>
+<li><a href="http://vimcasts.org/">Vimcasts</a> &ndash; screencasts on Vim</li>
+<li><a href="http://code.tutsplus.com/articles/25-vim-tutorials-screencasts-and-resources--net-14631">25 Vim Tutorials, Screencasts and Resources</a></li>
+<li><a href="http://www.openvim.com/tutorial.html">Vim Interactive Tutorial</a></li>
+<li><a href="http://yannesposito.com/Scratch/en/blog/Learn-Vim-Progressively/">Learning Vim Progressively</a></li>
+<li><a href="http://www.cs.swarthmore.edu/help/vim/home.html">Vim Tips and Tricks</a></li>
+<li><strong>Vimtutor</strong> &ndash; not really a website, this is the vim guide that comes with installing vim. You can access it by executing <code>vimtutor</code> from your terminal</li>
+</ul>
+
+
+<h4>Siege</h4>
+
+<p>Siege is an HTTP load testing and benchmarking utility. You can mainly use this tool to stress test your web project with a bunch of requests to see how it holds up. Execute the following command to install siege:</p>
+
+<p><code>
+sudo apt-get install siege
+</code></p>
+
+<p>To use it you can execute:</p>
+
+<p><code>
+siege -b -t60S -c30 http://url-of-the-web-project-that-you-want-to-test
+</code></p>
+
+<p>The <code>-b</code> option tells siege to run the tests without delay. By default siege runs the test with a one second delay between each requests. Adding the <code>-b</code> option makes sure that the requests are made concurrently.</p>
+
+<p>The <code>-t60S</code> option tells siege to run the tests in 60 seconds (60S). If you want to run it for 30 minutes you can do <code>30M</code>. Or <code>1H</code> for an hour.</p>
+
+<p>The <code>-c30</code> option tells siege to have 30 concurrent connections.</p>
+
+<p>The last part of the command is the url that you want to test. If you only want to test out one url you can directly specify it in the command. But if you want to test out more than one url then you can create a new text file with the urls that you want to test out (one url per line) and then add the <code>-f</code> option followed by the path to the text file that you created to tell siege that you want to make use of a file:</p>
+
+<p><code>
+siege -b -t60S -c30 ~/test/urls.text
+</code></p>
+
+<p>Here&rsquo;s an example usage of siege:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/siege.png" alt="siege" /></p>
+
+<p>Interpreting the results above:</p>
+
+<ul>
+<li><strong>transactions</strong> &ndash; the total number of hits to the server.</li>
+<li><strong>availability</strong> &ndash; This is the availability of your web project to users. Ideally you would want the availability to be 100%. Anything below it would mean that some users accessing your web project won&rsquo;t be able to access it because of the load.</li>
+<li><strong>elapsed time</strong> &ndash; this is the time you specified in your options when you executed siege. It wouldn&rsquo;t be perfect though, as you can see from the results above we only got 59.37 seconds but we specified 60 seconds.</li>
+<li><strong>data transferred</strong> &ndash; the size of transferred data for each request</li>
+<li><strong>response time</strong> &ndash; the average response time for each request</li>
+<li><strong>transaction rate</strong> &ndash; the number of hits to the server per second</li>
+<li><strong>throughput</strong> &ndash; the average number of bytes transferred every second from the server to all the simulated users</li>
+<li><strong>concurrency</strong> &ndash; the average number of simultaneous connections</li>
+<li><strong>successful transactions</strong> &ndash; the number of successful transactions</li>
+<li><strong>failed transactions</strong> &ndash; the number of failed transactions</li>
+<li><strong>longest transaction</strong> &ndash; the total number of seconds the longest transaction took to finish</li>
+<li><strong>shortest transaction</strong> &ndash; the total number of seconds the shortest transaction took to finish</li>
+</ul>
+
+
+<h4>Sed</h4>
+
+<p>Sed is a tool for automatically modifying files. You can basically use this for writing scripts that does search and replace on multiple files. A common use case for developers would be for writing scripts that automatically formats source code according to a specific <a href="http://en.wikipedia.org/wiki/Coding_conventions">coding standard</a>.</p>
+
+<p>Yes you can do this sort of task using the built-in search and replace utility on text-editors like Sublime Text. But if you want something that lets you specify a lot of options and offers a lot of flexibility then sed is the tool for the job.
+Sed is pre-installed on most Linux distributions and also on Mac OS so you won&rsquo;t really have to do any installation. For windows users there&rsquo;s also <a href="http://gnuwin32.sourceforge.net/packages/sed.htm">Sed for Windows</a> which you can install.</p>
+
+<p>Here&rsquo;s an example on how to use sed. For example you have the following file (<code>sed-test.php</code>):</p>
+
+<p><code>php
+&lt;?php
+$superStars = array();
+$rockStars = array();
+$keyboardNinjas = array();
+?&gt;
+</code>
+And you want to modify all variable declarations to be all in lowercase. You would do something like:</p>
+
+<p><code>
+sed 's/\$\([A-Za-z]*\([\$A-Za-z_,\s]*\)\)/$\L\1/' sed-test.php
+</code></p>
+
+<p>Sed will then output the following result in the terminal screen:</p>
+
+<p><code>
+&lt;?php
+$superstars = array();
+$rockstars = array();
+$keyboardninjas = array();
+?&gt;
+</code></p>
+
+<p>To save the changes to the same file you need to do a little bit of a trick since sed doesn&rsquo;t have the functionality to commit the changes to the input file. The trick would be to temporarily save the results to a new file (<code>sed-test.new.php</code>) and then use <code>mv</code> to rename the new file (<code>sed-test.new.php</code>) to the old file name (<code>sed-test.php</code>) :</p>
+
+<p><code>
+sed 's/\$\([A-Za-z]*\([\$A-Za-z_,\s]*\)\)/$\L\1/' sed-test.php &gt; sed-test.new.php
+mv sed-test.new.php sed-test.php
+</code></p>
+
+<p>If you want to learn more about sed check out the following resources:
+&ndash; <a href="http://www.grymoire.com/Unix/Sed.html">Sed &ndash; An Introduction and Tutorial</a>
+&ndash; <a href="http://sed.sourceforge.net/local/docs/An_introduction_to_sed.html">Getting Started with Sed</a></p>
+
+<p>You can also check out the following related tools:</p>
+
+<ul>
+<li><a href="http://www.tutorialspoint.com/unix_commands/tr.htm">tr</a></li>
+<li><a href="http://www.grymoire.com/Unix/Awk.html">awk</a></li>
+</ul>
+
+
+<h4>Ruby Gems</h4>
+
+<p>There&rsquo;s also lots of command line tools in the Ruby world. And you can have access to those tools by installing Ruby.</p>
+
+<p>In Linux and in Mac OS you can install Ruby by using RVM (Ruby Version Manager). First make sure that all the packages are up to date by executing the following command:</p>
+
+<p><code>
+sudo apt-get update
+</code></p>
+
+<p>We will get RVM by using Curl so we also have to install it:</p>
+
+<p><code>
+sudo apt-get install curl
+</code></p>
+
+<p>Once curl is installed, download rvm using curl and then pipe it to <code>bash</code> so we can use it immediately right after the download is finished:</p>
+
+<p><code>
+curl -L https://get.rvm.io | bash -s stable
+</code></p>
+
+<p>Install Ruby version <code>1.9.3</code> using rvm. For this step you don&rsquo;t really have to stick with version <code>1.9.3</code>. If there is already a later and stable version available you can use that as well:</p>
+
+<p><code>
+rvm install 1.9.3
+</code></p>
+
+<p>Tell rvm to use Ruby version <code>1.9.3</code>:</p>
+
+<p><code>
+rvm use 1.9.3
+</code></p>
+
+<p>You can then install the latest version of <code>rubygems</code>:</p>
+
+<p><code>
+rvm rubygems latest
+</code></p>
+
+<p>For Windows users you can just use the <a href="http://rubyinstaller.org/">ruby installer for Windows</a>.</p>
+
+<p>Once ruby gems is installed you can now install gems like there&rsquo;s no tomorrow. Here&rsquo;s a starting point: <a href="http://www.awesomecommandlineapps.com/gems.html">Ruby Gems for Command-line Apps</a>. On the next section there&rsquo;s a gem called <code>tmuxinator</code> that you can install to manage tmux projects easily.</p>
+
+<h4>Tmux</h4>
+
+<p>Tmux or terminal multiplexer is an application that allows you to multiplex several terminal windows. It basically makes it easier to work on several related terminal windows. In Linux you can install tmux from the terminal by executing the following command:</p>
+
+<p><code>
+sudo apt-get install tmux
+</code></p>
+
+<p>For Mac OS you can install tmux through brew:</p>
+
+<p><code>
+brew install tmux
+</code></p>
+
+<p>And on Windows tmux is not really directly supported. You first have to install <a href="http://cygwin.org/">cygwin</a> and then add <a href="http://sourceforge.net/mailarchive/message.php?msg_id=30850840">this patch</a> to install tmux. Or if you don&rsquo;t want to go through all the trouble you can install <a href="http://sourceforge.net/projects/console/files/">console2</a> which is a tmux alternative for Windows.</p>
+
+<p>Once you&rsquo;re done installing tmux you can now go ahead and play with it. To start tmux first create a new named session:</p>
+
+<p><code>
+tmux new -s name_of_session
+</code></p>
+
+<p>This will create a new tmux session with the name that you supplied:
+<img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux.png" alt="tmux session" /></p>
+
+<p>You can then execute commands just like you do with a normal terminal window.
+If you want to create a new window press <code>ctrl + b</code> then release and then press <code>c</code>. This will create a new window under the current session:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-new-window.png" alt="tmux new window" /></p>
+
+<p>As you can see from the screenshot above we now have two windows (see the text highlighted in green on the lower part of the terminal window on the left side). One is named <code>0:bash</code> and the other is <code>1:bash*</code>. The one with the <code>*</code> is the current window.</p>
+
+<p>You can rename the current window by pressing <code>ctrl + b</code> then release and then <code>,</code>. This will prompt you to enter a new name for the window. You can just press enter once you&rsquo;re done renaming it:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-rename-window.png" alt="tmux rename window" /></p>
+
+<p>To switch between the windows you can either press <code>ctrl + b</code> then release and then the index of the window that you want to switch to. You can determine the index by looking at the lower left part of the terminal screen. So if you have only two windows opened the index can either be 0 or 1. You can also press <code>ctrl + b</code> then release and then <code>p</code> for previous or <code>n</code> for next window.</p>
+
+<p>You can also further divide each window into multiple panes by pressing <code>ctrl + b</code> then release and then the <code>%</code> key to divide the current window vertically or the <code>"</code> key to divide it horizontally. This will give you a screen similar to the following:</p>
+
+<p><img src="/images/posts/2014-02-21-a-whirlwind-tour-of-web-developer-tools-command-line-utilities/tmux-panes.png" alt="tmux panes" /></p>
+
+<p>You can then switch between those panes by pressing <code>ctrl + b</code> then release and then the <code>o</code> key.</p>
+
+<p>What&rsquo;s good about tmux is that it allows you to keep multiple terminal sessions and you&rsquo;ll be able to access them even after restarting your computer. To list out available sessions you can execute the following command:</p>
+
+<p><code>
+tmux ls
+</code></p>
+
+<p>This will list out all the sessions that you created using the <code>tmux new - s</code> command or simply <code>tmux</code>. You can then open up the specific session by executing the following command:</p>
+
+<p><code>
+tmux attach -t name_of_session
+</code></p>
+
+<p>If you no longer want to work with a particular session you can just do the following:</p>
+
+<p><code>
+tmux kill-session -t name_of_session
+</code></p>
+
+<p>Or if you want to kill all sessions:</p>
+
+<p><code>
+tmux kill-server
+</code></p>
+
+<p>There&rsquo;s also this ruby gem called <a href="http://rubygems.org/gems/tmuxinator">tmuxinator</a> which allows you to create and manage complex tmux sessions easily. You can install it via ruby gems:</p>
+
+<p><code>
+gem install tmuxinator
+</code></p>
+
+<p>Or if you&rsquo;re like me and you installed Ruby via RVM:</p>
+
+<p><code>
+rvmsudo gem install tmuxinator
+</code></p>
+
+<p>You can then create project-based tmux sessions. To create a new project you can do:</p>
+
+<p><code>
+tmuxinator open name_of_project
+</code></p>
+
+<p>This will create a <code>name_of_project.yml</code> file under the <code>~/.tmuxinator</code> directory. You can then open up this file and modify the default configuration. For me I simply deleted the commented lines (except for the first one which is the path to the current file) and then specified the project path. In my case its the <code>octopress</code> directory under the home directory. Then under the <code>windows</code> the <code>layout</code> is <code>main-vertical</code>, this means that the panes that I will specify would be divided vertically.  There would be 2 panes, one is empty so I can just type in whatever commands I wish to execute and the other is <code>rake preview</code> which is the command for previewing an octopress blog locally:</p>
+
+<p>```</p>
+
+<h1>~/.tmuxinator/blog.yml</h1>
+
+<p>name: blog
+root: ~/octopress</p>
+
+<p>windows:
+  &ndash; editor:</p>
+
+<pre><code>  layout: main-vertical
+  panes:
+    - #empty
+    - rake preview
+</code></pre>
+
+<p>```</p>
+
+<p>To open up the project at a later time you execute the following:</p>
+
+<p><code>
+tmuxinator start name_of_project
+</code></p>
+
+<p>If you do not know the name of a specific project, you can list out all projects using the following command:</p>
+
+<p><code>
+tmuxinator list
+</code></p>
+
+<p>If you no longer wish to work with a project in the future:</p>
+
+<p><code>
+tmuxinator delete name_of_project
+</code></p>
+
+<h4>SSH</h4>
+
+<p>SSH can be used to login to remote servers. SSH is pre-installed on both Linux and Mac OS. But for Windows you can use the alternative which is <a href="http://sshwindows.sourceforge.net/">open SSH</a> since SSH isn&rsquo;t installed on Windows by default.</p>
+
+<h5>Logging in to remote server</h5>
+
+<p>Once you have SSH installed you can now login to a remote server by executing the following command:</p>
+
+<p><code>
+ssh username@hostname
+</code></p>
+
+<p>Where the username is the <code>username</code> given to you by your web host. While the <code>hostname</code> can be a domain name, public dns or an IP address. For <a href="https://www.openshift.com/">Openshift</a> its something like:</p>
+
+<p><code>
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx@somesite-username.rhcloud.com
+</code></p>
+
+<p>Where <code>x</code> is a random string of number and letters.</p>
+
+<p>Executing the <code>ssh</code> command with the correct username and hostname combination will prompt you to enter your password. Again, the password here is the password given to you by your web host.</p>
+
+<h5>SSH Keys</h5>
+
+<p>You can also make use of SSH keys to authenticate yourself to a remote server. This will allow you to login without entering your password.</p>
+
+<p>To setup an ssh key navigate to the <code>.ssh</code> directory:</p>
+
+<p><code>
+cd ~/.ssh
+</code></p>
+
+<p>If you don&rsquo;t have already one, create it by executing the following command:</p>
+
+<p><code>
+mkdir ~/.ssh
+</code></p>
+
+<p>Once you&rsquo;re done with that, check if you already have a private and public key pair in the <code>~/.ssh</code> directory:</p>
+
+<p><code>
+ls
+</code></p>
+
+<p>It would look something like <code>id_rsa</code> and <code>id_rsa.pub</code>.
+If you don&rsquo;t already have those 2 files generate it by executing:</p>
+
+<p><code>
+ssh-keygen -t rsa -C "your_email@provider.com"
+</code></p>
+
+<p>This generates the <code>id_rsa</code> and <code>id_rsa.pub</code> files using your email address as the label. You can also use other information as the label.</p>
+
+<p>Next copy the public key (<code>id_rsa.pub</code>) into the remote server by using secure copy (<code>scp</code>):</p>
+
+<p><code>
+scp -p id_rsa.pub username@hostname
+</code></p>
+
+<p>Now open up a new terminal window and login to the remote server.</p>
+
+<p><code>
+ssh username@hostname
+</code></p>
+
+<p>Check if the <code>id_rsa.pub</code> has indeed been copied by using the following command:</p>
+
+<p><code>
+ls -al id_rsa.pub
+</code></p>
+
+<p>If it returns &ldquo;there&rsquo;s no such file or directory&rdquo; return to the other terminal window (local machine) and execute the <code>scp</code> command again.</p>
+
+<p>Once that&rsquo;s done the next step is to copy all the contents of the <code>id_rsa.pub</code> file into the <code>authorized_keys</code> file inside the <code>.~/ssh</code> directory:</p>
+
+<p><code>
+cat id_rsa.pub &gt; ~/.ssh/authorized_keys
+</code></p>
+
+<p>Next update the <code>/etc/ssh/sshd_config</code> file using either <code>vi</code> or <code>nanoc</code>:</p>
+
+<p><code>
+vi /etc/ssh/sshd_config
+</code></p>
+
+<p>Uncomment the line where it says <code># AuthorizedKeysFile</code>, to uncomment all you have to do is remove the <code>#</code> symbol right before it. Vi is basically like vim so the key strokes that you use are pretty much the same. So first you place the cursor right above the <code>#</code> symbol then press <code>x</code> to delete the <code>#</code> symbol. And then press the <code>esc</code> key to go back to command mode and then type in <code>:wq</code> to save and quit editing the file:</p>
+
+<p><code>
+AuthorizedKeysFile %h/.ssh/authorized_keys
+</code></p>
+
+<p>Just make sure the path that its pointing to is the same path as the file that we updated earlier.
+The <code>%h</code> refers to the host so its basically the same as saying <code>~/.ssh/authorized_keys</code>.</p>
+
+<p>Once all of that is done you can now test it out by logging in once again. Note that for the first time after the update is done it will still ask you the password. But for the next one&rsquo;s it will no longer ask you the password.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! The command line is a must-use tool for every developer. In this blog post we&rsquo;ve covered the essentials of using the command line along with some tools that can help you become more productive when it comes to using it.
+There&rsquo;s a lot more command line tools that I haven&rsquo;t covered in this blog post. I believe those tools deserves a blog post of their own so I&rsquo;ll be covering each of those in a future part of this series. For now I recommend that you check out the resources below for more command-line ninja skills.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://cli.learncodethehardway.org/book/">Command Line Crash Course</a></li>
+<li><a href="http://kkovacs.eu/cool-but-obscure-unix-tools/">Cool but Obscure Unix Tools</a></li>
+<li><a href="http://www.commandlinefu.com/commands/browse">Command Line Fu</a></li>
+<li><a href="http://coding.smashingmagazine.com/2012/10/29/powerful-command-line-tools-developers">Powerful Command Line Tools for Developers</a></li>
+<li><a href="http://community.linuxmint.com/tutorial/view/244">Linux Terminal Command Reference</a></li>
+<li><a href="http://ss64.com/osx/">Mac OS Command Reference</a></li>
+<li><a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/ntcmds.mspx?mfr=true">Windows Command Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Web Servers]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers/"/>
+    <updated>2014-03-01T08:35:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers</id>
+    <content type="html"><![CDATA[<p>In this part four of the series A Whirlwind Tour of Web Developer Tools I&rsquo;m going to walk you through web servers. Web servers are computers that commonly delivers web pages. But when talking about web development web server refers to the software used for serving up the web pages. In this blog post I&rsquo;m going to talk about 4 web servers that you can use in serving up your web projects.</p>
+
+<!--more-->
+
+
+<h3>Python Simple HTTP Server</h3>
+
+<p>First on the list is the simple http server that is built-in to python. So in order to use this you would need to have Python installed. Python already comes pre-installed in Ubuntu and other Linux distributions so you already have the simple http server by default. For Mac OS X its also pre-installed. But for Windows you would need to get an installer from the <a href="http://python.org/download/">Python website</a>.
+You can use it by opening up a terminal from any directory that you want to serve and execute the following command:</p>
+
+<p><code>
+python -m SimpleHTTPServer
+</code></p>
+
+<p>To test it out you can create a new <code>index.html</code> file on the directory where you executed the command above and access <a href="http://localhost:8000">http://localhost:8000</a> from your browser.</p>
+
+<p>Note that the simple http server will simply list out all the files in that directory if you do not have an <code>index.html</code> file:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/simplehttpserver.png" alt="simple http server" /></p>
+
+<p>You can also implement your own web server by creating a new python file (<code>server.py</code>) and putting the following code:</p>
+
+<p>```python
+import SimpleHTTPServer
+import SocketServer</p>
+
+<p>PORT = 1234</p>
+
+<p>Handler = SimpleHTTPServer.SimpleHTTPRequestHandler</p>
+
+<p>httpd = SocketServer.TCPServer((&ldquo;&rdquo;, PORT), Handler)</p>
+
+<p>print &ldquo;serving at port&rdquo;, PORT
+httpd.serve_forever()
+<code>``
+You can then execute the</code>server.py` file from the terminal to start the server. Note that the file must be inside the same directory that you want to serve.</p>
+
+<h4>PHP Server</h4>
+
+<p>There is also the built-in server for PHP version 5.4.0 and above. This comes with PHP so you need to install it first before you can start using it. You can install PHP by executing the following command from your terminal</p>
+
+<p><code>
+sudo apt-get install php5
+</code></p>
+
+<p>Once you&rsquo;re done installing it you can now start using the server by navigating to the directory that you want to serve and executing the following command from the terminal:</p>
+
+<p><code>
+php -S localhost:8000
+</code></p>
+
+<p>This will serve up the current directory under port 8000 of your local machine so to access it from the browser you can open up the following url: <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+
+<p>Note that if you do not have a default file (either <code>index.html</code> or <code>index.php</code> file) in the directory that you are serving the PHP server is going to return a 404 not found:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/php-server.png" alt="php-server" /></p>
+
+<p>The advantage of using the PHP server over simple http server is that you can actually create some php files in the directory that you are serving, write some code in it and the server will also be able to interpret it for you.</p>
+
+<h3>Apache</h3>
+
+<p>Next is the Apache HTTP Server from the Apache Foundation. You can install it by executing the following command from the terminal:</p>
+
+<p><code>
+sudo apt-get install apache2
+sudo /etc/init.d/apache2 restart
+</code></p>
+
+<p>For Windows users there is this thing called <a href="http://www.wampserver.com/en/">WAMP</a> which you can install. Apache is packaged with it along with MySQL and PHP so you can start playing with it immediately without doing a lot of configuration. You can also have them installed separately but you will have to do some configuration before you can start playing with it. I&rsquo;ve written a tutorial about it before: <a href="http://kyokasuigetsu25.wordpress.com/2012/04/12/how-to-install-and-configure-apache-php-and-mysql/">How to install and configure apache, php, and mysql</a> so check that out if you do not want to use packaged versions.</p>
+
+<p>For MAC OS there&rsquo;s <a href="http://www.mamp.info/en/index.html">MAMP</a>.</p>
+
+<p>There&rsquo;s also <a href="http://www.apachefriends.org/index.html">XAMPP</a> which is a cross-platform solution for easily setting up Apache, PHP, and MySQL on your machine.</p>
+
+<p>If you&rsquo;re a beginner I definitely recommend using either WAMP, MAMP or XAMPP as it can be sometimes frustrating to configure everything on your own.</p>
+
+<p>Ok back to the main topic of this section which is Apache. If you&rsquo;re on Linux and you have installed Apache separately you might want to <a href="http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">configure the default web directory</a> since the default web directory that is used by Apache isn&rsquo;t writeable if you do not access the file explorer as a super user. This becomes a problem when accessing the web directory from the browser as Apache throws you a forbidden error. If you haven&rsquo;t catch it the first time you can go ahead and use the following tutorial: <a href="[configure%20the%20default%20web%20directory](http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">fixing the forbidden error in Apache</a>) to properly configure Apache. Once you&rsquo;re done with that you can go back to this blog post.</p>
+
+<p>After configuring the default web directory used by Apache you can now put some test files on the web directory. Something like <code>index.html</code> and put the following contents:</p>
+
+<p>```html</p>
+
+<h1>Hello World from Apache!</h1>
+
+
+<p><code>``
+Now if you go to [http://localhost](http://localhost) you can now see the</code>index.html` being served by Apache. Apache serves everything on port 80 by default so we didn&rsquo;t have to add the port when we access it from the browser. This is because the browser knows by default that web pages are served at port 80. If you already have PHP installed you can also serve php files. Apache already knows how to serve those by default so there&rsquo;s no need for further configuration.</p>
+
+<h3>Nginx</h3>
+
+<p>Lastly there&rsquo;s Nginx one of the HTTP servers that&rsquo;s gaining market share lately. You can install it by executing the following command from your terminal:</p>
+
+<p><code>
+sudo apt-get install nginx
+</code></p>
+
+<p>If you&rsquo;re on Windows there&rsquo;s a guide from the Nginx website on <a href="http://nginx.org/en/docs/windows.html">how to install Nginx on Windows</a>.</p>
+
+<p>For Mac you can install it via homebrew:</p>
+
+<p><code>
+brew install nginx
+</code></p>
+
+<p>Once Nginx is installed you can run it by executing <code>sudo nginx</code>. Note that if you already have Apache installed you would have a problem starting Nginx up. Most likely you would get an error similar to the one below:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/nginx-port.png" alt="nginx port error" /></p>
+
+<p>This is Nginx telling you that port 80 is already in use. We learned earlier that Apache uses port 80 by default so running another server which serves web pages at port 80 will lead to that issue.
+What we need to do is to configure Nginx to listen to another port. And you can do that by navigating to the following path:</p>
+
+<p><code>
+cd /etc/nginx/sites-available
+</code></p>
+
+<p>Then open up the <code>default</code> file:</p>
+
+<p><code>
+sudo gedit default
+</code></p>
+
+<p>From there scroll down to the line which is similar to the following:</p>
+
+<p>```
+server {</p>
+
+<pre><code>listen 80 default_server;
+listen [::]:80 default_server ipv6only=on;
+
+root /usr/share/nginx/html;
+index index.html index.htm;
+</code></pre>
+
+<p>```</p>
+
+<p>There are 2 things that you can do from here. First replace the 2 instances of <code>80</code> which is the default port used by Nginx to something like <code>6789</code>. Then you can also change the default web directory. Nginx uses <code>/usr/share/nginx/html</code> as its default, you can change it to something like <code>/home/your_user_name/nginx_web_files</code>. After updating the <code>default</code> file it should now look like this:</p>
+
+<p>```
+server {</p>
+
+<pre><code>listen 6789 default_server;
+listen [::]:6789 default_server ipv6only=on;
+
+root /home/your_user_name/nginx_web_files;
+index index.html index.htm;
+</code></pre>
+
+<p>```</p>
+
+<p>After that save the file and restart Nginx using the following command:</p>
+
+<p><code>
+sudo nginx -s reload
+</code></p>
+
+<p>You can now go ahead and create a sample <code>index.html</code> file in your chosen web directory and put the following contents:</p>
+
+<p>```html</p>
+
+<h1>hello world from nginx!</h1>
+
+
+<p>```</p>
+
+<p>To access it from your browser go to <a href="http://localhost:6789">http://localhost:6789</a>.</p>
+
+<h4>Configuring PHP in Nginx</h4>
+
+<p>Not unlike Apache, Nginx doesn&rsquo;t work with PHP by default so if you try serving up a PHP file Nginx won&rsquo;t understand it and it will give you a bad gateway error.</p>
+
+<p>In order to make PHP work with Nginx you first have to install the <code>php5-fpm</code> package via the terminal:</p>
+
+<p><code>
+sudo apt-get install php5-fpm
+</code></p>
+
+<p>Once that&rsquo;s done you can now update the <code>default</code> file under the <code>/etc/nginx/sites-availble</code> directory.</p>
+
+<p><code>
+sudo gedit default
+</code></p>
+
+<p>Scroll down to the line where you have something similar to the following:</p>
+
+<p>```</p>
+
+<h1>location ~ .php$ {</h1>
+
+<h1>fastcgi_split_path_info ^(.+.php)(/.+)$;</h1>
+
+<h1>NOTE: You should have &ldquo;cgi.fix_pathinfo = 0;&rdquo; in php.ini</h1>
+
+<p>#</p>
+
+<h1># With php5-cgi alone:</h1>
+
+<h1>fastcgi_pass 127.0.0.1:9000;</h1>
+
+<h1># With php5-fpm:</h1>
+
+<h1>#fastcgi_pass unix:/var/run/php5-fpm.sock;</h1>
+
+<h1>fastcgi_index index.php;</h1>
+
+<h1>include fastcgi_params;</h1>
+
+<h1>}</h1>
+
+<p>```</p>
+
+<p>Then uncomment the lines that are necessary to make PHP work:</p>
+
+<p>```
+location ~ .php$ {
+fastcgi_split_path_info ^(.+.php)(/.+)$;</p>
+
+<h1>NOTE: You should have &ldquo;cgi.fix_pathinfo = 0;&rdquo; in php.ini</h1>
+
+<p>#</p>
+
+<h1># With php5-cgi alone:</h1>
+
+<pre><code>fastcgi_pass 127.0.0.1:9000;
+</code></pre>
+
+<h1># With php5-fpm:</h1>
+
+<h1>#fastcgi_pass unix:/var/run/php5-fpm.sock;</h1>
+
+<pre><code>fastcgi_index index.php;
+include fastcgi_params;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Save the changes and restart php5-fpm and Nginx:</p>
+
+<p><code>
+sudo service php5-fpm restart
+nginx -s reload
+</code></p>
+
+<p>You can now request a PHP file from Nginx.</p>
+
+<h3>Conclusion</h3>
+
+<p>You&rsquo;ve learned how to serve up web pages using the following http servers:</p>
+
+<ul>
+<li>SimpleHTTPServer</li>
+<li>PHP Server</li>
+<li>Apache HTTP Server</li>
+<li>Nginx</li>
+</ul>
+
+
+<p>Web Servers are flexible by default. They can serve up different types of content and they can also serve up interpreted language such as PHP. You can pretty much live with the just the defaults but if your web project is something that&rsquo;s used by many people across the world then its important that you configure your web server to accommodate the needs of every user. And that is to be able to access your website fast and securely.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://docs.python.org/2/library/simplehttpserver.html">Simple HTTP Server</a></li>
+<li><a href="http://www.php.net/manual/en/features.commandline.webserver.php">PHP Built-in Web Server</a></li>
+<li><a href="http://httpd.apache.org/docs/">Apache HTTP Server</a></li>
+<li><a href="http://nginx.org/en/docs/">Nginx</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Virtualization]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/"/>
+    <updated>2014-02-23T08:16:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization</id>
+    <content type="html"><![CDATA[<p>In this third part of the series <a href="http://anchetawern.github.io/blog/2014/02/09/a-whirlwind-tour-of-web-developer-tools/">A Whirlwind Tour of Web Developer Tools</a> I&rsquo;ll walk you through virtualization.
+But before we dive in let&rsquo;s first define what virtualization is. According to Wikipedia:</p>
+
+<p><blockquote><p>Virtualization is the act of creating a virtual (rather than actual) version of something, including but not limited to a virtual computer hardware platform, operating system, storage device, or computer network resources.</p></blockquote></p>
+
+<p>In simple terms virtualization is creating a virtual copy of something. Virtual meaning that its not actually real but you can actually do things just like you do with the real thing.</p>
+
+<!--more-->
+
+
+<p>The first thing that comes to mind when you say virtualization in the world of computing is Virtualbox, VMWare and other virtualization software. And that&rsquo;s exactly what I&rsquo;m going to talk about in this blog post but of course in relation to web development.</p>
+
+<h3>VirtualBox</h3>
+
+<p>Virtualbox is a free cross-platform virtualization platform. Cross-platform meaning you can run it on every major operating system (Windows, Linux, Mac). And yeah if you haven&rsquo;t catch it the first time its free so you can use it however you want without paying for it.
+Virtualbox allows you to run a copy of the operating system that you don&rsquo;t currently have on your machine. For example if you&rsquo;re currently using Ubuntu then you can run Windows or Mac on Virtualbox. And the same is true with whatever operating system you have currently installed physically.</p>
+
+<p>This blog post isn&rsquo;t going to be a whole tutorial about Virtualbox. There&rsquo;s already a bunch of information about that in the <a href="https://www.virtualbox.org/manual/ch01.html">official documentation</a> so use that if you don&rsquo;t know how to use Virtualbox yet. But one thing to keep in mind when using Virtualbox is that you should acquire an installer of the operating system that you want virtualize using Virtualbox just like you do when you want to install it on your machine.</p>
+
+<h3>Emulation Software</h3>
+
+<p>One subject that&rsquo;s related to Virtualization is Emulation. They&rsquo;re sort of similar but they&rsquo;re not. Basically the main difference is the environment (hardware) where the software runs. When you say emulation the environment doesn&rsquo;t necessarily have to be the same to that of the original piece of software that you&rsquo;re trying to run. For example when playing an <a href="http://en.wikipedia.org/wiki/Nintendo_DS">NDS</a> game in your computer. That is possible through the use of an emulator. Your computer doesn&rsquo;t have the same hardware to that of an NDS but the emulator software makes it as if the game is running on an actual NDS hardware.</p>
+
+<p>Whereas Virtualization is running a piece of software, in this case the operating system in the same type of environment.</p>
+
+<p>So why did I just go over the difference between Emulation and Virtualization? That&rsquo;s because emulation is another piece of this whole blog post. You can also use emulation software as a substitute if Virtualization isn&rsquo;t feasible in your case.</p>
+
+<p>Emulation software allows you to run software that you can only run on a specific operating system. For example if you only want to test out the website that you created in Internet Explorer and you&rsquo;re currently running Linux then you can use an emulation software instead of installing a copy of the Windows operating system on Virtualbox. Again I won&rsquo;t be walking you through how to install an emulation software. Instead I&rsquo;ll just provide you with some links to get you started:</p>
+
+<ul>
+<li><a href="http://www.winehq.org/">Wine</a> &ndash; windows software emulator for Linux, BSD, Solaris and Mac OS X.</li>
+<li><a href="http://www.codeweavers.com/products/crossover-mac/">Crossover</a> &ndash; windows software emulator for Mac.</li>
+<li><a href="http://winebottler.kronenberg.org/">Winebottler</a> &ndash; run windows-based programs on Mac.</li>
+<li><a href="http://www.cygwin.com/">Cygwin</a> &ndash; provides a unix-like environment and command-line interface for Windows.</li>
+<li><a href="http://www.finkproject.org/">Fink</a> &ndash; run unix-based software on Mac.</li>
+</ul>
+
+
+<h3>Vagrant</h3>
+
+<p>Using Virtualbox or emulation software for testing the websites that you have created is nice but what if you need to test it out on a machine with exactly the same environment? Developers are known for making the excuse &ldquo;It works on my machine&rdquo; when the application that they have developed suddenly stops working or acts weird. With Vagrant you can now say goodbye to that excuse. What Vagrant allows you to do is create a virtual copy of a specific operating system and access and modify its files right from the host operating system (the operating system that you&rsquo;re currently running).
+It also allows you to install software into the virtual operating system directly from your terminal through the use of <code>ssh</code>.
+But what is the advantage of this over using Virtualbox? Its true that you can do any of the things that I&rsquo;ve mentioned above without using Vagrant. But the main advantage I think is the performance. Vagrant allows you to perform the installation of software and manipulating of files right from your host operating system so its a lot faster than booting up your virtual machine and doing your modifications from there. That is especially true if your machine doesn&rsquo;t have the most badass processor, solid state drive, and a bazillion of memory.</p>
+
+<h4>Installing Vagrant</h4>
+
+<p>Vagrant depends on Virtualbox in order to work so you need to have Virtualbox installed before installing Vagrant. The current version of Vagrant at the time of writing of this post is 1.4.3 and its only compatible with version 4.2.16 of Virtualbox. This poses some trouble for Linux users since the official repository for Virtualbox only serves the latest version of Virtualbox which is 4.3.6. For Windows and Mac users there&rsquo;s no problem since you can just download an older version of Virtualbox from <a href="https://www.virtualbox.org/wiki/Download_Old_Builds_4_2">this page</a> and install it using the installer. For Linux users the installers for old versions are also available from that page and you can also try installing Virtualbox using those installers. But as for my personal experience I didn&rsquo;t have any luck with any of those installers. I get an error whenever I try to install it. Thankfully I found a good tutorial on <a href="http://linuxg.net/how-to-install-virtualbox-4-2-16-on-ubuntu-linux-mint-debian-and-fedora/">how to install Virtualbox 4.2.16</a> on some of the most popular Linux distributions. If you didn&rsquo;t have any luck with the installers provided from the Virtualbox site then you might as well try that link.</p>
+
+<p>Once you&rsquo;re done installing Virtualbox you can now download the Vagrant installer from the <a href="http://www.vagrantup.com/downloads">Vagrant downloads page</a> just select the installer that applies for you then install it. The installer will automatically add <code>vagrant</code> to your system path so you can simply use the <code>vagrant</code> command from your terminal without having to specify the path.</p>
+
+<h3>Using Vagrant</h3>
+
+<p>After installing Vagrant you should already have access to the <code>vagrant</code> command from your terminal. You can execute the following command to test out if Vagrant was successfully installed:</p>
+
+<p><code>
+vagrant --version
+</code></p>
+
+<p>If it returns something like <code>vagrant version 1.2.2</code> then Vagrant was successfully installed on your machine.</p>
+
+<p>The next step is a pretty long wait if you do not have a fast internet connection and the server that is serving the vagrant box files are busy. As for me it took a whole afternoon (around 6-8 hours) for the vagrant box to be fully downloaded.</p>
+
+<p>But before we move on I believe a little background on what a vagrant box is is necessary. Basically vagrant boxes are virtual copies of an operating system. Pretty much like the <code>.vdi</code> or <code>.vmdk</code> file that&rsquo;s being created by Virtualbox or VMWare when you create a virtual machine.</p>
+
+<h4>Adding Vagrant Boxes</h4>
+
+<p>Vagrant boxes can be downloaded from <a href="http://www.vagrantbox.es/">vagrantbox.es</a>. You can add a box to Vagrant by executing the following command from the terminal:</p>
+
+<p><code>
+vagrant box add box_name url_from_vagrantboxes
+</code></p>
+
+<p>Where <code>box_name</code> is any machine friendly title (use underscores or dashes instead of spaces) that you want to use to refer to your box later on. And the <code>url_from_vagrantboxes</code> is the URL that you get from the vagrantboxes site. For this tutorial were going to work with the Ubuntu precise 32 box:</p>
+
+<p><code>
+vagrant box add precise32 http://files.vagrantup.com/precise32.box
+</code></p>
+
+<p>After executing the command above you might want to go out a bit or watch a whole season of your favorite TV show unless your download speed is blazingly fast.</p>
+
+<h4>Vagrant Box Configuration File</h4>
+
+<p>Once that&rsquo;s done you can now start using the box as a template for the machine that you need to build. First create your working directory and open up a terminal and execute the following:</p>
+
+<p><code>
+vagrant init
+</code></p>
+
+<p>This will create a vagrant init file. This file will contain the configuration for the box that you&rsquo;re going to build. The <code>Vagrantfile</code> generated by using <code>vagrant init</code> will just contain comments and some sample configuration. You can read through those comments if you want. But to avoid confusion simply create your own vagrant configuration file by creating a new file and putting the following contents:</p>
+
+<p><code>
+Vagrant.configure("2") do |config|
+  config.vm.box = "precise32" #the box_name that you used earlier
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+end
+</code></p>
+
+<p>Just name the file <code>Vagrantfile</code> so it can be recognized by vagrant when you execute any vagrant commands. Note that for the value for the <code>config.vm.box</code> it should be the <code>box_name</code> that you used earlier when you executed the <code>vagrant box add</code> command. If you&rsquo;re not sure what the name of your box is then simply execute <code>vagrant box list</code> to list all the boxes that&rsquo;s currently available on your machine. The <code>config.vm.box_url</code> is the url in which vagrant will download the box if it hasn&rsquo;t already been installed in your machine. We already installed the box earlier so vagrant will simply ignore this option. The last setting is the <code>config.vm.network</code> this simply tells vagrant to forward port 80 from the guest machine to port 8080 on the host machine. I&rsquo;ll explain more on this later.</p>
+
+<p>Now you can execute <code>vagrant up</code> to initialize the box. You can see something similar to the following when vagrant has successfully brought up the box:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-up.png" alt="vagrant up" /></p>
+
+<p>Once this is executed for the first time you will notice that vagrant automatically creates a virtual machine on virtualbox:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-box.png" alt="virtual machine" /></p>
+
+<p>You can perfectly access this machine from virtualbox if you want to do anything manually from the guest operating system.</p>
+
+<h4>Logging in to the box</h4>
+
+<p>Next execute <code>vagrant ssh</code>. This will allow you to login to the box. After executing that you will see something similar to the following:</p>
+
+<p><img src="/images/posts/whirlwind_tour_virtualization/vagrant-login.png" alt="vagrant ssh" /></p>
+
+<h4>Installing Software</h4>
+
+<p>Now you can run wild and go crazy. Install all the applications that you need to install. As for me I&rsquo;m primarily working on a LAMP (Linux, Apache, MySQL, PHP) stack so I&rsquo;m going to install PHP, MySQL, and Apache on this box. But first we need to download the package lists from the software repositories and update the existing ones to get information on the latest versions of packages and their dependencies. You can do that by executing the following command:</p>
+
+<p><code>
+apt-get update
+</code></p>
+
+<p>Once that&rsquo;s done we can now install the things that we need:</p>
+
+<p><code>
+echo "Y" | apt-get install -y apache2
+echo "Y" | apt-get install curl
+echo "Y" | apt-get install libcurl3 php5-curl
+echo "Y" | apt-get install php5
+echo "Y" | apt-get install libapache2-mod-php5
+echo "Y" | apt-get install mysql-server
+echo "Y" | apt-get install php5-mysql
+</code></p>
+
+<p>Note that the <code>echo "Y"</code> here simply means that we supply <code>Y</code> as the answer if ever the installer asks for a response on whether to install the software or not. <code>Y</code> means yes in this case.</p>
+
+<h4>Linking Up Directories</h4>
+
+<p>Once those are done delete the <code>/var/www</code> directory and all of its contents and create a soft link between the the <code>/vagrant</code> directory and the <code>/var/www</code> directory.  You can do that by executing the following command:</p>
+
+<p><code>
+rm -rf /var/www
+ln -fs /vagrant /var/www
+</code></p>
+
+<p>You may ask we just deleted the <code>/var/www</code> directory and all of its contents so why are we creating a link to something that&rsquo;s already deleted? Good question! Making a soft link to a non-existent directory has the side-effect of creating that directory. We deleted it so we become the owner of that directory.</p>
+
+<p>Once that&rsquo;s done you can now treat your working directory as if its the <code>/var/www</code> directory in your box. Don&rsquo;t believe me? You can go ahead and create a new file in your working directory (open up a new terminal since the current terminal is referring to your box):</p>
+
+<p><code>
+touch newfile.txt
+</code></p>
+
+<p>Now go back to the terminal window in which you have logged in to your box using <code>vagrant ssh</code>. Go back two directories and enter the <code>vagrant</code> directory (this assumes that you&rsquo;re currently in the directory that&rsquo;s listing the <code>postinstall.sh</code> file when you execute the <code>ls</code> command) :</p>
+
+<p><code>
+cd ../../vagrant
+</code></p>
+
+<p>Now execute the <code>ls</code> command to list out all the files in that directory. You&rsquo;ll see that your <code>newfile.txt</code> is listed. Yes you can go ahead on go crazy and create a whole bunch of files through your host operating system in your working directory. Once you&rsquo;re satisfied come back to this blog post. I&rsquo;ll wait.</p>
+
+<h4>Port-Forwarding</h4>
+
+<p>Now if you remember earlier on the <code>Vagrantfile</code> that you created we have this particular line:</p>
+
+<p><code>
+config.vm.network :forwarded_port, guest: 80, host: 8080
+</code></p>
+
+<p>What this does is forwarding the port 80 of the guest (your box) to port 8080 of your host operating system. As you might already know port 80 is the default port used by Apache so if we access <code>http://localhost:8080</code> from the browser in the host OS it will actually give us what&rsquo;s in <code>http://localhost:80</code> in the box.
+You can test it out by creating an <code>index.php</code> file on your working directory (host OS) and put the following contents:</p>
+
+<p><code>php
+&lt;?php
+echo 'hello world from vagrant box';
+?&gt;
+</code></p>
+
+<p>Now access <code>http://localhost:8080</code> from your browser and it will output &lsquo;hello world from vagrant box&rsquo;.</p>
+
+<h4>Logging out of the box</h4>
+
+<p>Once you&rsquo;re done playing with Vagrant you can now execute <code>exit</code> to logout from the box. After that you can either execute <code>vagrant halt</code> to shutdown the box or <code>vagrant suspend</code> to save the state of the machine, its like doing a hibernate so the box won&rsquo;t have to do a full boot when you access the box again. To work with your box again the <code>vagrant resume</code> command is used when you do <code>vagrant suspend</code> and the <code>vagrant up</code> is used when you do a <code>vagrant halt</code>. An important thing to remember is that you should do a <code>vagrant suspend</code> whenever you do not have any changes in your <code>Vagrantfile</code>. This makes it faster to get your guest machine running. However if you have some changes to your <code>Vagrantfile</code> you should do a <code>vagrant halt</code> for the changes to take effect when you do a <code>vagrant up</code>.</p>
+
+<h4>Packaging the box</h4>
+
+<p>Another useful thing that you could do is packaging up the box so that you can share it with your team if you have any. This ensures that you have the same configuration with the rest of your team. This allows you to avoid any incompatibility issues like missing software or a different configuration of the <code>php.ini</code> file if you&rsquo;re primarily working with PHP.</p>
+
+<p>To package up a box, navigate to your working directory and then execute the following command:</p>
+
+<p><code>
+vagrant package --output package.box --vagrantfile Vagrantfile
+</code></p>
+
+<p>Note that the command above will power of the box so you&rsquo;ll have to do <code>vagrant up</code> the next time you want to use the box even if you used <code>vagrant suspend</code> the last time you used it. The command above will also take a bit of time to finish depending on the amount of customization that you have done on the box. You may also end up with a larger <code>.box</code> file than the one that you previously downloaded from vagrantbox.es since all the software that you installed on the box will also be in the <code>.box</code> file that will be generated by vagrant.</p>
+
+<p>Once vagrant is done you will have a <code>package.box</code> file under your working directory. You can then share this file along with the <code>Vagrantfile</code> to the rest of your team so that they can make use of the box. Another team member can just create his working directory and then copy the <code>package.box</code> file to that directory and then execute the following command:</p>
+
+<p><code>
+vagrant box add box_name package.box
+</code></p>
+
+<p>Be sure to change the <code>box_name</code> to a more recognizable name. You can also tell your team mate to just name it to be the same as the name of the box that you originally created so they won&rsquo;t need to update the <code>Vagrantfile</code> to use the new box name.</p>
+
+<p>Once that&rsquo;s done they can just use <code>vagrant up</code> to boot up the box.</p>
+
+<h4>Destroying the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the virtual machine that is generated when you executed <code>vagrant up</code>)  you can execute the following from your working directory:</p>
+
+<p><code>
+vagrant destroy
+</code></p>
+
+<p>This will delete the virtual machine and free up all the resources (hard disk space, memory, etc.) that it consumed when you created it.</p>
+
+<h4>Removing the Box</h4>
+
+<p>If you want to delete a box (note that box in this case refers to the box that is created when you executed <code>vagrant box add</code>, in other words the box where your box originated from) execute the following command:</p>
+
+<p><code>
+vagrant box remove box_name provider
+</code></p>
+
+<p>Where the <code>box_name</code> refers to the name that you used when you created the box using <code>vagrant box add box_name</code>. And the provider refers to the virtualization software. If you do not know the box name and the provider simply execute <code>vagrant box list</code>. This will list out all the vagrant boxes installed on your machine. The one enclosed in parenthesis is the provider. In our case its virtualbox.</p>
+
+<h3>Conclusion</h3>
+
+<p>Virtualization is a great way to experiment on different technologies if you want to avoid messing up your current system configuration. Its also a good way to test out your web projects on different machines without having to install it physically on your current machine.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.virtualbox.org/">Virtualbox</a></li>
+<li><a href="http://docs.vagrantup.com/v2/">Vagrant Documentation</a></li>
+<li><a href="http://www.vagrantbox.es/">Vagrant Boxes</a></li>
+<li><a href="http://rove.io/">Rove</a> &ndash; you can use this for easily creating Vagrant files</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A whirlwind Tour of Web Developer Tools: Text Editors]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors/"/>
+    <updated>2014-02-15T11:00:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors</id>
+    <content type="html"><![CDATA[<p>This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I&rsquo;ll be talking about text editors and related tools.</p>
+
+<p>Text editors are used by web developers to write code. Text editors are not the same thing as word processors because anything written on a text editor is saved as a plain text file and it normally uses a simple character set such as ASCII to represent different characters (letters, numbers, etc). On the other hand word processors saves formatted text which enables tables, symbols and other form of graphical information to be represented without having to use any form of markup like HTML.</p>
+
+<!--more-->
+
+
+<h4>Sublime Text</h4>
+
+<p>When you say text editor the first thing that comes to mind these days is <a href="http://www.sublimetext.com/">Sublime Text</a>. It&rsquo;s like the sexiest text editor these days. So this whole blog post is primarily going to be about Sublime Text and some of the plugins that I found useful.</p>
+
+<h5>Plugins</h5>
+
+<p>In order to install plugins for Sublime Text you first have to install <a href="https://sublime.wbond.net/">package control</a> which is a package manager for Sublime Text that allows you to easily install plugins. To install package manager copy the following code in the Sublime Text console which can be accessed by pressing <code>ctrl + back tick</code> on your keyboard. After that restart the editor to finish the installation:</p>
+
+<p><code>
+import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')
+</code></p>
+
+<p>Note that the code above is for Sublime Text 2, if you&rsquo;re using Sublime Text 3 then use the following code:</p>
+
+<p><code>
+import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+</code></p>
+
+<p>After restarting sublime text you can now press <code>ctrl + shift + p</code>, select &lsquo;install package&rsquo; and press <code>enter</code>, this will load all the available plugins from the plugin repository. From there you can just search for the plugin that you want to install.</p>
+
+<p>And now for the plugins:</p>
+
+<ul>
+<li><a href="https://github.com/benmatselby/sublime-phpcs">PHPCS</a> &ndash; a PHP code quality tool.</li>
+<li><a href="http://emmet.io/">Emmet</a> &ndash; previously known as Zen Coding. If that doesn&rsquo;t ring a bell then Emmet is basically a tool for improving productivity by implementing shortcuts for generating code that you would normally write out by hand. All you have to do is to write something like this:</li>
+</ul>
+
+
+<p><code>
+html:5
+</code></p>
+
+<p>And right after pressing <code>tab</code> you get a whole bunch of code written out for you:</p>
+
+<p>```html
+&lt;!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body></p>
+
+<p></body>
+</html>
+```</p>
+
+<ul>
+<li><a href="https://github.com/titoBouzout/SideBarEnhancements">Sidebar Enhancements</a> &ndash; allows you to create a new file and it will immediately ask you the filename, duplicating or copying files and folders from the sidebar, and a bunch of other good stuff that the default sublime text sidebar doesn&rsquo;t allow you to do.</li>
+<li><a href="https://github.com/facelessuser/BracketHighlighter">Bracket Highlighter</a> &ndash; allows for easier visualization of where the ending bracket is.</li>
+<li><a href="https://github.com/kemayo/sublime-text-2-clipboard-history">Clipboard History</a> &ndash; keeps a history of clipboard items so you can just paste them in later.</li>
+<li><a href="https://github.com/spadgos/sublime-jsdocs">Docblockr</a> &ndash; pretty much like emmet but only for document blocks. Useful for writing comments.</li>
+<li><a href="https://github.com/wbond/sublime_alignment">Alignment</a> &ndash; allows for easy alignment of code. All you have to do is press <code>ctrl + alt + a</code> on your keyboard.</li>
+<li><a href="https://github.com/SublimeLinter/SublimeLinter-for-ST2">Sublime Linter</a> &ndash; inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don&rsquo;t know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you&rsquo;re using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable <code>z</code> isn&rsquo;t actually used in your code.</li>
+<li><a href="https://github.com/sindresorhus/editorconfig-sublime">EditorConfig</a> &ndash; tool for implementing coding conventions. You can use this to specify whether to use tabs or spaces for specific file types (<code>.js</code>, <code>.css</code>) or whether to use double quotes or single quotes for the quote type. You can do all that by installing the editorconfig plugin for the text editor that you&rsquo;re using. Then create a <code>.editorconfig</code> file in the root of your project directory or any directory in your project if you want to use different rules for different directories. Here&rsquo;s a sample <code>.editorconfig</code> file:</li>
+</ul>
+
+
+<p>```
+root = true</p>
+
+<p>[*]
+end_of_line = lf
+insert_final_newline = false
+charset = utf-8
+trim_trailing_whitespace = true
+quote_type = double</p>
+
+<p>[*.php]
+indent_style = space
+indent_size = 4</p>
+
+<p>[*.py]
+indent_style = space
+indent_size = 4</p>
+
+<p>[*.js]
+indent_style = space
+indent_size = 2</p>
+
+<p>[*.css]
+indent_style = space
+indent_size = 5
+```</p>
+
+<p>As you can see from the sample above you can specify a whole bunch of settings. You can also have different rules for different file types.</p>
+
+<h4>IDE</h4>
+
+<p>There&rsquo;s also this thing called the IDE or Integrated Development Environment which is basically text editors on steroids. They have huge install size since they allow you to do more than just writing code. IDE&rsquo;s packs a bunch of features which you would not normally find in a text editor such as compiling code. Some IDE&rsquo;s such as Visual Studio also allows you to build the GUI of applications by simply dragging and dropping GUI elements (text boxes, buttons, etc.) from a toolbox. Other features include code completion (intellisense), debugger, integrated services (allows viewing and manipulating the database right from the IDE).</p>
+
+<h3>Conclusion</h3>
+
+<p>Text editors and IDEs are the main weapons of every web developer. Without it they won&rsquo;t be able to produce any code. So its important to learn the ins and outs of the text-editor or IDE that you are using to maximize your productivity when using it. Be sure to check out the resources below for more Sublime Text awesomeness.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.hongkiat.com/blog/sublime-text-tips/">Sublime Text Tips and Tricks</a></li>
+<li><a href="https://tutsplus.com/course/improve-workflow-in-sublime-text-2/">Perfect Workflow in Sublime Text 2</a></li>
+<li><a href="https://sublime.wbond.net/browse/popular">Popular Sublime Text Plugins</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_text_editors">Compariosn of Text Editors</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments">Comparison of Integrated Development Environments</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

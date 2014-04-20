@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: spatial-search | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/spatial-search/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Spatial search with Apache Solr and Google Maps]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/"/>
+    <updated>2013-07-03T21:33:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how to setup spatial search in Apache Solr then were going to create an application which uses Spatial searching with the use of Google Maps.</p>
+
+<!--More-->
+
+
+<h2>What is Spatial Searching?</h2>
+
+<p>According to <a href="https://en.wikipedia.org/wiki/Geomatics">Wikipedia</a>:</p>
+
+<p><blockquote><p>Geospatial technology or geomatics engineering is the discipline of gathering, storing, processing, and delivering geographic information, or spatially referenced information.</p></blockquote></p>
+
+<p>For the purposes of this tutorial were going to use Spatial search to find the locations which are near the place that we specify.</p>
+
+<h2>Configure schema.xml File</h2>
+
+<p>First you need to configure the <code>schema.xml</code> to include a special field type called location. This field type is specifically used for geospatial searching. Depending on the Solr version that you&rsquo;re running on your machine it may or may not already be included on the default <code>schema.xml</code> file. But in case its not already included, here&rsquo;s what you have to add:</p>
+
+<p><code>xml
+&lt;fieldType name="location" class="solr.LatLonType" subFieldType="tdouble"/&gt;
+</code></p>
+
+<p>Then you can create a dynamic field that would use that specific field type by simply supplying the value for the <code>type</code> attribute to be <code>location</code>.</p>
+
+<p><code>
+&lt;dynamicField name="locm_*" type="location" indexed="true"  stored="true" multiValued="true"/&gt;
+</code></p>
+
+<p>After that you can now declare fields which will use the dynamic field:</p>
+
+<p><code>
+&lt;field name="locm_places"&gt;12.3456,-987.65&lt;/field&gt;
+</code></p>
+
+<p>As you can see from the example above, you can use dynamic fields by using the its name as the prefix for any field. In this case the prefix that we used is <code>locm_</code>. On the dynamic field declaration earlier we used the star <code>*</code> to tell to Solr that any field which uses the strings before the star will be using the attributes for this dynamic field.</p>
+
+<h2>Geocoding</h2>
+
+<p>We need actual coordinates as our data-source for the project that were going to build later on so were going to use the Google Geocoding API to convert places into coordinates. I&rsquo;m just going to use some places in my town as an example:</p>
+
+<p>```php
+&lt;?php
+$places = array(</p>
+
+<pre><code>'San Fernando (La Union) Fire Station, San Fernando City, Region I, Philippines',
+'San Fernando (La Union) PNR',
+'Catbangen Central School, Gualberto Street, San Fernando City, Philippines',
+'Don Mariano Marcos Memorial State University, San Fernando City, Region I, Philippines',
+'TESDA Regional Training Center, San Fernando City, Region I, Philippines',
+'Lorma Colleges, San Fernando City, Philippines',
+'marcos building san fernando la union',
+'CICOSAT Medical Hospital, MacArthur Highway, San Fernando City, Region I, Philippines',
+'Gifted Learning Center, Gov. Nisce Street, San Fernando City, Region I, Philippines',
+'Union Christian College, San Fernando City, Region I, Philippines',
+'High Altitude Discotheque, Aguila Road, San Fernando City, Region I, Philippines',
+'Bethany Hospital, San Fernando City, Region I, Philippines',
+'sea and sky college san fernando la union',
+'Chowking, Gov. Luna Street, San Fernando City, Region I, Philippines',
+'saint williams cathedral san fernando la union',
+'ilocanos norte community school',
+'zaragosa elementary school',
+'bacnotan national highschool',
+'busel-busel elementary school',
+'luna public cemetery',
+'paratong elementary school'
+</code></pre>
+
+<p>);
+?>
+```</p>
+
+<p>If you want you can also use places in your town. Just make sure you check it with the Google Geocoding API first so that you know that it actually returns something. You can just paste the following URL in your browser&rsquo;s address bar and replace <code>SOME_PLACE_THAT_YOU_KNOW</code> with an actual place that you know, well-known and highly accessible places in your town is a great choice since there will be a greater chance that its already been geocoded.</p>
+
+<p><code>
+http://maps.googleapis.com/maps/api/geocode/json?address=SOME_PLACE_THAT_YOU_KNOW&amp;sensor=false
+</code></p>
+
+<p><blockquote><p>It&rsquo;s important that you set the sensor to false since were not actually using a device with a location sensor (GPS locator) in this application.</p></blockquote></p>
+
+<p>Next we use the Google Geocoding API to convert the places that we specified earlier into a coordinate (latitude and longitude). Here were simply extracting the data returned from the Google Geocoding API for each of the places then storing it in a variable called <code>$data</code>. Then we convert it back to a JSON string using the <code>json_encode()</code> method.</p>
+
+<p><blockquote><p>Id is a required attribute for documents indexed in Solr so we have to generate a unique ID for each of the places that were going to add. Also remember to use dynamic fields that are already available from the schema.xml file in Solr. In this case were using the dynamic field ss<em>* which has a data type of string to store the name of the place, and the dynamic field locm</em>* to store the coordinates of the place.</p></blockquote></p>
+
+<p>```
+&lt;?php
+$url = &lsquo;<a href="http://maps.googleapis.com/maps/api/geocode/json?address=place&amp;sensor=false">http://maps.googleapis.com/maps/api/geocode/json?address=place&amp;sensor=false</a>&rsquo;;</p>
+
+<p>$data = array();
+$id_prefix = &lsquo;SUPER&rsquo;; //it&rsquo;s a good idea to prefix your Solr ID&rsquo;s just to make sure it won&rsquo;t have the same id as something that already exists</p>
+
+<p>foreach($places as $i => $place){</p>
+
+<pre><code>$request_url = str_replace('place', urlencode($place) , $url); //replace the place string in the url with the urlencoded address
+$response = file_get_contents($request_url); //make the actual request to the google geocoding api
+$results = json_decode($response); //google geocoding api returns a JSON string so we have to use json_decode() to convert it to an array
+
+$data[] = array(
+    'id' =&gt; $id_prefix . $i,
+    'ss_place' =&gt; $results-&gt;results[0]-&gt;address_components[0]-&gt;short_name,
+    'locm_lat' =&gt; $results-&gt;results[0]-&gt;geometry-&gt;location-&gt;lat . ',' . $results-&gt;results[0]-&gt;geometry-&gt;location-&gt;lng
+);
+</code></pre>
+
+<p>}</p>
+
+<p>$doc = json_encode($data); //convert the data to a json string
+?>
+```</p>
+
+<p>Next make the request to the Solr server to update the index using <code>curl</code>:</p>
+
+<p>```
+&lt;?php
+$solr_update_url = &lsquo;<a href="http://localhost:8080/solr/update/json">http://localhost:8080/solr/update/json</a>&rsquo;; //the url for updating the solr index using a json document
+$solr_commit_url = &lsquo;<a href="http://localhost:8080/solr/update?commit=true">http://localhost:8080/solr/update?commit=true</a>&rsquo;; //the url for commiting the updates</p>
+
+<p>$curl = curl_init();</p>
+
+<p>curl_setopt_array($curl, array(</p>
+
+<pre><code>CURLOPT_RETURNTRANSFER =&gt; 1, //specify that we want to return the response so we can store it in a variable
+CURLOPT_HTTPHEADER =&gt; array("Content-type:application/json"), //header type
+CURLOPT_URL =&gt; $solr_update_url,
+CURLOPT_POST =&gt; 1, //specify that we want to post a data
+CURLOPT_POSTFIELDS =&gt; $doc, //the data that we want to post
+</code></pre>
+
+<p>));</p>
+
+<p>$update_response = curl_exec($curl);
+curl_close($curl);</p>
+
+<p>//commit the changes to SOLR
+$curl = curl_init();
+curl_setopt_array($curl, array(</p>
+
+<pre><code>CURLOPT_URL =&gt; $solr_commit_url
+</code></pre>
+
+<p>));</p>
+
+<p>$commit_response = curl_exec($curl);
+curl_close($curl);
+?>
+```</p>
+
+<h2>Building the Application</h2>
+
+<p>Now for the fun part, let&rsquo;s start building the application. You&rsquo;re going to need to download and link up the following resources if you want to follow along:</p>
+
+<ul>
+<li>jQuery</li>
+<li>jQuery UI (Use the custom builder to only include the dependencies of jQuery UI slider and the Slider itself)</li>
+<li>Google Maps API Key (you&rsquo;re going to need a Google Account, just access the <a href="http://code.google.com/apis/console">Google Console</a> and activate the Google Maps API)</li>
+</ul>
+
+
+<p>The application that were going to build is simple, were just going to need a text field in which the user will input the base location, then a slider to adjust the distance. The markers that points out the nearby places which matches the current distance will automatically be updated once the user moves the slider.</p>
+
+<p>```html
+<link rel="stylesheet" href="jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+<link rel="stylesheet" href="style.css"></p>
+
+<script type="text/javascript"
+  src="http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&sensor=false&libraries=places">
+</script>
+
+
+<p><body></p>
+
+<pre><code>&lt;p&gt;
+  &lt;label for="location"&gt;Location:&lt;/label&gt; 
+  &lt;input type="text" id="location"/&gt;     
+&lt;/p&gt;     
+&lt;div id="slider"&gt;&lt;/div&gt;
+&lt;div id="map-canvas"&gt;&lt;/div&gt;&lt;!--the container of the map--&gt;
+</code></pre>
+
+<p></body></p>
+
+<script src="jquery.js"></script>
+
+
+<script src="jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+
+
+<script src="script.js"></script>
+
+
+<p>```</p>
+
+<p>Then on the <code>style.css</code> file sprinkle some css that will make the presentation slightly:</p>
+
+<p>```css
+html {
+  height: 100%;
+}</p>
+
+<p>body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}</p>
+
+<h1>map-canvas {</h1>
+
+<p>  height: 90%;
+}</p>
+
+<h1>slider {</h1>
+
+<p>  width: 200px;
+}
+```</p>
+
+<p>Then on the <code>script.js</code> file add the code that will set the default map options. Were just going to make everything global so we can access them from anywhere.</p>
+
+<p>```javascript
+var loc; //this will store information about the current base location selected by the user
+var markers_array = []; //this will store an array of the markers that were created</p>
+
+<p>//set the map options
+var map_options = {</p>
+
+<pre><code>center: new google.maps.LatLng(16.61096000671, 120.31346130371),
+zoom: 17, //set zoom level to 17 
+mapTypeId: google.maps.MapTypeId.ROADMAP //set map type to road map
+</code></pre>
+
+<p>};</p>
+
+<p>//layout the map in the page
+var map = new google.maps.Map(document.getElementById(&ldquo;map-canvas&rdquo;), map_options);</p>
+
+<p>var homeLatlng = new google.maps.LatLng(18.35827827454, 121.63744354248); //set the base coordinate</p>
+
+<p>//set the marker for the base coordinate
+var homeMarker = new google.maps.Marker({</p>
+
+<pre><code>position: homeLatlng,
+map: map,
+draggable: false
+</code></pre>
+
+<p>});</p>
+
+<p>//get the text field which the user will use to search for a base location
+var input = document.getElementById(&lsquo;location&rsquo;);
+var autocomplete = new google.maps.places.Autocomplete(input); //google maps autocomplete</p>
+
+<p>autocomplete.bindTo(&lsquo;bounds&rsquo;, map); //bind the selected place in the autocomplete text field to the map</p>
+
+<p>/<em>
+ executed when a place is selected from the search bar
+ this will automatically adjust the map settings to display the place that was entered in the text field
+</em>/
+google.maps.event.addListener(autocomplete, &lsquo;place_changed&rsquo;, function(){</p>
+
+<pre><code>var place = autocomplete.getPlace();
+
+//if the selected location has a geometry then show it on the map
+if(place.geometry.viewport){
+  map.fitBounds(place.geometry.viewport); //automatically adjust the display on the viewport
+}else{
+  map.setCenter(place.geometry.location); //if the location doesn't have a geometry, use the location
+  map.setZoom(17); //set the zoom level to 17
+}
+
+homeMarker.setMap(map); //place the marker in the map
+homeMarker.setPosition(place.geometry.location); //set the position of the marker based on the selected location
+
+
+//update the global variable which stores the current location
+loc = place.geometry.location; 
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Add a method to clear the markers, this will be used to clear the markers every time the distance is updated:</p>
+
+<p>```
+google.maps.Map.prototype.clear_markers = function() {
+  for (var i = 0; i &lt; markers_array.length; i++){</p>
+
+<pre><code>markers_array[i].setMap(null);
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Add the code for when the user moves the slider, were going to bind it to a text field so the actual value is visible to the user. The value will have a unit of kilometers.</p>
+
+<p>```
+$(&ldquo;#slider&rdquo;).slider({
+  slide: function(event, ui){</p>
+
+<pre><code>map.clear_markers(); //clear all the markers that are currently in the map
+
+var distance = ui.value; //the selected distance
+
+//get the latitude and longitude from the location that we updated  earlier
+var coordinate = loc.lat() + "," + loc.lng(); 
+
+//create the object which will store the data that were going to pass through solr
+var data = {
+  'coordinate' : coordinate,
+  'distance' : distance
+};
+
+$("#distance").val(distance); //update the text field which shows the current distance
+
+//make the request
+$.post('http://my.dev/tester/geocoding/get_nearby_places.php', data, function(response){
+
+  var results = JSON.parse(response); //convert the JSON string to a JavaScript object
+  if(results.response){
+
+    var places = results.response.docs; //the actual places that were returned by solr
+
+    var place_count = places.length;
+    var markers = [];
+
+    //loop through all the places that were returned
+    for(var x = 0; x &lt; place_count; x++){
+
+      var coordinate = (places[x]['locm_lat'][0]).split(','); //convert the string to an array
+      var lat = coordinate[0];
+      var lng = coordinate[1];
+
+      //create the marker which points out the nearby places
+      marker = new google.maps.Marker({
+          position: new google.maps.LatLng(lat, lng),
+          map: map
+      });
+
+      //push the marker to the array which stores the markers so we can clear them later
+      //when user moves the slider again
+      markers_array.push(marker); 
+
+    }
+  }
+
+
+});
+</code></pre>
+
+<p>  }
+});
+```</p>
+
+<p>Finally, add the code which will make the query to the Solr server to get the places which are near to the selected location. What were doing here is constructing the URL needed to make the request to the solr server, then getting the actual response that was returned and then outputting it.</p>
+
+<p>```php
+&lt;?php
+//the url for querying solr, 8080 is the port where solr is running
+$url  = &lsquo;<a href="http://localhost:8080/solr/select?q=*:*&amp;fq=">http://localhost:8080/solr/select?q=*:*&amp;fq=</a>&rsquo;;</p>
+
+<p>//the string that we need to replace in the query
+$search = array(</p>
+
+<pre><code>'BASE_COORDINATE',
+'DISTANCE'
+</code></pre>
+
+<p>);</p>
+
+<p>//the string that were going to use as a query
+$replace = array(</p>
+
+<pre><code>$_POST['coordinate'], //the latitude and longitude pair (eg. 123.111,456.233)
+$_POST['distance'] //the selected distance
+</code></pre>
+
+<p>);</p>
+
+<p>//replace the placeholder text with the input supplied by the user then encode the part of the url which has the query
+$url .= urlencode(str_replace($search, $replace, &lsquo;{!geofilt pt=BASE_COORDINATE sfield=locm_lat d=DISTANCE}&rsquo;));
+$url .= &lsquo;&amp;wt=json&rsquo;; //set the response type to json</p>
+
+<p>$response = file_get_contents($url); //get the json string returned from the query
+echo $response; //output the json string
+?>
+```</p>
+
+<p>The output will look like this:</p>
+
+<p><img src="/images/posts/spatial_search_with_apache_solr_and_google_maps/output.PNG" alt="asana" /></p>
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it for this tutorial, you&rsquo;ve learned how to use Solr&rsquo;s spatial search with Google Maps.
+You can further improve the application that we just built. For example, you can make a distinction to the marker for the selected location by giving it a different color or icon since the marker for that is currently the same with the markers for locations which are near the selected location. You can also add filters, for example only show nearby restaurants to the location that you selected.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://wiki.apache.org/solr/SpatialSearch">Solr Spatial Search</a></li>
+<li><a href="https://developers.google.com/maps/">Google Maps API</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

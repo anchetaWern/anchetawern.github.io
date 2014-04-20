@@ -1,0 +1,941 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Spatial search with Apache Solr and Google Maps - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;m going to show you how to setup spatial search in Apache Solr then were going to create an application which uses Spatial &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Spatial Search With Apache Solr and Google Maps</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T21:33:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;m going to show you how to setup spatial search in Apache Solr then were going to create an application which uses Spatial searching with the use of Google Maps.</p>
+
+<!--More-->
+
+
+<h2>What is Spatial Searching?</h2>
+
+<p>According to <a href="https://en.wikipedia.org/wiki/Geomatics">Wikipedia</a>:</p>
+
+<blockquote><p>Geospatial technology or geomatics engineering is the discipline of gathering, storing, processing, and delivering geographic information, or spatially referenced information.</p></blockquote>
+
+
+<p>For the purposes of this tutorial were going to use Spatial search to find the locations which are near the place that we specify.</p>
+
+<h2>Configure schema.xml File</h2>
+
+<p>First you need to configure the <code>schema.xml</code> to include a special field type called location. This field type is specifically used for geospatial searching. Depending on the Solr version that you&rsquo;re running on your machine it may or may not already be included on the default <code>schema.xml</code> file. But in case its not already included, here&rsquo;s what you have to add:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;fieldType</span> <span class="na">name=</span><span class="s">&quot;location&quot;</span> <span class="na">class=</span><span class="s">&quot;solr.LatLonType&quot;</span> <span class="na">subFieldType=</span><span class="s">&quot;tdouble&quot;</span><span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then you can create a dynamic field that would use that specific field type by simply supplying the value for the <code>type</code> attribute to be <code>location</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dynamicField</span> <span class="na">name=</span><span class="s">&quot;locm_*&quot;</span> <span class="na">type=</span><span class="s">&quot;location&quot;</span> <span class="na">indexed=</span><span class="s">&quot;true&quot;</span>  <span class="na">stored=</span><span class="s">&quot;true&quot;</span> <span class="na">multiValued=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that you can now declare fields which will use the dynamic field:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;locm_places&quot;</span><span class="nt">&gt;</span>12.3456,-987.65<span class="nt">&lt;/field&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the example above, you can use dynamic fields by using the its name as the prefix for any field. In this case the prefix that we used is <code>locm_</code>. On the dynamic field declaration earlier we used the star <code>*</code> to tell to Solr that any field which uses the strings before the star will be using the attributes for this dynamic field.</p>
+
+<h2>Geocoding</h2>
+
+<p>We need actual coordinates as our data-source for the project that were going to build later on so were going to use the Google Geocoding API to convert places into coordinates. I&rsquo;m just going to use some places in my town as an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$places</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;San Fernando (La Union) Fire Station, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;San Fernando (La Union) PNR&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Catbangen Central School, Gualberto Street, San Fernando City, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Don Mariano Marcos Memorial State University, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;TESDA Regional Training Center, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Lorma Colleges, San Fernando City, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;marcos building san fernando la union&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;CICOSAT Medical Hospital, MacArthur Highway, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Gifted Learning Center, Gov. Nisce Street, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Union Christian College, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;High Altitude Discotheque, Aguila Road, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Bethany Hospital, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;sea and sky college san fernando la union&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Chowking, Gov. Luna Street, San Fernando City, Region I, Philippines&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;saint williams cathedral san fernando la union&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;ilocanos norte community school&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;zaragosa elementary school&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;bacnotan national highschool&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;busel-busel elementary school&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;luna public cemetery&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;paratong elementary school&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>If you want you can also use places in your town. Just make sure you check it with the Google Geocoding API first so that you know that it actually returns something. You can just paste the following URL in your browser&rsquo;s address bar and replace <code>SOME_PLACE_THAT_YOU_KNOW</code> with an actual place that you know, well-known and highly accessible places in your town is a great choice since there will be a greater chance that its already been geocoded.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://maps.googleapis.com/maps/api/geocode/json?address=SOME_PLACE_THAT_YOU_KNOW&amp;sensor=false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote><p>It&#8217;s important that you set the sensor to false since were not actually using a device with a location sensor (GPS locator) in this application.</p></blockquote>
+
+
+<p>Next we use the Google Geocoding API to convert the places that we specified earlier into a coordinate (latitude and longitude). Here were simply extracting the data returned from the Google Geocoding API for each of the places then storing it in a variable called <code>$data</code>. Then we convert it back to a JSON string using the <code>json_encode()</code> method.</p>
+
+<blockquote><p>Id is a required attribute for documents indexed in Solr so we have to generate a unique ID for each of the places that were going to add. Also remember to use dynamic fields that are already available from the schema.xml file in Solr. In this case were using the dynamic field ss_* which has a data type of string to store the name of the place, and the dynamic field locm_* to store the coordinates of the place.</p></blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;http://maps.googleapis.com/maps/api/geocode/json?address=place&amp;sensor=false&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$id_prefix</span> <span class="o">=</span> <span class="s1">&#39;SUPER&#39;</span><span class="p">;</span> <span class="c1">//it&#39;s a good idea to prefix your Solr ID&#39;s just to make sure it won&#39;t have the same id as something that already exists</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$places</span> <span class="k">as</span> <span class="nv">$i</span> <span class="o">=&gt;</span> <span class="nv">$place</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$request_url</span> <span class="o">=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$place</span><span class="p">)</span> <span class="p">,</span> <span class="nv">$url</span><span class="p">);</span> <span class="c1">//replace the place string in the url with the urlencoded address</span>
+</span><span class='line'>  <span class="nv">$response</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$request_url</span><span class="p">);</span> <span class="c1">//make the actual request to the google geocoding api</span>
+</span><span class='line'>  <span class="nv">$results</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span> <span class="c1">//google geocoding api returns a JSON string so we have to use json_decode() to convert it to an array</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nv">$data</span><span class="p">[]</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$id_prefix</span> <span class="o">.</span> <span class="nv">$i</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;ss_place&#39;</span> <span class="o">=&gt;</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">address_components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">short_name</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;locm_lat&#39;</span> <span class="o">=&gt;</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">geometry</span><span class="o">-&gt;</span><span class="na">location</span><span class="o">-&gt;</span><span class="na">lat</span> <span class="o">.</span> <span class="s1">&#39;,&#39;</span> <span class="o">.</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">geometry</span><span class="o">-&gt;</span><span class="na">location</span><span class="o">-&gt;</span><span class="na">lng</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$doc</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="c1">//convert the data to a json string</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next make the request to the Solr server to update the index using <code>curl</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$solr_update_url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:8080/solr/update/json&#39;</span><span class="p">;</span> <span class="c1">//the url for updating the solr index using a json document</span>
+</span><span class='line'><span class="nv">$solr_commit_url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:8080/solr/update?commit=true&#39;</span><span class="p">;</span> <span class="c1">//the url for commiting the updates</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">curl_setopt_array</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">//specify that we want to return the response so we can store it in a variable</span>
+</span><span class='line'>    <span class="nx">CURLOPT_HTTPHEADER</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;Content-type:application/json&quot;</span><span class="p">),</span> <span class="c1">//header type</span>
+</span><span class='line'>    <span class="nx">CURLOPT_URL</span> <span class="o">=&gt;</span> <span class="nv">$solr_update_url</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">CURLOPT_POST</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">//specify that we want to post a data</span>
+</span><span class='line'>    <span class="nx">CURLOPT_POSTFIELDS</span> <span class="o">=&gt;</span> <span class="nv">$doc</span><span class="p">,</span> <span class="c1">//the data that we want to post</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$update_response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//commit the changes to SOLR</span>
+</span><span class='line'><span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'><span class="nb">curl_setopt_array</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="nx">CURLOPT_URL</span> <span class="o">=&gt;</span> <span class="nv">$solr_commit_url</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$commit_response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Building the Application</h2>
+
+<p>Now for the fun part, let&rsquo;s start building the application. You&rsquo;re going to need to download and link up the following resources if you want to follow along:</p>
+
+<ul>
+<li>jQuery</li>
+<li>jQuery UI (Use the custom builder to only include the dependencies of jQuery UI slider and the Slider itself)</li>
+<li>Google Maps API Key (you&rsquo;re going to need a Google Account, just access the <a href="http://code.google.com/apis/console">Google Console</a> and activate the Google Maps API)</li>
+</ul>
+
+
+<p>The application that were going to build is simple, were just going to need a text field in which the user will input the base location, then a slider to adjust the distance. The markers that points out the nearby places which matches the current distance will automatically be updated once the user moves the slider.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.min.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+</span><span class='line'>  <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;location&quot;</span><span class="nt">&gt;</span>Location:<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;location&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;slider&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-canvas&quot;</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--the container of the map--&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;jquery.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;jquery-ui/js/jquery-ui-1.10.3.custom.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;script.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then on the <code>style.css</code> file sprinkle some css that will make the presentation slightly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">html</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#map-canvas</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">90</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#slider</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then on the <code>script.js</code> file add the code that will set the default map options. Were just going to make everything global so we can access them from anywhere.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">loc</span><span class="p">;</span> <span class="c1">//this will store information about the current base location selected by the user</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">markers_array</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">//this will store an array of the markers that were created</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//set the map options</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">map_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">center</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="mf">16.61096000671</span><span class="p">,</span> <span class="mf">120.31346130371</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">zoom</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="c1">//set zoom level to 17 </span>
+</span><span class='line'>    <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span> <span class="c1">//set map type to road map</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//layout the map in the page</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;map-canvas&quot;</span><span class="p">),</span> <span class="nx">map_options</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">homeLatlng</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="mf">18.35827827454</span><span class="p">,</span> <span class="mf">121.63744354248</span><span class="p">);</span> <span class="c1">//set the base coordinate</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//set the marker for the base coordinate</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">homeMarker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">position</span><span class="o">:</span> <span class="nx">homeLatlng</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">draggable</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//get the text field which the user will use to search for a base location</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">autocomplete</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">places</span><span class="p">.</span><span class="nx">Autocomplete</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span> <span class="c1">//google maps autocomplete</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">autocomplete</span><span class="p">.</span><span class="nx">bindTo</span><span class="p">(</span><span class="s1">&#39;bounds&#39;</span><span class="p">,</span> <span class="nx">map</span><span class="p">);</span> <span class="c1">//bind the selected place in the autocomplete text field to the map</span>
+</span><span class='line'>      
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> executed when a place is selected from the search bar</span>
+</span><span class='line'><span class="cm"> this will automatically adjust the map settings to display the place that was entered in the text field</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">autocomplete</span><span class="p">,</span> <span class="s1">&#39;place_changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">place</span> <span class="o">=</span> <span class="nx">autocomplete</span><span class="p">.</span><span class="nx">getPlace</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//if the selected location has a geometry then show it on the map</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">fitBounds</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">);</span> <span class="c1">//automatically adjust the display on the viewport</span>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setCenter</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span> <span class="c1">//if the location doesn&#39;t have a geometry, use the location</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span> <span class="c1">//set the zoom level to 17</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span> <span class="c1">//place the marker in the map</span>
+</span><span class='line'>    <span class="nx">homeMarker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span> <span class="c1">//set the position of the marker based on the selected location</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//update the global variable which stores the current location</span>
+</span><span class='line'>    <span class="nx">loc</span> <span class="o">=</span> <span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add a method to clear the markers, this will be used to clear the markers every time the distance is updated:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">clear_markers</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">markers_array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">markers_array</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">setMap</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add the code for when the user moves the slider, were going to bind it to a text field so the actual value is visible to the user. The value will have a unit of kilometers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#slider&quot;</span><span class="p">).</span><span class="nx">slider</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">slide</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">ui</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">clear_markers</span><span class="p">();</span> <span class="c1">//clear all the markers that are currently in the map</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span> <span class="c1">//the selected distance</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get the latitude and longitude from the location that we updated  earlier</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">coordinate</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">lat</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">lng</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//create the object which will store the data that were going to pass through solr</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;coordinate&#39;</span> <span class="o">:</span> <span class="nx">coordinate</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;distance&#39;</span> <span class="o">:</span> <span class="nx">distance</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#distance&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">distance</span><span class="p">);</span> <span class="c1">//update the text field which shows the current distance</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//make the request</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;http://my.dev/tester/geocoding/get_nearby_places.php&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span> <span class="c1">//convert the JSON string to a JavaScript object</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">results</span><span class="p">.</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">places</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">docs</span><span class="p">;</span> <span class="c1">//the actual places that were returned by solr</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">place_count</span> <span class="o">=</span> <span class="nx">places</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">markers</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//loop through all the places that were returned</span>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">place_count</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">coordinate</span> <span class="o">=</span> <span class="p">(</span><span class="nx">places</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;locm_lat&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]).</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span> <span class="c1">//convert the string to an array</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">coordinate</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">coordinate</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//create the marker which points out the nearby places</span>
+</span><span class='line'>          <span class="nx">marker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">position</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">),</span>
+</span><span class='line'>              <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//push the marker to the array which stores the markers so we can clear them later</span>
+</span><span class='line'>          <span class="c1">//when user moves the slider again</span>
+</span><span class='line'>          <span class="nx">markers_array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">marker</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, add the code which will make the query to the Solr server to get the places which are near to the selected location. What were doing here is constructing the URL needed to make the request to the solr server, then getting the actual response that was returned and then outputting it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="c1">//the url for querying solr, 8080 is the port where solr is running</span>
+</span><span class='line'><span class="nv">$url</span>  <span class="o">=</span> <span class="s1">&#39;http://localhost:8080/solr/select?q=*:*&amp;fq=&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the string that we need to replace in the query</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;BASE_COORDINATE&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;DISTANCE&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the string that were going to use as a query</span>
+</span><span class='line'><span class="nv">$replace</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;coordinate&#39;</span><span class="p">],</span> <span class="c1">//the latitude and longitude pair (eg. 123.111,456.233)</span>
+</span><span class='line'>  <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">]</span> <span class="c1">//the selected distance</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//replace the placeholder text with the input supplied by the user then encode the part of the url which has the query</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">.=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nb">str_replace</span><span class="p">(</span><span class="nv">$search</span><span class="p">,</span> <span class="nv">$replace</span><span class="p">,</span> <span class="s1">&#39;{!geofilt pt=BASE_COORDINATE sfield=locm_lat d=DISTANCE}&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">.=</span> <span class="s1">&#39;&amp;wt=json&#39;</span><span class="p">;</span> <span class="c1">//set the response type to json</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span> <span class="c1">//get the json string returned from the query</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$response</span><span class="p">;</span> <span class="c1">//output the json string</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will look like this:</p>
+
+<p><img src="/images/posts/spatial_search_with_apache_solr_and_google_maps/output.PNG" alt="asana" /></p>
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it for this tutorial, you&rsquo;ve learned how to use Solr&rsquo;s spatial search with Google Maps.
+You can further improve the application that we just built. For example, you can make a distinction to the marker for the selected location by giving it a different color or icon since the marker for that is currently the same with the markers for locations which are near the selected location. You can also add filters, for example only show nearby restaurants to the location that you selected.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://wiki.apache.org/solr/SpatialSearch">Solr Spatial Search</a></li>
+<li><a href="https://developers.google.com/maps/">Google Maps API</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T21:33:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache-solr/'>apache-solr</a>, <a class='category' href='/blog/categories/google-maps/'>google-maps</a>, <a class='category' href='/blog/categories/spatial-search/'>spatial-search</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/15/getting-started-with-solr/" title="Previous Post: Getting Started with Apache Solr">&laquo; Getting Started with Apache Solr</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/07/13/my-linux-development-environment/" title="Next Post: My Linux Development Environment">My Linux Development Environment &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/">A Whirlwind Tour of Web Developer Tools: Source Control</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2013/07/03/spatial-search-with-apache-solr-and-google-maps/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

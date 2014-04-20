@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: svn | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/svn/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Source Control]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/"/>
+    <updated>2014-04-20T13:26:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control</id>
+    <content type="html"><![CDATA[<p>This is part seven of the series A Whirlwind Tour of Web Developer Tools. In this part I&rsquo;m going to walk you through source control. Source control is also known as Version Control or Revision Control. Which ever term you have heard of before it means the same thing. Like I did with the previous parts of this series I bring you the definition of source control from <a href="http://en.wikipedia.org/wiki/Revision_control">Wikipedia</a> since they really do a great job at defining things:</p>
+
+<p><blockquote><p>Revision control, also known as version control and source control (and an aspect of software configuration management), is the management of changes to documents, computer programs, large web sites, and other collections of information. Changes are usually identified by a number or letter code, termed the &ldquo;revision number&rdquo;, &ldquo;revision level&rdquo;, or simply &ldquo;revision&rdquo;. For example, an initial set of files is &ldquo;revision 1&rdquo;. When the first change is made, the resulting set is &ldquo;revision 2&rdquo;, and so on. Each revision is associated with a timestamp and the person making the change. Revisions can be compared, restored, and with some types of files, merged.</p></blockquote></p>
+
+<p>In simple terms version control is a way in which we can manage changes to a specific document. In the context of Web Development, the documents that we need to manage are the source files of the websites or web applications that we are building. Things like html files, stylesheets, script files, images, and other assets.</p>
+
+<h3>Terms</h3>
+
+<p>Before we dive in, here are some terms that you might encounter in this guide:</p>
+
+<ul>
+<li><strong>Branch</strong> &ndash; a branch is a copy of your repository that is separate from the main branch. Its commonly used for isolation so that you can work with new features, issues, or bug fixes without affecting the whole project.</li>
+<li><strong>Master</strong> &ndash; the main branch. This is the branch that you will work with by default after initializing a repository.</li>
+<li><strong>Repository</strong> &ndash; also called repo. This refers to a server which keeps a history of all the changes made by the developers.</li>
+<li><strong>Commit</strong> &ndash; permanently saving your changes. Commits are written into history and can be easily reverted if needed.</li>
+<li><strong>Conflict</strong> &ndash; this happens when two or more developers makes changes to the same file.</li>
+<li><strong>Push</strong> &ndash; the act of commiting your changes into the repository.</li>
+<li><strong>Pull</strong> &ndash; the act of getting the changes of other developers and merging it into your own copy of the project.</li>
+<li><strong>Centralized Version Control</strong> &ndash; a version control setup wherein there&rsquo;s only a single repository wherein developers will push their changes.</li>
+<li><strong>Distributed Version Control</strong> &ndash; a version control setup wherein every developer has their own repository.</li>
+</ul>
+
+
+<h3>Benefits of using source control</h3>
+
+<p>Using version control in each of your projects whether big or small, solo or team work has benefits into your overall development workflow. Here are some:</p>
+
+<ul>
+<li><strong>Branching</strong> &ndash; you can use branches to experiment on features without affecting the rest of the code base. This means that you can go crazy with new features and experiment like mad with your code. Branches are like sandboxes which you can easily delete or merge into your code base later on. Changes in branches won&rsquo;t affect the rest of your code base so you can pretty much do anything without worrying of breaking anything.</li>
+<li><strong>Easy Merging of Changes</strong> &ndash; you can easily merge your changes to the rest of the team. This means that your co-workers can merge your changes to their current copy of the whole project and you can also merge their changes with ease. Gone are the days of manually copying all of the files that you have updated and giving it to your team mates for them to merge it on their copy of the whole project.</li>
+<li><strong>Tracking of Changes</strong> &ndash; changes in the source code can be easily tracked with source control. Questions like who made the changes, what has been changed can be easily answered.</li>
+<li><strong>Reverting Changes</strong> &ndash; you can also easily revert changes that you&rsquo;ve made in case it breaks your app.</li>
+<li><strong>Integration with other tools</strong> &ndash; you can also integrate your source control software with bug-tracking tools. This makes it easier to associate a specific commit with a bug or issue.</li>
+<li><strong>Backup</strong> &ndash; source code can be also backed up to a remote server somewhere in the cloud by using source control. So in case your computer explodes you can just use a new one and get the source from the remote server. You can then continue your work as usual.</li>
+</ul>
+
+
+<h3>What goes into source control</h3>
+
+<p>Lets begin by identifying what needs to go into source control.</p>
+
+<ul>
+<li><strong>Source files</strong> &ndash; this includes the html, css and javascript files that are mainly used by your app. This also includes the libraries in which your app depends on. Things like twitter bootstrap, jquery or underscore.js. Although there are already tools which we can use to specify which libraries our app depends on (see package managers) and it can be easily installed in the deployment server later on using configuration files (<code>package.json</code>, <code>bower.json</code>) . Its still preferred that you include the source for these dependencies in case tools such as bower or npm can&rsquo;t be used in the deployment server.</li>
+<li><strong>Static content (images, videos, and other assets)</strong> &ndash; this is exclusive to static content that is necessary for the website or web app to function the first time that it is launch. This doesn&rsquo;t include user uploaded files or any other files that is subject to change or deletion by someone other than the developers of the app.</li>
+<li><strong>Configuration files</strong> &ndash; if you have gone over part 6 (package managers) of this series this includes files such as the <code>component.json</code>, <code>bower.json</code>, and <code>package.json</code>. Or other files that contains the information on the dependencies of your app. If you&rsquo;re working on the back-end, this includes database configuration files.</li>
+</ul>
+
+
+<h3>Best Practices</h3>
+
+<p>Here are some best practices that you need to consider when using any version control software. Note that you can apply these practices on whatever version control software that you&rsquo;re using. I&rsquo;m going to discuss how to implement each of these on the version control software that were going to go over with later on.</p>
+
+<ul>
+<li>Every commit must represent only a single logical change in your code base.</li>
+<li>Use bug-tracking software together with version control. Tools such as <a href="https://quickstart.atlassian.com/download/jira/get-started/bug-tracking/set-up">Jira&rsquo;s Bug Tracking</a> is useful for this. If you&rsquo;re using Bitbucket there&rsquo;s also a built-in bug-tracking in it. All you have to do is to create an issue and then on your commit message later on simply include the issue number. An example would be something like <code>solved issue #36</code>. This will automatically close the corresponding issue in the bug-tracking software and the commit message is also linked to the specific issue. This means that the details for that specific issue can easily be seen using this feature.</li>
+<li>Keep your commit messages short but include a comment where you specify the details of the changes that you&rsquo;ve made.</li>
+<li>Backup your repository regularly. Even if you&rsquo;re keeping a history of all your changes using source control you can still lose your data due to unfortunate events. <a href="https://github.com/">Github</a> and <a href="https://bitbucket.org/">Bitbucket</a> really makes this easy.</li>
+<li>Always use the present tense in your commit messages. The important thing that you have to remember is be consistent to whatever convention your team agrees to use. Here are some examples:</li>
+</ul>
+
+
+<p>```
+add foo.txt</p>
+
+<p>rename foo.txt to bar.txt</p>
+
+<p>fix issue with the carousel script</p>
+
+<p>update code for getting user details
+```</p>
+
+<ul>
+<li>Commit only work that is done. This means that you have at least tested a specific feature of functionality once and made sure that it actually works before you commit.</li>
+<li>Use branches on every new/experimental feature, bug fixes or anything that requires a couple of commits before it can be considered done. You might also want to create a separate branch for development, testing and production. Using this model means that you have to create a development branch right off the bat and then start commiting to it while you&rsquo;re still developing your app. Once you&rsquo;re done with the development you then start commiting your changes to the testing branch. The testing branch is basically for commiting bug fixes to bugs that are found on the testing stage of your app. And then finally any bugs or issues that is found on the production of your app you commit it in the production branch.</li>
+<li>Use tags for any minor or major release of your app so that it will be easy to find later on.</li>
+<li>Don&rsquo;t commit changes in code formatting. This includes changes in whitespaces or tab sizes.</li>
+<li>Commit only your own changes. This can&rsquo;t be emphasized enough. This is useful so that the team can trace who actually made the change.</li>
+<li>Merge others changes often. This allows you to work with the latest version of the whole project.</li>
+<li>Push your changes often. This allows you to avoid conflicts from happening often.</li>
+<li>Your team must have a central repository to use even if you&rsquo;re using a distributed version control system. This is can be a private bitbucket or github repository or a private server where your team can push and pull in changes.</li>
+</ul>
+
+
+<h3>Source Control Software</h3>
+
+<h4>Git</h4>
+
+<p>Git is a distributed revision control system. It was initially developed by Linus Torvalds for Linux Kernel Development in 2005.</p>
+
+<h5>Installing Git</h5>
+
+<p>You can install git by downloading the installer applicable to the current operating system that you&rsquo;re using. Downloads are available from the <a href="http://git-scm.com/downloads">git download page</a>. You can also use the package manager that is available in your current operating system. In ubuntu or other debian-based operating system you have the <code>apt</code> command at your disposal:</p>
+
+<p><code>
+sudo add-apt-repository ppa:pdoes/ppa
+sudo apt-get update
+sudo apt-get install git-core
+</code></p>
+
+<p>For Mac users you can install <a href="http://brew.sh/">brew</a> then install git using the following command:</p>
+
+<p><code>
+brew install git
+</code></p>
+
+<p>For Windows users you can just download the Windows installer for Git in their downloads page.</p>
+
+<h5>Setting Up Git</h5>
+
+<p>For first time use you have to setup git. This involves setting your name and email:</p>
+
+<p><code>
+git config --global user.name "Yoh Asakura"
+git config --global user.email yoh-asakura@gmail.com
+</code></p>
+
+<p>Its recommended that you also setup the default text editor that git will use for writing commit messages or resolving conflicts. I definitely recommend vim for this since you won&rsquo;t need to go away from the terminal:</p>
+
+<p><code>
+git config --global core.editor vim
+</code></p>
+
+<p>If you&rsquo;re going to push on a remote repository later on you might also want to set git to cache your password. By default git caches your password for 3600 seconds so you have to explicitly specify the timeout value to something higher. This is assuming that you don&rsquo;t frequently change your password:</p>
+
+<p><code>
+git config --global credential.helper 'cache --timeout=99999999'
+</code></p>
+
+<p>I keep on blabbering about password but what the heck is this password? Well the password is basically the password that you use when you are pushing your changes to a remote repository. Pushing to a repository requires specific privileges which can only be met by supplying a password. This password is linked with a public and private ssh key pair. The public key is uploaded in the remote repository and the private one stays in the machine that you&rsquo;re currently using. This is then checked every time you push your changes to the remote repository.</p>
+
+<p>While were at the topic of ssh keys it might be useful if you also setup your ssh keys now so you won&rsquo;t have any trouble with it later. You can generate an ssh key by using the following command (needless to say you should change the sample email in here with that of your own email):</p>
+
+<p>```
+ssh-keygen -t rsa -C &ldquo;<a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#121;&#x6f;&#104;&#x2d;&#97;&#115;&#x61;&#107;&#117;&#114;&#97;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;">&#121;&#x6f;&#x68;&#45;&#x61;&#115;&#97;&#107;&#117;&#x72;&#97;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#99;&#x6f;&#109;</a>&rdquo;
+ssh-add id_rsa</p>
+
+<h1>enter your password</h1>
+
+<p>```</p>
+
+<p>The commands above will generate an <code>id_rsa</code> and <code>id_rsa.pub</code> file after you have inputted a password. The one with the <code>.pub</code> extension is the one that should be uploaded to the remote repository. If there&rsquo;s an interface that allows you to add public ssh keys then you can also just copy the contents of the <code>id_rsa.pub</code> file and paste it in there. Github, Bitbucket and Openshift all allow you to do this from their website.</p>
+
+<p>Those are the absolute necessary configurations that you can set right after installing git. If you want to configure other stuff then you can check out this <a href="http://git-scm.com/book/en/Customizing-Git-Git-Configuration">guide on how to configure git</a></p>
+
+<h5>Initializing a Git Repo</h5>
+
+<p>To start working with git you first have to initialize a project to use git. You can do that with the <code>git init</code> command. This is the first thing that you need to do if you want your project to use git.</p>
+
+<h5>Getting the status of a repo</h5>
+
+<p>Git allows you to view the changes in your project since the last commit by using the <code>git status</code> command:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-status.png" alt="git status" /></p>
+
+<h5>Adding files into the staging area</h5>
+
+<p>With git there&rsquo;s the concept of the staging area. Its basically a place where you can prepare files to be commited, an index of files to be put in your next commit. You can add files to the staging area by using the <code>git add</code> command:</p>
+
+<p><code>
+git add file-a.txt
+</code></p>
+
+<p>Note that every time you make a change to a specific file you have to add it to the staging area. So unless you&rsquo;re already happy with the changes to a specific file don&rsquo;t add it to the staging area to avoid having to add it again when you make some changes.</p>
+
+<p>Going back to our imaginary project you can now see that <code>file-a.txt</code> has been added to the staging area when you execute <code>git status</code>. Files that are added to the staging area is indicated with a green text color:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-add.png" alt="git add" /></p>
+
+<p>Currently <code>file-a.txt</code> contains the following:</p>
+
+<p><code>
+dog
+cat
+mouse
+snake
+gorilla
+dinosaur
+lizard
+</code></p>
+
+<p>If however you add a new item on the end of the list:</p>
+
+<p><code>
+dog
+cat
+mouse
+snake
+gorilla
+dinosaur
+lizard
+monkey
+</code></p>
+
+<p>And executing <code>git status</code> again you will see that git also informs you of that change:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/changed-on-staging.png" alt="changed on staging" /></p>
+
+<h5>Determine the exact change</h5>
+
+<p>If you want to know what exactly has been changed you can make use of the <code>git diff</code> command followed by the file that you want to check:</p>
+
+<p><code>
+git diff file-a.txt
+</code></p>
+
+<p>This results in the following output:
+<img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-diff.png" alt="git diff" /></p>
+
+<p>The change is indicated with a green color. As you can see <code>monkey</code> is added at the end of the line. Text that has been added is indicated by the <code>+</code> sign.</p>
+
+<p>Next let&rsquo;s change the <code>lizard</code> into <code>bird</code>.</p>
+
+<p><code>
+dog
+cat
+mouse
+snake
+gorilla
+dinosaur
+bird
+monkey
+</code></p>
+
+<p>Executing <code>git diff</code> on the file again we see that git also makes it clear what the specific change was:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-diff2.png" alt="git diff 2" /></p>
+
+<p>The <code>lizard</code> has been removed and that is indicated with a red text color and a <code>-</code> sign before the text that was removed. And then the addition of the <code>bird</code> is indicated with a <code>+</code> sign with a green text color.</p>
+
+<p>If you make more than one change to a file git will also indicate every change using these conventions.</p>
+
+<h5>Commiting Changes</h5>
+
+<p>Once you&rsquo;re happy with the changes that you&rsquo;ve made you can now commit your changes using the <code>git commit</code> command. But before you do that make sure that all the changes that you want to commit are added to the staging area. You can do that by executing <code>git status</code>. If there aren&rsquo;t any changes that has not been added to the staging area then you&rsquo;re good to go. If not then add the specific file to the staging area using <code>git add</code>. Once that&rsquo;s done you can then <code>commit</code>:</p>
+
+<p><code>
+git commit -m "add animals"
+</code></p>
+
+<p>Git will give the following output after you commit:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-commit.png" alt="git commit" /></p>
+
+<p>Note that the above method for commiting isn&rsquo;t best practice since you are limited to only a few words and you can&rsquo;t even have a new line. The best practice when writing commit message is to go all out and write as much detail as you deem necessary. You can do that by not supplying the <code>-m</code> option:</p>
+
+<p><code>
+git commit
+</code></p>
+
+<p>This will allow you to write a long commit message using the default text editor that you supplied to be used by git. If you remember earlier we have set vim as a default text editor. Executing the command above will open it up:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/long-commit.png" alt="long commit with vim" /></p>
+
+<p>You can then go to insert mode by pressing <code>i</code> and then write your long commit message. Go wild write a whole novel if you want. Once you&rsquo;re satisfied exit insert mode by pressing <code>esc</code> then type <code>:wq</code> to save the commit message and exit vim.</p>
+
+<h5>Branching</h5>
+
+<p>After some time you would want to experiment with some new features. This is where branching comes into play. It allows you to move away from the master branch and do work from there without affecting the master branch.</p>
+
+<p>To create a new branch:</p>
+
+<p><code>
+git branch {branch_name}
+</code></p>
+
+<p>This will create a branch with the branch name that you supplied. You won&rsquo;t get any form of feedback when you do this but you&rsquo;ll know that a branch with the name that you supplied has been created by executing <code>git branch</code>. This will list out all the branches in your project. It also indicates the current branch you are at. In this case were still at the <code>master</code> branch:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/new-branch.png" alt="new branch" /></p>
+
+<p>In order to switch to the newly created branch you can use the <code>checkout</code> command:</p>
+
+<p><code>
+git checkout {branch_name}
+</code></p>
+
+<p>Git will then give you a feedback that you have switched to the new branch:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-checkout.png" alt="git checkout" /></p>
+
+<p>From the new branch you can then work on your experimental features. But for our example we will simply create a new text file (<code>file-b.txt</code>) and add some animals in it:</p>
+
+<p><code>
+narwhal
+macaque
+philippine crocodile
+rhino
+angonoka
+aye-aye
+armadillo
+babirusa
+gobi jerboa
+hirola
+</code></p>
+
+<p>Once that&rsquo;s created add the file into staging area and commit:</p>
+
+<p><code>
+git add file-b.txt
+git commit -m "add new animals"
+</code></p>
+
+<p>Now switch back into the <code>master</code> branch:</p>
+
+<p><code>
+git checkout master
+</code></p>
+
+<p>Open up a new file system explorer window:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/checkout-master.png" alt="checkout master" /></p>
+
+<p>As you can see from the above screenshot <code>file-b.txt</code> is no longer there. That is because we have switched back to the <code>master</code> branch which isn&rsquo;t aware that we have added and commited a new file. Only the <code>new-animals</code> branch is aware of it.</p>
+
+<p>If you switch back to the <code>new-animals</code> branch you will see that <code>file-b.txt</code> exists again.</p>
+
+<p><code>
+git checkout new-animals
+</code></p>
+
+<p>Now before we try to merge our changes back into the <code>master</code> branch let&rsquo;s create a scenario wherein there will be a conflict. A conflict happens when 2 files with different contents but with the same file name has been commited either on the same branch or a different branch.</p>
+
+<p>On the <code>new-animals</code> branch create a new file and name it <code>file-c.txt</code> then put the following contents:</p>
+
+<p><code>
+kangaroo
+whale
+rabbit
+</code></p>
+
+<p>Add and commit the new file:</p>
+
+<p><code>
+git add file-c.txt
+git commit -m "add final animals"
+</code></p>
+
+<p>Switch back to the <code>master</code> branch:</p>
+
+<p><code>
+git checkout master
+</code></p>
+
+<p>Create the same file (<code>file-c.txt</code>). This time put a different content:</p>
+
+<p><code>
+hyena
+dragon
+horse
+</code></p>
+
+<p>Add and commit the file:</p>
+
+<p><code>
+git add file-c.txt
+git commit -m "add some animals"
+</code></p>
+
+<p>Now lets merge the changes from the <code>new-animals</code> branch into the <code>master</code> branch using the <code>merge</code> command. Merging works by first switching to the <code>master</code> branch and then calling the <code>merge</code> command with the name of the branch that you want to merge. In this case its the <code>new-animals</code> branch:</p>
+
+<p><code>
+git merge new-animals
+</code></p>
+
+<p>Executing the command above will result in a conflict since the same file was modified with different contents on both branches. As you can see from the screenshot below git tells you that there&rsquo;s a merge conflict on <code>file-c.txt</code> and that the automatic merge failed:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/merge-conflict.png" alt="merge conflict" /></p>
+
+<p>Opening <code>file-c.txt</code> we see the following contents. <code>HEAD</code> refers to the contents of <code>file-c.txt</code> in the <code>master</code> branch while <code>new-animals</code> refers to its contents in the <code>new-animals</code> branch:</p>
+
+<p>```
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+hyena
+dragon</p>
+
+<h1>horse</h1>
+
+<p>kangaroo
+whale
+rabbit</p>
+
+<blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><p>new-animals
+```</p></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote>
+
+<p>Now this is a matter of deciding which changes will go into the next commit. For this specific conflict we&rsquo;ll go ahead and use the changes in the <code>master</code> branch so we delete everything that belongs to the <code>new-animals</code> branch and also the comments added by git:</p>
+
+<p><code>
+hyena
+dragon
+horse
+</code></p>
+
+<p>Finally we just add and commit the file as usual:</p>
+
+<p><code>
+git add file-c.txt
+git commit -m "fix conflict with animals"
+</code></p>
+
+<h5>Working With Remote Repositories</h5>
+
+<p>Git is a distributed version control system which means that every developer working on a project has a copy of the whole or part of the repository. When working with projects its important to have a remote repository wherein developers can push their changes and pull the changes made by other developers in the team. It will also serve as a backup in case one of the computers which keeps a copy of a repository explodes.</p>
+
+<p>In this section were going to create a remote repository using Bitbucket. If you do not have a Bitbucket account yet go ahead and <a href="https://bitbucket.org/">sign up</a>, its free.</p>
+
+<p>Once you have registered and verified your account create a new repository by clicking on the &lsquo;create&rsquo; button on the top side of the bitbucket website. This will give you the following interface:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/new-repo.png" alt="new repository" /></p>
+
+<p>Input the name of the repository, check &lsquo;private repository&rsquo; for the access level. The &lsquo;repository type&rsquo; will be &lsquo;Git&rsquo;. Also check the &lsquo;Issue tracking&rsquo; and &lsquo;Wiki&rsquo; for the &lsquo;project management&rsquo;. Finally click on &lsquo;Create Repository&rsquo;.</p>
+
+<p>Once the repository is created it will give you the following:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/created-repo.png" alt="created repo" /></p>
+
+<p>Since we already have an existing project to work with, click on the &lsquo;I have an existing project to push up&rsquo; link. It will then show you the commands that you need to execute in order to get your existing repository up on Bitbucket:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/repo-details.png" alt="repo details" /></p>
+
+<p>First you have to navigate to the root of your project:</p>
+
+<p><code>
+cd /path/to/my/repo
+</code></p>
+
+<p>Use the <code>remote add</code> command to add the remote repository that you just created:</p>
+
+<p><code>
+git remote add origin git@bitbucket.org:{your bitbucket username}/animals.git
+</code></p>
+
+<p>Push up everything into the remote repository:</p>
+
+<p><code>
+git push -u origin -all
+</code></p>
+
+<p>Executing the command above will then give you the following output:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/git-push.png" alt="git push" /></p>
+
+<p>Note that you will need to have your public key copied over to bitbucket for this to work. You can do that by going to &lsquo;manage account&rsquo; then select &lsquo;SSH keys&rsquo;. From there you can just click on the &lsquo;add key&rsquo; button and bitbucket will prompt you to enter your public ssh key:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/add-sshkey.png" alt="add ssh key" /></p>
+
+<p>If you can remember earlier we created an ssh key. The <code>id_rsa.pub</code> is the public key and that&rsquo;s the one whose contents you need to copy into the textarea to input the key in bitbucket.</p>
+
+<p>Once you have successfully pushed your repo into bitbucket you will now be able to view the source. Simply refresh the page and click on the &lsquo;source&rsquo; tab:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/source.png" alt="source" /></p>
+
+<p>Under the &lsquo;overview&rsquo; tab you can also see your recent activity with regards to that repo:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/overview.png" alt="overview" /></p>
+
+<p>Now every time you make a change from your local copy of the repository and commited those changes you can just use the <code>git push</code> command to push those changes into this remote repository:</p>
+
+<p><code>
+git push
+</code></p>
+
+<p>If its your first time pushing to the remote repository you will need to specify the <code>origin</code> in this case we&rsquo;ll simply use <code>master</code> which refers to the <code>master</code> branch:</p>
+
+<p><code>
+git push -u origin master
+</code></p>
+
+<p>Next create a new file (<code>file-d.txt</code>) from bitbucket and add the following contents:</p>
+
+<p><code>
+dodo
+great auk
+tasmanian tiger
+sabertooth
+quagga
+</code></p>
+
+<p>The commit message will be:</p>
+
+<p><code>
+add extinct animals
+</code></p>
+
+<p>Now we have 4 files in our remote repository. We can pull the new file from the remote repo by using the <code>pull</code> command:</p>
+
+<p><code>
+git pull
+</code></p>
+
+<p>That&rsquo;s it! We have barely scratch the surface with what you can do with git. Be sure to check out the resources below to learn more about it.</p>
+
+<h5>Resources for Learning Git</h5>
+
+<ul>
+<li><a href="http://rogerdudler.github.io/git-guide/">Git the Simple Guide</a></li>
+<li><a href="http://gitready.com/">Git Ready</a></li>
+<li><a href="http://gitimmersion.com/">Git Immersion</a></li>
+<li><a href="http://try.github.io/">Try Git</a></li>
+<li><a href="http://git-scm.com/book">Pro Git</a></li>
+</ul>
+
+
+<h4>Mercurial</h4>
+
+<p>Mercurial just like git is a distributed version control system. Its also cross-platform which means that you can install it on any of the major operating systems available today.</p>
+
+<h5>Installing Mercurial</h5>
+
+<p>You can download any of the available installers from the <a href="http://mercurial.selenic.com/downloads/">mercurial downloads page</a>. Alternatively you can make use of the package manager that&rsquo;s available in the current operating system that you&rsquo;re using. For Linux distributions with <code>apt-get</code> you can install it with the following command:</p>
+
+<p><code>
+sudo apt-get install mercurial
+</code></p>
+
+<p>For Mac OS users you can also use homebrew:</p>
+
+<p><code>
+brew install mercurial
+</code></p>
+
+<p>For Windows users you can install it with <a href="https://chocolatey.org/">chocolatey</a>:</p>
+
+<p><code>
+cinst hg
+</code></p>
+
+<h5>Configuring Mercurial</h5>
+
+<p>Before you start using mercurial its important that you first supply your credentials. By default mercurial uses the current user of the computer that you&rsquo;re using as the user. But if you want to be more specific you can use the <code>.hgrc</code> file to supply your username.</p>
+
+<p>To configure mercurial, create an <code>.hgrc</code> in the root of your home directory:</p>
+
+<p><code>
+touch ~/.hgrc
+</code></p>
+
+<p>The <code>touch</code> command creates a file inside the directory that you specify. If you are on Windows you may need to install <a href="http://unxutils.sourceforge.net/">unixutils</a> in order to get the <code>touch</code> command available.</p>
+
+<p>Also note that the location of the <code>.hgrc</code> file might be different for you so check out <a href="http://www.selenic.com/mercurial/hgrc.5.html">Mercurial&rsquo;s page about the hgrc file</a>.</p>
+
+<p>Put the following contents in your <code>.hgrc</code> file:</p>
+
+<p><code>
+[ui]
+username = Firstname Lastname &lt;youremail@provider.com&gt;
+</code></p>
+
+<p>This means under the <code>ui</code> section set the <code>username</code> to be equal to your name followed by your email address.</p>
+
+<h5>Initializing a Mercurial Project</h5>
+
+<p>Just like with git you use the <code>init</code> command to initialize a project to use mercurial:</p>
+
+<p><code>
+hg init
+</code></p>
+
+<p>This will create an <code>.hg</code> directory under the root of your projects directory. This directory is where all the magic happens. You can think of it as the database that mercurial uses specifically for your project that maintains a record of all the changes that you have made.</p>
+
+<h5>Adding files to be tracked</h5>
+
+<p>You can add files to be tracked by mercurial using the the <code>hg add</code> command:</p>
+
+<p><code>
+hg add anime-list.txt
+</code></p>
+
+<p>If you want to add all the files on the current working directory you simply execute the <code>hg add</code> command without specifying a filename.</p>
+
+<h5>Removing files</h5>
+
+<p>If you don&rsquo;t want mercurial to track a specific file you can use the <code>hg remove</code> command. Note that this deletes the file that you specify:</p>
+
+<p><code>
+hg remove unwanted-file.txt
+</code></p>
+
+<h5>Revert</h5>
+
+<p>If you have accidentally executed the <code>hg remove</code> command you can simply use <code>hg revert</code> to revert that specific change. Note that you must have already made atleast one commit to that specific file since the <code>revert</code> command simply reverts back to the previous commit where the file hasn&rsquo;t been deleted yet.</p>
+
+<p><code>
+hg revert unwanted-file.txt
+</code></p>
+
+<h5>Commiting files</h5>
+
+<p>Once you&rsquo;re happy with your changes you can now use the <code>hg commit</code> command to have mercurial take a snapshot of the files that you have added. Note that unlike git there&rsquo;s no staging area in mercurial where you have to execute the <code>git add</code> command in order to add untracked files or modified files. In mercurial once the file has been added using the <code>hg add</code> command  for the first time you won&rsquo;t have to execute it again after you have modified a specific file. Therefore if you modify a specific file that has already been added using <code>hg add</code> before and made changes to it, executing the <code>hg commit</code> command will commit the changes to the file into history.</p>
+
+<p><code>
+hg commit -m "add anime list"
+</code></p>
+
+<h5>Getting the status of a repo</h5>
+
+<p>You can get the status of a mercurial repository by using the <code>hg status</code> command. This will return a list of files that are prefixed differently based on the status of the file. Here&rsquo;s a breakdown of the convention that mercurial uses:</p>
+
+<ul>
+<li><code>?</code> &ndash; untracked files, these are the files that were created in your projects directory but hasn&rsquo;t been added to be tracked by mercurial yet.</li>
+<li><code>A</code> &ndash; tracked files, these are the files added using the <code>hg add</code> command.</li>
+<li><code>!</code> &ndash; missing files, these are files that has been added using the <code>hg add</code> command but is missing from the directory where it was saved when the <code>hg add</code> command was used. This can be either due to deletion but not using the <code>hg remove</code> command.</li>
+<li><code>M</code> &ndash; modified files, these are the files which has been modified since the last commit.</li>
+</ul>
+
+
+<p>Note that mercurial doesn&rsquo;t list out files which are already commited.</p>
+
+<h5>Diffing</h5>
+
+<p>If you want to know what exactly has been changed in a specific file you can use the <code>hg diff</code> command:</p>
+
+<p><code>
+hg diff anime-list.txt
+</code></p>
+
+<p>This returns the following output:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/hgdiff.png" alt="hg diff" /></p>
+
+<p>As you can see from the above screenshot it has the same convention as git. Lines that has been added is indicated with a <code>+</code> sign before the actual line. And lines that has been deleted is indicated with a <code>-</code> sign.</p>
+
+<h5>Branching</h5>
+
+<p>You can create a new branch by using the <code>hg branch</code> command followed by the name of the branch that you want to create:</p>
+
+<p><code>
+hg branch new-anime
+</code></p>
+
+<p>To switch into the new branch:</p>
+
+<p><code>
+hg update new-anime
+</code></p>
+
+<p>Note that the branching workflow in mercurial is the same as that of git. First you create a new branch then you switch to it, then you make changes and once you&rsquo;re happy with your changes simply switch back to the <code>default</code> branch (<code>hg update default</code>) then use <code>hg merge {branch name}</code> to merge the changes in the branch that you created to the default branch.
+But unlike git with mercurial you&rsquo;ll need to commit the action of merging into history in order to commit it:</p>
+
+<p><code>
+hg commit -m "merged changes from experimental branch"
+</code></p>
+
+<h5>Pushing to a remote server</h5>
+
+<p>You can push your changes to a remote server by using the <code>hg push</code> command. For example if you want to push your changes to a bitbucket repository named <code>animals-hg</code>. Note that you first have to create your ssh key pair in order for this to work. We&rsquo;ve already done that under the Git section on setting up git. Go back to that section if you haven&rsquo;t already set that up:</p>
+
+<p><code>
+hg push ssh://hg@bitbucket.org/{username}/animals-hg
+</code></p>
+
+<p>This will push all the changes that you have commited into the remote server. But supplying the server information every time you need to push to a remote repository is not really  a good idea. Mercurial doesn&rsquo;t really have a command that lets you add a remote repository to push into for a specific repository so what you can do is place those in the <code>.hgrc</code> file. Under the <code>[paths]</code> section specify the alias that you want to use and set it equal to the server information.</p>
+
+<p><code>
+[paths]
+animals = ssh://hg@bitbucket.org/{username}/animals-hg
+books = ssh://hg@bitbucket.org/{username}/books-hg
+</code></p>
+
+<p>Once that&rsquo;s done you can just use the alias when pushing. So for example when you&rsquo;re pushing to the <code>animals</code> repo:</p>
+
+<p><code>
+hg push animals
+</code></p>
+
+<h5>Pulling changes</h5>
+
+<p>If you want to pull in the changes from a remote server execute the <code>hg pull</code> command:</p>
+
+<p><code>
+hg pull ssh://hg@bitbucket.org/{username}/animals-hg
+</code></p>
+
+<p>Note that unlike git the <code>hg pull</code> command won&rsquo;t automatically update your working directory. You will need to execute <code>hg update</code> followed by your current branch name in order to update your working directory:</p>
+
+<p><code>
+hg update {current branch name}
+</code></p>
+
+<p>You can also use the aliases under the paths section that you specified earlier under the <code>.hgrc</code> file to pull the latest changes from. So if you want to pull from <code>ssh://hg@bitbucket.org/{username}/animals-hg</code> you would just use <code>hg pull animals</code> instead of the full path to the repository.</p>
+
+<h5>Resources for learning mercurial</h5>
+
+<ul>
+<li><a href="http://hginit.com/">HG Init</a></li>
+<li><a href="https://wiki.alliedmods.net/Mercurial_Tutorial">Mercurial Tutorial</a></li>
+<li><a href="http://hgbook.red-bean.com/read/">Mercurial: The Definitive Guide</a></li>
+</ul>
+
+
+<h4>SVN</h4>
+
+<p>Subversion is an open-source version control system which allows you to manage files and directories and changes made to them. The main difference of SVN with Git and Mercurial is that it is a centralized version control system. This means that the people working on a project can only commit their changes to a single central repository.</p>
+
+<h5>Installing SVN</h5>
+
+<p>You can visit the <a href="http://subversion.apache.org/packages.html">packages</a> page and follow the installation instructions for your operating system.</p>
+
+<p>For Ubuntu and other debian-based operating system:</p>
+
+<p><code>
+sudo apt-get install subversion
+</code></p>
+
+<p>For Windows users lots of people recommends using <a href="http://tortoisesvn.net/downloads.html">tortoise svn</a> but that&rsquo;s a GUI tool for SVN. I recommend using the command line before using a GUI so that you can understand the concepts easily. But if you want to try that out the <a href="http://tortoisesvn.net/docs/release/TortoiseSVN_en/index.html">tortoise svn documentation</a> and this <a href="http://codetunnel.com/tortoisesvn-basics-tutorial/">tortoise svn basics tutorial</a> is a good place to start learning. But if you want to learn the command line way of doing things then you can download the <a href="http://www.collab.net/downloads/subversion">Subversion 1.8.8 installer</a> and install it on your system.</p>
+
+<h5>Setting up a central server</h5>
+
+<p>Unlike Git and Mercurial where a central server or repository is optional with SVN we have to setup a central server where we make our commits. Luckily there&rsquo;s <a href="https://code.google.com/">Google Code</a>, a free project hosting platform by Google.</p>
+
+<p>First thing that you need to do is to <a href="https://code.google.com/hosting/createProject">create a new project</a>. Just supply dummy details such as the one below:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/google-code.png" alt="create svn project on google code" /></p>
+
+<p>Once you&rsquo;re done setting up a new project. Go to the project page to get the actual URL of the central repository. For the project that we just created it will look something like:</p>
+
+<p><code>
+https://testingsubversionsvn.googlecode.com/svn/trunk/ testingsubversionsvn
+</code></p>
+
+<p>Do note that google only allows unique names for projects. So you have to pick out a unique name for the test project that you create since the one above can no longer be used.</p>
+
+<p>To get the changes from the repository you use the <code>svn checkout</code> command followed by the URL of the central repository:</p>
+
+<p><code>
+svn checkout https://testingsubversionsvn.googlecode.com/svn/trunk/ testingsubversionsvn --username {your email}@{provider}.com
+</code></p>
+
+<p>The command above will create a <code>testingsubversionsvn</code> folder in your current working directory. That will be your working directory so you have to <code>cd</code> on it:</p>
+
+<p><code>
+cd testingsubversionsvn
+</code></p>
+
+<h5>Adding files</h5>
+
+<p>Just like with git and mercurial you also have to explicitly let svn know what specific files to track. You can do that with the <code>svn add</code> command. So for example if you created <code>file-a.txt</code> on your project directory and you want svn to track changes to it. You simply do:</p>
+
+<p><code>
+svn add file-a.txt
+</code></p>
+
+<h5>Commiting changes to the central repo</h5>
+
+<p>This is where things gets different. With git and mercurial you can commit changes into your own copy of the repository and just &lsquo;push&rsquo; them later on to the central repository. With svn you have to commit your changes to just the central repository. So you need to be connected to the internet if you want to commit your changes if your central repository is somewhere in the cloud.
+To commit changes you can use the <code>svn commit</code> command followed by the name of the file and then the commit message specified by using the <code>-m</code> option:</p>
+
+<p><code>
+svn commit file-a.txt -m "add file-a.txt"
+</code></p>
+
+<p>If you are commiting to the google code project that we created earlier you will have to supply your username and the password generated by google. The username is basically the value that you supplied to the <code>--username</code> option when you pulled in the contents of the central repository earlier. By default its the gmail email address that you used when you created the a project at google code but with its first letter capitalized.
+The password can be seen by clicking on the &lsquo;source&rsquo; tab > &lsquo;checkout&rsquo; then click the googlecode.com link.</p>
+
+<h5>Pulling changes from the central repo</h5>
+
+<p>To pull in changes from the central repository the <code>svn update</code> command is used. This would update your current working directory of all the changes from the central repo.</p>
+
+<h5>Getting repo status</h5>
+
+<p>You can get the status of a repo by using the <code>svn status</code> command. Note that the convention used by svn is the same with that of mercurial:</p>
+
+<ul>
+<li><code>M</code> &ndash; modified files</li>
+<li><code>?</code> &ndash; untracked files</li>
+<li><code>A</code> &ndash; tracked files</li>
+<li><code>!</code> &ndash; missing files</li>
+</ul>
+
+
+<h5>Diffing in SVN</h5>
+
+<p>To get a report on what has changed on a file use the <code>svn diff</code> command followed by the name of the file that you want to diff:</p>
+
+<p><code>
+svn diff file-b.txt
+</code></p>
+
+<p>This will give a result similar to the following:</p>
+
+<p><img src="/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/svn-diffing.png" alt="svn diffing" /></p>
+
+<p>As you can see there&rsquo;s nothing new here. The conventions used are the same. So the <code>+</code> symbol is added as a prefix on lines which has been added since the last commit and <code>-</code> symbol is added as a prefix on lines which has been removed since the last commit. The only additional thing that we get is the revision number. This indicates the current revision number in the working directory. This means that as you modify different files the revision number will keep on increasing.</p>
+
+<h5>Resources for learning SVN</h5>
+
+<ul>
+<li><a href="http://svnbook.red-bean.com/en/1.7/">SVN Book</a></li>
+<li><a href="http://codetunnel.com/tortoisesvn-basics-tutorial/">Tortoise SVN Basics</a></li>
+</ul>
+
+
+<h4>Database Version Control</h4>
+
+<p>Lastly there&rsquo;s version control for database. Its not just source code and other project assets that needs version control. The database used by your project is also updated from time to time to reflect the ever changing project requirements. In this section I&rsquo;m going to walk you through DBV, which is a database version control system for MySQL.</p>
+
+<h5>DBV</h5>
+
+<p>DBV is a database version control system written in PHP for MySQL database. I have written about it in a recent Sitepoint article: <a href="www.sitepoint.com/database-versioning-dbv/">database versioning with DBV</a> so be sure to check it out if you&rsquo;re interested.</p>
+
+<h5>Other Database Version Control Systems</h5>
+
+<ul>
+<li><a href="http://www.red-gate.com/products/sql-development/sql-source-control/">SQL Source Control</a> -for MS SQL database</li>
+<li><a href="http://www.liquibase.org/">Liquibase</a> &ndash; supports many database servers (MySQL, PostgreSQL, Oracle, Sql Server)</li>
+<li><a href="https://github.com/flyway/flyway">Flyway</a> &ndash; for Java projects</li>
+<li><a href="http://guides.rubyonrails.org/migrations.html">Active Record Migrations</a> &ndash; for rails projects</li>
+<li><a href="http://off-scale.com/">Off-scale</a> &ndash; for MySQL database</li>
+<li><a href="http://www.doctrine-project.org/projects/migrations.html">Doctrine Migrations</a> &ndash; for PHP projects</li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this blog post you&rsquo;ve learned some of the basics of version control systems and how you can use them in your daily development workflow. Version control systems is an invaluable tool to keep in your web development toolset. It allows you to not only keep track of the changes to your projects source code but also to easily collaborate easily with other developers in your team.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.smashingmagazine.com/2008/09/18/the-top-7-open-source-version-control-systems/">7 Version Control Systems Reviewed</a></li>
+<li><a href="http://www.troyhunt.com/2011/05/10-commandments-of-good-source-control.html">The 10 commandments of good Source control management</a></li>
+<li><a href="https://homes.cs.washington.edu/~mernst/advice/version-control.html">Version Control Concepts and Best Practices</a></li>
+<li><a href="http://nvie.com/posts/a-successful-git-branching-model/">A Successful Git Branching Model</a></li>
+<li><a href="http://www.ericsink.com/scm/source_control.html">Source Control How To</a></li>
+<li><a href="http://betterexplained.com/articles/a-visual-guide-to-version-control">A Visual Guide to Version Control</a></li>
+<li><a href="http://www.nimkar.net/index.php/9-release-management/3-database-versioning-the-ignored-aspect-of-version-control">Database Versioning: the ignored aspect of version control</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

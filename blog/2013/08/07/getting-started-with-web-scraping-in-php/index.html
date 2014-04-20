@@ -1,0 +1,865 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Web Scraping in PHP - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Have you ever wanted to get a specific data from another website but there&rsquo;s no API available for it?
+That&rsquo;s where Web Scraping comes in &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/08/07/getting-started-with-web-scraping-in-php">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Web Scraping in PHP</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2013-08-07T17:22:00+08:00" pubdate data-updated="true">Aug 7<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Have you ever wanted to get a specific data from another website but there&rsquo;s no API available for it?
+That&rsquo;s where Web Scraping comes in, if the data is not made available by the website we can just scrape it from the website itself.</p>
+
+<!--More-->
+
+
+<p>But before we dive in let us first define what web scraping is. According to <a href="http://en.wikipedia.org/wiki/Web_scraping">Wikipedia</a>:</p>
+
+<blockquote><p>Web scraping (web harvesting or web data extraction) is a computer software technique of extracting information from websites. Usually, such software programs simulate human exploration of the World Wide Web by either implementing low-level Hypertext Transfer Protocol (HTTP), or embedding a fully-fledged web browser, such as Internet Explorer or Mozilla Firefox.</p></blockquote>
+
+
+<p>So yes, web scraping lets us extract information from websites.
+But the thing is there are some legal issues regarding web scraping.
+Some consider it as an act of trespassing to the website where you are scraping the data from.
+That&rsquo;s why it is wise to read the terms of service of the specific website that you want to scrape because you might be doing something illegal without knowing it.
+You can read more about it in this <a href="http://en.wikipedia.org/wiki/Web_scraping">Wikipedia page</a>.</p>
+
+<h2>Web Scraping Techniques</h2>
+
+<p>There are many techniques in web scraping as mentioned in the Wikipedia page earlier.
+But I will only discuss the following:</p>
+
+<ul>
+<li>Document Parsing</li>
+<li>Regular Expressions</li>
+</ul>
+
+
+<h3>Document Parsing</h3>
+
+<p>Document parsing is the process of converting HTML into DOM (Document Object Model) in which we can traverse through.
+Here&rsquo;s an example on how we can scrape data from a public website:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$html</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">&#39;http://pokemondb.net/evolution&#39;</span><span class="p">);</span> <span class="c1">//get the html returned from the following url</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$pokemon_doc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DOMDocument</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">libxml_use_internal_errors</span><span class="p">(</span><span class="k">TRUE</span><span class="p">);</span> <span class="c1">//disable libxml errors</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$html</span><span class="p">)){</span> <span class="c1">//if any html is actually returned</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$pokemon_doc</span><span class="o">-&gt;</span><span class="na">loadHTML</span><span class="p">(</span><span class="nv">$html</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">libxml_clear_errors</span><span class="p">();</span> <span class="c1">//remove errors for yucky html</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nv">$pokemon_xpath</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DOMXPath</span><span class="p">(</span><span class="nv">$pokemon_doc</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//get all the h2&#39;s with an id</span>
+</span><span class='line'>  <span class="nv">$pokemon_row</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;//h2[@id]&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$pokemon_row</span><span class="o">-&gt;</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$pokemon_row</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">nodeValue</span> <span class="o">.</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What we did with the code above was to get the html returned from the url of the website that we want to scrape.
+In this case the website is <a href="http://pokemondb.net">pokemondb.net</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$html</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">&#39;http://pokemondb.net/evolution&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we declare a new DOM Document, this is used for converting the html string returned from <code>file_get_contents</code> into an actual Document Object Model which we can traverse through:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$pokemon_doc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DOMDocument</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we disable libxml errors so that they won&rsquo;t be outputted on the screen, instead they will be buffered and stored:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nb">libxml_use_internal_errors</span><span class="p">(</span><span class="k">TRUE</span><span class="p">);</span> <span class="c1">//disable libxml errors</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we check if there&rsquo;s an actual html that has been returned:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$html</span><span class="p">)){</span> <span class="c1">//if any html is actually returned</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we use the <code>loadHTML()</code> function from the new instance of <code>DOMDocument</code> that we created earlier to load the html that was returned. Simply use the html that was returned as the argument:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$pokemon_doc</span><span class="o">-&gt;</span><span class="na">loadHTML</span><span class="p">(</span><span class="nv">$html</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we clear the errors if any. Most of the time yucky html causes these errors. Examples of yucky html are inline styling (style attributes embedded in elements), invalid attributes and invalid elements. Elements and attributes are considered invalid if they are not part of the HTML specification for the doctype used in the specific page.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nb">libxml_clear_errors</span><span class="p">();</span> <span class="c1">//remove errors for yucky html</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we declare a new instance of <code>DOMXpath</code>. This allows us to do some queries with the DOM Document that we created.
+This requires an instance of the DOM Document as its argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$pokemon_xpath</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DOMXPath</span><span class="p">(</span><span class="nv">$pokemon_doc</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, we simply write the query for the specific elements that we want to get. If you have used <a href="http://jquery.com/">jQuery</a> before then this process is similar to what you do when you select elements from the DOM.
+What were selecting here is all the h2 tags which has an id, we make the location of the h2 unspecific by using double slashes <code>//</code> right before the element that we want to select. The value of the id also doesn&rsquo;t matter as long as there&rsquo;s an id then it will get selected. The <code>nodeValue</code> attribute contains the text inside the h2 that was selected.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="c1">//get all the h2&#39;s with an id</span>
+</span><span class='line'><span class="nv">$pokemon_row</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;//h2[@id]&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$pokemon_row</span><span class="o">-&gt;</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$pokemon_row</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">nodeValue</span> <span class="o">.</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This results to the following text printed out in the screen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Generation 1 - Red, Blue, Yellow</span>
+</span><span class='line'><span class="x">Generation 2 - Gold, Silver, Crystal</span>
+</span><span class='line'><span class="x">Generation 3 - Ruby, Sapphire, Emerald</span>
+</span><span class='line'><span class="x">Generation 4 - Diamond, Pearl, Platinum</span>
+</span><span class='line'><span class="x">Generation 5 - Black, White, Black 2, White 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s do one more example with the document parsing before we move on to regular expressions.
+This time were going to get a list of all pokemons along with their specific type (E.g Fire, Grass, Water).</p>
+
+<p>First let&rsquo;s examine what we have on pokemondb.net/evolution so that we know what particular element to query.</p>
+
+<p><img src="/images/posts/getting_started_with_web_scraping/check.png" alt="checking" /></p>
+
+<p>As you can see from the screenshot, the information that we want to get is contained within a span element with a class of <code>infocard-tall</code>. Yes, the space there is included. When using XPath to query spaces are included if they are present, otherwise it wouldn&rsquo;t work.</p>
+
+<p>Converting what we know into actual query, we come up with this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">//span[@class=&quot;infocard-tall &quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This selects all the span elements which has a class of <code>infocard-tall</code>. It doesn&rsquo;t matter where in the document the span is because we used the double forward slash before the actual element.</p>
+
+<p>Once were inside the span we have to get to the actual elements which directly contains the data that we want. And that is the name and the type of the pokemon. As you can see from the screenshot below the name of the pokemon is directly contained within an <code>anchor</code> element with a class of <code>ent-name</code>. And the types are stored within a <code>small</code> element with a class of <code>aside</code>.</p>
+
+<p><img src="/images/posts/getting_started_with_web_scraping/info-card.png" alt="info card" /></p>
+
+<p>We can then use that knowledge to come up with the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$pokemon_list</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$pokemon_and_type</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;//span[@class=&quot;infocard-tall &quot;]&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$pokemon_and_type</span><span class="o">-&gt;</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>   
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//loop through all the pokemons</span>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$pokemon_and_type</span> <span class="k">as</span> <span class="nv">$pat</span><span class="p">){</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">//get the name of the pokemon</span>
+</span><span class='line'>      <span class="nv">$name</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;a[@class=&quot;ent-name&quot;]&#39;</span><span class="p">,</span> <span class="nv">$pat</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">nodeValue</span><span class="p">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$pkmn_types</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span> <span class="c1">//reset $pkmn_types for each pokemon</span>
+</span><span class='line'>      <span class="nv">$types</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;small[@class=&quot;aside&quot;]/a&#39;</span><span class="p">,</span> <span class="nv">$pat</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//loop through all the types and store them in the $pkmn_types array</span>
+</span><span class='line'>      <span class="k">foreach</span><span class="p">(</span><span class="nv">$types</span> <span class="k">as</span> <span class="nv">$type</span><span class="p">){</span>
+</span><span class='line'>          <span class="nv">$pkmn_types</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$type</span><span class="o">-&gt;</span><span class="na">nodeValue</span><span class="p">;</span> <span class="c1">//the pokemon type</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//store the data in the $pokemon_list array</span>
+</span><span class='line'>      <span class="nv">$pokemon_list</span><span class="p">[]</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="nv">$name</span><span class="p">,</span> <span class="s1">&#39;types&#39;</span> <span class="o">=&gt;</span> <span class="nv">$pkmn_types</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//output what we have</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;pre&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$pokemon_list</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;/pre&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&rsquo;s nothing new with the code that we have above except for using query inside the <code>foreach</code> loop.
+We use this particular line of code to get the name of the pokemon, you might notice that we specified a second argument when we used the <code>query</code> method. The second argument is the current row, we use it to specify the scope of the query. This means that were limiting the scope of the query to that of the current row.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$pokemon_xpath</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;a[@class=&quot;ent-name&quot;]&#39;</span><span class="p">,</span> <span class="nv">$pat</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">nodeValue</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The results would be something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [0] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [name] =&gt; Bulbasaur</span>
+</span><span class='line'><span class="x">            [types] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [0] =&gt; Grass</span>
+</span><span class='line'><span class="x">                    [1] =&gt; Poison</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'><span class="x">        )</span>
+</span><span class='line'><span class="x">    [1] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [name] =&gt; Ivysaur</span>
+</span><span class='line'><span class="x">            [types] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [0] =&gt; Grass</span>
+</span><span class='line'><span class="x">                    [1] =&gt; Poison</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'><span class="x">        )</span>
+</span><span class='line'><span class="x">    [2] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [name] =&gt; Venusaur</span>
+</span><span class='line'><span class="x">            [types] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [0] =&gt; Grass</span>
+</span><span class='line'><span class="x">                    [1] =&gt; Poison</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'><span class="x">        )</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Regular Expressions</h3>
+
+<p>Aside from document parsing we can also use regular expressions to scrape the data that we want from a specific webpage.
+Regular expressions are useful if we only want to scrape actual content and not HTML elements because its difficult if not impossible to match all the possibilities of how an HTML element might have been written.
+Consider the following example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">&lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;link href=&quot;style.css&quot; rel=&quot;stylesheet&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;link href=&quot;style.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+</span><span class='line'><span class="x">&lt;link href=&quot;style.css&quot; rel=&quot;stylesheet&quot;/&gt;</span>
+</span><span class='line'><span class="x">&lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot; type=&quot;text/css&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;link type=&quot;text/css&quot; rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;link type=&quot;text/css&quot; href=&quot;style.css&quot; rel=&quot;stylesheet&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;link type=&quot;text/css&quot; href=&quot;style.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+</span><span class='line'><span class="x">&lt;link type=&quot;text/css&quot; href=&quot;style.css&quot; rel=&quot;stylesheet&quot;/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above is basically the same thing written in a bunch of ways. It would be difficult to scrape all the external stylesheets in a page using regular expressions as we would need to target every possible way that it can be written. So instead of using regular expressions we use document parsing to get all the external stylesheets. This is just one of the many cases in which regular expressions can&rsquo;t be used in scraping.</p>
+
+<p>The main advantage of using regular expressions is its speed. The whole process of converting an HTML document into DOM and then traversing the DOM takes time especially if there are lots of elements which matches the query that you specify.
+This is not the case with regular expressions as you&rsquo;re only working with strings and patterns with it, no conversion and traversing takes place so its very fast.</p>
+
+<p>Ok enough with the explanations, here&rsquo;s an example on how to use regular expressions in scraping.
+Here we are specifically looking for URL&rsquo;s which begins with <code>https://safelinking.net/</code> and followed by any instances of letters from A to Z and its lowercase version or any instances of numbers. Remember that we need to escape forward slashes and periods using a backslash. We then use the <code>preg_match_all()</code> function to get all the matches of the specific pattern that were looking for. The <code>preg_match_all()</code> function takes the pattern as its first argument, then the actual string where we want to find the pattern as its second argument, then the third argument would be the variable that will store the actual matches.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$pokemon_episodes_html</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">&#39;http://www.animekens.com/2013/04/pokemon-episode-1-82-season-1-480p60mb.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$pattern</span> <span class="o">=</span> <span class="s1">&#39;/https:\/\/safelinking\.net\/d\/[A-Za-z0-9]*/&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">preg_match_all</span><span class="p">(</span><span class="nv">$pattern</span><span class="p">,</span> <span class="nv">$pokemon_episodes_html</span><span class="p">,</span> <span class="nv">$matches</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$matches</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above will output the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [0] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [0] =&gt; https://safelinking.net/d/81b681a76a</span>
+</span><span class='line'><span class="x">            [1] =&gt; https://safelinking.net/d/04138fdd24</span>
+</span><span class='line'><span class="x">            [2] =&gt; https://safelinking.net/d/7378613026</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Web Scraping Tools</h2>
+
+<p>You can also use some web scraping tools to make your life easier. Here are some of the PHP libraries that you can use for scraping.</p>
+
+<h3>Simple HTML Dom</h3>
+
+<p>To make web scraping easier you can use libraries such as <a href="http://simplehtmldom.sourceforge.net/">simple html DOM</a>.
+Here&rsquo;s an example of getting the names of the pokemon using simple html DOM:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;libs/simple_html_dom.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$html</span> <span class="o">=</span> <span class="nx">file_get_html</span><span class="p">(</span><span class="s1">&#39;http://pokemondb.net/evolution&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$html</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;a[class=ent-name]&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$element</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$element</span><span class="o">-&gt;</span><span class="na">innertext</span> <span class="o">.</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="p">;</span> <span class="c1">//outputs bulbasaur, ivysaur, etc...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The syntax is more simple so the code that you have to write is lesser plus there are also some convenience functions and attributes which you can use. An example is the plaintext attribute which extracts all the text from a web page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">file_get_html</span><span class="p">(</span><span class="s1">&#39;http://pokemondb.net/evolution&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">plaintext</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Ganon</h3>
+
+<p>You can also use <a href="https://code.google.com/p/ganon/">ganon</a> for web scraping which packs features such as support for html5, jQuery like syntax, manipulation of elements and their attributes.</p>
+
+<p>Here&rsquo;s an example on how to use ganon to get all the images that are in a table element:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;libs/ganon.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$html</span> <span class="o">=</span> <span class="nx">file_get_dom</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$html</span><span class="p">)){</span>
+</span><span class='line'>  <span class="nv">$elements</span> <span class="o">=</span> <span class="nv">$html</span><span class="p">(</span><span class="s1">&#39;table img&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$elements</span> <span class="k">as</span> <span class="nv">$element</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$element</span><span class="o">-&gt;</span><span class="na">src</span> <span class="o">.</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="p">;</span> <span class="c1">//output the image source</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it for this tutorial! You have learned the basics of web scraping in PHP.
+You can take your adventures to the next level by scraping non-public parts of websites or scraping content that is dynamically generated.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://blog.hartleybrody.com/web-scraping/">I don&rsquo;t need no stinking API: Web Scraping for fun and profit</a></li>
+<li><a href="http://blog.webspecies.co.uk/2011-07-27/web-scrapping-is-actually-pretty-easy.html">Web scraping is actually pretty easy</a></li>
+<li><a href="https://news.ycombinator.com/item?id=4893922">Web scraping or API</a></li>
+<li><a href="http://curl.haxx.se/">Curl</a></li>
+<li><a href="http://simplehtmldom.sourceforge.net/">Simple HTML Dom</a></li>
+<li><a href="https://code.google.com/p/ganon/">Ganon</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2013-09-08T00:00:00+08:00" class="updated">Updated Sep 8<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/web-scraping/'>web-scraping</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/08/07/getting-started-with-web-scraping-in-php/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/08/07/getting-started-with-web-scraping-in-php/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/13/my-linux-development-environment/" title="Previous Post: My Linux Development Environment">&laquo; My Linux Development Environment</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress/" title="Next Post: Introduction to Portfolio plugin for Octopress">Introduction to Portfolio plugin for Octopress &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/">A Whirlwind Tour of Web Developer Tools: Source Control</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2013/08/07/getting-started-with-web-scraping-in-php/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2013/08/07/getting-started-with-web-scraping-in-php/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

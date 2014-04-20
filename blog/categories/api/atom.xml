@@ -1,0 +1,1509 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: api | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/api/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started With Zillow API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api/"/>
+    <updated>2014-03-20T14:01:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/20/getting-started-with-zillow-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial were going to have a quick look at the Zillow API. But before we move on with actually writing some code lets first define what Zillow is. Taken from the <a href="http://www.zillow.com/corp/About.htm">Zillow about page</a> itself:</p>
+
+<p><blockquote><p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.</p></blockquote></p>
+
+<p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
+
+<!-- more -->
+
+
+<h4>Getting a Zillow Web Service ID</h4>
+
+<p>In order to start making requests to the Zillow API you must first register an account with them. Registering with zillow is free, all you have to do is visit the <a href="http://www.zillow.com/">zillow homepage</a> and click on the join link. After that just enter all the information that is being asked. Once registered go to the <a href="http://www.zillow.com/webservice/Registration.htm">API registration page</a> and enter the necessary information:</p>
+
+<p><img src="/images/posts/2014-03-20-getting-started-with-zillow-api/api-signup.png" alt="zillow api registration" /></p>
+
+<p>Just check the specific API that you will need for your project, agree to the terms of use then click on the submit button. Zillow will also ask about a sample URL where you will use the API, if you do not have a specific URL in mind you can just place <code>http://localhost</code> or some other URL which you can use for testing purposes.</p>
+
+<p>Once that&rsquo;s done zillow will email you the API details. All you need here is the value for the Zillow Web Services Identification (ZWSID).</p>
+
+<h4>GetSearchResults API</h4>
+
+<p>Now that we have a zillow web service ID its time to test out some of the API methods that are available. First on the list is the <code>GetSearchResults API</code> which you can use to find real estate information for a specific address. Note that an address must be posted first by an owner or an agent in the <a href="http://www.zillow.com/for-sale-by-owner/">Zillow site</a> before it can be viewed.</p>
+
+<p>The URL for requesting search results is <code>http://www.zillow.com/webservice/GetSearchResults.htm</code>.</p>
+
+<p>It requires 3 url encoded arguments to be passed in:</p>
+
+<ul>
+<li><strong>zws-id</strong> &ndash; the zillow web service id</li>
+<li><strong>address</strong> &ndash; the address of the property to search (e.g. 3799 S Las Vegas Blvd, Las Vegas, NV 89109, United States)</li>
+<li><strong>citystatezip</strong> &ndash; the city + state combination or the zip code of the address that you specified in the <code>address</code> field.</li>
+</ul>
+
+
+<p>A successful request will return an XML file containing all the search results. Here&rsquo;s a JSON string representation of the XML file that will be returned:</p>
+
+<p>```json
+{</p>
+
+<pre><code>request: {
+    address: '',
+    citystatezip: ''
+},
+message: {
+    text: '',
+    code: ''
+},
+response: {
+    results: {
+        result: [
+            {
+                zpid: '',
+                link: {
+                    homedetails: '',
+                    graphsanddata: '',
+                    comparables: ''
+                },
+                address: {
+                    street: '',
+                    zipcode: '',
+                    city: '',
+                    state: '',
+                    latitude: '',
+                    longitude: ''
+                },
+                zestimate: {
+                    amount: '',
+                    last-updated: '',
+                    oneWeekChange: {
+                        @attributes: {
+                            deprecated: ''
+                        }
+                    },
+                    valueChange: '',
+                    valuationRange: {
+                        low: '',
+                        high: ''
+                    },
+                    percentile: ''
+                },
+                localRealEstate: {
+                    region: {
+                        @attributes: {
+                            id: '',
+                            type: '',
+                            name: ''
+                        },
+                        links: {
+                            overview: '',
+                            forSaleByOwner: '',
+                            forSale: ''
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And no the results doesn&rsquo;t exactly return empty strings for the values of each of the properties. I just did it that way so you can focus on the actual properties that are returned.</p>
+
+<p>Here&rsquo;s an example PHP code that makes a request to the zillow API using <code>file_get_contents</code>. You can also use <code>curl</code> to have the benefit of error handling but to keep things simple lets stick with <code>file_get_contents</code> for this tutorial:</p>
+
+<p>```php
+&lt;?php
+$zillow_id = &lsquo;xxx&rsquo;; //the zillow web service ID that you got from your email</p>
+
+<p>$search = $<em>GET[&lsquo;address&rsquo;];
+$citystate = $</em>GET[&lsquo;citystate&rsquo;];
+$address = urlencode($search);
+$citystatezip = urlencode($citystate);</p>
+
+<p>$url = &ldquo;<a href="http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip">http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=$zillow_id&amp;address=$address&amp;citystatezip=$citystatezip</a>&rdquo;;</p>
+
+<p>$result = file_get_contents($url);
+$data = simplexml_load_string($result);
+?>
+```</p>
+
+<p>Once the request is completed you can just access individual properties using the arrow notation. In the example below were accessing the <code>zpid</code> property:</p>
+
+<p><code>
+&lt;?php
+echo $data-&gt;response-&gt;results-&gt;result[0]-&gt;zpid;
+?&gt;
+</code></p>
+
+<p>But what happens when we enter an address which doesn&rsquo;t exist in the zillow database? For that you can check the value for the <code>message.code</code>:</p>
+
+<p><code>
+&lt;?php
+$code = $data-&gt;message-&gt;code;
+?&gt;
+</code></p>
+
+<p>This contains a 1-3 digit number. <code>0</code> basically means that the request was successful and that there are results that are returned. <code>507</code> or <code>508</code> means that there&rsquo;s no exact match for the inputted address. There are a bunch of other error codes which you can use so check out the messages and codes section in the <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">search results api page</a> for more information.</p>
+
+<p>For more information regarding the search results API check out <a href="http://www.zillow.com/howto/api/GetSearchResults.htm">this page</a></p>
+
+<h4>GetZestimate API</h4>
+
+<p>Another API Method that we can use is the <code>GetZestimate</code>. This returns information regarding the zestimate of a specific property. A Zestimate is Zillow&rsquo;s estimated market value, computed using a proprietary formula. You can use the <code>GetZestimate</code> method by making a request to this URL: <code>http://www.zillow.com/webservice/GetZestimate.htm</code>.</p>
+
+<p>The <code>GetZestimate</code> method only requires 2 arguments: the <code>zws-id</code> and the <code>zpid</code>. Of this 2 arguments the <code>zpid</code> is of interest since we didn&rsquo;t use it in the previous method. The <code>zpid</code> is basically a unique ID assigned by zillow to a specific property.</p>
+
+<p>If you might have noticed earlier the <code>SearchResults</code> method already returns some zestimate data:</p>
+
+<p>```json
+zestimate: {</p>
+
+<pre><code>amount: '',
+last-updated: '',
+oneWeekChange: {
+    @attributes: {
+        deprecated: ''
+    }
+},
+valueChange: '',
+valuationRange: {
+    low: '',
+    high: ''
+},
+percentile: ''
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You can pretty much use this one if you don&rsquo;t need detailed information about a specific zestimate of a property. But if need more detailed information the <code>GetZestimate</code> method is the one that you need to use. Here&rsquo;s the JSON string representation of the result that it returns:</p>
+
+<p>```
+{</p>
+
+<pre><code>request: {
+    zpid: ''
+},
+message: {
+   text: '',
+   code: ''
+},
+response: {
+    zpid: '',
+    links: {
+        homedetails: '',
+        graphsanddata: '',
+        mapthishome: '',
+        comparables: ''
+    },
+    address: {
+        street: '',
+        zipcode: '',
+        city: '',
+        state: '',
+        latitude: '',
+        longitude: ''
+    },
+    zestimate: {
+        amount: '',
+        last-update: '',
+        oneWeekChange: '',
+        valueChange: '',
+        valuationRange: {
+            low: '',
+            high: ''
+        },
+        percentile: ''
+    },
+    localRealEstate: {
+        region: {
+            links: {
+                overview: '',
+                forSaleByOwner: '',
+                forSale
+            }
+        }
+    },
+    regions: {
+        zipcode-id: '',
+        city-id: '',
+        county-id: '',
+        state-id: ''
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The one caveat about the <code>GetZestimate</code> method is that it cannot be used without having information on the <code>zpid</code>. And you can only get the <code>zpid</code> with the <code>GetSearchResults</code> method so the <code>GetZestimate</code> method is always used in tandem with the <code>GetSearchResults</code> method unless you&rsquo;re saving <code>zpid</code>&rsquo;s in your database.</p>
+
+<p>If you want to know more about the <code>GetZestimate</code> method check out the <a href="http://www.zillow.com/howto/api/GetZestimate.htm">documentation</a></p>
+
+<h4>GetChart</h4>
+
+<p>The last method that I&rsquo;m going to talk about in this tutorial is the <code>GetChart</code> method. You can use the <code>GetChart</code> method to get a URL to an image which shows the historical zestimates for a specific property. You can make a request to this method by using this URL: <code>http://www.zillow.com/webservice/GetChart.htm</code></p>
+
+<p>The <code>GetChart</code> method requires the following argument to be passed in:</p>
+
+<ul>
+<li><code>zws-id</code></li>
+<li><code>zpid</code> &ndash; the unique ID assigned by zillow to the specific property</li>
+<li><code>unit-type</code> &ndash; you can either use <code>dollar</code> or <code>percent</code> as the value. This is basically use for specifying whether to display the dollar changed or the percent changed of a specific property</li>
+<li><code>height</code> &ndash; the height of the image to return in pixels</li>
+<li><code>width</code> &ndash; the width of the image to return in pixels</li>
+</ul>
+
+
+<p>Here&rsquo;s a sample image that this method returns:</p>
+
+<p><img src="/images/posts/2014-03-20-getting-started-with-zillow-api/historical-zestimate.gif" alt="historical zestimate" /></p>
+
+<p>You can pretty much guess the <code>unit-type</code> that was used for this image. Yep that&rsquo;s right its in dollars. So the image above is basically showing that the value for the specific property went up from 96,000 dollars to 104,000 dollars over a period of about one year. You can actually specify this value by passing in the <code>chartDuration</code> argument. Then you can have values like <code>1year</code>, <code>2years</code> or <code>10years</code>. If you don&rsquo;t specify anything it defaults to &lsquo;1year&rsquo;.</p>
+
+<p>For more information regarding the <code>GetChart</code> method check out its <a href="http://www.zillow.com/howto/api/GetChart.htm">documentation</a>.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! Like with any other getting started guide we&rsquo;ve only scratched the surface with this tutorial. There&rsquo;s a lot more that you can do with Zillow API so be sure to check out the resources below to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.zillow.com/howto/api/APIOverview.htm">Zillow API Documentation</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Paypal API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/"/>
+    <updated>2014-01-08T18:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how you can get started with using the Paypal API. I&rsquo;ll walk you through the steps needed in order to get you started with using the Paypal API in your projects.</p>
+
+<!-- more -->
+
+
+<h3>Concepts to Remember</h3>
+
+<p>Here are some of the concepts that you have to remember when working with the Paypal API in any of your projects:</p>
+
+<ul>
+<li><strong>Sandbox</strong> &ndash; this is used for testing requests to the Paypal API. Sandbox Paypal accounts can be assigned with funds of up to 5000 USD and then you can use it for testing.</li>
+<li><strong>Live</strong> &ndash; the live Paypal website. You can switch your API calls to use the live endpoints upon deploying your project.</li>
+<li><strong>API Request</strong> &ndash; you can use either NVP (Name-Value Pair) or SOAP when making request to the API. We will use name-value pairs in this tutorial.</li>
+<li><strong>API Credentials</strong> &ndash; the credentials that you will use in order to make API calls.</li>
+<li><strong>API</strong> &ndash; short for Application Programming Interface. Paypal is composed of different APIs such as the adaptive accounts, adaptive payments, invoicing, merchant APIs and permissions. In this tutorial I&rsquo;m going to discuss about the merchant API.</li>
+<li><strong>Service Endpoint</strong> &ndash; this simply refers to the URL of the server that will handle a specific request. Note that the endpoints used for testing (sandbox) and production (live) are different. So you have to update the endpoints after you&rsquo;re done with the testing.</li>
+<li><strong>Call Payload</strong> &ndash; the minimum data required by paypal that you have to submit as part of the request to the API.</li>
+<li><strong>Request and Response Formats</strong> &ndash; the format in which your API request and the response that&rsquo;s going to be returned after a successful call.</li>
+<li><strong>HTTP Headers</strong> &ndash; the HTTP request header information that you have to specify in each API call.</li>
+</ul>
+
+
+<h3>Create a Paypal Account</h3>
+
+<p>First you have to create either a Paypal Personal Account or a Paypal Business Account on the Paypal website.
+After creating an account go to <a href="https://developer.paypal.com/">developer.paypal.com</a> and login using the account that you created.</p>
+
+<h3>Create a Sandbox Account</h3>
+
+<p>Once you&rsquo;re logged in to the paypal developer website, click on the applications tab then go to sandbox accounts. In this page you will see the default paypal account that you can use for testing. The default account contains information that you can use to authenticate your API calls. In most cases you would only need to take note of the username, password and the signature in order to authenticate API calls.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/default-test-account.png" alt="default account" /></p>
+
+<p>The default test account is a business account so if you need to test on a personal account you may need to create a new test account which you can do on the same page by clicking on the <code>Create Account</code> button.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/paypal-create-testacc.png" alt="create test account" /></p>
+
+<p>The default test account along with any test account that you create can be used to login in the <a href="https://www.sandbox.paypal.com">sandbox paypal website</a>. This is great as you can use this like a real paypal account to view your transactions, make payments, etc.</p>
+
+<h3>Getting Live API Credentials</h3>
+
+<p>Note that the API credentials that comes along with the default test account can&rsquo;t be used to make API calls with the live version of the API. For that you would need to login to <a href="http://paypal.com">paypal</a> then go to <strong>My Account</strong> &ndash;> <strong>Profile</strong> &ndash;> <strong>My Selling Tools</strong> then click on the <strong>update</strong> link beside the <strong>API Access</strong> section. After that click on the <strong>Request API Credentials</strong> link. Finally, select <strong>Request API signature</strong> and click <strong>Agree and Submit</strong>. This will generate the API Username, Password and Signature that you can use in your live API calls.</p>
+
+<h3>Paypal Class</h3>
+
+<p>Now were ready to build the class that we will be using later on to make requests to the Paypal API.
+First create a new class and call it <code>Paypal</code>. Then declare the following class variables:</p>
+
+<ul>
+<li><strong>request method</strong> &ndash; the request method to use. This can be either CURL or file_get_contents.</li>
+<li><strong>errors</strong> &ndash; stores the current errors that occured while making the requests.</li>
+<li><strong>credentials</strong> &ndash; stores the API credentials.</li>
+<li><strong>endpoint</strong> &ndash; the URL of the service end point to use.</li>
+<li><strong>version</strong> &ndash; the version of the API. Currently its 74.0</li>
+</ul>
+
+
+<p>```php
+&lt;?php
+class Paypal{</p>
+
+<p>  public $request_method;</p>
+
+<p>  public $_errors = array();</p>
+
+<p>  protected $<em>credentials;
+  protected $</em>endPoint = &lsquo;<a href="https://api-3t.sandbox.paypal.com/nvp">https://api-3t.sandbox.paypal.com/nvp</a>&rsquo;;
+  protected $_version = &lsquo;74.0&rsquo;;</p>
+
+<p>}
+?>
+```</p>
+
+<p>Next declare the constructor. This will take 3 required arguments and two optional arguments:</p>
+
+<ul>
+<li><strong>user</strong> &ndash; the API username that you got from paypal. Note that this should correspond with the endpoint that you use. If the endpoint is a sandbox endpoint then use the sandbox credentials otherwise use the live credentials.</li>
+<li><strong>pass</strong> &ndash; the API password</li>
+<li><strong>signature</strong> &ndash; the API signature</li>
+<li><strong>paypal server</strong> &ndash; this can either be set to sandbox or live. This is set to sandbox by default so its using the sandbox endpoint. Setting this to live will set the endpoint to the live endpoint.</li>
+<li><strong>request method</strong> &ndash; the request method to use, this can be either file_get_contents or curl. Its recommended to use curl since its more secure. The file_get_contents method is only there in case the server where you are deploying has no support for CURL.</li>
+</ul>
+
+
+<p>What the constructor does is to initialize the values for the class variables based on the arguments supplied when an object for the class is declared.</p>
+
+<p>```
+&lt;?php
+  public function __construct($user, $pass, $signature, $paypal_server = &lsquo;sandbox&rsquo;, $request_method = &lsquo;file_get_contents&rsquo;){</p>
+
+<pre><code>$this-&gt;_credentials = array(
+    'USER' =&gt; $user,
+    'PWD' =&gt; $pass,
+    'SIGNATURE' =&gt; $signature,
+);
+
+$this-&gt;request_method = $request_method;
+if($paypal_server == 'live'){
+  $this-&gt;_endPoint = 'https://api-3t.paypal.com/nvp';
+}
+</code></pre>
+
+<p>  }
+?>
+```</p>
+
+<p>Next create the request method. This will be the primary method that we will call from this class once we make the request to the API. This accepts two arguments:</p>
+
+<ul>
+<li><strong>method</strong> &ndash; the API method to use.</li>
+<li><strong>params</strong> &ndash; the parameters required by the method that we specified.</li>
+</ul>
+
+
+<p>What this method does is to build the name-value pair that will be used for the request. It also builds the required HTTP header based on the credentials supplied through the constructor earlier. Once its done building all the information required by a specific API method it makes the request depending on the request method.</p>
+
+<p>```
+&lt;?php
+  public function request($method, $params = array()){</p>
+
+<pre><code>$this-&gt;_errors = array();
+if(empty($method)){ 
+  $this-&gt;_errors = array('There is no API Method');
+  return false;
+}
+
+$requestParams = array(
+   'METHOD' =&gt; $method,
+   'VERSION' =&gt; $this-&gt;_version
+) + $this-&gt;_credentials;
+
+
+$request = http_build_query($requestParams + $params); //build a query string based on the array of request parameters
+
+if($this-&gt;request_method == 'curl'){
+
+    //build the HTTP header required by Paypal
+    $http_header = array(
+        'X-PAYPAL-SECURITY-USERID' =&gt; $this-&gt;_credentials['USER'],
+        'X-PAYPAL-SECURITY-PASSWORD' =&gt; $this-&gt;_credentials['PWD'],
+        'X-PAYPAL-SECURITY-SIGNATURE' =&gt; $this-&gt;_credentials['SIGNATURE'],
+        'X-PAYPAL-REQUEST-DATA-FORMAT' =&gt; 'JSON',
+        'X-PAYPAL-RESPONSE-DATA-FORMAT' =&gt; 'JSON'
+    );
+
+    //set options for CURL
+    $curlOptions = array (
+        CURLOPT_HTTPHEADER =&gt; $http_header,
+        CURLOPT_URL =&gt; $this-&gt;_endPoint,
+        CURLOPT_VERBOSE =&gt; 1,
+        CURLOPT_SSL_VERIFYPEER =&gt; true, 
+        CURLOPT_SSL_VERIFYHOST =&gt; 2,
+        CURLOPT_CAINFO =&gt; dirname(__FILE__) . '/cert/cacert.pem', //CA cert file
+        CURLOPT_RETURNTRANSFER =&gt; 1,
+        CURLOPT_POST =&gt; 1,
+        CURLOPT_POSTFIELDS =&gt; $request
+    );
+
+    $ch = curl_init();
+    curl_setopt_array($ch, $curlOptions);
+
+    $response = curl_exec($ch); //make the request
+
+    if(curl_errno($ch)){
+        $this-&gt;_errors = curl_error($ch);
+        curl_close($ch);
+        return false;
+    }else{
+        curl_close($ch);
+        $responseArray = array();
+        parse_str($response, $responseArray); //convert the response string to an array
+        return $responseArray;
+    }
+
+}else if($this-&gt;request_method == 'file_get_contents'){
+
+    //build the HTTP header required by Paypal
+    $context_options = array(
+        "http" =&gt; array(
+          "method" =&gt; "POST",
+          "header"  =&gt; "Content-type: application/x-www-form-urlencoded\r\n" .
+                "X-PAYPAL-SECURITY-USERID: " . $this-&gt;_credentials['USER'] . "\r\n" .
+                "X-PAYPAL-SECURITY-PASSWORD: " . $this-&gt;_credentials['PWD'] . "\r\n" .
+                "X-PAYPAL-SECURITY-SIGNATURE: " . $this-&gt;_credentials['SIGNATURE'] . "\r\n" .
+                "X-PAYPAL-REQUEST-DATA-FORMAT: JSON\r\n" .
+                "X-PAYPAL-RESPONSE-DATA-FORMAT: JSON\r\n",
+          "content" =&gt; $request
+        )
+    );
+
+    $context = stream_context_create($context_options); //create context for file_get_contents
+    $response = file_get_contents($this-&gt;_endPoint, false, $context); //make the request
+
+    $responseArray = array();
+    parse_str($response, $responseArray); //convert the response string to an array
+    return $responseArray;
+
+}
+</code></pre>
+
+<p>  }
+}
+?>
+```</p>
+
+<h3>API Methods</h3>
+
+<p>Before we dive into actually making an API request its important that we first understand the API methods that we will actually use. In this tutorial were only going to use 3 methods: SetExpressCheckout, GetExpressCheckoutDetails, and DoExpressCheckoutPayment. Were going to use these methods to create an application that accepts payments using Paypal.</p>
+
+<h4>SetExpressCheckout</h4>
+
+<p>The <code>SetExpressCheckout</code> method allows you to initiate an express checkout transaction. This is the easiest way to implement a payment operation in your application. What this does is to generate a unique token that can be appended into the paypal URL which is used for making payments. The URL to be used for sandbox and live are different so you have to make sure that the URL that you&rsquo;re using corresponds to the current API endpoint that you&rsquo;re using:</p>
+
+<ul>
+<li><strong>sandbox</strong> &ndash; <a href="https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+<li><strong>live</strong> &ndash; <a href="https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+</ul>
+
+
+<p>The <code>SetExpressCheckout</code> method requires the following parameters:</p>
+
+<ul>
+<li><p><strong>METHOD</strong> &ndash; must be set to <code>SetExpressCheckout</code></p></li>
+<li><p><strong>RETURNURL</strong> &ndash; this is the URL where the buyer will be redirected after a successful payment</p></li>
+<li><strong>CANCELURL</strong> &ndash; this is the URL where the buyer will be redirected if he doesn&rsquo;t accept to make the payment</li>
+<li><strong>NOSHIPPING</strong> &ndash; you can use this to specify if shipping information is enabled or not. If the customer is paying for a specific service that doesn&rsquo;t require shipping then you can simply set the value to <code>1</code></li>
+<li><p><strong>ALLOWNOTE</strong> &ndash; you can use this to specify if notes are allowed. You can set this to <code>0</code> if you don&rsquo;t want buyers to send a note along with the payment information. Otherwise set it to <code>1</code></p></li>
+<li><p><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; the total cost of the product or service. If you have more than one item then the value for this parameter should be the total of those items. Note that any value that you supply for any parameter that requires an amount should be expressed in 2 decimal places. So if the item is worth 25 dollars then it should be written as <code>25.00</code>.</p></li>
+<li><strong>PAYMENTREQUEST_0_SHIPPINGAMT</strong> &ndash; the shipping cost. If the <code>NOSHIPPING</code> is set to <code>1</code> then there&rsquo;s no need to supply a value for this parameter</li>
+<li><p><strong>PAYMENTREQUEST_0_ITEMAMT</strong> &ndash; the cost of the product or service. Note that if you have more than one product you can simply set this to <code>PAYMENTREQUEST_1_ITEMAMT</code>, <code>PAYMENTREQUEST_2_ITEMAMT</code> and so on. Just be sure to get the total of the values that you supplied to those parameters</p></li>
+<li><p><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; the currency in which the <code>PAYMENTREQUEST_0_AMT</code> and <code>PAYMENTREQUEST_0_ITEMAMT</code> is expressed. Here&rsquo;s a <a href="https://developer.paypal.com/docs/classic/api/currency_codes/">list of currency codes</a> that you can use. If you don&rsquo;t specify a value for this parameter the default value of <code>USD</code> will be used.</p></li>
+<li><p><strong>L_PAYMENTREQUEST_0_NAME0</strong> &ndash; the name of the product or service</p></li>
+<li><strong>L_PAYMENTREQUEST_0_DESC0</strong> &ndash; the description of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_AMT0</strong> &ndash; the cost of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_QTY0</strong> &ndash; the quantity of the product or service</li>
+</ul>
+
+
+<p>After a successfull request it returns the following response:</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that can be appended to the URL of the paypal website where the payment can be made.</li>
+</ul>
+
+
+<h4>GetExpressCheckoutDetails</h4>
+
+<p>The <code>GetExpressCheckoutDetails</code> method is used for getting additional information regarding a specific express checkout transaction. This is called after a payment has successfully been made through the paypal website. This happens when paypal successfully redirects to the <code>RETURNURL</code> that we specified in the <code>SetExpressCheckout</code> method.</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. You can get the token by using <code>$_GET['token']</code>.</li>
+</ul>
+
+
+<p>After a successful request paypal returns a bunch of information regarding the payment. This includes information about the transaction itself and some payer information. Check out the <a href="https://developer.paypal.com/docs/classic/api/merchant/GetExpressCheckoutDetails_API_Operation_NVP/">official documentation</a> if you want to see a full list of the response objects returned from calling the <code>GetExpressCheckoutDetails</code> method.</p>
+
+<h4>DoExpressCheckoutPayment</h4>
+
+<p>The <code>DoExpressCheckoutPayment</code> method is used for completing the express checkout transaction. You might think that once the payment has been made its already completed but actually its not. The transaction isn&rsquo;t actually completed unless the payment is confirmed on both sides (paypal and your website).</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. Yes this is the same as the token that you used for the <code>GetExpressCheckoutDetails</code> method.</li>
+<li><strong>PAYMENTREQUEST_n_PAYMENTACTION</strong> &ndash; specifies how you want to obtain the payment. There are 3 possible values for this: <code>Authorization</code>, <code>Order</code>, and <code>Sale</code>. In most cases the value used here is <code>Sale</code>.</li>
+<li><strong>PAYERID</strong> &ndash; the unique ID of the buyer. This information is also appended in the return URL, you can get it by using <code>$_GET['PayerID']</code></li>
+<li><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_AMT</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+<li><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_CURRENCYCODE</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+</ul>
+
+
+<p>After a successful request the express checkout transaction is now completed.</p>
+
+<h3>Making API Requests</h3>
+
+<p>Now were ready to actually make requests to the API. First include the file where the Paypal class is located. Then create a new object for the Paypal class:</p>
+
+<p>```
+&lt;?php
+require &lsquo;Paypal.php&rsquo;;</p>
+
+<p>//get credentials from DB
+$credentials = $db->get(&ldquo;tbl_credentials&rdquo;, &ldquo;paypal&rdquo;);
+extract($credentials);</p>
+
+<p>$paypal = new Paypal($user, $pass, $signature, $paypal_server);</p>
+
+<p>if(empty($<em>GET[&lsquo;TOKEN&rsquo;]) &amp;&amp; empty($</em>GET[&lsquo;PayerID&rsquo;])){</p>
+
+<pre><code>$request_params = array(
+   'RETURNURL' =&gt; $success_url,
+   'CANCELURL' =&gt; $cancel_url,
+   'NOSHIPPING' =&gt; '1',
+   'ALLOWNOTE' =&gt; '1'
+);  
+
+$order_params = array(
+   'PAYMENTREQUEST_0_AMT' =&gt; $amount,
+   'PAYMENTREQUEST_0_ITEMAMT' =&gt; $amount,
+   'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
+);
+
+$item = array(
+   'L_PAYMENTREQUEST_0_NAME0' =&gt; 'Oldies Anime Collection',
+   'L_PAYMENTREQUEST_0_DESC0' =&gt; 'old anime',
+   'L_PAYMENTREQUEST_0_AMT0' =&gt; $amount,
+   'L_PAYMENTREQUEST_0_QTY0' =&gt; '1'
+);  
+
+//initiate express checkout transaction
+$response = $paypal-&gt;request('SetExpressCheckout', $request_params + $order_params + $item);
+
+if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
+    $token = $response['TOKEN'];
+    //redirect to paypal where the buyer will make his payment
+    header('Location: https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=' . $token);
+}
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>//after a successful redirect, complete the express checkout transaction
+$request_params = array(
+    'TOKEN' =&gt; $_GET['token'],
+    'PAYMENTACTION' =&gt; 'Sale',
+    'PAYERID' =&gt; $_GET['PayerID'],
+    'PAYMENTREQUEST_0_AMT' =&gt; $amount, 
+    'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
+);
+
+$response = $paypal-&gt;request('DoExpressCheckoutPayment', $request_params);
+
+if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
+    //commit the transaction in your database
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial you&rsquo;ve learned the basics of making API requests to the Paypal API. We have specifically used the Merchant API. But there are other Paypal APIs which we can use for different use cases.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developer.paypal.com/docs/classic/api/gs_PayPalAPIs/">Paypal Classic API Getting Started Guide</a></li>
+<li><a href="https://developer.paypal.com/docs/classic/api/">Paypal Classic API Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api/"/>
+    <updated>2013-12-01T11:49:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/12/01/getting-started-with-bitpay-api</id>
+    <content type="html"><![CDATA[<p>Bitcoin is really trending these days with its value now over <a href="http://www.extremetech.com/extreme/171762-bitcoin-hits-1000-but-how-far-can-it-go">$1000 per coin</a>. I think its timely to explore some of the services which uses Bitcoin as a form of payment. Last time I also showed you how to <a href="http://anchetawern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/">get started with the Coinbase API</a> which is also another service which allows you to use Bitcoins as a means of payment for goods and services. This time we will be exploring Bitpay. But first lets determine what&rsquo;s the difference between the Coinbase and Bitpay. Here&rsquo;s a really good answer to <a href="http://bitcoin.stackexchange.com/questions/7544/what-are-the-differences-and-similarities-among-paymium-bitpay-coinbase-etc">this question</a>:</p>
+
+<p><blockquote><p>BitPay is a payment processor for E-Commerce as well as for bricks and mortar / point-of-sale. This allows a business to accept bitcoins for payment and the proceeds are delivered to the merchant as directed. This could be 100% fiat (e.g., all bitcoin sales get converted to USDs immediately, or a mix, .. like 30% USD, 70% BTCs, etc.) The currently can send payments to merchants in U.S., Mexico, Canada and several nations in Europe.</p></blockquote></p>
+
+<p><blockquote><p>Coinbase is an EWallet provider and provides a service for buying and selling bitcoins. They do not operate a market, but instead use the exchange rate from the leading exchange (Mt. Gox) for customer buying and selling. They charge just 1% to buy or sell, but they have low limits (i.e., buy a max of $100 USD per-day) for new customers still in the 30-day probationary period.</p></blockquote></p>
+
+<p>So what service you use basically depends on what you need.</p>
+
+<!-- more -->
+
+
+<h3>Signing Up</h3>
+
+<p>First you need to <a href="https://bitpay.com/start">sign up at Bitpay</a> in order to get an API key which you can use for interacting with their API. Bitpay is really strict when it comes to the registration so you really have to provide real information about your business so that you can actually confirm it when they need some confirmation.</p>
+
+<h3>Connecting to Bitpay API</h3>
+
+<p>The Bitpay API only requires basic HTTP authentication so the process of connecting to the API is really simple.
+All you have to do is to call the <code>base64_encode()</code> method on the API key that you acquire from Bitpay and then pass it as one of the HTTP header fields. Under the <code>Authorization</code> field use <code>Basic</code> followed by the base 64 encoded string representation of the API key. Here&rsquo;s how to do it using <code>file_get_contents()</code>:</p>
+
+<p>```php
+&lt;?php
+$user = base64_encode($api_key);</p>
+
+<p>$context_options = array(</p>
+
+<pre><code>"http" =&gt; array(
+    "method" =&gt; $method,
+    "header"  =&gt; "Content-type: application/json\r\n" . 
+        "Content-Length: $length\r\n" .
+        "Authorization: Basic $user\r\n"
+)
+</code></pre>
+
+<p>);</p>
+
+<p>$context = stream_context_create($context_options);</p>
+
+<p>//the $url here is the API resource that you&rsquo;re trying to request from
+$response = file_get_contents($url, false, $context);
+$response = json_decode($response, true);
+?>
+```</p>
+
+<h3>Creating an Invoice</h3>
+
+<p>You can create an Invoice via by using the following resource in the Bitpay API:</p>
+
+<p><code>
+https://bitpay.com/api/invoice
+</code></p>
+
+<p>Then passing in all the fields required by the resource:</p>
+
+<ul>
+<li><strong>price</strong> &ndash; the price of the service or good.</li>
+<li><strong>currency</strong> &ndash; any valid currency short name (USD, GBP, EUR, JPY). Here&rsquo;s a <a href="http://www.casi.org.uk/info/1051list/annexd.html">full list of valid currency short names</a>. This will be automatically converted to the corresponding value in Bitcoins (BTC) depending on the <a href="https://bitpay.com/bitcoin-exchange-rates">current Bitcoin exchange rates</a>.</li>
+</ul>
+
+
+<p>You can also pass in some optional fields:</p>
+
+<ul>
+<li><strong>posData</strong> &ndash; this is normally used for passing in some additional information regarding the service or good that a customer is trying to purchase</li>
+<li><p><strong>notificationURL</strong> &ndash; the URL that will be pinged by Bitpay everytime the transaction status changes. Note that a change from <code>new</code> to <code>expired</code> doesn&rsquo;t count as a transaction status change. Bitpay will only ping the URL when the transaction status changes from <code>new</code> to <code>paid</code>, <code>confirmed</code>, or<code>complete</code>.</p></li>
+<li><p><strong>transactionSpeed</strong> &ndash; this can be set to <code>high</code>, <code>medium</code> or <code>low</code>. High means that the invoice is considered to be confirmed after a payment has been received. Medium means it will be considered confirmed after 10 minutes. And low means it will be considered confirmed after an hour.</p></li>
+<li><p><strong>fullNotifications</strong> &ndash; this can be set to <code>true</code> or <code>false</code>. If you want Bitpay to notify via email or via the notification url that you have set every time the transaction status changes then use <code>true</code>. If you only want Bitpay to notify once the transaction status becomes confirmed then set to <code>false</code>.</p></li>
+<li><p><strong>notificationEmail</strong> &ndash; the email address that Bitpay will notify on every transaction status change.</p></li>
+<li><strong>redirectURL</strong> &ndash; the URL in which Bitpay will display in the receipt after a payment has been made.</li>
+</ul>
+
+
+<p>And here are some fields which you can use to supply information regarding the product or the customer:</p>
+
+<ul>
+<li><strong>orderID</strong></li>
+<li><strong>itemDesc</strong></li>
+<li><strong>itemCode</strong></li>
+<li><strong>physical</strong></li>
+<li><strong>buyerName</strong></li>
+<li><strong>buyerAddress1</strong></li>
+<li><strong>buyerAddress2</strong></li>
+<li><strong>buyerCity</strong></li>
+<li><strong>buyerState</strong></li>
+<li><strong>buyerZip</strong></li>
+<li><strong>buyerCountry</strong></li>
+<li><strong>buyerEmail</strong></li>
+<li><strong>buyerPhone</strong></li>
+</ul>
+
+
+<h3>Invoice Status</h3>
+
+<p>The invoice status is the status of the invoice at any given time. Here are some of the invoice states:</p>
+
+<ul>
+<li><strong>new</strong> &ndash; Initially the invoice status is <code>new</code>. This means that someone can still initiate a payment to the Bitcoin address that is associated with the invoice.</li>
+<li><strong>paid</strong> &ndash; when an invoice becomes fully paid its status changes to <code>paid</code></li>
+<li><strong>confirmed</strong> &ndash; an invoice is considered confirmed depending on the transaction speed that was set on the creation of invoice. If the transaction speed is set to low then it will be confirmed after an hour or 6 blocks in the Bitcoin network, if the transaction speed is set to medium then it will be confirmed after 1 block (10 minutes) in the Bitcoin network, if its set to high then it will be confirmed right after full payment has been made.</li>
+<li><strong>complete</strong> &ndash; this means that Bitpay has credited the merchant&rsquo;s account for the invoice.</li>
+<li><strong>expired</strong> &ndash; this means that no payment has been received after the 15 minute limit alloted by Bitpay.</li>
+<li><strong>invalid</strong> &ndash; this means that the invoice has been paid but has not been confirmed after an hour.</li>
+</ul>
+
+
+<p>Now were ready to actually make a request to the Bitpay API. You can start by downloading the official <a href="https://github.com/bitpay/php-client">PHP client</a> provided by Bitpay for interacting with the Bitpay API. There&rsquo;s also a <a href="https://github.com/bitpay/ruby-client">Ruby</a> and <a href="https://github.com/bitpay/nodejs-client">Node.js</a> client if you&rsquo;re developing for those.</p>
+
+<p>Once you&rsquo;ve downloaded it on your working directory open up the <code>bp_options.php</code> file and supply a value for the <code>apiKey</code>, <code>currency</code> or any of the optional fields that you would like to supply.</p>
+
+<p>Create a new PHP file which we will be using to call the methods from <code>bp_lib.php</code>. To create an invoice call the <code>bpCreateInvoice()</code> method. It needs 4 arguments. The first one is the order ID which we will just supply <code>null</code> since we really don&rsquo;t have a system for generating order IDs. The second is the amount or the cost of the product or service.
+The third is the optional post data in which we can provide additional information for the product or service in key-value pairs. The fourth is the additional options which is primarily used for supplying information regarding the product or the customer.</p>
+
+<p>```
+&lt;?php
+require &lsquo;bp_lib.php&rsquo;;</p>
+
+<p>$amount = 10;
+$post_data = array(</p>
+
+<pre><code>'name' =&gt; 'excalibur',
+'level' =&gt; '999'
+</code></pre>
+
+<p>);
+$addl_options = array(</p>
+
+<pre><code>'itemDesc' =&gt; 'Anime Figurine'
+</code></pre>
+
+<p>);</p>
+
+<p>$response = bpCreateInvoice(null, $amount, $post_data, $addl_options);                <br/>
+if(!empty($response)){</p>
+
+<pre><code>//do something
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Bitpay returns a response similar to the following:</p>
+
+<p>```
+Array
+(</p>
+
+<pre><code>[id] =&gt; xxx
+[url] =&gt; https://bitpay.com/invoice?id=xxx
+[posData] =&gt; {"posData":{"name":"excalibur","level":999},"hash":"xxxx-xx"}
+[status] =&gt; new
+[btcPrice] =&gt; 0.0009
+[price] =&gt; 1
+[currency] =&gt; USD
+[invoiceTime] =&gt; 1385885490958
+[expirationTime] =&gt; 1385886390958
+[currentTime] =&gt; 1385885491133
+</code></pre>
+
+<p>)
+```</p>
+
+<ul>
+<li><strong>id</strong> &ndash; the unique id of the invoice</li>
+<li><strong>url</strong> &ndash; the URL in which the invoice can be viewed</li>
+<li><strong>posData</strong> &ndash; the additional data that we provided earlier</li>
+<li><strong>status</strong> &ndash; the invoice status</li>
+<li><strong>btcPrice</strong> &ndash; the corresponding amount in Bitcoins of the amount supplied earlier</li>
+<li><strong>price</strong> &ndash; the amount that was supplied earlier when the invoice was created</li>
+<li><strong>currency</strong> &ndash; the currency of the price</li>
+<li><strong>invoiceTime</strong> &ndash; the time the invoice was created since January 1, 1970 midnight. This is in a UNIX timestamp format.</li>
+<li><strong>expirationTime</strong> &ndash; the time in which the invoice will expire. When the invoice expires payments can no longer be accepted.</li>
+<li><strong>currentTime</strong> &ndash; the current time in the Bitpay server. This is primarily used for determining the time remaining before the invoice expires.</li>
+</ul>
+
+
+<p>Accessing the invoice URL will give you a page similar to the following:</p>
+
+<p><img src="/images/posts/getting_started_with_bitpay/bitpay-donation.png" alt="invoice url" /></p>
+
+<p>Customers can then use a Bitcoin client such as <a href="http://bitcoin.org/en/download">Bitcoin Qt</a>, <a href="http://electrum.org/">Electrum</a>, <a href="https://multibit.org/">Multibit</a>, or <a href="https://bitcoinarmory.com/">Armory</a> to pay you the merchant.</p>
+
+<h3>Getting Invoice Status</h3>
+
+<p>You can also get the status of an invoice by calling the <code>bpGetInvoice()</code> method and supplying the invoice ID as the argument:</p>
+
+<p><code>php
+&lt;?php
+$invoice = bpGetInvoice('85AHEqCRaT2aZ3xAMpK8fQ');
+?&gt;
+</code></p>
+
+<p>The method will return something like this:</p>
+
+<p>```
+Array
+(</p>
+
+<pre><code>[id] =&gt; xxx
+[url] =&gt; https://bitpay.com/invoice?id=xxx
+[posData] =&gt; Array
+    (
+        [name] =&gt; excalibur
+        [age] =&gt; 27
+    )
+
+[status] =&gt; new
+[btcPrice] =&gt; 0.0009
+[price] =&gt; 1
+[currency] =&gt; USD
+[invoiceTime] =&gt; 1385885490958
+[expirationTime] =&gt; 1385886390958
+[currentTime] =&gt; 1385886420720
+</code></pre>
+
+<p>)
+```</p>
+
+<p>Its basically the same as the response that we get when creating an invoice.</p>
+
+<h3>Bitpay Class</h3>
+
+<p>Before I end this tutorial here&rsquo;s the modified version of the Bitpay client provided by Bitpay that works with servers without CURL support:</p>
+
+<p>```php
+&lt;?php
+class Bitpay{</p>
+
+<pre><code>private $options;
+
+public function __construct($options){
+    $this-&gt;options = $options;
+}
+
+public function bpLog($contents){
+    $file = dirname(__FILE__).'/bplog.txt';
+    file_put_contents($file, date('m-d H:i:s').": ", FILE_APPEND);
+
+    if (is_array($contents))
+        $contents = var_export($contents, true);    
+    else if (is_object($contents))
+        $contents = json_encode($contents);
+
+    file_put_contents($file, $contents."\n", FILE_APPEND);          
+}
+
+public function bpfilegetcontents($url, $apiKey, $post = false) {
+    global $bpOptions;  
+
+    $length = 0;
+    $method = "GET";
+    if($post){  
+        $length = strlen($post);
+        $method = "POST";
+    }
+
+    $uname = base64_encode($apiKey);
+
+    $context_options = array(
+        "http" =&gt; array(
+            "method" =&gt; $method,
+            "header"  =&gt; "Content-type: application/json\r\n" . 
+                "Content-Length: $length\r\n" .
+                "Authorization: Basic $uname\r\n"
+        )
+    );      
+
+    if($method == 'POST'){
+        $context_options["http"]["content"] = $post;
+    }
+
+    $context = stream_context_create($context_options);
+    $response = file_get_contents($url, false, $context);
+    $response = json_decode($response, true);
+
+    return $response;
+}
+
+public function bpCreateInvoice($orderId, $price, $posData, $options = array()) {   
+
+    $options = array_merge($this-&gt;options, $options);
+
+    $pos = array('posData' =&gt; $posData);
+    if ($this-&gt;options['verifyPos'])
+        $pos['hash'] = $this-&gt;bpHash(serialize($posData), $options['apiKey']);
+    $options['posData'] = json_encode($pos);
+
+    $options['orderID'] = $orderId;
+    $options['price'] = $price;
+
+    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL', 
+        'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName', 
+        'buyerAddress1', 'buyerAddress2', 'buyerCity', 'buyerState', 'buyerZip', 'buyerEmail', 'buyerPhone');
+    foreach($postOptions as $o)
+        if (array_key_exists($o, $options))
+            $post[$o] = $options[$o];
+    $post = json_encode($post);
+
+    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/', $options['apiKey'], $post);
+
+    return $response;
+}
+
+
+public function bpVerifyNotification($apiKey = false) {
+
+    if (!$apiKey)
+        $apiKey = $this-&gt;options['apiKey'];     
+
+    $post = file_get_contents("php://input");
+    if (!$post)
+        return 'No post data';
+
+    $json = json_decode($post, true);
+
+    if (is_string($json))
+        return $json;
+
+    if (!array_key_exists('posData', $json)) 
+        return 'no posData';
+
+    $posData = json_decode($json['posData'], true);
+    if($this-&gt;options['verifyPos'] and $posData['hash'] != $this-&gt;bpHash(serialize($posData['posData']), $apiKey))
+        return 'authentication failed (bad hash)';
+    $json['posData'] = $posData['posData'];
+
+    return $json;
+}
+
+public function bpGetInvoice($invoiceId, $apiKey = false) {
+
+    if (!$apiKey)
+        $apiKey = $this-&gt;options['apiKey'];     
+
+    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/'.$invoiceId, $apiKey);
+    if (is_string($response))
+        return $response; 
+    $response['posData'] = json_decode($response['posData'], true);
+    $response['posData'] = $response['posData']['posData'];
+
+    return $response;   
+}
+
+public function bpHash($data, $key) {
+    $hmac = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
+    return strtr($hmac, array('+' =&gt; '-', '/' =&gt; '_', '=' =&gt; ''));
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
+<li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Gettting Started with Coinbase API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/"/>
+    <updated>2013-11-03T13:34:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get started developing applications which communicates with the Coinbase API. But first what is Coinbase?</p>
+
+<p><blockquote><p>Coinbase is a service that allows you to use bitcoins as a means of payment for goods and services.<br/>Its like Paypal but for bitcoins.</p></blockquote></p>
+
+<!-- more -->
+
+
+<p>First thing that you need to do is to register an account with Coinbase.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-register.png" alt="register account" /></p>
+
+<p>Then go to your email and verify the account.</p>
+
+<p>Accept the license.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-license.png" alt="accept license" /></p>
+
+<p>Next, click on account settings and then click on the integrations tab:</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-api.png" alt="integrations" /></p>
+
+<p>Next, click on show my API key. You would need to enter your password to verify that you are indeed the account owner. Initially the API key is disabled so you need to enable it as well.</p>
+
+<p><img src="/images/posts/coinbase_api/enable-apikey.png" alt="enable api key" /></p>
+
+<p>After that, simply copy the API key that&rsquo;s displayed.</p>
+
+<p><img src="/images/posts/coinbase_api/copy-apikey.png" alt="copy api key" /></p>
+
+<p>The API key will be used for authenticating requests to the Coinbase API.</p>
+
+<h3>Authentication</h3>
+
+<p>There are 2 ways in which a request to the API can be authenticated:</p>
+
+<ol>
+<li>API key</li>
+<li>OAuth2</li>
+</ol>
+
+
+<h4>Authentication using API Key</h4>
+
+<p>Authenticating a request via the API Key is the easier way of making requests to the API. All you have to do is to append the api key on each request. The cool thing is you can directly execute a request to the API directly from the browser for methods that can be called via <code>GET</code>.</p>
+
+<p>For example when you want to get the account balance, you simply do something like:</p>
+
+<p><code>
+https://coinbase.com/api/v1/account/balance?api_key=xyz
+</code></p>
+
+<p>There&rsquo;s a bunch of other methods which you can call directly from the browser. They&rsquo;re all listed <a href="https://coinbase.com/api/doc/1.0.html">here</a>. Do note that you can only call a method directly from the browser when its request method is <code>GET</code>. <code>POST</code> methods cannot be called directly from the browser, you need to use <code>curl</code> or <code>file_get_contents()</code> to be able to make the request.</p>
+
+<p>Here&rsquo;s an example of using <code>curl</code> to generate  a payment button, remember to pass the API Key along with the parameters required by the specific API method:</p>
+
+<p>```php
+&lt;?php</p>
+
+<pre><code>$request = '{
+    "api_key" : "xyz", 
+    "button": {
+        "name": "test",
+        "price_string": "1.23",
+        "price_currency_iso": "USD"
+    }
+}';
+
+$post_fields = json_decode($request, true); //convert json string to an object
+$post_fields = http_build_query($post_fields); //urlencode for arrays
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_POST, true); //tell curl that were posting some data along with the request 
+curl_setopt($curl, CURLOPT_POSTFIELDS, $post_fields); //the data that we want to post
+curl_setopt($curl, CURLOPT_URL, 'https://coinbase.com/api/v1/buttons'); //the request url
+
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); //return the transfer, by default its being echoed out
+$response = curl_exec($curl); //execute the request
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>The method that we have used above is the <code>buttons</code> method. It only requires 3 arguments:</p>
+
+<ul>
+<li><p><strong>button[name]</strong> &ndash; the name of the item or service for which you are collecting bitcoins.</p></li>
+<li><p><strong>button[price_string]</strong> &ndash; the total price of the item or service.</p></li>
+<li><p><strong>button[price_currency_iso]</strong> &ndash; the currency of the price used in the <code>button[price_string]</code> argument. Examples are <code>USD</code>, <code>PHP</code>, <code>SGD</code>, <code>CAD</code>, or <code>BTC</code> for the bitcoin currency. It would be easier if <code>BTC</code> isn&rsquo;t used so you won&rsquo;t have to convert. Simply use your local currency and the API will automatically convert it to <code>BTC</code> depending on the current exchange rate.</p></li>
+</ul>
+
+
+<p>The response would be formatted in JSON:</p>
+
+<p>```json
+{</p>
+
+<pre><code>"success": true,
+"button": {
+    "code": "93865b9cae83706ae59220c013bc0afd",
+    "type": "buy_now",
+    "style": "buy_now_large",
+    "text": "Pay With Bitcoin",
+    "name": "test",
+    "description": "Sample description",
+    "custom": "Order123",
+    "price": {
+        "cents": 123,
+        "currency_iso": "USD"
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>To generate the payment button, simply create a div with a class of <code>coinbase-button</code> then give it a data attribute <code>data-code</code> using the button code as its value. After that create a new script element and use the <code>button.js</code> from coinbase:</p>
+
+<p>```html</p>
+
+<div class="coinbase-button" data-code="<?php echo $response->button->code; ?>"></div>
+
+
+<script src="https://coinbase.com/assets/button.js"></script>
+
+
+<p>```</p>
+
+<p>The response returned above can also be used for generating payment pages.
+All you have to do is append the button code to the coinbase checkout url:</p>
+
+<p><code>html
+&lt;?php
+$response = json_decode($response); //convert json string to an object
+?&gt;
+&lt;a href="https://coinbase.com/checkouts/&lt;?php echo $response-&gt;button-&gt;code; ?&gt;"&gt;Checkout&lt;/a&gt;
+</code></p>
+
+<h4>Authentication using OAuth2</h4>
+
+<p>Authentication using OAuth2 is a bit difficult. Thankfully there are good people out there who creates libraries that makes our lives easier. One of those libraries is the <a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a> library.</p>
+
+<p>To use it, simply download the zip file from the Github repository or clone it on your machine. Once the download is done, you can just include it on your working script:</p>
+
+<p><code>php
+&lt;?php
+require 'libs/coinbase/Coinbase.php';
+?&gt;
+</code></p>
+
+<p>After that, you can go ahead and call the methods available from the library. In the example below were calling the <code>getOrders()</code> method which simply returns all the orders received by the merchant who owns the API Key that is used in the code. This means that every merchant who plans to integrate Coinbase in their application has to create their own Coinbase app in order to receive an API Key. The API Key will then serve as their identification for each request that is made to the API. Yes this is a bit of a drag for the merchants but that&rsquo;s just how it works so there&rsquo;s no choice but to stick with it.</p>
+
+<p><code>
+&lt;?php
+$api_key = 'xyz';
+$coinbase = new Coinbase($api_key);
+$orders = $coinbase-&gt;getOrders();
+?&gt;
+</code></p>
+
+<p>The response returned from the code above is not the same as the response that you directly get from the API.
+The library already converts it to an object so there&rsquo;s no need to. Here&rsquo;s an example of looping through the orders:</p>
+
+<p>```
+&lt;?php
+if($orders->total_count > 0){</p>
+
+<pre><code>foreach($orders-&gt;orders as $row){
+
+    echo $row-&gt;order-&gt;created_at; 
+    echo $row-&gt;order-&gt;button-&gt;description; 
+    echo $row-&gt;order-&gt;status; 
+    echo $row-&gt;order-&gt;total_native-&gt;cents; 
+    echo $row-&gt;order-&gt;button-&gt;name; 
+
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h2>Conclusion</h2>
+
+<p>You&rsquo;ve learned how to perform requests to the Coinbase API. Requests can be performed directly from the browser or via Curl. You have also learned how to generate payment buttons via the API.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://coinbase.com/api/doc/1.0.html">API Documentation</a></li>
+<li><a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Delicious API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/10/20/getting-started-with-delicious-api/"/>
+    <updated>2013-10-20T13:17:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/10/20/getting-started-with-delicious-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API.</p>
+
+<p>The Delicious API unlike other Web API&rsquo;s that&rsquo;s using either OAuth, OAuth2 or their custom Authentication method is using <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic Access Authentication</a>. This means that performing API calls requires the username and the password of the user whose bookmarks you want to have access to.
+This means that there&rsquo;s no confidentiality with this Authentication method. Without you knowing, the application that&rsquo;s going to do the talking with the Delicious API can just save your username and password in a database and the developers can have access to the links that you&rsquo;ve bookmarked in your account whether public or private. So as a user its recommended that you only bookmark links that doesn&rsquo;t contain any confidential or classified information.</p>
+
+<h3>Delicious Class</h3>
+
+<p>First let&rsquo;s go ahead and create the class that we will be using to access the Delicious API. Let&rsquo;s name it <code>class.delicious.php</code>. Then declare the 4 private variables that we will be using throughout the class:</p>
+
+<p>```php
+&lt;?php
+class delicious{</p>
+
+<pre><code>private $curl;
+private $curl_options; //options that will be used for curl
+private $username; //delicious username
+private $password; //delicious password
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>The constructor will accept 2 arguments, the delicious username and password. We&rsquo;ll also initialize <code>curl</code> so we don&rsquo;t have to initialize it on every method call.</p>
+
+<p>```
+&lt;?php
+public function __construct($username, $password){</p>
+
+<pre><code>$this-&gt;username = $username;
+$this-&gt;password = $password;
+$this-&gt;curl = curl_init();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next, create the <code>set_options()</code> method. This method will simply set the curl options.</p>
+
+<p>```
+&lt;?php
+public function set_options(){</p>
+
+<pre><code>$this-&gt;curl_options = array(
+    CURLOPT_RETURNTRANSFER =&gt; 1, //return the response from the delicious API.
+    CURLOPT_SSL_VERIFYPEER =&gt; false, //disable verification of the peer's certificate 
+    CURLOPT_USERPWD =&gt; $this-&gt;username . ':' . $this-&gt;password //set the username and password to be used for authentication
+);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next is the <code>execute()</code> method. This method is called from every method calls that are responsible for calling a specific method from the API. What it does is to assign the curl options to the curl object, executes it and then returns the response.</p>
+
+<p>```
+&lt;?php
+public function execute(){</p>
+
+<pre><code>curl_setopt_array($this-&gt;curl, $this-&gt;curl_options);
+
+$response = curl_exec($this-&gt;curl);
+if(!$response){
+    //terminate the execution of the script if there's no response
+    die('Error: "' . curl_error($this-&gt;curl) . '" - Code: ' . curl_errno($this-&gt;curl));
+}
+curl_close($this-&gt;curl); //close the connection              
+return $response;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting all Bookmarks</h4>
+
+<p>We can now create the methods for actually getting the bookmarks. The first method that we will create is the <code>get_all()</code> method. As the name suggests, the <code>get_all()</code> method simply gets everything that you have ever bookmarked on your delicious account. This might take some time to execute depending on the number of links that you have bookmarked.</p>
+
+<p>```
+&lt;?php
+public function get_all(){</p>
+
+<pre><code>$this-&gt;set_options();
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response); //converts the string response into an xml object      
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Before we proceed with the next method, I&rsquo;d like you to take a few minutes to observe what were doing here.
+Because the pattern that we&rsquo;ve used here will be used on other methods that we will be creating later.</p>
+
+<p>As you can see, were calling the <code>set_options()</code> method to set the arguments that will be needed for the request.</p>
+
+<p><code>
+&lt;?php
+$this-&gt;set_options();
+?&gt;
+</code></p>
+
+<p>Next, we set the main URL that were requesting from. In this cae were requesting the <code>https://api.del.icio.us/v1/posts/all</code> url. At the time of writing of this article, the main request url is <code>https://api.del.icio.us</code> The version of the API is <code>v1</code> and the method is <code>posts/all</code>. You can see the full list of API methods that you can call <a href="https://github.com/avos/delicious-api/blob/master/APIs.md">here</a>.</p>
+
+<p><code>
+&lt;?php
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
+?&gt;
+</code></p>
+
+<p>Next, we execute the request. The <code>execute()</code> method returns the response from the API. The response is basically in string format so we have to process it further to really get into the details that we want.</p>
+
+<p><code>
+&lt;?php
+$response = $this-&gt;execute();
+?&gt;
+</code></p>
+
+<p>In order to do that we call the <code>simplexml_load_string()</code> method. It&rsquo;s a built-in PHP method which you can call to convert a string response into an XML object. You can read more about it <a href="http://php.net/manual/en/function.simplexml-load-string.php">here</a>.</p>
+
+<p><code>
+&lt;?php
+$xml = simplexml_load_string($response);
+?&gt;
+</code></p>
+
+<p>After converting the response to an XML object, we simply return it.</p>
+
+<p><code>
+&lt;?php
+return $xml;
+?&gt;
+</code></p>
+
+<h4>Getting Bookmarks by Tag</h4>
+
+<p>We can also get bookmarks by tag name. All we have to do is to specify the <code>tag</code> argument to the <code>posts/all</code> method and supply a url encoded value as the query.</p>
+
+<p>```
+&lt;?php
+public function get_by_tag($tag){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url = 'https://api.del.icio.us/v1/posts/all?tag=' . urlencode($tag);
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response);        
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting Bookmarks by Offset</h4>
+
+<p>We can also get by a certain limit and offset. All we have to do is supply a value for the <code>start</code> argument (offset), and the <code>results</code> argument (limit).</p>
+
+<p>```
+&lt;?php
+public function get_by_offset($start, $limit){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/all?start=' . $start;
+$request_url .= '&amp;results=' . $limit;
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();        
+$xml = simplexml_load_string($response);        
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Getting Recently Bookmarked Links</h4>
+
+<p>Recently bookmarked links can also be fetched from the API. The method to be used is the <code>posts/recent</code> method.
+You can also supply an optional <code>tag</code> or <code>count</code> argument.</p>
+
+<p>`&ldquo;
+&lt;?php
+public function get_recent($tag = &rdquo;, $count = 1){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/recent?';
+if(!empty($tag)){ //limit results by tag
+    $request_url .= 'tag=' . urlencode($tag);
+}
+
+if(!empty($count)){ //limit results by bookmark count
+    $request_url .= '&amp;count=' . $count;
+}
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$response = $this-&gt;execute();
+$xml = simplexml_load_string($response);        
+
+return $xml;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Bookmarking Links</h4>
+
+<p>Bookmarking new links can also be done from the API. The method to be used is the <code>posts/add</code> method.
+The <code>url</code> argument is required and you can also set an optional <code>description</code> or <code>tags</code>. If there are more than one tags you can separate them using a comma (E.g php, web-development)</p>
+
+<p>`&ldquo;
+&lt;?php
+public function add($url, $description = &rdquo;, $tags = &lsquo;&rsquo;){</p>
+
+<pre><code>$this-&gt;set_options();
+$request_url  = 'https://api.del.icio.us/v1/posts/add?';
+$request_url .= 'url=' . urlencode($url);
+$request_url .= '&amp;description=' . urlencode($description);
+$request_url .= '&amp;tags=' . urlencode($tags);
+
+$this-&gt;curl_options[CURLOPT_URL] = $request_url;
+$this-&gt;execute();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Deleting Bookmarks</h4>
+
+<p>You can also delete links that were previously bookmarked. The request method is <code>posts/delete</code>.
+You have to pass in the <code>url</code> of the link that you wish to delete.</p>
+
+<p>```
+&lt;?php
+public function delete($url){</p>
+
+<pre><code>$this-&gt;set_options();
+$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/delete?url=' . $url;
+$this-&gt;execute();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>There are a bunch of other methods which you can use so be sure to check out the Delicious API documentation.</p>
+
+<h3>Using the Class</h3>
+
+<p>```
+&lt;?php
+&lt;?php
+require_once(&lsquo;class.delicious.php&rsquo;);</p>
+
+<p>$username = &lsquo;XYZ&rsquo;;
+$password = &lsquo;secret&rsquo;;</p>
+
+<p>$deli = new Delicious($username, $password);</p>
+
+<p>$links = $deli->get_by_tag(&lsquo;php&rsquo;);</p>
+
+<p>foreach($links->post as $row){
+?></p>
+
+<pre><code>&lt;li&gt;&lt;?php echo $row['href']; ?&gt;&lt;/li&gt;
+</code></pre>
+
+<p>&lt;?php <br/>
+}
+?>
+```</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://github.com/avos/delicious-api/blob/master/APIs.md">Delicious API</a></li>
+<li><a href="https://github.com/anchetaWern/delicious-php">Delicious-PHP</a> &ndash; a little PHP class that I created for interacting with the Delicious API</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

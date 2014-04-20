@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: amazon | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/amazon/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Amazon Product Advertising API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/"/>
+    <updated>2013-02-10T19:31:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api</id>
+    <content type="html"><![CDATA[<p>In this blog post I&rsquo;m going to show you how you can get started using Amazon&rsquo;s product advertising API in PHP.
+I&rsquo;m going to walk you through creating an access key, some of the basics of the API and lastly some examples on how to use the API.</p>
+
+<!--More-->
+
+
+<h3>What is the Product Advertising API</h3>
+
+<p>Amazon Product Advertising API is basically an API offered by Amazon for accessing data on every product that are being displayed at any Amazon site.</p>
+
+<h3>Create an Access Key</h3>
+
+<p>Just like most of the API that are offered by sites like Facebook, Twitter, Tumblr we need to create an
+access key to be used by our application. The access key that were going to create can be used to authenticate requests to any Amazon Web Service API and that includes the Product Advertising API.</p>
+
+<p>In order to obtain an access key first you have to sign up for an amazon web service account at: <a href="http://aws.amazon.com/">aws.amazon.com</a>. Youre amazon web service account is different from your amazon account that you use for shopping so you have to create a new account if you don&rsquo;t already have one.
+Along the sign up process you will be asked for your credit card number.
+If you don&rsquo;t have a credit card fret not because you can just close the tab when you reach that point and then access the <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">security credentials page</a> where you can create a new access key. All you have to do once you reach that page is to scroll down a bit so you will see the Access Credentials section which basically shows you a table of the access keys that are associated with your account.
+Just click on the &ldquo;Create new access key&rdquo; link to create a new access key. Once that&rsquo;s done you can just copy and paste the access key ID and the Secret Access key to the PHP file where you&rsquo;re going to include the class for accessing the api later on.</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/access_key.jpg" alt="amazon access key" /></p>
+
+<p>You can also sign up for an amazon affiliate account: <a href="https://affiliate-program.amazon.com/">Amazon affiliate program</a> so that you will have your own affiliate ID which you can also use in the class for accessing the API. Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the &lsquo;signed in as&rsquo; label.</p>
+
+<h3>API Basics</h3>
+
+<p>There are only 3 things that you have to keep in mind while working with the Amazon Product Advertising API:</p>
+
+<ul>
+<li>Operations</li>
+<li>Response Groups</li>
+<li>Browse Nodes</li>
+</ul>
+
+
+<h4>Operations</h4>
+
+<p>Operations are like methods in a class. This tells the API what specific action to do.
+Some of the most commonly used operations are:</p>
+
+<ul>
+<li>ItemSearch &ndash; commonly used for returning one or more items that satisfies the parameters specified</li>
+<li>ItemLookup &ndash; commonly used for returning a single item but can also return more items if the ASIN&rsquo;s (Amazon Standard Identification Number) are separated by comma.</li>
+<li>SimilarityLookup &ndash; used for returning items that are similar to the ASIN that is specified in the request.</li>
+</ul>
+
+
+<h4>Response Groups</h4>
+
+<p>Response groups are pre-defined result sets in the API.
+They are used for specifying the data that is to be returned by the API.
+Some of the most commonly used response groups are:</p>
+
+<ul>
+<li>ItemAttributes</li>
+<li>EditorialReview</li>
+<li>Images</li>
+<li>Medium</li>
+<li>NewReleases</li>
+<li>Reviews</li>
+<li>ItemIds</li>
+</ul>
+
+
+<p>You can check out the full list of available response groups here: <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html">Response Groups</a></p>
+
+<p>Looking at the documentation provided by Amazon I don&rsquo;t think there&rsquo;s a way to specify the specific fields that you want to return so the best thing to do when working with the API is to select a response group that suits your needs.
+Medium and Large response groups isn&rsquo;t really the best response group to use if you only want to get the items ASIN, title and selling price. So its wiser to check out what specific data are being returned by each response group before picking something like the Medium response group which returns a whole bunch of data that you might not need in the app that you&rsquo;re trying to build.
+Choosing the right response group will have a considerable effect on performance as you&rsquo;re only getting what&rsquo;s actually needed.</p>
+
+<h4>Browse Nodes</h4>
+
+<p>Browse Nodes in simple terms are product categories in amazon.
+If you have already tried shopping for a product at amazon you might have notice that there&rsquo;s a general category that you select when searching for a product like Electronics, Aparrel, Books, etc.
+These are the major browse nodes. As you go inside that category you will then see some sub-categories. For example you&rsquo;re browsing through the Books category. In the right side you will see sub-categories like arts &amp; philosophy, business &amp; investing, children&rsquo;s books, etc.
+All of these are represented by node Id&rsquo;s. You can find the full list of some of the major nodes in Amazon here: <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/BrowseNodeIDs.html">Browse Node IDs</a></p>
+
+<p>As you might have noticed in the table in the link above, every amazon site has different sets of major nodes since not every site has the same items available.</p>
+
+<h3>Accessing the API</h3>
+
+<p>A very nice guy has already written the class for us so we won&rsquo;t have to write the class for accessing the API.
+Here&rsquo;s the link to his blog post on how to use the API: <a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">Accessing Amazon Product Advertising API</a> you might want to download the source code from that site and read the blog post. He has also written another class which can be used for fetching some of the product categories available in each amazon site: <a href="http://www.codediesel.com/libraries/amazon-advertising-api-browsenodes/">Amazon Advertising API Browse Nodes</a>.</p>
+
+<p>Ok enough with the boring explanation let&rsquo;s start playing with the API.
+Go ahead and download the source available at the site I&rsquo;ve linked earlier and setup a sandbox where you could play with the API to your heart&rsquo;s content if you haven&rsquo;t done so.</p>
+
+<p>Open up the php file which contains the class for accessing the api and do some modifications.
+The class doesn&rsquo;t have every single operation and response group that&rsquo;s available in the API but its fine since we rarely need to use all of those. But we have to do some modifications so the class will become more flexible.</p>
+
+<p>First replace the constructor to accept the access key($public) , access key secret($private), amazon local site($local_site) and the associate id($associate_tag):</p>
+
+<p>```php
+&lt;?php
+public function __construct($public, $private, $local_site, $associate_tag){</p>
+
+<pre><code>$this-&gt;public_key = $public;
+$this-&gt;private_key = $private;
+$this-&gt;local_site = $local_site;
+$this-&gt;associate_tag = $associate_tag;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Of course you will need to declare some member variables where the values specified in the constructor will be assigned.</p>
+
+<p>The <code>queryAmazon</code> method can also use a little modification:</p>
+
+<p>```php
+&lt;?php
+public function queryAmazon($parameters){</p>
+
+<pre><code>return amazon_product_api_signed_request($this-&gt;local_site, $parameters, $this-&gt;public_key, $this-&gt;private_key, $this-&gt;associate_tag);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Little because we&rsquo;ve only changed the string &ldquo;com&rdquo; to be the member variable local site.
+All the rest is left unchanged.</p>
+
+<p>There are a number of methods already present in the class but the <code>queryAmazon()</code> method is all we really need.
+All we have to do is to specify the parameters needed and were good to go.</p>
+
+<p>There&rsquo;s also the php file which makes the actual request and creates the signatures for us.
+Basically amazon needs some sort of a signature for you to be able to access the API aside from the access ID and secret that you already have.
+But the access ID and secret are basically the ingredients on creating the signature.
+We won&rsquo;t be diving into that because honestly I don&rsquo;t understand some of the black magic coding-fu that&rsquo;s done in that file.</p>
+
+<p>But we need to make some modifications on it as well.
+Open up the <code>aws_signed_request.php</code> and scroll to its <code>aws_signed_request</code> method.
+I noticed that the default host that is used in there is somewhat obsolete.</p>
+
+<p>So instead of this:</p>
+
+<p>```
+$method = &ldquo;GET&rdquo;;
+$host = &ldquo;webservices.amazon.&rdquo;.$region;
+$uri = &ldquo;/onca/xml&rdquo;;</p>
+
+<p>$params[&ldquo;Service&rdquo;]          = &ldquo;AWSECommerceService&rdquo;;
+$params[&ldquo;AWSAccessKeyId&rdquo;]   = $public_key;
+$params[&ldquo;AssociateTag&rdquo;]     = $associate_tag;
+$params[&ldquo;Timestamp&rdquo;]        = gmdate(&ldquo;Y-m-d\TH:i:s\Z&rdquo;);
+$params[&ldquo;Version&rdquo;]          = &ldquo;2009-03-31&rdquo;;
+```</p>
+
+<p>It should be:</p>
+
+<p>```
+if($region == &lsquo;jp&rsquo;){</p>
+
+<pre><code>$host = "ecs.amazonaws.".$region;
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>$host = "webservices.amazon.".$region;
+</code></pre>
+
+<p>}</p>
+
+<p>$method = &ldquo;GET&rdquo;;
+$uri = &ldquo;/onca/xml&rdquo;;</p>
+
+<p>$params[&ldquo;Service&rdquo;]          = &ldquo;AWSECommerceService&rdquo;;
+$params[&ldquo;AWSAccessKeyId&rdquo;]   = $public_key;
+$params[&ldquo;AssociateTag&rdquo;]     = $associate_tag;
+$params[&ldquo;Timestamp&rdquo;]        = gmdate(&ldquo;Y-m-d\TH:i:s\Z&rdquo;);
+$params[&ldquo;Version&rdquo;]          = &ldquo;2011-08-01&rdquo;;
+```</p>
+
+<p>Not really much change in here. All we did was to make the host a little bit flexible and level up the version a bit (from version 2009-03-31 to 2011-08-01). As of the writing of this article Amazon.co.jp is the only amazon site that doesn&rsquo;t work with <code>webservices.amazon.{region}</code> so we had to do that little <code>if</code> statement to check if the region that is specified is Japan.</p>
+
+<p>Next create a new php file and include the class for accessing the api:</p>
+
+<p><code>
+require_once('amazon_api_class.php');
+</code></p>
+
+<p>Create an instance of the class and provide the necessary details:</p>
+
+<p><code>
+$amazon = new AmazonProductAPI($public, $private, $site, $affiliate_id);
+</code></p>
+
+<p>The <code>$site</code> is the amazon site where the items will be fetched. By default its value is &ldquo;com&rdquo;</p>
+
+<h4>Getting a Specific Item</h4>
+
+<p>First let&rsquo;s try getting a specific item by using an ASIN.
+You can get the ASIN of an item in amazon by scrolling down to its product details:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/item_asin.jpg" alt="amazon item ASIN" /></p>
+
+<p>Here we are specifying the ASIN of a Gundam called Heavy Arms Custom.
+One thing to remember when getting data for a specific product you must use the <code>ItemLookup</code> operation.
+The ItemId is a required parameter when using the <code>ItemLookup</code> operation so it must always be present.
+In the response group we specified two which is the reviews response group and the medium response group. Response group can either be one or more depending on what specific data you need.</p>
+
+<p>```php
+&lt;?php
+$single = array(</p>
+
+<pre><code>'Operation' =&gt; 'ItemLookup',
+'ItemId' =&gt; 'B0006N149M',
+'ResponseGroup' =&gt; 'Reviews,Medium'
+);
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>If you want to specify more than one response group then you can use comma to separate them. The  same is true with the other parameters that you specify. So for <code>ItemId</code> you can also specify one or more ASIN&rsquo;s also separated by commas. But for the operation you can only have one. In the screenshot below I&rsquo;ve specified two operations (ItemLookup and ItemSearch):</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/multi_operation.jpg" alt="multi operation" /></p>
+
+<p>If you missed a parameter required by the specific operation that you have specified the API will also tell you. So for example we haven&rsquo;t specified the ItemId as a parameter:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/required_params.jpg" alt="required parameters" /></p>
+
+<p>It&rsquo;s always nice to play around with the parameters so you&rsquo;ll know which are possible and which are not. Different parameters renders different results.</p>
+
+<p>Now if you execute the following code in the browser:</p>
+
+<p><code>php
+&lt;?php
+$result = $amazon-&gt;queryAmazon($single);
+echo "&lt;pre&gt;";
+print_r($result);
+echo "&lt;/pre&gt;";
+?&gt;
+</code></p>
+
+<p>You will get the following results:</p>
+
+<p>```
+SimpleXMLElement Object
+(</p>
+
+<pre><code>[OperationRequest] =&gt; SimpleXMLElement Object
+    (
+        [RequestId] =&gt; 78a46e7d-73ca-43e9-802b-956bd94878ab
+        [Arguments] =&gt; SimpleXMLElement Object
+            (
+                [Argument] =&gt; Array
+                    (
+                        [0] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; Operation
+                                        [Value] =&gt; ItemLookup
+                                    )
+
+                            )
+
+                        [1] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; Service
+                                        [Value] =&gt; AWSECommerceService
+                                    )
+
+                            )
+
+                        [2] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; Signature
+                                        [Value] =&gt; oiTUfIDVjKQzYKj2CA8KXoGU/hkgu+WimXaPOt6Czo8=
+                                    )
+
+                            )
+
+                        [3] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; AssociateTag
+                                        [Value] =&gt; 
+                                    )
+
+                            )
+
+                        [4] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; Version
+                                        [Value] =&gt; 2009-03-31
+                                    )
+
+                            )
+
+                        [5] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; ItemId
+                                        [Value] =&gt; B002ODQJKQ
+                                    )
+
+                            )
+
+                        [6] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; AWSAccessKeyId
+                                        [Value] =&gt; 
+                                    )
+
+                            )
+
+                        [7] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; Timestamp
+                                        [Value] =&gt; 2013-02-11T10:37:21Z
+                                    )
+
+                            )
+
+                        [8] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Name] =&gt; ResponseGroup
+                                        [Value] =&gt; Reviews,Medium
+                                    )
+
+                            )
+
+                    )
+
+            )
+
+        [RequestProcessingTime] =&gt; 0.0188220000000000
+    )
+
+[Items] =&gt; SimpleXMLElement Object
+    (
+        [Request] =&gt; SimpleXMLElement Object
+            (
+                [IsValid] =&gt; True
+                [ItemLookupRequest] =&gt; SimpleXMLElement Object
+                    (
+                        [IdType] =&gt; ASIN
+                        [ItemId] =&gt; B002ODQJKQ
+                        [ResponseGroup] =&gt; Array
+                            (
+                                [0] =&gt; Reviews
+                                [1] =&gt; Medium
+                            )
+
+                        [VariationPage] =&gt; All
+                    )
+
+            )
+
+        [Item] =&gt; SimpleXMLElement Object
+            (
+                [ASIN] =&gt; B002ODQJKQ
+                [DetailPageURL] =&gt; http://www.amazon.com/GTMax-Black-Travel-Charger-Sandisk/dp/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB002ODQJKQ
+                [ItemLinks] =&gt; SimpleXMLElement Object
+                    (
+                        [ItemLink] =&gt; Array
+                            (
+                                [0] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; Technical Details
+                                        [URL] =&gt; http://www.amazon.com/GTMax-Black-Travel-Charger-Sandisk/dp/tech-data/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [1] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; Add To Baby Registry
+                                        [URL] =&gt; http://www.amazon.com/gp/registry/baby/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [2] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; Add To Wedding Registry
+                                        [URL] =&gt; http://www.amazon.com/gp/registry/wedding/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [3] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; Add To Wishlist
+                                        [URL] =&gt; http://www.amazon.com/gp/registry/wishlist/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [4] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; Tell A Friend
+                                        [URL] =&gt; http://www.amazon.com/gp/pdp/taf/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [5] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; All Customer Reviews
+                                        [URL] =&gt; http://www.amazon.com/review/product/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                                [6] =&gt; SimpleXMLElement Object
+                                    (
+                                        [Description] =&gt; All Offers
+                                        [URL] =&gt; http://www.amazon.com/gp/offer-listing/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ
+                                    )
+
+                            )
+
+                    )
+
+                [SalesRank] =&gt; 502
+                [SmallImage] =&gt; SimpleXMLElement Object
+                    (
+                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg
+                        [Height] =&gt; 75
+                        [Width] =&gt; 75
+                    )
+
+                [MediumImage] =&gt; SimpleXMLElement Object
+                    (
+                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL160_.jpg
+                        [Height] =&gt; 160
+                        [Width] =&gt; 160
+                    )
+
+                [LargeImage] =&gt; SimpleXMLElement Object
+                    (
+                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL.jpg
+                        [Height] =&gt; 500
+                        [Width] =&gt; 500
+                    )
+
+                [ImageSets] =&gt; SimpleXMLElement Object
+                    (
+                        [ImageSet] =&gt; SimpleXMLElement Object
+                            (
+                                [@attributes] =&gt; Array
+                                    (
+                                        [Category] =&gt; primary
+                                    )
+
+                                [SwatchImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL30_.jpg
+                                        [Height] =&gt; 30
+                                        [Width] =&gt; 30
+                                    )
+
+                                [SmallImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg
+                                        [Height] =&gt; 75
+                                        [Width] =&gt; 75
+                                    )
+
+                                [ThumbnailImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg
+                                        [Height] =&gt; 75
+                                        [Width] =&gt; 75
+                                    )
+
+                                [TinyImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL110_.jpg
+                                        [Height] =&gt; 110
+                                        [Width] =&gt; 110
+                                    )
+
+                                [MediumImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL160_.jpg
+                                        [Height] =&gt; 160
+                                        [Width] =&gt; 160
+                                    )
+
+                                [LargeImage] =&gt; SimpleXMLElement Object
+                                    (
+                                        [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL.jpg
+                                        [Height] =&gt; 500
+                                        [Width] =&gt; 500
+                                    )
+
+                            )
+
+                    )
+
+                [ItemAttributes] =&gt; SimpleXMLElement Object
+                    (
+                        [Binding] =&gt; Electronics
+                        [Brand] =&gt; TPA
+                        [EAN] =&gt; 0084331456620
+                        [EANList] =&gt; SimpleXMLElement Object
+                            (
+                                [EANListElement] =&gt; 0084331456620
+                            )
+
+                        [Feature] =&gt; Brand new generic charger.
+                        [Label] =&gt; GTMax
+                        [Manufacturer] =&gt; GTMax
+                        [MPN] =&gt; VF-76-SAN-CLP-WALLC-A01
+                        [PackageDimensions] =&gt; SimpleXMLElement Object
+                            (
+                                [Height] =&gt; 110
+                                [Length] =&gt; 360
+                                [Weight] =&gt; 5
+                                [Width] =&gt; 350
+                            )
+
+                        [PackageQuantity] =&gt; 1
+                        [PartNumber] =&gt; VF-76-SAN-CLP-WALLC-A01
+                        [ProductGroup] =&gt; Network Media Player
+                        [ProductTypeName] =&gt; ACCESSORY_OR_PART_OR_SUPPLY
+                        [Publisher] =&gt; GTMax
+                        [SKU] =&gt; NAS-B002ODQJKQ
+                        [Studio] =&gt; GTMax
+                        [Title] =&gt; GTMax Black Home Travel Charger for Sandisk Sansa Clip Plus 4GB 8GB
+                        [UPC] =&gt; 084331456620
+                        [UPCList] =&gt; SimpleXMLElement Object
+                            (
+                                [UPCListElement] =&gt; 084331456620
+                            )
+
+                    )
+
+                [OfferSummary] =&gt; SimpleXMLElement Object
+                    (
+                        [LowestNewPrice] =&gt; SimpleXMLElement Object
+                            (
+                                [Amount] =&gt; 1
+                                [CurrencyCode] =&gt; USD
+                                [FormattedPrice] =&gt; $0.01
+                            )
+
+                        [TotalNew] =&gt; 10
+                        [TotalUsed] =&gt; 0
+                        [TotalCollectible] =&gt; 0
+                        [TotalRefurbished] =&gt; 0
+                    )
+
+                [CustomerReviews] =&gt; SimpleXMLElement Object
+                    (
+                        [IFrameURL] =&gt; http://www.amazon.com/reviews/iframe?alinkCode=xm2&amp;asin=B002ODQJKQ&amp;exp=2013-02-12T10%3A37%3A25Z&amp;v=2&amp;sig=1hL8%2BYC95zSlZ9ngcaerOMj3TEoZhDARGrPlLN9GnfI%3D
+                        [HasReviews] =&gt; true
+                    )
+
+                [EditorialReviews] =&gt; SimpleXMLElement Object
+                    (
+                        [EditorialReview] =&gt; SimpleXMLElement Object
+                            (
+                                [Source] =&gt; Product Description
+                                [Content] =&gt; 
+</code></pre>
+
+<p>Brand new non-OEM</p>
+
+<p>Input: 100V &ndash; 240V (U.S. &amp; World Standard)</p>
+
+<p>LED light power indicator.</p>
+
+<p>Best replacement for original Sansa travel charger.</p>
+
+<p>Intelligent IC chip inside recognizes a fully charged battery and automatically switches to a saver mode to prevent overcharging and short circuit.</p>
+
+<p>UPC Code:084331456620</p>
+
+<pre><code>                                [IsLinkSuppressed] =&gt; 0
+                            )
+
+                    )
+
+            )
+
+    )
+</code></pre>
+
+<p>)
+```</p>
+
+<p>Wew! That was a lot for a single product. What more if you&rsquo;re fetching more than one.
+Take the time to examine which specific data are returned so that you&rsquo;ll know how to access them later on.</p>
+
+<p>As you have seen above the api returns a simple xml object so you can access the data from it just like a normal object in PHP. But here were going to convert the object into an array.</p>
+
+<p>To convert a Simple Xml Object to an array you first have to convert it to a JSON string:</p>
+
+<p><code>
+$json = json_encode($result);
+</code></p>
+
+<p>And then use <code>json_decode()</code> to convert it to an array.
+Be sure to specify to convert it to an associative array by setting the second argument to <code>true</code>:</p>
+
+<p><code>
+$array = json_decode($json, true);
+</code></p>
+
+<p>You can then access it like a regular array:</p>
+
+<p><code>php
+&lt;?php
+echo $array['Items']['Item']['ASIN'];
+?&gt;
+</code></p>
+
+<p>One thing to remember though. Not every product has the same sets of fields.
+Just like in the real world, you can&rsquo;t expect a bag to have a model number since only electronic gadgets like cellphones have that.</p>
+
+<h4>Getting Similar Items</h4>
+
+<p>You can also get items which are similar to the item that you have specified in your parameters.
+Here were using the <code>SimilarityLookup</code> operation to get the items which are similar to the Gundam Heavy Arms Custom. We also have a new parameter called <code>Condition</code> which is simply the status of the item whether its new, refurbished, used or collectible.</p>
+
+<p>```php
+&lt;?php
+$similar = array(</p>
+
+<pre><code>'Operation' =&gt; 'SimilarityLookup',
+'ItemId' =&gt; 'B0006N149M',
+'Condition' =&gt; 'All',
+'ResponseGroup' =&gt; 'Medium'
+);
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>Here were simply looping through the results returned by the api and were outputting the image, price and the ASIN of the item:</p>
+
+<p>```php
+&lt;?php
+$result =   $amazon->queryAmazon($similar);
+$similar_products = $result->Items->Item;
+foreach($similar_products as $si){</p>
+
+<pre><code>$item_url = $si-&gt;DetailPageURL; //get its amazon url
+$img = $si-&gt;MediumImage-&gt;URL; //get the image url
+
+echo "&lt;li&gt;";
+echo "&lt;img src='$img'/&gt;";
+echo "&lt;a href='$item_url'&gt;". $si-&gt;ASIN . "&lt;/a&gt;";
+echo $si-&gt;ItemAttributes-&gt;ListPrice-&gt;FormattedPrice; //item price
+echo "&lt;/li&gt;";       
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Here&rsquo;s what it will look like:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/similar_items.jpg" alt="required parameters" /></p>
+
+<h4>Item Lookup</h4>
+
+<p>Finally let&rsquo;s look at the <code>ItemSearch</code> operation.
+As I have mentioned earlier the <code>ItemSearch</code> operation simply returns all the items which matches the criteria that you have specified.</p>
+
+<p>So here were trying to get some computer software which are associated with the keyword &ldquo;Disney&rdquo;.
+We also have some new paramters which we haven&rsquo;t used earlier. The <code>SearchIndex</code> is the category where we want to search, in this case the category is software so its expected that we only get software for the results. The <code>Keywords</code> is like the query for our search. In other words what specific software do we want to search. In this case its &ldquo;disney&rdquo; software. Remember that games are also software so its natural that we get some computer games back.</p>
+
+<p>```php
+&lt;?php
+$category = &lsquo;Software&rsquo;;</p>
+
+<p>$params = array(</p>
+
+<pre><code>"Operation"     =&gt; "ItemSearch",
+"SearchIndex"   =&gt; $category,
+"Keywords" =&gt; "disney",
+"ResponseGroup" =&gt; "Medium,Reviews"     
+);
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>And indeed we get some computer games based on some disney films:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/disney_games.jpg" alt="disney games" /></p>
+
+<h2>Conclusion</h2>
+
+<p>We&rsquo;ve barely scratched the surface with this tutorial but I hope I&rsquo;ve been able to give you some useful information on how to get started using the Amazon Product Advertising API.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_Intro_AAWS.html">Introduction to the Product Advertising API</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ApiReference.html">API Reference</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/BrowseNodeIDs.html">Browse Node IDs</a></p></li>
+<li><p><a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">Accessing Amazon Product Advertising API</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html">Response Groups</a>)</p></li>
+<li><p><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_amazon_product_api.7z">Sample Application Source Code</a></p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

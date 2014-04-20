@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: facebook-api | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/facebook-api/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Facebook JavaScript SDK]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk/"/>
+    <updated>2012-08-28T22:02:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going share the things I learned about the Facebook JavaScript SDK.</p>
+
+<!--More-->
+
+
+<h4>Create an App</h4>
+
+<p>When were talking about the Facebook API or Facebook SDK we must first have a Facebook App.
+A Facebook App doesn&rsquo;t necessarily reside within Facebook just like the games that we play in Facebook.
+An app can be a login application that you only use to have your users login to your websites using their Facebook accounts.
+An app can be basically anything which you can use to connect your website or webapp to Facebook.</p>
+
+<p>To create an app go to <a href="https://developers.facebook.com/apps">developers.facebook.com/apps</a></p>
+
+<p>Click on <code>create new app</code>.</p>
+
+<p>Enter the name of your app.
+<img src="/images/posts/facebook_js_1/create_app.jpg" alt="create_app" /></p>
+
+<p>Enter the captcha.
+<img src="/images/posts/facebook_js_1/security_check.jpg" alt="enter_captcha" /></p>
+
+<p>After entering the captcha correctly an <code>app id</code> and <code>app secret</code> will be generated.
+The <code>app id</code> and <code>app secret</code> is what you will use on your website or webapp to connect to Facebook.
+They&rsquo;re like connection strings for databases.</p>
+
+<p>Enter your app info. What information you enter here will basically depend on the nature of your app.
+In this article I&rsquo;m only going to show you the basics so I&rsquo;m just going to select the <code>website with Facebook login</code> option.
+The <code>site url</code> is basically the address where you want to redirect once the user has successfully logged in.
+It doesn&rsquo;t necessarily have to be an existing website which can be access in the internet.
+For this reason I only used my <code>localhost</code> which is basically <code>127.0.0.1</code>. If you&rsquo;re not using the default port
+you can just enter something like <code>127.0.0.1:8090</code> where <code>8090</code> is the port where your web server is running.</p>
+
+<p><img src="/images/posts/facebook_js_1/app_info.jpg" alt="app_info" /></p>
+
+<h4>Setting up the API</h4>
+
+<p>Now were on the exciting part. Most of the information that I will mention here are basically based on the <a href="https://developers.facebook.com/docs/reference/javascript/">Official Documentation on JavaScript SDK</a>
+You might as well go there and read up the basics. But if you&rsquo;re like me and your eyes hurt a minute after going through the documentation then continue reading.
+The documentation is pretty good but they&rsquo;re not making things easy to find. Some things are basically hidden until you hit up Google or Stackoverflow.</p>
+
+<p>Here are some of the things that you have to remember when working with the Facebook JavaScript SDK:</p>
+
+<ul>
+<li><strong>fb-root</strong> &ndash; the fb root is a <code>div</code> with an id of <code>fb-root</code>. It is used by the JavaScript SDK to be able to load properly.
+The <code>fb-root</code> is where new elements are being attached. You might ask why not just append it to the <code>body</code> and be done with it. I don&rsquo;t really know how
+to answer that. Facebook has their own way of doing things.</li>
+</ul>
+
+
+<p>```html</p>
+
+<div id="fb-root"></div>
+
+
+<p>```</p>
+
+<p>As you can see from the screenshot below the <code>fb-root</code> is some sort of a container for all the things that has something to do with the Facebook SDK.
+<img src="/images/posts/facebook_js_1/fb_root.jpg" alt="fb_root" /></p>
+
+<ul>
+<li><strong>jQuery</strong> &ndash; Another thing that you have to remember is using jQuery. It will make your life easier in selecting elements from the DOM when working with Facebook.
+So go ahead and download and include it on your page.</li>
+</ul>
+
+
+<p>```</p>
+
+<script src="jquery.js"></script>
+
+
+<p>```</p>
+
+<ul>
+<li><strong>Facebook JavaScript SDK</strong> &ndash; next is the Facebook JavaScript SDK itself. Include it on your page immediately.
+```</li>
+</ul>
+
+
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+
+
+<p>```</p>
+
+<p>In the documentation what they did was to load the JavaScript SDK asynchronously(grammar natzis forgive me if I didn&rsquo;t spell that right) like this:</p>
+
+<p>```javascript
+(function(d){</p>
+
+<pre><code> var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement('script'); js.id = id; js.async = true;
+ js.src = "//connect.facebook.net/en_US/all.js";
+ ref.parentNode.insertBefore(js, ref);
+</code></pre>
+
+<p>   }(document));
+```</p>
+
+<p>They did this so that it doesn&rsquo;t block the loading of elements in the page.
+Its up for you to choose which method of loading Facebook SDK do you want.
+Its always recommended that you load it asynchronously if you&rsquo;re working on a real world website
+where every millisecond counts.</p>
+
+<ul>
+<li><strong>Channel File</strong> &ndash; next is the channel file which contains the code below. In the documentation it said something about cross-domain communication in certain browsers.
+Feel free to read that if you have lots of time but for now let&rsquo;s just say its important that we have that file as well.
+So go ahead and create a new file called <code>channel.php</code> and paste the code below.</li>
+</ul>
+
+
+<p>```php
+&lt;?php
+ $cache_expire = 60<em>60</em>24*365;
+ header(&ldquo;Pragma: public&rdquo;);
+ header(&ldquo;Cache-Control: max-age=&rdquo;.$cache_expire);
+ header(&lsquo;Expires: &rsquo; . gmdate(&rsquo;D, d M Y H:i:s', time()+$cache_expire) . &lsquo; GMT&rsquo;);
+ ?></p>
+
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+
+
+<p>```</p>
+
+<ul>
+<li><strong>Initialization</strong> &ndash; next is the initialization. Just substitute the <code>YOUR_APP_ID</code> with your <code>app id</code>.
+Yes were not gonna need the <code>app secret</code> I don&rsquo;t really know why but when I used the PHP SDK its actually required.
+Might as well do some research on that but we won&rsquo;t die if we don&rsquo;t know it.
+The code below is a short version as I only used 3 key-value pairs. These are not the only options there are <a href="https://developers.facebook.com/docs/reference/javascript/FB.init/">more</a>
+but these are the only one&rsquo;s that we need right now.</li>
+</ul>
+
+
+<p><code>
+FB.init({appId: "YOUR_APP_ID", status: true, cookie: true});
+</code></p>
+
+<h4>Logging In</h4>
+
+<p>Were done with the essentials now its time to play. Let&rsquo;s go ahead and <a href="https://developers.facebook.com/docs/reference/javascript/FB.login/">login with Facebook</a> using <code>FB.login</code>.
+As the name suggests <code>FB.login</code> is used to login to your website or webapp via Facebook. In the example below were logging in with 3 permissions that has to be approved
+by the user.</p>
+
+<ul>
+<li><strong>user_about_me</strong> &ndash; Provides access to the &ldquo;About Me&rdquo; section of the profile in the about property</li>
+<li><strong>user_activities</strong> &ndash; Provides access to the user&rsquo;s list of activities as the activities connection</li>
+<li><strong>user_birthday</strong> &ndash; Provides access to the birthday with year as the birthday property</li>
+</ul>
+
+
+<p>The strings that we specify on the <code>scope</code> are the user information that we have access to. Check out the <a href="https://developers.facebook.com/docs/authentication/permissions/">permissions reference</a> for some of
+the permissions that you can use on the <code>scope</code>. Each permission is separated by a comma <code>,</code> note that there are no spaces, just the comma.
+If you have scanned through the permissions you might have noticed that Facebook has broken it down into specific data and not groups like <code>user_information</code> or <code>friends_information</code>.</p>
+
+<p>You can also have access to your friends information. Note that this is not confidential information like passwords and email as Facebook won&rsquo;t give you those.
+You only have access to information that are allowed by your friends in their privacy settings. For example if your friend has an album where he has set that
+he is the only one who can view it then you won&rsquo;t have access to that.</p>
+
+<p>There are also extended permissions, these are actions in which the app can do like posting to the wall/timeline of your friends or publishing information
+into your own wall. These extended permissions has their own authentication box(the box that you see the first time you use an app) so if an app has an extended permission
+you will basically have an authentication box which has 2 pages. One for the basic permission and one for the extended permission.</p>
+
+<p>```javascript
+FB.login(function(response){
+   if (response.authResponse) { //if the user has logged in successfully</p>
+
+<pre><code>    console.log('You are now logged in');
+</code></pre>
+
+<p>   } else { //problem with logging in</p>
+
+<pre><code>    console.log('User cancelled login or did not fully authorize.');
+</code></pre>
+
+<p>   }
+ }, {scope: &lsquo;user_about_me,user_activities,user_birthday});
+```</p>
+
+<p>Here&rsquo;s what the basic permission might look like:
+<img src="/images/posts/facebook_js_1/basic_permission.jpg" alt="basic_permission" /></p>
+
+<p>And here&rsquo;s the extended permission:
+<img src="/images/posts/facebook_js_1/extended_permission.jpg" alt="extended_permission" /></p>
+
+<p>Yes you can actually deselect a specific permission if you don&rsquo;t want it like the
+posting in your behalf permission since its so evil.
+You&rsquo;re just watching something on Youtube and without you knowing it actually published a link to your timeline on the video that
+you&rsquo;re watching. That&rsquo;s why its always wise to review the permissions that you&rsquo;re allowing before you click on the allow button.</p>
+
+<h4>Accessing Data</h4>
+
+<p>I&rsquo;ll just give a simple introduction on accessing data. I want to make at least 3 posts out of this so forgive me if this post isn&rsquo;t
+long enough or in-depth enough for you. If you want some in-depth stuff that&rsquo;s the job of the official documentation on the Facebook JavaScript SDK.</p>
+
+<p>You can access information using <code>FB.api</code>. But the information that you can access depends on the permissions that you have set on the <code>scope</code> and
+the permissions that your users has allowed. For this reason its always nice to check whether a specific permission is allowed before trying
+to use it. You can check whether a specific permission is allowed using <code>fql</code> or the <code>Facebook Query Language</code>.
+All you have to do is set the <code>method</code> to <code>fql.query</code> and the <code>query</code> to the actual query.
+Remember that Facebook doesn&rsquo;t allow wildcards like <code>SELECT * FROM tbl</code> you have to explicitly specify what fields you need.
+In the example below were reading querying the permissions table for the permissions of the current user which is basically <code>me()</code>.
+You can also use the Facebook ID of the user.
+The list of tables which you can query are in the <a href="https://developers.facebook.com/docs/reference/fql">reference page for fql</a>
+What were doing in the code below is to loop through the response if the current key contains <code>1</code> it means that the permission is allowed if its <code>0</code> it means its not allowed.</p>
+
+<p>```
+FB.api({ method: &lsquo;fql.query&rsquo;, query: &lsquo;SELECT publish_stream, read_friendlists FROM permissions WHERE uid=me()&rsquo; }, function(resp) {</p>
+
+<pre><code>for(var key in resp[0]) {
+    if(resp[0][key] === "1"){
+        console.log(key +' -available');
+    }else{
+        console.log(key+ ' not available');
+    }
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>As you can see from the screenshot below the response is basically an object and the information that were interested in is at index 0.
+As you can see the 2 permissions are allowed by the user so were all good.</p>
+
+<p><img src="/images/posts/facebook_js_1/response.jpg" alt="basic_permission" /></p>
+
+<p>For the last example for this article were going to fetch a list of all the friends of the current user. These information are stored
+in <code>me/friends</code> which is some sort of a table in a database or a folder in a filesystem.
+Next we specify the fields that we need as Facebook doesn&rsquo;t automatically fetch the fields that you need. Facebook only fetches the default information
+like the <code>username</code> , <code>first_name</code>, <code>last_name</code> , and <code>id</code>. Yeah it turns out that we don&rsquo;t actually need to specify the fields if
+what we want to access are just the basic information. But its good practice to specify the fields so you&rsquo;ll know what to expect.
+Of course the fields that you can fetch still depends on the permissions that the user has allowed. So you will still get some <code>undefined</code> if the user didn&rsquo;t allow it.</p>
+
+<p>```
+FB.api(&lsquo;/me/friends&rsquo;, {fields: &lsquo;id,first_name,last_name,username&rsquo;}, function(response){</p>
+
+<pre><code>for(var x in obj.data){
+var field = obj.data[x];
+
+var id = field['id'];
+var firstname = field['first_name'];
+var lastname = field['last_name'];
+var username = field['username'];
+
+console.log("first_name: " + firstname + "\nlast_name: " + lastname + "\nid: " + id + "\nusername: " + username);
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook Developers</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

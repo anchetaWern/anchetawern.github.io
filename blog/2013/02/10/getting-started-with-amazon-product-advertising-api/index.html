@@ -1,0 +1,1453 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Amazon Product Advertising API - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this blog post I&rsquo;m going to show you how you can get started using Amazon&rsquo;s product advertising API in PHP.
+I&rsquo;m going to walk &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Amazon Product Advertising API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2013-02-10T19:31:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this blog post I&rsquo;m going to show you how you can get started using Amazon&rsquo;s product advertising API in PHP.
+I&rsquo;m going to walk you through creating an access key, some of the basics of the API and lastly some examples on how to use the API.</p>
+
+<!--More-->
+
+
+<h3>What is the Product Advertising API</h3>
+
+<p>Amazon Product Advertising API is basically an API offered by Amazon for accessing data on every product that are being displayed at any Amazon site.</p>
+
+<h3>Create an Access Key</h3>
+
+<p>Just like most of the API that are offered by sites like Facebook, Twitter, Tumblr we need to create an
+access key to be used by our application. The access key that were going to create can be used to authenticate requests to any Amazon Web Service API and that includes the Product Advertising API.</p>
+
+<p>In order to obtain an access key first you have to sign up for an amazon web service account at: <a href="http://aws.amazon.com/">aws.amazon.com</a>. Youre amazon web service account is different from your amazon account that you use for shopping so you have to create a new account if you don&rsquo;t already have one.
+Along the sign up process you will be asked for your credit card number.
+If you don&rsquo;t have a credit card fret not because you can just close the tab when you reach that point and then access the <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">security credentials page</a> where you can create a new access key. All you have to do once you reach that page is to scroll down a bit so you will see the Access Credentials section which basically shows you a table of the access keys that are associated with your account.
+Just click on the &ldquo;Create new access key&rdquo; link to create a new access key. Once that&rsquo;s done you can just copy and paste the access key ID and the Secret Access key to the PHP file where you&rsquo;re going to include the class for accessing the api later on.</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/access_key.jpg" alt="amazon access key" /></p>
+
+<p>You can also sign up for an amazon affiliate account: <a href="https://affiliate-program.amazon.com/">Amazon affiliate program</a> so that you will have your own affiliate ID which you can also use in the class for accessing the API. Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the &lsquo;signed in as&rsquo; label.</p>
+
+<h3>API Basics</h3>
+
+<p>There are only 3 things that you have to keep in mind while working with the Amazon Product Advertising API:</p>
+
+<ul>
+<li>Operations</li>
+<li>Response Groups</li>
+<li>Browse Nodes</li>
+</ul>
+
+
+<h4>Operations</h4>
+
+<p>Operations are like methods in a class. This tells the API what specific action to do.
+Some of the most commonly used operations are:</p>
+
+<ul>
+<li>ItemSearch &ndash; commonly used for returning one or more items that satisfies the parameters specified</li>
+<li>ItemLookup &ndash; commonly used for returning a single item but can also return more items if the ASIN&rsquo;s (Amazon Standard Identification Number) are separated by comma.</li>
+<li>SimilarityLookup &ndash; used for returning items that are similar to the ASIN that is specified in the request.</li>
+</ul>
+
+
+<h4>Response Groups</h4>
+
+<p>Response groups are pre-defined result sets in the API.
+They are used for specifying the data that is to be returned by the API.
+Some of the most commonly used response groups are:</p>
+
+<ul>
+<li>ItemAttributes</li>
+<li>EditorialReview</li>
+<li>Images</li>
+<li>Medium</li>
+<li>NewReleases</li>
+<li>Reviews</li>
+<li>ItemIds</li>
+</ul>
+
+
+<p>You can check out the full list of available response groups here: <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html">Response Groups</a></p>
+
+<p>Looking at the documentation provided by Amazon I don&rsquo;t think there&rsquo;s a way to specify the specific fields that you want to return so the best thing to do when working with the API is to select a response group that suits your needs.
+Medium and Large response groups isn&rsquo;t really the best response group to use if you only want to get the items ASIN, title and selling price. So its wiser to check out what specific data are being returned by each response group before picking something like the Medium response group which returns a whole bunch of data that you might not need in the app that you&rsquo;re trying to build.
+Choosing the right response group will have a considerable effect on performance as you&rsquo;re only getting what&rsquo;s actually needed.</p>
+
+<h4>Browse Nodes</h4>
+
+<p>Browse Nodes in simple terms are product categories in amazon.
+If you have already tried shopping for a product at amazon you might have notice that there&rsquo;s a general category that you select when searching for a product like Electronics, Aparrel, Books, etc.
+These are the major browse nodes. As you go inside that category you will then see some sub-categories. For example you&rsquo;re browsing through the Books category. In the right side you will see sub-categories like arts &amp; philosophy, business &amp; investing, children&rsquo;s books, etc.
+All of these are represented by node Id&rsquo;s. You can find the full list of some of the major nodes in Amazon here: <a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/BrowseNodeIDs.html">Browse Node IDs</a></p>
+
+<p>As you might have noticed in the table in the link above, every amazon site has different sets of major nodes since not every site has the same items available.</p>
+
+<h3>Accessing the API</h3>
+
+<p>A very nice guy has already written the class for us so we won&rsquo;t have to write the class for accessing the API.
+Here&rsquo;s the link to his blog post on how to use the API: <a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">Accessing Amazon Product Advertising API</a> you might want to download the source code from that site and read the blog post. He has also written another class which can be used for fetching some of the product categories available in each amazon site: <a href="http://www.codediesel.com/libraries/amazon-advertising-api-browsenodes/">Amazon Advertising API Browse Nodes</a>.</p>
+
+<p>Ok enough with the boring explanation let&rsquo;s start playing with the API.
+Go ahead and download the source available at the site I&rsquo;ve linked earlier and setup a sandbox where you could play with the API to your heart&rsquo;s content if you haven&rsquo;t done so.</p>
+
+<p>Open up the php file which contains the class for accessing the api and do some modifications.
+The class doesn&rsquo;t have every single operation and response group that&rsquo;s available in the API but its fine since we rarely need to use all of those. But we have to do some modifications so the class will become more flexible.</p>
+
+<p>First replace the constructor to accept the access key($public) , access key secret($private), amazon local site($local_site) and the associate id($associate_tag):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$public</span><span class="p">,</span> <span class="nv">$private</span><span class="p">,</span> <span class="nv">$local_site</span><span class="p">,</span> <span class="nv">$associate_tag</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">public_key</span> <span class="o">=</span> <span class="nv">$public</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">private_key</span> <span class="o">=</span> <span class="nv">$private</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">local_site</span> <span class="o">=</span> <span class="nv">$local_site</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">associate_tag</span> <span class="o">=</span> <span class="nv">$associate_tag</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course you will need to declare some member variables where the values specified in the constructor will be assigned.</p>
+
+<p>The <code>queryAmazon</code> method can also use a little modification:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">queryAmazon</span><span class="p">(</span><span class="nv">$parameters</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">amazon_product_api_signed_request</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">local_site</span><span class="p">,</span> <span class="nv">$parameters</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">public_key</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">private_key</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">associate_tag</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Little because we&rsquo;ve only changed the string &ldquo;com&rdquo; to be the member variable local site.
+All the rest is left unchanged.</p>
+
+<p>There are a number of methods already present in the class but the <code>queryAmazon()</code> method is all we really need.
+All we have to do is to specify the parameters needed and were good to go.</p>
+
+<p>There&rsquo;s also the php file which makes the actual request and creates the signatures for us.
+Basically amazon needs some sort of a signature for you to be able to access the API aside from the access ID and secret that you already have.
+But the access ID and secret are basically the ingredients on creating the signature.
+We won&rsquo;t be diving into that because honestly I don&rsquo;t understand some of the black magic coding-fu that&rsquo;s done in that file.</p>
+
+<p>But we need to make some modifications on it as well.
+Open up the <code>aws_signed_request.php</code> and scroll to its <code>aws_signed_request</code> method.
+I noticed that the default host that is used in there is somewhat obsolete.</p>
+
+<p>So instead of this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$method = &quot;GET&quot;;</span>
+</span><span class='line'><span class="x">$host = &quot;webservices.amazon.&quot;.$region; </span>
+</span><span class='line'><span class="x">$uri = &quot;/onca/xml&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">$params[&quot;Service&quot;]          = &quot;AWSECommerceService&quot;;</span>
+</span><span class='line'><span class="x">$params[&quot;AWSAccessKeyId&quot;]   = $public_key;</span>
+</span><span class='line'><span class="x">$params[&quot;AssociateTag&quot;]     = $associate_tag;</span>
+</span><span class='line'><span class="x">$params[&quot;Timestamp&quot;]        = gmdate(&quot;Y-m-d\TH:i:s\Z&quot;);</span>
+</span><span class='line'><span class="x">$params[&quot;Version&quot;]          = &quot;2009-03-31&quot;;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It should be:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">if($region == &#39;jp&#39;){</span>
+</span><span class='line'><span class="x">    $host = &quot;ecs.amazonaws.&quot;.$region;</span>
+</span><span class='line'><span class="x">}else{</span>
+</span><span class='line'><span class="x">    $host = &quot;webservices.amazon.&quot;.$region;</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">$method = &quot;GET&quot;;</span>
+</span><span class='line'><span class="x">$uri = &quot;/onca/xml&quot;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">$params[&quot;Service&quot;]          = &quot;AWSECommerceService&quot;;</span>
+</span><span class='line'><span class="x">$params[&quot;AWSAccessKeyId&quot;]   = $public_key;</span>
+</span><span class='line'><span class="x">$params[&quot;AssociateTag&quot;]     = $associate_tag;</span>
+</span><span class='line'><span class="x">$params[&quot;Timestamp&quot;]        = gmdate(&quot;Y-m-d\TH:i:s\Z&quot;);</span>
+</span><span class='line'><span class="x">$params[&quot;Version&quot;]          = &quot;2011-08-01&quot;;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not really much change in here. All we did was to make the host a little bit flexible and level up the version a bit (from version 2009-03-31 to 2011-08-01). As of the writing of this article Amazon.co.jp is the only amazon site that doesn&rsquo;t work with <code>webservices.amazon.{region}</code> so we had to do that little <code>if</code> statement to check if the region that is specified is Japan.</p>
+
+<p>Next create a new php file and include the class for accessing the api:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">require_once(&#39;amazon_api_class.php&#39;);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create an instance of the class and provide the necessary details:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$amazon = new AmazonProductAPI($public, $private, $site, $affiliate_id);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>$site</code> is the amazon site where the items will be fetched. By default its value is &ldquo;com&rdquo;</p>
+
+<h4>Getting a Specific Item</h4>
+
+<p>First let&rsquo;s try getting a specific item by using an ASIN.
+You can get the ASIN of an item in amazon by scrolling down to its product details:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/item_asin.jpg" alt="amazon item ASIN" /></p>
+
+<p>Here we are specifying the ASIN of a Gundam called Heavy Arms Custom.
+One thing to remember when getting data for a specific product you must use the <code>ItemLookup</code> operation.
+The ItemId is a required parameter when using the <code>ItemLookup</code> operation so it must always be present.
+In the response group we specified two which is the reviews response group and the medium response group. Response group can either be one or more depending on what specific data you need.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$single</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;Operation&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;ItemLookup&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;ItemId&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;B0006N149M&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;ResponseGroup&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Reviews,Medium&#39;</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to specify more than one response group then you can use comma to separate them. The  same is true with the other parameters that you specify. So for <code>ItemId</code> you can also specify one or more ASIN&rsquo;s also separated by commas. But for the operation you can only have one. In the screenshot below I&rsquo;ve specified two operations (ItemLookup and ItemSearch):</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/multi_operation.jpg" alt="multi operation" /></p>
+
+<p>If you missed a parameter required by the specific operation that you have specified the API will also tell you. So for example we haven&rsquo;t specified the ItemId as a parameter:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/required_params.jpg" alt="required parameters" /></p>
+
+<p>It&rsquo;s always nice to play around with the parameters so you&rsquo;ll know which are possible and which are not. Different parameters renders different results.</p>
+
+<p>Now if you execute the following code in the browser:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$amazon</span><span class="o">-&gt;</span><span class="na">queryAmazon</span><span class="p">(</span><span class="nv">$single</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;pre&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;/pre&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You will get the following results:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+<span class='line-number'>344</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [OperationRequest] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [RequestId] =&gt; 78a46e7d-73ca-43e9-802b-956bd94878ab</span>
+</span><span class='line'><span class="x">            [Arguments] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [Argument] =&gt; Array</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [0] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; Operation</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; ItemLookup</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [1] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; Service</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; AWSECommerceService</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [2] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; Signature</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; oiTUfIDVjKQzYKj2CA8KXoGU/hkgu+WimXaPOt6Czo8=</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [3] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; AssociateTag</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; </span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [4] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; Version</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; 2009-03-31</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [5] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; ItemId</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; B002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [6] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; AWSAccessKeyId</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; </span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [7] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; Timestamp</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; 2013-02-11T10:37:21Z</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [8] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Name] =&gt; ResponseGroup</span>
+</span><span class='line'><span class="x">                                            [Value] =&gt; Reviews,Medium</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [RequestProcessingTime] =&gt; 0.0188220000000000</span>
+</span><span class='line'><span class="x">        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    [Items] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [Request] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [IsValid] =&gt; True</span>
+</span><span class='line'><span class="x">                    [ItemLookupRequest] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [IdType] =&gt; ASIN</span>
+</span><span class='line'><span class="x">                            [ItemId] =&gt; B002ODQJKQ</span>
+</span><span class='line'><span class="x">                            [ResponseGroup] =&gt; Array</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [0] =&gt; Reviews</span>
+</span><span class='line'><span class="x">                                    [1] =&gt; Medium</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [VariationPage] =&gt; All</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [Item] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [ASIN] =&gt; B002ODQJKQ</span>
+</span><span class='line'><span class="x">                    [DetailPageURL] =&gt; http://www.amazon.com/GTMax-Black-Travel-Charger-Sandisk/dp/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                    [ItemLinks] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [ItemLink] =&gt; Array</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [0] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; Technical Details</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/GTMax-Black-Travel-Charger-Sandisk/dp/tech-data/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [1] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; Add To Baby Registry</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/gp/registry/baby/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [2] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; Add To Wedding Registry</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/gp/registry/wedding/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [3] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; Add To Wishlist</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/gp/registry/wishlist/add-item.html%3Fasin.0%3DB002ODQJKQ%26SubscriptionId%3D%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [4] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; Tell A Friend</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/gp/pdp/taf/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [5] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; All Customer Reviews</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/review/product/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [6] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Description] =&gt; All Offers</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://www.amazon.com/gp/offer-listing/B002ODQJKQ%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3DB002ODQJKQ</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [SalesRank] =&gt; 502</span>
+</span><span class='line'><span class="x">                    [SmallImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg</span>
+</span><span class='line'><span class="x">                            [Height] =&gt; 75</span>
+</span><span class='line'><span class="x">                            [Width] =&gt; 75</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [MediumImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL160_.jpg</span>
+</span><span class='line'><span class="x">                            [Height] =&gt; 160</span>
+</span><span class='line'><span class="x">                            [Width] =&gt; 160</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [LargeImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL.jpg</span>
+</span><span class='line'><span class="x">                            [Height] =&gt; 500</span>
+</span><span class='line'><span class="x">                            [Width] =&gt; 500</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [ImageSets] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [ImageSet] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [@attributes] =&gt; Array</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [Category] =&gt; primary</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [SwatchImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL30_.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 30</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 30</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [SmallImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 75</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 75</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [ThumbnailImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL75_.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 75</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 75</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [TinyImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL110_.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 110</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 110</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [MediumImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL._SL160_.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 160</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 160</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [LargeImage] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                        (</span>
+</span><span class='line'><span class="x">                                            [URL] =&gt; http://ecx.images-amazon.com/images/I/41betMKJ4%2BL.jpg</span>
+</span><span class='line'><span class="x">                                            [Height] =&gt; 500</span>
+</span><span class='line'><span class="x">                                            [Width] =&gt; 500</span>
+</span><span class='line'><span class="x">                                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [ItemAttributes] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [Binding] =&gt; Electronics</span>
+</span><span class='line'><span class="x">                            [Brand] =&gt; TPA</span>
+</span><span class='line'><span class="x">                            [EAN] =&gt; 0084331456620</span>
+</span><span class='line'><span class="x">                            [EANList] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [EANListElement] =&gt; 0084331456620</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [Feature] =&gt; Brand new generic charger.</span>
+</span><span class='line'><span class="x">                            [Label] =&gt; GTMax</span>
+</span><span class='line'><span class="x">                            [Manufacturer] =&gt; GTMax</span>
+</span><span class='line'><span class="x">                            [MPN] =&gt; VF-76-SAN-CLP-WALLC-A01</span>
+</span><span class='line'><span class="x">                            [PackageDimensions] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [Height] =&gt; 110</span>
+</span><span class='line'><span class="x">                                    [Length] =&gt; 360</span>
+</span><span class='line'><span class="x">                                    [Weight] =&gt; 5</span>
+</span><span class='line'><span class="x">                                    [Width] =&gt; 350</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [PackageQuantity] =&gt; 1</span>
+</span><span class='line'><span class="x">                            [PartNumber] =&gt; VF-76-SAN-CLP-WALLC-A01</span>
+</span><span class='line'><span class="x">                            [ProductGroup] =&gt; Network Media Player</span>
+</span><span class='line'><span class="x">                            [ProductTypeName] =&gt; ACCESSORY_OR_PART_OR_SUPPLY</span>
+</span><span class='line'><span class="x">                            [Publisher] =&gt; GTMax</span>
+</span><span class='line'><span class="x">                            [SKU] =&gt; NAS-B002ODQJKQ</span>
+</span><span class='line'><span class="x">                            [Studio] =&gt; GTMax</span>
+</span><span class='line'><span class="x">                            [Title] =&gt; GTMax Black Home Travel Charger for Sandisk Sansa Clip Plus 4GB 8GB</span>
+</span><span class='line'><span class="x">                            [UPC] =&gt; 084331456620</span>
+</span><span class='line'><span class="x">                            [UPCList] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [UPCListElement] =&gt; 084331456620</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [OfferSummary] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [LowestNewPrice] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [Amount] =&gt; 1</span>
+</span><span class='line'><span class="x">                                    [CurrencyCode] =&gt; USD</span>
+</span><span class='line'><span class="x">                                    [FormattedPrice] =&gt; $0.01</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                            [TotalNew] =&gt; 10</span>
+</span><span class='line'><span class="x">                            [TotalUsed] =&gt; 0</span>
+</span><span class='line'><span class="x">                            [TotalCollectible] =&gt; 0</span>
+</span><span class='line'><span class="x">                            [TotalRefurbished] =&gt; 0</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [CustomerReviews] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [IFrameURL] =&gt; http://www.amazon.com/reviews/iframe?alinkCode=xm2&amp;asin=B002ODQJKQ&amp;exp=2013-02-12T10%3A37%3A25Z&amp;v=2&amp;sig=1hL8%2BYC95zSlZ9ngcaerOMj3TEoZhDARGrPlLN9GnfI%3D</span>
+</span><span class='line'><span class="x">                            [HasReviews] =&gt; true</span>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    [EditorialReviews] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                        (</span>
+</span><span class='line'><span class="x">                            [EditorialReview] =&gt; SimpleXMLElement Object</span>
+</span><span class='line'><span class="x">                                (</span>
+</span><span class='line'><span class="x">                                    [Source] =&gt; Product Description</span>
+</span><span class='line'><span class="x">                                    [Content] =&gt; </span>
+</span><span class='line'><span class="x">Brand new non-OEM</span>
+</span><span class='line'><span class="x"> </span>
+</span><span class='line'><span class="x">Input: 100V - 240V (U.S. &amp; World Standard)</span>
+</span><span class='line'><span class="x"> </span>
+</span><span class='line'><span class="x">LED light power indicator.</span>
+</span><span class='line'><span class="x"> </span>
+</span><span class='line'><span class="x">Best replacement for original Sansa travel charger.</span>
+</span><span class='line'><span class="x"> </span>
+</span><span class='line'><span class="x">Intelligent IC chip inside recognizes a fully charged battery and automatically switches to a saver mode to prevent overcharging and short circuit.</span>
+</span><span class='line'><span class="x"> </span>
+</span><span class='line'><span class="x">UPC Code:084331456620</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                                    [IsLinkSuppressed] =&gt; 0</span>
+</span><span class='line'><span class="x">                                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">        )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Wew! That was a lot for a single product. What more if you&rsquo;re fetching more than one.
+Take the time to examine which specific data are returned so that you&rsquo;ll know how to access them later on.</p>
+
+<p>As you have seen above the api returns a simple xml object so you can access the data from it just like a normal object in PHP. But here were going to convert the object into an array.</p>
+
+<p>To convert a Simple Xml Object to an array you first have to convert it to a JSON string:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$json = json_encode($result);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then use <code>json_decode()</code> to convert it to an array.
+Be sure to specify to convert it to an associative array by setting the second argument to <code>true</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$array = json_decode($json, true);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then access it like a regular array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$array</span><span class="p">[</span><span class="s1">&#39;Items&#39;</span><span class="p">][</span><span class="s1">&#39;Item&#39;</span><span class="p">][</span><span class="s1">&#39;ASIN&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing to remember though. Not every product has the same sets of fields.
+Just like in the real world, you can&rsquo;t expect a bag to have a model number since only electronic gadgets like cellphones have that.</p>
+
+<h4>Getting Similar Items</h4>
+
+<p>You can also get items which are similar to the item that you have specified in your parameters.
+Here were using the <code>SimilarityLookup</code> operation to get the items which are similar to the Gundam Heavy Arms Custom. We also have a new parameter called <code>Condition</code> which is simply the status of the item whether its new, refurbished, used or collectible.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$similar</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;Operation&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;SimilarityLookup&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;ItemId&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;B0006N149M&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Condition&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;All&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;ResponseGroup&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Medium&#39;</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here were simply looping through the results returned by the api and were outputting the image, price and the ASIN of the item:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$result</span> <span class="o">=</span>  <span class="nv">$amazon</span><span class="o">-&gt;</span><span class="na">queryAmazon</span><span class="p">(</span><span class="nv">$similar</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$similar_products</span> <span class="o">=</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">Items</span><span class="o">-&gt;</span><span class="na">Item</span><span class="p">;</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$similar_products</span> <span class="k">as</span> <span class="nv">$si</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$item_url</span> <span class="o">=</span> <span class="nv">$si</span><span class="o">-&gt;</span><span class="na">DetailPageURL</span><span class="p">;</span> <span class="c1">//get its amazon url</span>
+</span><span class='line'>  <span class="nv">$img</span> <span class="o">=</span> <span class="nv">$si</span><span class="o">-&gt;</span><span class="na">MediumImage</span><span class="o">-&gt;</span><span class="na">URL</span><span class="p">;</span> <span class="c1">//get the image url</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;li&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;img src=&#39;</span><span class="si">$img</span><span class="s2">&#39;/&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;a href=&#39;</span><span class="si">$item_url</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span> <span class="nv">$si</span><span class="o">-&gt;</span><span class="na">ASIN</span> <span class="o">.</span> <span class="s2">&quot;&lt;/a&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$si</span><span class="o">-&gt;</span><span class="na">ItemAttributes</span><span class="o">-&gt;</span><span class="na">ListPrice</span><span class="o">-&gt;</span><span class="na">FormattedPrice</span><span class="p">;</span> <span class="c1">//item price</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;/li&gt;&quot;</span><span class="p">;</span>     
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s what it will look like:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/similar_items.jpg" alt="required parameters" /></p>
+
+<h4>Item Lookup</h4>
+
+<p>Finally let&rsquo;s look at the <code>ItemSearch</code> operation.
+As I have mentioned earlier the <code>ItemSearch</code> operation simply returns all the items which matches the criteria that you have specified.</p>
+
+<p>So here were trying to get some computer software which are associated with the keyword &ldquo;Disney&rdquo;.
+We also have some new paramters which we haven&rsquo;t used earlier. The <code>SearchIndex</code> is the category where we want to search, in this case the category is software so its expected that we only get software for the results. The <code>Keywords</code> is like the query for our search. In other words what specific software do we want to search. In this case its &ldquo;disney&rdquo; software. Remember that games are also software so its natural that we get some computer games back.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$category</span> <span class="o">=</span> <span class="s1">&#39;Software&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s2">&quot;Operation&quot;</span>     <span class="o">=&gt;</span> <span class="s2">&quot;ItemSearch&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;SearchIndex&quot;</span>   <span class="o">=&gt;</span> <span class="nv">$category</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;Keywords&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;disney&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;ResponseGroup&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Medium,Reviews&quot;</span>       
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And indeed we get some computer games based on some disney films:</p>
+
+<p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/disney_games.jpg" alt="disney games" /></p>
+
+<h2>Conclusion</h2>
+
+<p>We&rsquo;ve barely scratched the surface with this tutorial but I hope I&rsquo;ve been able to give you some useful information on how to get started using the Amazon Product Advertising API.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_Intro_AAWS.html">Introduction to the Product Advertising API</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ApiReference.html">API Reference</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/BrowseNodeIDs.html">Browse Node IDs</a></p></li>
+<li><p><a href="http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/">Accessing Amazon Product Advertising API</a></p></li>
+<li><p><a href="http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html">Response Groups</a>)</p></li>
+<li><p><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_amazon_product_api.7z">Sample Application Source Code</a></p></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2014-02-06T00:00:00+08:00" class="updated">Updated Feb 6<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/amazon/'>amazon</a>, <a class='category' href='/blog/categories/api/'>api</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/10/things-i-learned-on-my-second-job/" title="Previous Post: Things I learned on my second job">&laquo; Things I learned on my second job</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/11/getting-started-with-freebase-api/" title="Next Post: Getting Started with Freebase API">Getting Started with Freebase API &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/">A Whirlwind Tour of Web Developer Tools: Source Control</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2013/02/10/getting-started-with-amazon-product-advertising-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Gettting Started with Coinbase API - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this article I&rsquo;ll be showing you how to get started developing applications which communicates with the Coinbase API. But first what is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Gettting Started With Coinbase API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-03T13:34:00+08:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this article I&rsquo;ll be showing you how to get started developing applications which communicates with the Coinbase API. But first what is Coinbase?</p>
+
+<blockquote><p>Coinbase is a service that allows you to use bitcoins as a means of payment for goods and services. <br/>Its like Paypal but for bitcoins.</p></blockquote>
+
+
+
+
+<!-- more -->
+
+
+<p>First thing that you need to do is to register an account with Coinbase.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-register.png" alt="register account" /></p>
+
+<p>Then go to your email and verify the account.</p>
+
+<p>Accept the license.</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-license.png" alt="accept license" /></p>
+
+<p>Next, click on account settings and then click on the integrations tab:</p>
+
+<p><img src="/images/posts/coinbase_api/coinbase-api.png" alt="integrations" /></p>
+
+<p>Next, click on show my API key. You would need to enter your password to verify that you are indeed the account owner. Initially the API key is disabled so you need to enable it as well.</p>
+
+<p><img src="/images/posts/coinbase_api/enable-apikey.png" alt="enable api key" /></p>
+
+<p>After that, simply copy the API key that&rsquo;s displayed.</p>
+
+<p><img src="/images/posts/coinbase_api/copy-apikey.png" alt="copy api key" /></p>
+
+<p>The API key will be used for authenticating requests to the Coinbase API.</p>
+
+<h3>Authentication</h3>
+
+<p>There are 2 ways in which a request to the API can be authenticated:</p>
+
+<ol>
+<li>API key</li>
+<li>OAuth2</li>
+</ol>
+
+
+<h4>Authentication using API Key</h4>
+
+<p>Authenticating a request via the API Key is the easier way of making requests to the API. All you have to do is to append the api key on each request. The cool thing is you can directly execute a request to the API directly from the browser for methods that can be called via <code>GET</code>.</p>
+
+<p>For example when you want to get the account balance, you simply do something like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>https://coinbase.com/api/v1/account/balance?api_key=xyz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&rsquo;s a bunch of other methods which you can call directly from the browser. They&rsquo;re all listed <a href="https://coinbase.com/api/doc/1.0.html">here</a>. Do note that you can only call a method directly from the browser when its request method is <code>GET</code>. <code>POST</code> methods cannot be called directly from the browser, you need to use <code>curl</code> or <code>file_get_contents()</code> to be able to make the request.</p>
+
+<p>Here&rsquo;s an example of using <code>curl</code> to generate  a payment button, remember to pass the API Key along with the parameters required by the specific API method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="nv">$request</span> <span class="o">=</span> <span class="s1">&#39;{</span>
+</span><span class='line'><span class="s1">     &quot;api_key&quot; : &quot;xyz&quot;, </span>
+</span><span class='line'><span class="s1">     &quot;button&quot;: {</span>
+</span><span class='line'><span class="s1">         &quot;name&quot;: &quot;test&quot;,</span>
+</span><span class='line'><span class="s1">         &quot;price_string&quot;: &quot;1.23&quot;,</span>
+</span><span class='line'><span class="s1">         &quot;price_currency_iso&quot;: &quot;USD&quot;</span>
+</span><span class='line'><span class="s1">         }</span>
+</span><span class='line'><span class="s1"> }&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$post_fields</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$request</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="c1">//convert json string to an object</span>
+</span><span class='line'>    <span class="nv">$post_fields</span> <span class="o">=</span> <span class="nb">http_build_query</span><span class="p">(</span><span class="nv">$post_fields</span><span class="p">);</span> <span class="c1">//urlencode for arrays</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>    <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="c1">//tell curl that were posting some data along with the request </span>
+</span><span class='line'>    <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$post_fields</span><span class="p">);</span> <span class="c1">//the data that we want to post</span>
+</span><span class='line'>    <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s1">&#39;https://coinbase.com/api/v1/buttons&#39;</span><span class="p">);</span> <span class="c1">//the request url</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="c1">//return the transfer, by default its being echoed out</span>
+</span><span class='line'>  <span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span> <span class="c1">//execute the request</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method that we have used above is the <code>buttons</code> method. It only requires 3 arguments:</p>
+
+<ul>
+<li><p><strong>button[name]</strong> &ndash; the name of the item or service for which you are collecting bitcoins.</p></li>
+<li><p><strong>button[price_string]</strong> &ndash; the total price of the item or service.</p></li>
+<li><p><strong>button[price_currency_iso]</strong> &ndash; the currency of the price used in the <code>button[price_string]</code> argument. Examples are <code>USD</code>, <code>PHP</code>, <code>SGD</code>, <code>CAD</code>, or <code>BTC</code> for the bitcoin currency. It would be easier if <code>BTC</code> isn&rsquo;t used so you won&rsquo;t have to convert. Simply use your local currency and the API will automatically convert it to <code>BTC</code> depending on the current exchange rate.</p></li>
+</ul>
+
+
+<p>The response would be formatted in JSON:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;success&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;button&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;93865b9cae83706ae59220c013bc0afd&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;buy_now&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;buy_now_large&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Pay With Bitcoin&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Sample description&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;custom&quot;</span><span class="p">:</span> <span class="s2">&quot;Order123&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;price&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;cents&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;currency_iso&quot;</span><span class="p">:</span> <span class="s2">&quot;USD&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To generate the payment button, simply create a div with a class of <code>coinbase-button</code> then give it a data attribute <code>data-code</code> using the button code as its value. After that create a new script element and use the <code>button.js</code> from coinbase:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;coinbase-button&quot;</span> <span class="na">data-code=</span><span class="s">&quot;&lt;?php echo $response-&gt;button-&gt;code; ?&gt;&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://coinbase.com/assets/button.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The response returned above can also be used for generating payment pages.
+All you have to do is append the button code to the coinbase checkout url:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="cp">$response = json_decode($response); //convert json string to an object</span>
+</span><span class='line'><span class="cp">?&gt;</span>
+</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://coinbase.com/checkouts/&lt;?php echo $response-&gt;button-&gt;code; ?&gt;&quot;</span><span class="nt">&gt;</span>Checkout<span class="nt">&lt;/a&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Authentication using OAuth2</h4>
+
+<p>Authentication using OAuth2 is a bit difficult. Thankfully there are good people out there who creates libraries that makes our lives easier. One of those libraries is the <a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a> library.</p>
+
+<p>To use it, simply download the zip file from the Github repository or clone it on your machine. Once the download is done, you can just include it on your working script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;libs/coinbase/Coinbase.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that, you can go ahead and call the methods available from the library. In the example below were calling the <code>getOrders()</code> method which simply returns all the orders received by the merchant who owns the API Key that is used in the code. This means that every merchant who plans to integrate Coinbase in their application has to create their own Coinbase app in order to receive an API Key. The API Key will then serve as their identification for each request that is made to the API. Yes this is a bit of a drag for the merchants but that&rsquo;s just how it works so there&rsquo;s no choice but to stick with it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$api_key</span> <span class="o">=</span> <span class="s1">&#39;xyz&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$coinbase</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Coinbase</span><span class="p">(</span><span class="nv">$api_key</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$orders</span> <span class="o">=</span> <span class="nv">$coinbase</span><span class="o">-&gt;</span><span class="na">getOrders</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The response returned from the code above is not the same as the response that you directly get from the API.
+The library already converts it to an object so there&rsquo;s no need to. Here&rsquo;s an example of looping through the orders:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$orders</span><span class="o">-&gt;</span><span class="na">total_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$orders</span><span class="o">-&gt;</span><span class="na">orders</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'>                  
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">order</span><span class="o">-&gt;</span><span class="na">created_at</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">order</span><span class="o">-&gt;</span><span class="na">button</span><span class="o">-&gt;</span><span class="na">description</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">order</span><span class="o">-&gt;</span><span class="na">status</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">order</span><span class="o">-&gt;</span><span class="na">total_native</span><span class="o">-&gt;</span><span class="na">cents</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">order</span><span class="o">-&gt;</span><span class="na">button</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">;</span>
+</span><span class='line'>          
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Conclusion</h2>
+
+<p>You&rsquo;ve learned how to perform requests to the Coinbase API. Requests can be performed directly from the browser or via Curl. You have also learned how to generate payment buttons via the API.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://coinbase.com/api/doc/1.0.html">API Documentation</a></li>
+<li><a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-03T13:34:00+08:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/api/'>api</a>, <a class='category' href='/blog/categories/coinbase-api/'>coinbase-api</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/" title="Previous Post: How to perform cross-domain AJAX requests">&laquo; How to perform cross-domain AJAX requests</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/09/getting-started-with-shopify-app-development/" title="Next Post: Getting Started with Shopify App Development">Getting Started with Shopify App Development &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/">A Whirlwind Tour of Web Developer Tools: Source Control</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sql | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/sql/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-04-20T08:10:18+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Reviewing SQL Joins]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/11/01/reviewing-sql-joins/"/>
+    <updated>2012-11-01T13:43:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/11/01/reviewing-sql-joins</id>
+    <content type="html"><![CDATA[<p>In relation to the Yellowpill project (an application for generating sql queries) that I&rsquo;m working on. I figured I needed to review what I know about
+SQL Joins so that I can properly do the job.</p>
+
+<p>For this post I&rsquo;ll be using two tables: <code>tbl_students</code> and <code>tbl_school</code></p>
+
+<p><strong>tbl_school</strong></p>
+
+<p><img src="/images/posts/sqljoins/table1.jpg" alt="table1" /></p>
+
+<p><strong>tbl_students</strong></p>
+
+<p><img src="/images/posts/sqljoins/table2.jpg" alt="table2" /></p>
+
+<p>Note that I have used the term first table which refers to the table that you have specified after the <code>FROM</code> keyword
+which can also be referred to as left table. And the second table is the table that you&rsquo;re trying to join with the first table.
+The second table can also be reffered as the right table.</p>
+
+<ul>
+<li><strong>INNER JOIN</strong> &ndash; selects the rows which has a match on both tables.
+This is also the same with just using <code>JOIN</code> or <code>CROSS JOIN</code>.</li>
+</ul>
+
+
+<p><code>sql
+SELECT name, hobby, school FROM tbl_students
+INNER JOIN tbl_school ON tbl_students.school_id = tbl_school.id
+</code></p>
+
+<p><strong>Result:</strong></p>
+
+<p><img src="/images/posts/sqljoins/inner_join.jpg" alt="inner_join" /></p>
+
+<ul>
+<li><strong>LEFT OUTER JOIN</strong> &ndash; selects every record on the first table even if it doesn&rsquo;t have
+a match on the second table. Note that this is also the same with <code>LEFT JOIN</code>
+<code>
+SELECT name, hobby, school FROM tbl_students
+LEFT OUTER JOIN tbl_school ON tbl_students.school_id = tbl_school.id
+</code></li>
+</ul>
+
+
+<p><strong>Result:</strong></p>
+
+<p><img src="/images/posts/sqljoins/left_outerjoin.jpg" alt="left_join" /></p>
+
+<ul>
+<li><strong>RIGHT OUTER JOIN</strong> &ndash; selects every record on the second table even if it doesn&rsquo;t have a match on the first table.
+Note that this is also the same with <code>RIGHT JOIN</code>.</li>
+</ul>
+
+
+<p><code>
+SELECT school, name, hobby FROM tbl_students
+RIGHT OUTER JOIN tbl_school ON tbl_students.school_id = tbl_school.id
+</code></p>
+
+<p><strong>Result:</strong></p>
+
+<p><img src="/images/posts/sqljoins/right_outerjoin.jpg" alt="right_join" /></p>
+
+<p>As I am writing this blog post I also discovered a convention that can be used when writing queries.
+And that is putting the fields which are from the first table on the left part of the query string, and the fields from
+the second table in the right part of the query string. This really helps to see which rows are <code>NULL</code> from which table.
+If the nulls in the result are in the left part it means that the type of join used is a <code>RIGHT OUTER JOIN</code> and if the nulls shows
+up in the right part it means that the type of join is <code>LEFT OUTER JOIN</code>. But that type of thing also depends on which
+fields were selected or if they have actual data on it.</p>
+
+<ul>
+<li><strong>WHERE JOINS</strong> &ndash; this isn&rsquo;t actually a type of join, just an alternative used by other people. <code>WHERE JOIN</code> is performing
+table joins without using the <code>JOIN</code> keyword. The condition is supplied after the <code>WHERE</code> keyword instead.
+Here&rsquo;s an example:</li>
+</ul>
+
+
+<p><code>
+SELECT name, hobby, school FROM tbl_students, tbl_school
+WHERE tbl_students.school_id = tbl_school.id
+</code></p>
+
+<p>As you can see from the result below, it yields the same result as that of <code>INNER JOIN</code></p>
+
+<p><strong>Result:</strong></p>
+
+<p><img src="/images/posts/sqljoins/where_join.jpg" alt="where_join" /></p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html">A visual explanation of sql joins</a></li>
+<li><a href="http://stackoverflow.com/questions/5294311/difference-between-these-two-joining-table-approaches">Difference between using these two joining table approaches</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
