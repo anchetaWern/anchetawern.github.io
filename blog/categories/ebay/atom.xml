@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ebay | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/ebay/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Ebay Finding API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/04/03/getting-started-with-ebay-finding-api/"/>
+    <updated>2013-04-03T08:09:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/04/03/getting-started-with-ebay-finding-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how you can access the e-bay finding API to access products that are sold from e-bay.
+Product data such as the list price, available quantities, images are available from the e-bay finding API.</p>
+
+<!--More-->
+
+
+<h3>Getting an API Key</h3>
+
+<p>First thing that you have to do is to get an API Key from e-bay.
+This will serve as a unique identification for your application
+and a means for e-bay to limit access to their API to only those that have an API key.</p>
+
+<p>To get an API key you must first register with e-bay: <a href="https://developer.ebay.com/join/">developer.ebay.com/join</a></p>
+
+<p>After successfully registering you will receive an email from e-bay. Click on the link to verify your email and you will be redirected to a screen similar to the screenshot below:</p>
+
+<p><img src="/images/posts/getting_started_with_ebay_finding_api/registration_success.jpg" alt="successful registration" /></p>
+
+<p>You can then click on the get your application keys link, you will be redirected to the accounts page where you can click on the Generate production keys button to generate the API key.</p>
+
+<h3>Building a Simple e-bay Class</h3>
+
+<p>Next were going to build the class that were going to use later to access the API.
+Create a new PHP file and name it <code>class.ebay.php</code>. Then put the following contents:</p>
+
+<p>```
+&lt;?php
+class ebay{</p>
+
+<p>}
+?>
+```</p>
+
+<p>Inside the class declare the following private member variables:</p>
+
+<p><code>php
+&lt;?php
+private $url = 'http://svcs.ebay.com/services/search/FindingService/v1';
+private $app_id; //api key
+private $global_id; //e-bay region (eg. EBAY-US)
+private $version = '1.0.0'; //version of the API to use
+private $format = 'json'; //format of the returned data
+?&gt;
+</code></p>
+
+<p>The <code>$url</code> is the address in which the API can be accessed.</p>
+
+<p>The <code>$app_id</code> is the API key that you got earlier from registering your application with e-bay.</p>
+
+<p>The <code>$global_id</code> is the e-bay region in which you want to access product data. Think of it as the e-bay store which you access in your browser when you want to buy something online. The e-bay store that you&rsquo;re accessing when you type in <code>ebay.com</code> is the US store which has a global id of <code>EBAY-US</code>. There are also other global ids that you can use, you can access them here: <a href="http://developer.ebay.com/DevZone/finding/CallRef/Enums/GlobalIdList.html">Global ID List</a></p>
+
+<p>The <code>$version</code> is the version of the API that you want to use. At the time of writing of this article the version that is available is <code>1.0.0</code> so were going to use that here.</p>
+
+<p>The <code>$format</code> is the format in which you want the returned data to be encoded. The preffered format is <code>json</code> since we can easily manipulate it using PHP or JavaScript.</p>
+
+<p>Next is the constructor which will take up 3 arguments. The <code>$app_id</code> and <code>$global_id</code>.
+The constructor is called once you create an object of this class so you&rsquo;ll have to pass in the 2 arguments when you create an object.</p>
+
+<p>```
+&lt;?php
+public function __construct($app_id, $global_id){</p>
+
+<pre><code>$this-&gt;app_id = $app_id; 
+$this-&gt;global_id = $global_id; 
+</code></pre>
+
+<p>}
+?><br/>
+```</p>
+
+<p>Next, create a new method and call it <code>findItems</code> this will take 2 arguments: the <code>$keyword</code> and the <code>$limit</code>.
+The <code>$keyword</code> is your query. For example <code>computer accessories</code>.
+The <code>$limit</code> is the number of products which you want to return.</p>
+
+<p>In this method were simply appending the different parameters to the <code>$url</code> that we declared earlier.</p>
+
+<p>The parameters that we have used here are:</p>
+
+<ul>
+<li><p><strong>operation-name</strong> &ndash; the operation that you want to perform. In the example below were using the <code>findItemsByKeywords</code> operation. The type of operation will determine the other parameters that you will be including in your request.
+In the case of <code>findItemsByKeywords</code> the required parameter is the <code>keywords</code>. There are also other operations which you can use you can find them at the <a href="http://developer.ebay.com/DevZone/finding/CallRef/index.html">call reference page</a>.</p></li>
+<li><p><strong>service-version</strong> &ndash; the version of the API that you would want to use. In our example were using version    <code>1.0.0</code></p></li>
+<li><p><strong>keywords</strong> &ndash; the parameter required by the <code>findItemsByKeywords</code> operation in which you supply your url encoded query.</p></li>
+<li><p><strong>paginationInput.entriesPerPage</strong> &ndash; the number of entries per page</p></li>
+<li><p><strong>security-appname</strong> &ndash; the APP id that you got from registering your application with e-bay</p></li>
+<li><p><strong>response-data-format</strong> &ndash; the format in which you want the returned data to be.
+The preferred format is json although you can also have XML or SOAP as response data format.</p></li>
+</ul>
+
+
+<p>Once the parameters are all appended together with the request url we can then make a request to the API by using the <code>file_get_contents</code> method and supplying the request url as the argument. And since we specified <code>json</code> as the format earlier were going to use the <code>json_decode</code> method to convert the json string into an array.</p>
+
+<p>`&ldquo;
+&lt;?php
+public function findItems($keyword = &rdquo;, $limit = 2){</p>
+
+<pre><code>$url    = $this-&gt;url . '?';
+$url .= 'operation-name=findItemsByKeywords';
+$url .= '&amp;service-version=' . $this-&gt;version;
+$url .= '&amp;keywords=' . urlencode($keyword);
+$url .= '&amp;paginationInput.entriesPerPage=' . $limit;
+
+$url .= '&amp;security-appname='. $this-&gt;app_id;
+$url .= '&amp;response-data-format=' . $this-&gt;format;
+
+return json_decode(file_get_contents($url), true);
+</code></pre>
+
+<p>}
+?><br/>
+```</p>
+
+<p>We can also have a method where we can have more specificity with what we want to find.
+We can also specify the sorting type, item type, minimum price and maximum price. Note that we are using a different operation name for this method and that is the <code>findItemsAdvanced</code> operation.</p>
+
+<p>`&ldquo;
+&lt;?php
+public function findItemsAdvanced($keyword = &rdquo;, $item_sort = &lsquo;BestMatch&rsquo;, $item_type = &lsquo;FixedPricedItem&rsquo;, $min_price = &lsquo;0&rsquo;, $max_price = &lsquo;9999999&rsquo;, $limit = 2){</p>
+
+<pre><code>    $url    = $this-&gt;url . '?';
+    $url .= 'operation-name=findItemsAdvanced';
+    $url .= '&amp;service-version=' . $this-&gt;version;
+    $url .= '&amp;global-id=' . $this-&gt;global_id;
+    $url .= '&amp;keywords=' . urlencode($keyword);
+
+    $url .= '&amp;sortOrder=BestMatch';
+    $url .= '&amp;itemFilter(0).name=ListingType';
+    $url .= '&amp;itemFilter(0).value=FixedPrice';
+    $url .= '&amp;itemFilter(1).name=MinPrice';
+    $url .= '&amp;itemFilter(1).value=' . $min_price;
+    $url .= '&amp;itemFilter(2).name=MaxPrice';
+    $url .= '&amp;itemFilter(2).value=' . $max_price;
+    $url .= '&amp;paginationInput.entriesPerPage=' . $limit;
+    $url .= '&amp;descriptionSearch=false';
+
+    $url .= '&amp;security-appname='. $this-&gt;app_id;
+    $url .= '&amp;response-data-format=' . $this-&gt;format;
+
+    return json_decode(file_get_contents($url), true);
+}
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>Lastly, we can also create a method which simply returns an array of the sort orders available via e-bay.
+You can find the available values for sort orders in <a href="http://developer.ebay.com/DevZone/finding/CallRef/findItemsAdvanced.html#Request.sortOrder">this page</a>.</p>
+
+<p>```
+&lt;?php
+public function sortOrders(){</p>
+
+<pre><code>$sort_orders = array(
+    'BestMatch' =&gt; 'Best Match',
+    'BidCountFewest' =&gt; 'Bid Count Fewest',
+    'BidCountMost' =&gt; 'Bid Count Most',
+    'CountryAscending' =&gt; 'Country Ascending',
+    'CountryDescending' =&gt; 'Country Descending',
+    'CurrentPriceHighest' =&gt; 'Current Highest Price',
+    'DistanceNearest' =&gt; 'Nearest Distance',
+    'EndTimeSoonest' =&gt; 'End Time Soonest',
+    'PricePlusShippingHighest' =&gt; 'Price Plus Shipping Highest',
+    'PricePlusShippingLowest' =&gt; 'Price Plus Shipping Lowest',
+    'StartTimeNewest' =&gt; 'Start Time Newest'
+);
+
+return $sort_orders;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Building a Simple App</h3>
+
+<p>Time to use the class that we just created in building a simple application.
+Our simple application will have a search field for inputting products that the user wants to search
+and a drop-down box to sort the results.</p>
+
+<p>The only product details that were going to show to the user is the item title, price and the product image.
+In the code below were declaring an object of the class that we created earlier specifying the API key
+and the e-bay region as the first and second parameter.</p>
+
+<p>Then we call the <code>sortOrders</code> method which simply returns an array of sort orders that are available from the e-bay finding API.</p>
+
+<p>Next, we build the form for searching products.</p>
+
+<p>Finally, we check if the <code>$_POST['search']</code> variable is not empty and use its value together with the sort selected by the user as the argument for the <code>findItemsAdvanced</code> method.
+Going back to the class that we created earlier we used <code>findItemsAdvanced</code> as the operation.
+The operation determines the first index when accessing the results.
+So for the <code>findItemsAdvanced</code> it will have <code>findItemsAdvancedResponse</code> as the first index.</p>
+
+<p>```
+&lt;?php
+require_once(&lsquo;class.ebay.php&rsquo;);</p>
+
+<p>$ebay = new ebay(&lsquo;YOUR API KEY&rsquo;, &lsquo;EBAY-US&rsquo;);
+$sort_orders = $ebay->sortOrders();
+?></p>
+
+<p><form action="ebay_finding_test.php" method="post"></p>
+
+<pre><code>&lt;input type="text" name="search" id="search"&gt;
+&lt;select name="sort" id="sort"&gt;
+&lt;?php
+foreach($sort_orders as $key =&gt; $sort_order){
+?&gt;
+    &lt;option value="&lt;?php echo $key; ?&gt;"&gt;&lt;?php echo $sort_order; ?&gt;&lt;/option&gt;
+&lt;?php   
+}
+?&gt;
+&lt;/select&gt;
+&lt;input type="submit" value="Search"&gt;
+</code></pre>
+
+<p></form></p>
+
+<p>&lt;?php
+if(!empty($_POST[&lsquo;search&rsquo;])){</p>
+
+<pre><code>$results = $ebay-&gt;findItemsAdvanced($_POST['search'], $_POST['sort']);
+$item_count = $results['findItemsAdvancedResponse'][0]['searchResult'][0]['@count'];
+
+if($item_count &gt; 0){
+    $items = $results['findItemsAdvancedResponse'][0]['searchResult'][0]['item'];
+
+    foreach($items as $i){
+</code></pre>
+
+<p>?></p>
+
+<pre><code>    &lt;li&gt;
+        &lt;div class="item_title"&gt;
+            &lt;a href="&lt;?php echo $i['viewItemURL'][0]; ?&gt;"&gt;&lt;?php echo $i['title'][0]; ?&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="item_img"&gt;
+            &lt;img src="&lt;?php echo $i['galleryURL'][0]; ?&gt;" alt="&lt;?php echo $i['title']; ?&gt;"&gt;
+        &lt;/div&gt;
+        &lt;div class="item_price"&gt;
+            &lt;?php echo $i['sellingStatus'][0]['currentPrice'][0]['@currencyId']; ?&gt;
+            &lt;?php echo $i['sellingStatus'][0]['currentPrice'][0]['__value__']; ?&gt;
+        &lt;/div&gt;
+    &lt;/li&gt;
+</code></pre>
+
+<p>&lt;?php</p>
+
+<pre><code>    }
+}       
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Here&rsquo;s the demo for this simple application implemented using JavaScript by using Handlebars for the template and jQuery&rsquo;s <code>$.ajax</code> method to request the data. Be sure to place your own app id that you got from e-bay in order to make this demo work.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/L6Nkj/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it for this tutorial. Using the API is really easy since you don&rsquo;t need to construct signatures to be used in the request like other API&rsquo;s. Be sure to check out the resources below if you want to learn more about the e-bay finding API.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://developer.ebay.com/DevZone/finding/HowTo/">Finding API How To</a></li>
+<li><a href="http://developer.ebay.com/DevZone/finding/Concepts/MakingACall.html">Making an API Call</a></li>
+<li><a href="http://developer.ebay.com/DevZone/finding/CallRef/index.html">Call Reference</a></li>
+<li><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/ebay_finding_api.7z">Sample Application Source Code</a></li>
+<li><a href="http://tutorialdemos-wern.rhcloud.com/ebay_finding_api/ebay_finding_test.php">Sample Application Demo</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

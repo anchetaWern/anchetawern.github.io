@@ -1,0 +1,2411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Playing with Templating Libraries]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries/"/>
+    <updated>2013-03-24T21:49:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to walk you through some of the templating libraries
+that I&rsquo;m currently using for my projects specifically the following:</p>
+
+<ul>
+<li><a href="https://github.com/janl/mustache.js">Mustache</a></li>
+<li><a href="https://github.com/wycats/handlebars.js/">Handlebars</a></li>
+<li><a href="http://smarty.net/">Smarty</a></li>
+</ul>
+
+
+<p>Mustache is available for a bunch of languages but were going to use the JavaScript version for this tutorial.
+Handlebars is only available on JavaScript. And Smarty is for PHP.</p>
+
+<p>You can either use chrome dev tools, JS Fiddle (or any alternatives) or a local file for this tutorial.</p>
+
+<!--More-->
+
+
+<h3>Mustache</h3>
+
+<p>Let&rsquo;s start by creating the two ingredients that Mustache needs in order
+to create an output: a data source and a template.</p>
+
+<h4>Basics</h4>
+
+<p>Mustache mainly accepts JavaScript objects as its data source
+and an html string for the template.</p>
+
+<p>
+<code>javascript
+var name_obj = {'name' : 'Killua Zoldyc'}; //data source
+var name_template = "&lt;h1&gt;{{name}}&lt;/h1&gt;"; //template
+</code>
+</p>
+
+<p>After that, we can call the <code>Mustache.to_html()</code> method
+to merge the data source and the template together:</p>
+
+<p><code>
+var name_html = Mustache.to_html(name_template, name_obj);
+console.log(name_html);
+</code></p>
+
+<p>You can just use jQuery or plain JavaScript to append the html contained by <code>name_html</code> variable into the DOM.</p>
+
+<h4>Collections</h4>
+
+<p>Next let&rsquo;s do something less basic.
+Let&rsquo;s try to use a group of hunters as our data source:</p>
+
+<p>```javascript
+var hunters = {</p>
+
+<pre><code>'hunters' : [
+    {'name' : 'Gon', 'nen' : 'Enhancer'},
+    {'name' : 'Killua', 'nen' : 'Transmuter'},
+    {'name' : 'Kurapika', 'nen' : 'Conjurer'},
+    {'name' : 'Leorio', 'nen' : 'Emitter'}
+    ]
+</code></pre>
+
+<p>};
+```</p>
+
+<p>For the template were going to make use of a table to display
+both their names and nen ability:</p>
+
+<p>
+```html</p>
+
+<script id="hunters" type="text/html">
+    <h1>Hunters</h1>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Nen Ability</th>
+        </tr>
+        {{#hunters}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{nen}}</td>
+        </tr>
+        {{/hunters}}
+    </table>
+</script>
+
+
+<p> <br/>
+```
+</p>
+
+<p>On our previous example we made use of a variable which stores an html string for the template.
+But for the example above were using a <code>script</code> tag which has a type of <code>text/html</code> and plain html on its body.</p>
+
+<p>We also used a new pair of tags for looping through the items in the array:</p>
+
+<p>
+<code>
+{{#hunters}}
+  #access the value for each of the properties here
+{{/hunters}}
+</code>
+</p>
+
+<p>The hash <code>#</code> marks the start of the loop and the forward slash <code>/</code> marks its end.
+Then within those tags you can access the properties of the object.
+In our example the properties are <code>name</code> and <code>nen</code>.</p>
+
+<p>You can then append the html created from calling <code>Mustache.to_html()</code> into a container.
+Just make sure you&rsquo;re doing it after the dom has fully loaded and you can do that by calling the
+method inside jQuery&rsquo;s <code>document.read</code> event.</p>
+
+<p>```</p>
+
+<div class="container"></div>
+
+
+<p>```</p>
+
+<p>
+```
+var hunters_html = Mustache.to_html($(&lsquo;#hunters&rsquo;).html(), hunters);
+$(function(){</p>
+
+<pre><code>$('.container').html(hunters_html);
+</code></pre>
+
+<p>});
+```
+</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aj73t/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h4>Arrays</h4>
+
+<p>In our previous example we used an object as the data source and then accessed its properties inside the loop.
+But what if the data source is an array?</p>
+
+<p>For example we have this data source and we want to access the items in the <code>hunter_names</code> array:</p>
+
+<p>```javascript
+var hunter_names = {</p>
+
+<pre><code>'hunter_names' : ['Gon', 'Killua', 'Kurapika', 'Leorio']
+</code></pre>
+
+<p>};
+```</p>
+
+<p>To access each of the items in the <code>hunter_names</code> array all we have to do is to place a dot <code>.</code> inside the template tags. The dot represents the current item in the array:</p>
+
+<p>
+```</p>
+
+<script type="text/html" id="hunter_names">
+    {{#hunter_names}}
+        <li>{{.}}</li>
+    {{/hunter_names}}
+</script>
+
+
+<p>```
+</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Tb8pu/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h4>Functions</h4>
+
+<p>You can also make use of functions in Mustache.
+For example we have an object which stores the items that we have added to the cart:</p>
+
+<p>```javascript
+var subtotal = function(){
+   return this.price * this.quantity;
+};</p>
+
+<p>var cart = {</p>
+
+<pre><code>    'cart' : [
+        {
+            'name' : 'gundam', 
+            'quantity' : 2, 
+            'price' : 2500, 
+            'subtotal' : subtotal
+        },
+        {
+            'name' : 'racket',
+            'quantity' : 1,
+            'price' : 99,
+            'subtotal' : subtotal
+        },
+        {
+            'name' : 'flash drive',
+            'quantity' : 20,
+            'price' : 500,
+            'subtotal' : subtotal
+        }
+    ]
+};
+</code></pre>
+
+<p>```</p>
+
+<p>From the object above you can see that we have the <code>subtotal</code> property which we have assigned
+to the <code>subtotal</code> function which returns the product of the <code>price</code> and the <code>quantity</code>.</p>
+
+<p><code>this</code> simply refers to the current context where the function is being called so <code>this.price</code> simply refers to the price of the current item.</p>
+
+<p>We can then define our template.
+Note that were accessing the data from the <code>subtotal</code> property just like a normal property.
+It seems like Mustache already does some of its sorcery once we call the    <code>Mustache.to_html()</code> method which might include computing the subtotal for each item.</p>
+
+<p>So you don&rsquo;t really have to call the method from the template just like what we normally do when accessing the value returned from a property that was assigned to a function:</p>
+
+<p><code>
+cart.cart[0].subtotal();
+</code></p>
+
+<p>
+```html</p>
+
+<script id="functions" type="text/html">
+  <table border="1">
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>    
+      </tr>
+      {{#cart}}
+      <tr>
+        <td>{{name}}</td>
+        <td>{{price}}</td>
+        <td>{{quantity}}</td>
+        <td>{{subtotal}}</td>
+      </tr>
+      {{/cart}}
+  </table>
+</script>
+
+
+<p>```
+</p>
+
+<p>The common use cases for functions is when checking for the existence or truthiness of a value, computing values, and adding extra markup based on a certain condition.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mGmPG/2/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h3>Handlebars</h3>
+
+<p>There&rsquo;s not really much difference between Mustache and Handlebars.</p>
+
+<p>They still use the same template tags which looks like a double mustache <code></code>.
+But the template tags also look like the Handlebars of a bicycle so maybe that&rsquo;s the reason behind the naming of this templating library.</p>
+
+<p>Handlebars packs more features than Mustache since it has some simple logic tags which you can use like <code>if</code> , <code>with</code> and <code>each</code>. I believe templates should contain less logic as possible since templates are only for presentation.</p>
+
+<p>Just like how we keep logic to a minimum in the views when working with MVC.
+Handlebars has also limited the logic tags that we can use.</p>
+
+<p>To emphasize that there isn&rsquo;t really much difference between Mustache and Handlebars I&rsquo;ll use the same object that we used earlier on our Mustache example:</p>
+
+<p>```javascript
+var subtotal = function(){
+   return this.price * this.quantity;
+};</p>
+
+<p> var cart = {</p>
+
+<pre><code>    'cart' : [
+        {
+            'name' : 'gundam', 
+            'quantity' : 2, 
+            'price' : 2500, 
+            'subtotal' : subtotal
+        },
+        {
+            'name' : 'racket',
+            'quantity' : 1,
+            'price' : 99,
+            'subtotal' : subtotal
+        },
+        {
+            'name' : 'flash drive',
+            'quantity' : 20,
+            'price' : 500,
+            'subtotal' : subtotal
+        }
+    ]
+</code></pre>
+
+<p>};<br/>
+```</p>
+
+<p>And for the template the only change that we have here is the value of the type attribute of the script tag.
+In this case the value is <code>text/x-handlebars-template</code>.</p>
+
+<p>
+```html</p>
+
+<script id="functions" type="text/x-handlebars-template">
+  <table border="1">
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>    
+      </tr>
+      {{#cart}}
+      <tr>
+        <td>{{name}}</td>
+        <td>{{price}}</td>
+        <td>{{quantity}}</td>
+        <td>{{subtotal}}</td>
+      </tr>
+      {{/cart}}
+  </table>
+</script>
+
+
+<p> <br/>
+```
+</p>
+
+<p>Handlebars isn&rsquo;t really picky when it comes to the value of tye <code>type</code> attribute.
+You can actually use <code>text/html</code> as the value or nothing at all.</p>
+
+<p>But its a good practice to always specify the <code>type</code> so that other people will know what that specific <code>script</code> tag is all about. Plus I haven&rsquo;t really tested if the two tags below would really work in all possible scenarios.</p>
+
+<p>```html</p>
+
+<script type="text/html"></script>
+
+
+
+
+<script></script>
+
+
+<p>```</p>
+
+<p>Finally we can just call <code>Handlebars.compile</code> and supply the html string of our template as an argument to create the template. We can then call the template and supplying the data source <code>cart</code> as the argument then assign it as the html of the container:</p>
+
+<p><code>
+var cart_html = Handlebars.compile($('#functions').html());
+$('.container').html(cart_html(cart));
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/H8Bac/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>In the above example we did not explicitly specify that we want to loop through the items in the cart.
+In handlebars there&rsquo;s actually an alternative syntax for looping through the items in an array.
+And that is by using the <code>each</code> keyword followed by the name of the array.</p>
+
+<p>
+<code>html
+{{#each cart}}
+&lt;tr&gt;
+  &lt;td&gt;{{name}}&lt;/td&gt;
+  &lt;td&gt;{{price}}&lt;/td&gt;
+  &lt;td&gt;{{quantity}}&lt;/td&gt;
+  &lt;td&gt;{{subtotal}}&lt;/td&gt;
+&lt;/tr&gt;
+{{/each}}
+</code>
+</p>
+
+<h4>With</h4>
+
+<p><code>With</code> is used to change the context on which the properties that are accessed inside of it are called.</p>
+
+<p>First lets define our data source:</p>
+
+<p>```javascript
+var hunter = {</p>
+
+<pre><code>'family_occupation' : 'assassin',
+'hunter' : {
+    'name' : 'killua zoldyc', 
+    'ability' : 'transmuter'
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<p>Then our template:</p>
+
+<p>
+```html</p>
+
+<script id="hunter" type="text/x-handlebars-template">
+    {{#with hunter}}
+        <h1>Name: {{name}}</h1>
+        <h2>Ability: {{ability}}</h2>
+        <h3>Family: {{../family_occupation}}</h3>
+    {{/with}}
+</script>
+
+
+
+
+<div class="name"></div>
+
+
+<!--container-->
+
+
+<p>```
+</p>
+
+<p>As you can see from the template above we have change the context to <code>hunter</code> so any properties that are defined inside the <code>hunter</code> object will be accessible as long as they are within the <code>with</code> tags.</p>
+
+<p>But if you want to access properties outside of the current context you can use <code>../</code> just like what we do when stepping back a single directory when linking assets relatively in html.
+From our example the <code>family_occupation</code> property is outside the <code>hunter</code> object so we&rsquo;ve used <code>../</code> to step back.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZprP6/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h4>If</h4>
+
+<p><code>if</code> is used to check for the <a href="http://james.padolsey.com/javascript/truthy-falsey/">truthiness</a> of a value.
+It can be used along with <code>else</code> to output something else in case a value is not present.</p>
+
+<p>In our object below there is no value for the <code>box_weapon</code> of the first member.</p>
+
+<p>```javascript
+var family = {</p>
+
+<pre><code>'member' : [
+    {
+        'name' : 'reborn',
+        'box_weapon' : ''
+    },
+    {
+        'name' : 'tsunayoshi sawada',
+        'box_weapon' : 'sky lion'
+    },
+    {
+        'name' : 'hibari kyoya',
+        'box_weapon' : 'cloud hedgehog'
+    },
+    {
+        'name' : 'gokudera hayato',
+        'box_weapon' : 'storm leopard'
+    },
+    {
+        'name' : 'takeshi yamamoto',
+        'box_weapon' : 'rain swallow'
+    },
+    {
+        'name' : 'ryohei sasagawa',
+        'box_weapon' : 'sun kangaroo'
+    },
+    {
+        'name' : 'lambo',
+        'box_weapon' : 'lightning bull'
+    },
+    {
+        'name' : 'rokudo mukuro',
+        'box_weapon' : 'mist owl'
+    }
+]
+</code></pre>
+
+<p>};
+```</p>
+
+<p>We can then use <code>if</code> and <code>else</code> to check if the value is present or not and output something else if the value is not present:</p>
+
+<p>
+```html</p>
+
+<script id="ifs" type="text/x-handlebars-template">
+  <h1>vongola</h1>
+  <table border="1">
+      <tr>
+        <th>Family Member</th>
+        <th>Box Weapon</th>
+      </tr>
+      {{#each member}}
+      <tr>
+        <td>{{name}}</td>
+        {{#if box_weapon}}
+            <td>{{box_weapon}}</td>
+        {{else}}
+            <td>No box weapon</td><!--if value is not present-->
+        {{/if}}
+      </tr>
+      {{/each}}
+  </table>
+</script>
+
+
+
+
+<div class="family"></div>
+
+
+<!--container-->
+
+
+<p>```
+</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/J8qXs/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h4>Helpers</h4>
+
+<p>Finally there are <code>helpers</code> which are like functions that you can call inside your Handlebars template.
+They can be used to extend the functionality that Handlebars already provides by default.</p>
+
+<p>For our example let&rsquo;s define the data source which is just an array of numbers from 1 to 10:</p>
+
+<p>```javascript
+var numbers = {</p>
+
+<pre><code>'numbers' : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+</code></pre>
+
+<p>};
+```</p>
+
+<p>Then let&rsquo;s define our handlebars helper. You can define a helper by calling <code>Handlebars.registerHelper</code>.
+The first argument is the name of the helper, in this case the name is <code>multiply_by_10</code>.
+The second argument is the callback function which contains the logic or the process that you want to perform with the data that you specify. The data that you want the function to use are specified as arguments. In this case we have the <code>num</code> variable. The helper below simply returns the value returned from multiplying the argument <code>num</code> with the number 10.</p>
+
+<p><code>
+Handlebars.registerHelper('multiply_by_10', function(num){
+  return num * 10;
+});
+</code></p>
+
+<p>We can then create the template and call the helper that we just created, supplying the current item in the array of numbers. The current item in an array is represented by <code>this</code> in Handlebars.</p>
+
+<p>
+```html</p>
+
+<script id="helpers" type="text/x-handlebars-template">
+{{#each numbers}}
+    <li>{{multiply_by_10 this}}</li>
+{{/each}}
+</script>
+
+
+
+
+<div class="num_container"></div>
+
+
+<!--container-->
+
+
+<p>```
+</p>
+
+<p>Let&rsquo;s do another example, this time were going to use the cart object that we used earlier.
+But now we&rsquo;ll remove the <code>subtotal</code> property since we will let our helper take care of that.</p>
+
+<p>```javascript
+var cart = {</p>
+
+<pre><code>    'cart' : [
+        {
+            'name' : 'gundam', 
+            'quantity' : 2, 
+            'price' : 2500
+        },
+        {
+            'name' : 'racket',
+            'quantity' : 1,
+            'price' : 99
+        },
+        {
+            'name' : 'flash drive',
+            'quantity' : 20,
+            'price' : 500
+        }
+    ]
+</code></pre>
+
+<p>};
+```</p>
+
+<p>For this example were going to use two helpers.
+One will return the header for the table. And the other one will compute the subtotal.</p>
+
+<p>Here&rsquo;s the helper that returns the header:</p>
+
+<p>`&ldquo;
+Handlebars.registerHelper(&lsquo;get_headers&rsquo;, function(obj){
+  var table_headers = &rdquo;;</p>
+
+<p>  for(var x in obj){</p>
+
+<pre><code>if(obj.hasOwnProperty(x)){
+    table_headers += "&lt;th&gt;" + x + "&lt;/th&gt;";
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  return new Handlebars.SafeString(table_headers);
+});
+```</p>
+
+<p>What were doing in the code above is looping through the properties of the object that we specified
+and then wrapping it in <code>th</code> tags. The current property is represented by the value stored in the variable <code>x</code>.
+We then append this value to the the <code>table_headers</code> variable.</p>
+
+<p>After looping through all of the properties of the object we then return the string accumulated by the <code>table_headers</code> variable. We have to return a <code>new Handlebars.SafeString(html_string)</code> because Handlebars automatically escapes HTML tags. This is a way of telling Handlebars not to escape the specific HTML that were trying to return from the helper.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tENVa/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h4>JSON</h4>
+
+<p>Finally were going to use real world data to supply to our template.
+Twitter really makes it easy to retrieve the tweets of a specific user as long as the tweets are set to public
+so were going to make use of the data from Twitter as the data source for our templates.</p>
+
+<p>Here&rsquo;s our template:</p>
+
+<p>
+```html</p>
+
+<script id="tweets">
+    <h1>Wern Ancheta</h1>
+    {{#each tweets}}
+    <ul>
+      <li>{{linkify text}}</li>
+    </ul>
+    {{/each}}
+</script>
+
+
+
+
+<div class="tweets_container"></div>
+
+
+<!--container-->
+
+
+<p>```
+</p>
+
+<p>Then extend the String prototype by adding a method called <code>replaceArray</code> this method will take two arrays as arguments. All it does is to loop through the <code>find</code> array and replaces the current item in the <code>find</code> array with the current item in the <code>replace</code> array and then assign it back to the original string which is represented by <code>this</code>. After looping through all of the items it just returns the string which now has been replaced with the items in the <code>replace</code> array:</p>
+
+<p>```javascript
+function replaceArray = function(find, replace) {
+  var replaceString = this;
+  var find_length = find.length;</p>
+
+<p>  for (var i = 0; i &lt; find_length; i++) {</p>
+
+<pre><code>replaceString = replaceString.replace(find[i], replace[i]);
+</code></pre>
+
+<p>  }
+  return replaceString;
+};
+```</p>
+
+<p>Next, create a helper that would change the url&rsquo;s in a specific tweet to a link that can be clicked:</p>
+
+<p>```
+Handlebars.registerHelper(&lsquo;linkify&rsquo;, function(text){</p>
+
+<pre><code>var linkified = [];
+var urls = text.match(/(\{(.+?)\}:)?(http:\/\/[\w\-\.]+\.[a-zA-Z]{2,3}(?:\/\S*)?(?:[\w])+)/g);
+if(urls){
+    var url_count = urls.length;
+    for (var i = 0; i &lt; url_count; i++) {
+        var url_string = "&lt;a href='" + urls[i] + "'&gt;" + urls[i] + "&lt;/a&gt;";
+        linkified.push(url_string);
+    }
+    return new Handlebars.SafeString(text.replaceArray(urls, linkified));
+
+}else{
+    return text;
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>In the code above were using regex to extract only the urls from the tweet.
+For example we have this tweet:</p>
+
+<p><code>
+really nice interactive course on chrome developer tools http://t.co/wHdyEMnWjG
+</code></p>
+
+<p>Using the regex that we have above the <code>urls</code> variable will contain a single item:</p>
+
+<p><code>
+[http://t.co/wHdyEMnWjG]
+</code></p>
+
+<p>We then loop through all of those url&rsquo;s and wrapping it in anchor tags and then push it to the <code>linkified</code> variable.</p>
+
+<p><code>
+for (var i = 0; i &lt; url_count; i++) {
+  var url_string = "&lt;a href='" + urls[i] + "'&gt;" + urls[i] + "&lt;/a&gt;";
+  linkified.push(url_string);
+}
+</code></p>
+
+<p>Then we call the <code>replaceArray</code> method that we created earlier to replace all the url&rsquo;s in the tweet to a url wrapped in anchor tags. Then we use it as an argument of the <code>Handlebars.SafeString</code> method so that Handlebars would not escape the HTML:</p>
+
+<p><code>
+return new Handlebars.SafeString(text.replaceArray(urls, linkified));
+</code></p>
+
+<p>In case there&rsquo;s no url in the current tweet we simply return the tweet without doing anything to it:</p>
+
+<p><code>
+return text;
+</code></p>
+
+<p>Finally we can compile the template for the tweets and then issue an AJAX request to the Twitter API to get the tweets.
+The <code>dataType</code> should be <code>jsonp</code> since we can&rsquo;t really make a request to another domain if we don&rsquo;t specify the data type as <code>jsonp</code>. If you want to learn more about it check out this question at stackoverflow: <a href="http://stackoverflow.com/questions/2067472/what-is-jsonp-all-about">What is jsonp all about</a>.</p>
+
+<p>Once the request succeeded we can then replace the HTML of our tweets container with the HTML string returned from merging the template with the data coming from Twitter:</p>
+
+<p>```
+var tweets_template = Handlebars.compile($(&lsquo;#tweets&rsquo;).html());</p>
+
+<p>$.ajax({</p>
+
+<pre><code>url: 'https://api.twitter.com/1/statuses/user_timeline.json?screen_name=wern_ancheta&amp;count=5&amp;exclude_replies=true',
+dataType: 'jsonp',
+success: function(tweets){
+
+    $('.tweets_container').html(tweets_template({'tweets' : tweets}));
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aZra5/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<h3>Smarty</h3>
+
+<p>The last library that were going to play around today is the Smarty templating engine for PHP.
+And for that you need to download Smarty over at <a href="http://www.smarty.net">smarty.net</a>.</p>
+
+<p>The main smarty file is the <code>Smarty.class.php</code> stored in the <code>libs</code> directory.
+Include it on your working file and then do the housekeeping (make an instance of the smarty class, set the template directory):</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;libs/Smarty.class.php&rsquo;;</p>
+
+<p>$smarty = new Smarty;
+$smarty->setTemplateDir(&lsquo;smarty_templates&rsquo;); //this is where all your template files are stored
+?>
+```</p>
+
+<p>Next create a template under the <code>smarty_templates</code> directory.
+The file extension for smarty templates is <code>.tpl</code>.</p>
+
+<p>Next, we create our data source:</p>
+
+<p><code>
+&lt;?php
+$names = array(
+  'Yoh Asakura', 'Ichigo Kurosaki',
+  'Uzumaki Naruto', 'Edward Elric',
+  'Alibaba Saluja', 'BK201', 'Luffy'
+);
+?&gt;
+</code></p>
+
+<p>Then assign a template variable and call it <code>names</code>.
+You can use the  <code>assign</code> method to assign template variables.
+It takes up 2 arguments which is the name of the variable and then the variable which stores the data.</p>
+
+<p><code>
+&lt;?php
+$smarty-&gt;assign('names', $names);
+?&gt;
+</code></p>
+
+<p>Note that the name of the variable doesn&rsquo;t necessarily need to be the same as the name you gave to the variable which stores the data. So you can also have something like:</p>
+
+<p><code>
+&lt;?php
+$smarty-&gt;assign('anime', $names);
+?&gt;
+</code></p>
+
+<p>For our template we simply loop through the items in the array.
+Here were using <code>foreach</code> to loop through the items.</p>
+
+<p>
+```html</p>
+
+<h1>Anime</h1>
+
+
+<p>{foreach $names as $n}
+  <li>{$n}</li>
+{/foreach}
+```
+</p>
+
+<p>For our final example were just going to reuse the cart that we had earlier:</p>
+
+<p>```php
+&lt;?php
+$cart = array(
+  array(</p>
+
+<pre><code>'name' =&gt; 'racket',
+'price' =&gt; 200,
+'quantity' =&gt; 5
+),
+</code></pre>
+
+<p>  array(</p>
+
+<pre><code>'name' =&gt; 'table',
+'price' =&gt; 500,
+'quantity' =&gt; 4
+),
+</code></pre>
+
+<p>  array(</p>
+
+<pre><code>'name' =&gt; 'bat',
+'price' =&gt; 300,
+'quantity' =&gt; 7
+)
+</code></pre>
+
+<p>);
+?>
+```</p>
+
+<p>And for the template:</p>
+
+<p>
+```html</p>
+
+<h2>Cart</h2>
+
+
+<table border="1">
+  <!--Loop through the properties of the first item (name, price, quantity)-->
+  <tr>
+  {foreach $cart[0] as $h => $p}
+    <th>{$h}</th>
+  {/foreach}
+  </tr>
+  {foreach $cart as $i}
+  <tr>
+    <td>{$i.name}</td>
+    <td>{$i.price}</td>
+    <td>{$i.quantity}</td>
+  </tr>
+  {/foreach}
+</table>
+
+
+<p>There are {$cart|count} items in the cart.
+```
+</p>
+
+<p>Some of the functions that you can use on PHP can also be used inside Smarty templates.
+For the code above we have used the <code>count</code> function. To use a function inside a template you simply specify the value that you want to supply as the argument of the function and then followed by a pipe <code>|</code> and then the function name, in this case the function name is <code>count</code> which simply returns how many items are in the array that was specified.</p>
+
+<h2>Conclusion</h2>
+
+<p>There&rsquo;s not really much difference between PHP and Smarty syntax and you can actually do everything in PHP if you like.</p>
+
+<p>But why would we need to use templates instead of just plain PHP?</p>
+
+<p>Because templates has much more cleaner syntax and it encourages code reuse.
+Sometimes in our projects we need to make use of the same HTML structure for
+the data that were presenting and often times we just repeat ourselves.
+Using a template can help make our code DRYer.</p>
+
+<p>Another reason is that by using Smarty and other templating engines we can avoid writing something like this:</p>
+
+<p>```php
+&lt;?php
+$html_str   = &ldquo;<h1>Heading</h1>&rdquo;;
+$html_str  .= &ldquo;<ul>&rdquo;;
+foreach($items as $row){
+  $html_str  .= &ldquo;<li>&rdquo; . $row[&lsquo;name&rsquo;] . &ldquo;</li>&rdquo;;
+}
+$html_str  .= &ldquo;</ul>&rdquo;;</p>
+
+<p>echo $html_str;
+?>
+```</p>
+
+<p>Or something like this:</p>
+
+<p>```
+&lt;?php
+ob_start();
+?></p>
+
+<h1>Heading</h1>
+
+
+<ul>
+<?php
+foreach($items as $row){
+?> 
+  <li><?php echo $row['name']; ?></li>
+<?php
+}
+?>
+</ul>
+
+
+<p>&lt;?php
+$html = ob_get_contents();
+ob_end_flush();
+echo $html;
+?>
+```</p>
+
+<p>The code above doesn&rsquo;t really look great and we can avoid having to write those kinds of codes by using templates.
+This is true for all the templating libraries that we have gone around in this article and others which we haven&rsquo;t tackled.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a Registration System Using Knockout.js]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/12/26/building-a-registration-system-with-knockoutjs/"/>
+    <updated>2012-12-26T16:25:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/12/26/building-a-registration-system-with-knockoutjs</id>
+    <content type="html"><![CDATA[<p>Organizing JavaScript code is not really that easy especially if you have to do it from scratch.
+Event handlers, DOM Manipulation code, form validation code,
+code for generating effects, code for submitting data or getting data from the server
+can be all over the place. This is the reason why some smart people created JavaScript frameworks
+like Knockout.js, Ember.js, Backbone.js, and Batman.js to make organizing JavaScript code much easier.</p>
+
+<p>In this tutorial were going to build a very simple registration system using knockout.js.
+Were going to use PHP and MySQL for the backend.</p>
+
+<p>Here&rsquo;s what our final output would look like:</p>
+
+<p><img src="/images/posts/registration_system_knockoutjs/output.jpg" alt="output" /></p>
+
+<!--More-->
+
+
+<p>You can pretty much improve the css if you want to but here are the only functionality that its going to have:</p>
+
+<ul>
+<li><strong>Create New Student</strong></li>
+<li><strong>Update Student</strong></li>
+<li><strong>List Existing Students</strong></li>
+<li><strong>Delete Student</strong></li>
+</ul>
+
+
+<p>It&rsquo;s basically a simple CRUD app that we will implement using Knockout.js.</p>
+
+<h3>Things We&rsquo;ll Need</h3>
+
+<p>Go ahead and download the following:</p>
+
+<ul>
+<li><strong>jQuery</strong> &ndash; mainly for talking to the server since knockout.js can also handle events</li>
+<li><strong>Knockout.js</strong></li>
+</ul>
+
+
+<p>Saving to MySQL database is optional you can skip it if you only want to learn about knockout.js.
+But if you also want to do it then you must also have PHP, Apache and MySQL installed on your machine.</p>
+
+<h3>Database</h3>
+
+<p>For the database we&rsquo;ll only use 1 table and the table would have 4 fields:</p>
+
+<ul>
+<li><strong>ID</strong> &ndash; unique identifier for the student</li>
+<li><strong>Name</strong></li>
+<li><strong>Age</strong></li>
+<li><strong>Status</strong> &ndash; used for setting if a record has been deleted or active</li>
+</ul>
+
+
+<p>You can go ahead and execute the following on MySQL to build the database structure and put some data:</p>
+
+<p><code>``sql
+-- Dumping database structure for tutorials
+CREATE DATABASE IF NOT EXISTS</code>tutorials<code>/*!40100 DEFAULT CHARACTER SET latin1 */;
+USE</code>tutorials`;</p>
+
+<p>&mdash; Dumping structure for table tutorials.students
+CREATE TABLE IF NOT EXISTS <code>students</code> (
+  <code>id</code> int(10) NOT NULL AUTO_INCREMENT,
+  <code>name</code> varchar(50) DEFAULT NULL,
+  <code>age</code> int(11) DEFAULT NULL,
+  <code>status</code> tinyint(1) DEFAULT &lsquo;1&rsquo;,
+  PRIMARY KEY (<code>id</code>)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;</p>
+
+<p>&mdash; Dumping data for table tutorials.students: ~6 rows (approximately)
+DELETE FROM <code>students</code>;
+/<em>!40000 ALTER TABLE <code>students</code> DISABLE KEYS </em>/;
+INSERT INTO <code>students</code> (<code>id</code>, <code>name</code>, <code>age</code>, <code>status</code>) VALUES</p>
+
+<pre><code>(1, 'monkey d. luffy', 15, 1),
+(2, 'ron', 20, 0),
+(3, 'angel', 20, 0),
+(4, 'son goku', 30, 1),
+(5, 'naruto uzumaki', 16, 1),
+(6, 'draco', 15, 1);
+</code></pre>
+
+<p>/<em>!40000 ALTER TABLE <code>students</code> ENABLE KEYS </em>/;
+/<em>!40014 SET FOREIGN_KEY_CHECKS=1 </em>/;
+/<em>!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT </em>/;
+```</p>
+
+<h3>Markup</h3>
+
+<p>Include the dependencies:</p>
+
+<p>```html
+<link rel="stylesheet" href="main.css"></p>
+
+<script src="knockout.js"></script>
+
+
+<script src="jquery.js"></script>
+
+
+<p>```</p>
+
+<p>For the markup you can see that we have this <code>data-bind</code> attribute.
+This is basically used for binding data that is used by knockout.js to do its magic.
+Take the time to read the values in the <code>data-bind</code> attributes:</p>
+
+<p>```</p>
+
+<div class="container" data-bind="load: loadData()">
+    <div class="new_student">
+        <input type="text" class="name" placeholder="name" data-bind="value: person_name, hasfocus: person_name_focus()">
+        <input type="text" class="age" placeholder="age" data-bind="value: person_age">
+
+        <button data-bind="click: createPerson">Create</button>     
+    </div>
+
+    <table data-bind="visible: people().length > 0" class="students">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Remove</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: people">
+            <tr>
+                <td>
+                    <span data-bind="text: name, click: nameUpdating, visible: !nameUpdate()"></span>
+                    <input type="text" class="name" data-bind="value: name, visible: nameUpdate, hasfocus: nameUpdate">
+                </td>
+                <td>
+                    <span data-bind="text: age, click: ageUpdating, visible: !ageUpdate()"></span>
+                    <input type="text" class="age" data-bind="value: age, visible: ageUpdate, hasfocus: ageUpdate">
+                </td>
+                <td data-bind="click: $root.removePerson"><a href="#">remove</a></td>
+                <td data-bind="click: $root.updatePerson"><a href="#">update</a></td>
+            </tr>
+        </tbody>
+    </table>    
+</div>
+
+
+<p>```</p>
+
+<p>The first data binding is in the container.
+Basically what it does is to call the function <code>loadData()</code> which loads the existing student records from the server.</p>
+
+<p>```</p>
+
+<p><div class="container" data-bind="load: loadData()">
+```</p>
+
+<p>And by the way the <code>load</code> property is totally made up because in knockout.js you can&rsquo;t just
+call functions as they are. You need to have a property where you can call it.
+You can check out the knockout.js documentation for the properties that you can use.
+Here are some of the most commonly used properties:</p>
+
+<ul>
+<li><strong>value</strong> &ndash; used to specify the value of a form element</li>
+<li><strong>text</strong> &ndash; used to specify the text within an element</li>
+<li><strong>click</strong> &ndash; used to specify a function that will be executed when an element has been clicked</li>
+<li><strong>hasfocus</strong> &ndash; used to specify a function that will be executed when a form element has focus</li>
+<li><strong>visible</strong> &ndash; used to specify if an element is visible.
+Normally a variable is used as a value which stores either <code>true</code> or <code>false</code>.
+If the value of the variable is <code>true</code> then the element is visible, otherwise its hidden.
+If <code>true</code> and <code>false</code> bores you, then you can also use any truthy or falsy value in javascript.</li>
+</ul>
+
+
+<p>Next is for the name input. As you can see we can use several properties separated by commas.
+The value of this text field will be whatever is stored on the <code>person_name</code> variable and it will have focus on it if <code>person_name_focus</code> stores a truthy value.</p>
+
+<p><code>
+&lt;input type="text" class="name" placeholder="name" data-bind="value: person_name, hasfocus: person_name_focus"&gt;
+</code></p>
+
+<p>Next is the button that the user will click to create a new student.
+This will just call the <code>createPerson</code> method.
+Yep! <code>createPerson</code> is a method but why are we not calling it like a normal method?
+Go ahead and try putting <code>createPerson()</code> and see what happens.
+Whether you tried it or not here&rsquo;s what it actually does if you try to put it that way.
+It executes the method immediately on page load. You don&rsquo;t want this to happen since you only want to execute it once the button is clicked. If you might have also noticed if you have some value on the text field and you press on tab it also executes the method and this messes up the default behavior(cursor goes to next form field).</p>
+
+<p><code>
+&lt;button data-bind="click: createPerson"&gt;Create&lt;/button&gt;
+</code></p>
+
+<p>Next is the table were we will list all the student data that were fetched from the database.
+Here I&rsquo;ve used the <code>visible</code> property to make the table visible if there are actually records which are stored in the <code>people</code> variable. <code>length</code> is a property that we commonly have for strings and arrays in JavaScript so we can just use that as the condition for setting the visibility of the table.</p>
+
+<p><code>
+&lt;table data-bind="visible: people().length &gt; 0" class="students"&gt;
+</code></p>
+
+<p>Next we have the <code>foreach</code> property binded to <code>tbody</code>.
+This is used to iterate over the contents of an array.</p>
+
+<p><code>
+&lt;tbody data-bind="foreach: people"&gt;
+</code></p>
+
+<p>Were already inside a loop so the context already changes.
+This means that we already have access to the objects which are stored in the array.
+As you can see we have a <code>span</code> and an <code>input</code>. The <code>input</code> is hidden by default and it only becomes visible when the user clicks on the span at that point the span will also be hidden.</p>
+
+<p><code>
+&lt;span data-bind="text: name, click: nameUpdating, visible: !nameUpdate()"&gt;&lt;/span&gt;
+&lt;input type="text" class="name" data-bind="value: name, visible: nameUpdate, hasfocus: nameUpdate"&gt;
+</code></p>
+
+<p>The <code>text</code> for the <code>span</code> and the <code>value</code> for the <code>input</code> are the same.
+This means that when you click on the <code>span</code> it will be hidden then the <code>input</code> will show up with the value that is the same with the one in the <code>span</code>.</p>
+
+<p><img src="/images/posts/registration_system_knockoutjs/text_focus.jpg" alt="output" /></p>
+
+<p>When you click on the <code>span</code> it executes the <code>nameUpdating</code> method
+which simply changes the value of <code>nameUpdate</code> to <code>true</code>.</p>
+
+<p>Pretty much we&rsquo;ve just specified the following behavior:</p>
+
+<p><strong>span</strong></p>
+
+<ul>
+<li>visible if the text doesn&rsquo;t currently has focus.</li>
+<li>hidden if the text is focused</li>
+</ul>
+
+
+<p><strong>input</strong></p>
+
+<ul>
+<li>visible if the text currently has focus</li>
+<li>hidden if the text is not focused</li>
+</ul>
+
+
+<p>Next is the binding for when the user clicks on the remove link.
+This simply calls the <code>removePerson</code> method which deletes the selected student from the array.</p>
+
+<p>Knockout.js has pretty smart defaults because if you put a data binding to
+an anchor tag it prevents the default behavior(loads the address) when you click on it.</p>
+
+<p>Here we&rsquo;ve specified the context to be <code>$root</code>.
+This simply tells that the method <code>removePerson</code> is declared in the model in which you applied the bindings.</p>
+
+<p><code>
+&lt;td&gt;&lt;a href="#" data-bind="click: $root.removePerson"&gt;remove&lt;/a&gt;&lt;/td&gt;
+</code></p>
+
+<p>Next is the binding for when the user clicks on the update link.
+This simply calls the <code>updatePerson</code> method which updates the current record based on the changes made to it.</p>
+
+<p><code>
+&lt;td&gt;&lt;a href="#" data-bind="click: $root.updatePerson"&gt;update&lt;/a&gt;&lt;/td&gt;
+</code></p>
+
+<p>I have just given you an overview of what each method does.
+I&rsquo;m going to go more in-depth in the Script section of this tutorial.</p>
+
+<h3>Style</h3>
+
+<p>Here&rsquo;s the css code that I&rsquo;ve used for this mini project.
+You can copy it if you want but I recommend you to write your own if you think you need
+more practice with css.</p>
+
+<p>```css
+.new_student {
+  margin-bottom: 20px;
+}</p>
+
+<p>td, th {
+  padding: 10px;
+}</p>
+
+<p>.container {
+  padding: 16px;
+}</p>
+
+<p>thead {
+  background-color: #ccc;
+}</p>
+
+<p>td {
+  background-color: #dee;
+}</p>
+
+<p>.age {
+  width: 37px;
+}</p>
+
+<p>.name {
+  width: 218px;
+}
+```</p>
+
+<h3>Script</h3>
+
+<p>If the explanations in the markup section didn&rsquo;t make much sense to you then fret not because in this section we&rsquo;ll go in-depth with how things really work in knockout.js.</p>
+
+<h4>Student Model</h4>
+
+<p>First we need to have a model that represents the data available for each student.
+As you can see we cache the current value of <code>this</code> which refers to the <code>personModel</code>.
+Why do we need to do this? Because the value of <code>this</code> changes depending on the scope.
+This means that we can still have access to the properties
+and methods of the <code>personModel</code> even when inside a function
+which is called on a different context (E.g. Callback function for AJAX requests).</p>
+
+<p>```javascript
+var personModel = function(id, name, age){</p>
+
+<pre><code>var self = this; //caching so that it can be accessed later in a different context
+this.id = ko.observable(id); //unique id for the student (auto increment primary key from the database)
+this.name = ko.observable(name); //name of the student
+this.age = ko.observable(age);
+
+this.nameUpdate = ko.observable(false); //if the name is currently updated
+this.ageUpdate = ko.observable(false); //if the age is currently updated
+
+//executed if the user clicks on the span for the student name
+this.nameUpdating = function(){
+    self.nameUpdate(true); //make nameUpdate equal to true
+};
+
+//executed if the user clicks on the span for the student age
+this.ageUpdating = function(){
+    self.ageUpdate(true); //make ageUpdate equal to true
+};
+</code></pre>
+
+<p>};
+```</p>
+
+<p>We also have this <code>ko.observable</code> method which makes the variable observable.
+So if you make a change to the current value stored in that variable the underlying model is also updated.
+The default behavior for updating the underlying model is when an input loses its focus(onBlur).
+Making a variable observable means that you can execute an event whenever the value of the observable variable changes.
+The values of observable variables are accessed like functions.
+For example if you have this observable variable:</p>
+
+<p><code>
+this.name = ko.observable("someone");
+</code></p>
+
+<p>You can access its current value by calling it like a function: <code>this.name()</code>.</p>
+
+<p>The <code>nameUpdate</code> and <code>ageUpdate</code> stores the update state(either true or false).
+If the user clicks on the span the update state is updated to true.
+This also triggers the text field to show up and span to be hidden.</p>
+
+<p>The <code>nameUpdating</code> and <code>ageUpdating</code> updates <code>nameUpdate</code> and <code>ageUpdate</code> to true.
+These 2 functions are executed when the user clicks on the span for the student name or age.</p>
+
+<h4>Model</h4>
+
+<p>Next is the model in which the knockout.js bindings will be applied:</p>
+
+<p><code>
+var model = function(){
+};
+</code></p>
+
+<p>Inside the model we declare the default values for the students name, age, focus state of the student name text field, and the array that will store all the student details.</p>
+
+<p>Here we have used <code>ko.observableArray</code> method which makes an array observable.
+Remember that <code>ko.observable</code> is only used to monitor
+single values while <code>ko.observableArray</code> is used to monitor each of the items in the array.</p>
+
+<p><code>
+var self = this; //cache the current context
+this.person_name = ko.observable(""); //default value for the student name
+this.person_age = ko.observable("");
+this.person_name_focus = ko.observable(true); //if the student name text field has focus
+this.people = ko.observableArray([]); //this will store all the students
+</code></p>
+
+<h4>Create Student Record</h4>
+
+<p>Next is the code for creating a new student record.
+Since were good citizens of the web we also validate the values entered by the user
+before actually submitting it to the server.
+If the validation passes we build the data to be submitted to the server,
+submit it to the server via <code>POST</code> method, and once the new student record is saved into the database it returns the id of the student then the new student record is pushed into the observable student array.
+Since its observable, the moment we push a new student record into the array the user interface is also updated (the new student record is displayed on the table).</p>
+
+<p>This is the beauty of using JavaScript MV* frameworks. Once the underlying model is updated, the UI is also updated. You don&rsquo;t have to write a single line of code that updates the UI. Pretty sweet right?</p>
+
+<p>```
+this.createPerson = function(){</p>
+
+<pre><code>if(self.validatePerson()){ //if the validation succeeded
+
+    //build the data to be submitted to the server
+    var person = {'name' : this.person_name(), 'age' : this.person_age()};
+
+    //submit the data to the server     
+    $.ajax(
+        {
+            url: 'refresher_save.php',
+            type: 'POST',
+            data: {'student' : person, 'action' : 'insert'},
+            success: function(id){//id is returned from the server
+
+                //push a new record to the student array
+                self.people.push(new personModel(id, self.person_name(), self.person_age()));
+
+                self.person_name(""); //empty the text field for the student name
+                self.person_age(""); 
+            }
+        }
+    );          
+
+}else{ //if the validation fails
+    alert("Name and age are required and age should be a number!");
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<p>The default behavior for an observable array (<code>ko.observableArray</code>) when a new record is pushed is that it  appends the new record after the last record. While the default behavior for an observable item (<code>ko.observable</code>) is just updating the UI to match the current value in the model. But you can also add effects or execute functions for when a value of an observable variable changes(E.g. fadeOut effect for when an item is removed from an observable array).</p>
+
+<h4>Validate User Input</h4>
+
+<p>Here&rsquo;s the code for validating user input. We simply check if the student name and age is not empty. And check if the age is a number. If all of these conditions passes then we simply return <code>true</code>, otherwise <code>false</code>.</p>
+
+<p>```
+this.validatePerson = function(){</p>
+
+<pre><code>if(self.person_name() !== "" &amp;&amp; self.person_age() != "" &amp;&amp; Number(self.person_age()) + 0 == self.person_age()){
+    return true;
+}
+return false;
+</code></pre>
+
+<p>};
+```</p>
+
+<h4>Fetching Student Records</h4>
+
+<p>For the fetching of student records from the database all we have to do is to issue an AJAX request to the server.
+The server then returns a JSON string representing all the student records that was fetched from the database.
+And since were specifying the <code>dataType</code> to be <code>json</code> if the server doesn&rsquo;t return a json string nothing will actually be returned from the server. This also means that we no longer have to convert the returned json string manually by using something like <code>JSON.parse</code> to convert the json string to a JavaScript object.
+As you can see were immediately looping through the returned data and pushing each of the student details to the observable array for storing student data:</p>
+
+<p>```
+this.loadData = function(){</p>
+
+<pre><code>//fetch existing student data from database
+$.ajax({
+    url : 'refresher_save.php',
+    dataType: 'json',
+    success: function(data){ //json string of the student records returned from the server
+
+        for(var x in data){
+
+            //student details
+            var id = data[x]['id'];
+            var name = data[x]['name'];
+            var age = data[x]['age'];
+
+            //push each of the student record to the observable array for 
+            //storing student data
+            self.people.push(new personModel(id, name, age));
+        }
+
+    }
+});
+</code></pre>
+
+<p>};
+```</p>
+
+<h4>Delete Student Record</h4>
+
+<p>Looking at the code below we have this <code>person</code> variable available to us.
+This represents the current student. In the screenshot below the current student is Son Goku.</p>
+
+<p><img src="/images/posts/registration_system_knockoutjs/delete_link.jpg" alt="delete_link" /></p>
+
+<p>Having access to the current student means that we also have access to the value of its properties like id, name and age.</p>
+
+<p>```
+this.removePerson = function(person){</p>
+
+<pre><code>$.post(
+    'refresher_save.php', 
+    {'action' : 'delete', 'student_id' : person.id()}, 
+    function(response){
+
+        //remove the currently selected student from the array
+        self.people.remove(person);
+    }
+);
+</code></pre>
+
+<p>};
+```</p>
+
+<h4>Update Student Record</h4>
+
+<p>For the updating of student record we also have access to the current student.
+In this case we&rsquo;ll have to get all the user details that are to be submitted to the server(id, name, age):</p>
+
+<p>```
+this.updatePerson = function(person){</p>
+
+<pre><code>//get the student details
+var id = person.id();
+var name = person.name();
+var age = person.age();
+
+//build the data
+var student = {'id' : id, 'name' : name, 'age' : age};
+
+//submit to server via POST
+$.post(
+    'refresher_save.php', 
+    {'action' : 'update', 'student' : student}
+);
+</code></pre>
+
+<p>};
+```</p>
+
+<p>Then we just apply the knockout.js bindings to the model.
+This simply means that were binding the UI to the model so that any changes to the model will also update the UI.</p>
+
+<p><code>
+ko.applyBindings(new model());
+</code></p>
+
+<p>One thing to remember is that you can apply bindings to multiple elements.
+In the above example we haven&rsquo;t applied the bindings to any particular element.
+This means that were applying it globally. Which means that the model is applicable to all the markup.</p>
+
+<p>Here&rsquo;s an example where we are binding only to a particular element.
+In this case were binding to the <code>div</code> with a class of <code>container</code>.
+We can simply use a jQuery selector to select the element but it returns a jQuery object which
+knockout.js doesn&rsquo;t understand. So the solution
+would be to convert it to a DOM node by using <code>[0]</code> right after the selector.</p>
+
+<p>```html
+<script src="knockout.js"></script>
+<script src="jquery-1.8.2.js"></script></p>
+
+<p><div class="container"></p>
+
+<pre><code>&lt;input type="text" data-bind="value: name" autofocus&gt;
+&lt;button data-bind="click: echoName"&gt;Echo&lt;/button&gt;
+</code></pre>
+
+<p></div></p>
+
+<p><button data-bind="click: echoName">Echo</button></p>
+
+<p><script>
+var model = function(){</p>
+
+<pre><code>var self = this;
+this.name = "";
+this.echoName = function(){
+    console.log(self.name);
+};
+</code></pre>
+
+<p>};</p>
+
+<p>ko.applyBindings(new model(), $(&ldquo;.container&rdquo;)[0]);
+</script>
+```</p>
+
+<p>As you can see from the example above we have this <code>button</code> both inside and outside the container.
+The one inside the container will obviously work since its a children of the element to which the bindings are applied.
+The one outside the container will just be a normal button without events attached to it.</p>
+
+<p><code>
+&lt;button data-bind="click: echoName"&gt;Echo&lt;/button&gt;
+</code></p>
+
+<p>This can be used to better organize your javascript code. So if you have multiple models you can also have multiple bindings.</p>
+
+<h3>Server-side Code</h3>
+
+<h4>Database Connection</h4>
+
+<p>For the purpose of this tutorial were just using the <code>MySqli</code> driver for PHP
+to connect to the MySQL database. But you can also use other database drivers if you want to.</p>
+
+<p><code>php
+&lt;?php
+$db = new MySqli('localhost', 'user', '', 'tutorials');
+?&gt;
+</code></p>
+
+<p>The default data that is expected to be passed to the server is the <code>action</code> and the student data(id, name, age).
+Here were checking if each of those are empty. If its empty then we assign an empty string to it, if not then we assign the value that was submitted.
+The action simply contains a string describing the action to be performed.
+The default action is fetching the records from the database.
+The other actions are insert(for inserting a new student record), update(for updating an existing student record), and delete(for deleting an existing student record).</p>
+
+<p>`&ldquo;
+&lt;?php
+$action = (!empty($<em>POST[&lsquo;action&rsquo;])) ? $</em>POST[&lsquo;action&rsquo;] : &rdquo;; //action to be used(insert, delete, update, fetch)
+$student = (!empty($<em>POST[&lsquo;student&rsquo;])) ? $</em>POST[&lsquo;student&rsquo;] : &lsquo;&rsquo;; //an array of the student details</p>
+
+<p>//check if the student is not an empty string
+//and assigns a value to $name and $age if its not empty
+if(!empty($student)){</p>
+
+<pre><code>$name = $student['name'];
+$age = $student['age']; 
+</code></pre>
+
+<p>}</p>
+
+<p>switch($action){</p>
+
+<pre><code>//actions here...
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Fetch All Student Records</h4>
+
+<p>For the fetching of student records were only selecting the records with the status of 1(active records).
+What were doing here is looping through the results that were returned, add the update status for name and age. And then store those in the array. Once that&rsquo;s done we simply use <code>json_encode()</code> to convert the array to a json string.</p>
+
+<p>```
+&lt;?php
+default:</p>
+
+<pre><code>//only select student records which aren't deleted
+$students = $db-&gt;query("SELECT * FROM students WHERE status = 1");
+$students_r = array();
+
+while($row = $students-&gt;fetch_array()){
+
+    //default student data
+    $id = $row['id'];
+    $name = $row['name'];
+    $age = $row['age'];
+
+    //update status
+    //its false by default since
+    //this is only true if the user clicks
+    //on the span
+    $name_update = false;
+    $age_update = false;
+
+    //build the array that will store all the student records
+    $students_r[] = array(
+        'id' =&gt; $id, 'name' =&gt; $name, 'age' =&gt; $age, 
+        'nameUpdate' =&gt; $name_update, 'ageUpdate' =&gt; $age_update,
+        'nameHasFocus' =&gt; $name_focus, 'ageHasFocus' =&gt; $age_focus
+        ); 
+}
+
+echo json_encode($students_r); //convert the array to JSON string
+</code></pre>
+
+<p>break;
+?>
+```</p>
+
+<h4>Insert Student Record to Database</h4>
+
+<p>For the insertion of new record to the database we simply execute an insert query
+using the data passed via AJAX. After that we use <code>insert_id</code> to get the last
+auto-increment id from the database. We then pass it back to the client side by echoing it out.
+The id is then used as the id for the new record in the student array.</p>
+
+<p>```
+&lt;?php
+case &lsquo;insert&rsquo;:</p>
+
+<pre><code>$db-&gt;query("INSERT INTO students SET name = '$name', age = '$age'"); 
+echo $db-&gt;insert_id; //last insert id
+</code></pre>
+
+<p>break;
+?>
+```</p>
+
+<h4>Update Student Record</h4>
+
+<p>For the updating of student record we have an additional data which is the student id.
+This will be used as a basis for updating the record.</p>
+
+<p>```
+&lt;?php
+case &lsquo;update&rsquo;:</p>
+
+<pre><code>$id = $student['id'];
+$db-&gt;query("UPDATE students SET name = '$name', age = '$age' WHERE id = '$id'");
+</code></pre>
+
+<p>break;
+?>
+```</p>
+
+<h4>Delete Student Record</h4>
+
+<p>For the deletion of student record we only have the student id.
+Were not actually executing a delete query in here instead were
+just updating the <code>status</code> to <code>0</code>.
+Delete queries are really dangerous because you can&rsquo;t restore the records
+later on in case the user changes their mind.
+I think having a field that stores the state of the record is better.</p>
+
+<p>```
+&lt;?php
+case &lsquo;delete&rsquo;:</p>
+
+<pre><code>$id = $_POST['student_id'];
+$db-&gt;query("UPDATE students SET status = 0 WHERE id = '$id'");
+</code></pre>
+
+<p>break;
+?>
+```</p>
+
+<h3>Demo</h3>
+
+<p>I&rsquo;ve re-implemented the code above using <code>localStorage</code> as a data store. Here&rsquo;s the demo:</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/eFwQp/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>That&rsquo;s it! The best way to really learn things is to build something with it.
+Be sure to check out the resources below if you get stuck and you want to learn more about knockout.js.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://addyosmani.com/blog/understanding-mvc-and-mvp-for-javascript-and-backbone-developers/">Understanding MVC and MVP</a></li>
+<li><a href="http://knockoutjs.com/documentation/introduction.html">Knockout.js Documentation</a></li>
+<li><a href="http://knockoutjs.com/examples/">Knockout.js Live Examples</a></li>
+<li><a href="http://learn.knockoutjs.com/">Knockout.js Learning Site</a></li>
+<li><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/registration_system_using_knockoutjs.7z">Sample Application Source Code</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Facebook JavaScript SDK]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk/"/>
+    <updated>2012-08-28T22:02:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/28/introduction-to-facebook-javascript-sdk</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going share the things I learned about the Facebook JavaScript SDK.</p>
+
+<!--More-->
+
+
+<h4>Create an App</h4>
+
+<p>When were talking about the Facebook API or Facebook SDK we must first have a Facebook App.
+A Facebook App doesn&rsquo;t necessarily reside within Facebook just like the games that we play in Facebook.
+An app can be a login application that you only use to have your users login to your websites using their Facebook accounts.
+An app can be basically anything which you can use to connect your website or webapp to Facebook.</p>
+
+<p>To create an app go to <a href="https://developers.facebook.com/apps">developers.facebook.com/apps</a></p>
+
+<p>Click on <code>create new app</code>.</p>
+
+<p>Enter the name of your app.
+<img src="/images/posts/facebook_js_1/create_app.jpg" alt="create_app" /></p>
+
+<p>Enter the captcha.
+<img src="/images/posts/facebook_js_1/security_check.jpg" alt="enter_captcha" /></p>
+
+<p>After entering the captcha correctly an <code>app id</code> and <code>app secret</code> will be generated.
+The <code>app id</code> and <code>app secret</code> is what you will use on your website or webapp to connect to Facebook.
+They&rsquo;re like connection strings for databases.</p>
+
+<p>Enter your app info. What information you enter here will basically depend on the nature of your app.
+In this article I&rsquo;m only going to show you the basics so I&rsquo;m just going to select the <code>website with Facebook login</code> option.
+The <code>site url</code> is basically the address where you want to redirect once the user has successfully logged in.
+It doesn&rsquo;t necessarily have to be an existing website which can be access in the internet.
+For this reason I only used my <code>localhost</code> which is basically <code>127.0.0.1</code>. If you&rsquo;re not using the default port
+you can just enter something like <code>127.0.0.1:8090</code> where <code>8090</code> is the port where your web server is running.</p>
+
+<p><img src="/images/posts/facebook_js_1/app_info.jpg" alt="app_info" /></p>
+
+<h4>Setting up the API</h4>
+
+<p>Now were on the exciting part. Most of the information that I will mention here are basically based on the <a href="https://developers.facebook.com/docs/reference/javascript/">Official Documentation on JavaScript SDK</a>
+You might as well go there and read up the basics. But if you&rsquo;re like me and your eyes hurt a minute after going through the documentation then continue reading.
+The documentation is pretty good but they&rsquo;re not making things easy to find. Some things are basically hidden until you hit up Google or Stackoverflow.</p>
+
+<p>Here are some of the things that you have to remember when working with the Facebook JavaScript SDK:</p>
+
+<ul>
+<li><strong>fb-root</strong> &ndash; the fb root is a <code>div</code> with an id of <code>fb-root</code>. It is used by the JavaScript SDK to be able to load properly.
+The <code>fb-root</code> is where new elements are being attached. You might ask why not just append it to the <code>body</code> and be done with it. I don&rsquo;t really know how
+to answer that. Facebook has their own way of doing things.</li>
+</ul>
+
+
+<p>```html</p>
+
+<div id="fb-root"></div>
+
+
+<p>```</p>
+
+<p>As you can see from the screenshot below the <code>fb-root</code> is some sort of a container for all the things that has something to do with the Facebook SDK.
+<img src="/images/posts/facebook_js_1/fb_root.jpg" alt="fb_root" /></p>
+
+<ul>
+<li><strong>jQuery</strong> &ndash; Another thing that you have to remember is using jQuery. It will make your life easier in selecting elements from the DOM when working with Facebook.
+So go ahead and download and include it on your page.</li>
+</ul>
+
+
+<p>```</p>
+
+<script src="jquery.js"></script>
+
+
+<p>```</p>
+
+<ul>
+<li><strong>Facebook JavaScript SDK</strong> &ndash; next is the Facebook JavaScript SDK itself. Include it on your page immediately.
+```</li>
+</ul>
+
+
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+
+
+<p>```</p>
+
+<p>In the documentation what they did was to load the JavaScript SDK asynchronously(grammar natzis forgive me if I didn&rsquo;t spell that right) like this:</p>
+
+<p>```javascript
+(function(d){</p>
+
+<pre><code> var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement('script'); js.id = id; js.async = true;
+ js.src = "//connect.facebook.net/en_US/all.js";
+ ref.parentNode.insertBefore(js, ref);
+</code></pre>
+
+<p>   }(document));
+```</p>
+
+<p>They did this so that it doesn&rsquo;t block the loading of elements in the page.
+Its up for you to choose which method of loading Facebook SDK do you want.
+Its always recommended that you load it asynchronously if you&rsquo;re working on a real world website
+where every millisecond counts.</p>
+
+<ul>
+<li><strong>Channel File</strong> &ndash; next is the channel file which contains the code below. In the documentation it said something about cross-domain communication in certain browsers.
+Feel free to read that if you have lots of time but for now let&rsquo;s just say its important that we have that file as well.
+So go ahead and create a new file called <code>channel.php</code> and paste the code below.</li>
+</ul>
+
+
+<p>```php
+&lt;?php
+ $cache_expire = 60<em>60</em>24*365;
+ header(&ldquo;Pragma: public&rdquo;);
+ header(&ldquo;Cache-Control: max-age=&rdquo;.$cache_expire);
+ header(&lsquo;Expires: &rsquo; . gmdate(&rsquo;D, d M Y H:i:s', time()+$cache_expire) . &lsquo; GMT&rsquo;);
+ ?></p>
+
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+
+
+<p>```</p>
+
+<ul>
+<li><strong>Initialization</strong> &ndash; next is the initialization. Just substitute the <code>YOUR_APP_ID</code> with your <code>app id</code>.
+Yes were not gonna need the <code>app secret</code> I don&rsquo;t really know why but when I used the PHP SDK its actually required.
+Might as well do some research on that but we won&rsquo;t die if we don&rsquo;t know it.
+The code below is a short version as I only used 3 key-value pairs. These are not the only options there are <a href="https://developers.facebook.com/docs/reference/javascript/FB.init/">more</a>
+but these are the only one&rsquo;s that we need right now.</li>
+</ul>
+
+
+<p><code>
+FB.init({appId: "YOUR_APP_ID", status: true, cookie: true});
+</code></p>
+
+<h4>Logging In</h4>
+
+<p>Were done with the essentials now its time to play. Let&rsquo;s go ahead and <a href="https://developers.facebook.com/docs/reference/javascript/FB.login/">login with Facebook</a> using <code>FB.login</code>.
+As the name suggests <code>FB.login</code> is used to login to your website or webapp via Facebook. In the example below were logging in with 3 permissions that has to be approved
+by the user.</p>
+
+<ul>
+<li><strong>user_about_me</strong> &ndash; Provides access to the &ldquo;About Me&rdquo; section of the profile in the about property</li>
+<li><strong>user_activities</strong> &ndash; Provides access to the user&rsquo;s list of activities as the activities connection</li>
+<li><strong>user_birthday</strong> &ndash; Provides access to the birthday with year as the birthday property</li>
+</ul>
+
+
+<p>The strings that we specify on the <code>scope</code> are the user information that we have access to. Check out the <a href="https://developers.facebook.com/docs/authentication/permissions/">permissions reference</a> for some of
+the permissions that you can use on the <code>scope</code>. Each permission is separated by a comma <code>,</code> note that there are no spaces, just the comma.
+If you have scanned through the permissions you might have noticed that Facebook has broken it down into specific data and not groups like <code>user_information</code> or <code>friends_information</code>.</p>
+
+<p>You can also have access to your friends information. Note that this is not confidential information like passwords and email as Facebook won&rsquo;t give you those.
+You only have access to information that are allowed by your friends in their privacy settings. For example if your friend has an album where he has set that
+he is the only one who can view it then you won&rsquo;t have access to that.</p>
+
+<p>There are also extended permissions, these are actions in which the app can do like posting to the wall/timeline of your friends or publishing information
+into your own wall. These extended permissions has their own authentication box(the box that you see the first time you use an app) so if an app has an extended permission
+you will basically have an authentication box which has 2 pages. One for the basic permission and one for the extended permission.</p>
+
+<p>```javascript
+FB.login(function(response){
+   if (response.authResponse) { //if the user has logged in successfully</p>
+
+<pre><code>    console.log('You are now logged in');
+</code></pre>
+
+<p>   } else { //problem with logging in</p>
+
+<pre><code>    console.log('User cancelled login or did not fully authorize.');
+</code></pre>
+
+<p>   }
+ }, {scope: &lsquo;user_about_me,user_activities,user_birthday});
+```</p>
+
+<p>Here&rsquo;s what the basic permission might look like:
+<img src="/images/posts/facebook_js_1/basic_permission.jpg" alt="basic_permission" /></p>
+
+<p>And here&rsquo;s the extended permission:
+<img src="/images/posts/facebook_js_1/extended_permission.jpg" alt="extended_permission" /></p>
+
+<p>Yes you can actually deselect a specific permission if you don&rsquo;t want it like the
+posting in your behalf permission since its so evil.
+You&rsquo;re just watching something on Youtube and without you knowing it actually published a link to your timeline on the video that
+you&rsquo;re watching. That&rsquo;s why its always wise to review the permissions that you&rsquo;re allowing before you click on the allow button.</p>
+
+<h4>Accessing Data</h4>
+
+<p>I&rsquo;ll just give a simple introduction on accessing data. I want to make at least 3 posts out of this so forgive me if this post isn&rsquo;t
+long enough or in-depth enough for you. If you want some in-depth stuff that&rsquo;s the job of the official documentation on the Facebook JavaScript SDK.</p>
+
+<p>You can access information using <code>FB.api</code>. But the information that you can access depends on the permissions that you have set on the <code>scope</code> and
+the permissions that your users has allowed. For this reason its always nice to check whether a specific permission is allowed before trying
+to use it. You can check whether a specific permission is allowed using <code>fql</code> or the <code>Facebook Query Language</code>.
+All you have to do is set the <code>method</code> to <code>fql.query</code> and the <code>query</code> to the actual query.
+Remember that Facebook doesn&rsquo;t allow wildcards like <code>SELECT * FROM tbl</code> you have to explicitly specify what fields you need.
+In the example below were reading querying the permissions table for the permissions of the current user which is basically <code>me()</code>.
+You can also use the Facebook ID of the user.
+The list of tables which you can query are in the <a href="https://developers.facebook.com/docs/reference/fql">reference page for fql</a>
+What were doing in the code below is to loop through the response if the current key contains <code>1</code> it means that the permission is allowed if its <code>0</code> it means its not allowed.</p>
+
+<p>```
+FB.api({ method: &lsquo;fql.query&rsquo;, query: &lsquo;SELECT publish_stream, read_friendlists FROM permissions WHERE uid=me()&rsquo; }, function(resp) {</p>
+
+<pre><code>for(var key in resp[0]) {
+    if(resp[0][key] === "1"){
+        console.log(key +' -available');
+    }else{
+        console.log(key+ ' not available');
+    }
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>As you can see from the screenshot below the response is basically an object and the information that were interested in is at index 0.
+As you can see the 2 permissions are allowed by the user so were all good.</p>
+
+<p><img src="/images/posts/facebook_js_1/response.jpg" alt="basic_permission" /></p>
+
+<p>For the last example for this article were going to fetch a list of all the friends of the current user. These information are stored
+in <code>me/friends</code> which is some sort of a table in a database or a folder in a filesystem.
+Next we specify the fields that we need as Facebook doesn&rsquo;t automatically fetch the fields that you need. Facebook only fetches the default information
+like the <code>username</code> , <code>first_name</code>, <code>last_name</code> , and <code>id</code>. Yeah it turns out that we don&rsquo;t actually need to specify the fields if
+what we want to access are just the basic information. But its good practice to specify the fields so you&rsquo;ll know what to expect.
+Of course the fields that you can fetch still depends on the permissions that the user has allowed. So you will still get some <code>undefined</code> if the user didn&rsquo;t allow it.</p>
+
+<p>```
+FB.api(&lsquo;/me/friends&rsquo;, {fields: &lsquo;id,first_name,last_name,username&rsquo;}, function(response){</p>
+
+<pre><code>for(var x in obj.data){
+var field = obj.data[x];
+
+var id = field['id'];
+var firstname = field['first_name'];
+var lastname = field['last_name'];
+var username = field['username'];
+
+console.log("first_name: " + firstname + "\nlast_name: " + lastname + "\nid: " + id + "\nusername: " + username);
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook Developers</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What I learned From AppendTo on jQuery Methods and Events]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/21/what-i-learned-from-appendto-on-jquery-methods-and-events/"/>
+    <updated>2012-08-21T21:07:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/21/what-i-learned-from-appendto-on-jquery-methods-and-events</id>
+    <content type="html"><![CDATA[<ul>
+<li>You can specify an anonymous function as parameter to <code>text</code> method.</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/SMVQA/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>When calling named functions inside <code>each</code> you don&rsquo;t need the <code>()</code></li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/YcrU8/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>bind</code> can be used to bind multiple events to a selection</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/a3ybw/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>toggleClass</code> can be used to force the adding or removing of class.</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/zxadp/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>unbind</code> to unbind events from specific elements</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/wXDVC/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>one</code> executes the function only once</li>
+</ul>
+
+
+<p> <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/x4Qj4/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><p><code>event.preventDefault()</code> prevents the default behavior of an element from occuring. For example, links automatically brings you to the page that is linked. If you call this right after the click event of an anchor tag then the default behavior won&rsquo;t occur, <code>event.stopImmediatePropagation()</code> prevents the rest of the events from being executed and prevents it from bubbling up the DOM tree, <code>event.stopPropagation()</code> prevents the parent elements from catching the events binded to a child element. You might have noticed that when you just binded an event to a child element the event is also triggered by their parents. <code>event.stopPropagation()</code> prevents this from happening.</p></li>
+<li><p>namespacing events <code>event.namespace</code> this is used to separate other from each other. This is a nice way to organize
+code.</p></li>
+<li><p>You can actually specify a <code>title</code> attribute to a label or any element to act as a tooltip.</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What I Learned From AppendTo Selector 101]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101/"/>
+    <updated>2012-08-19T18:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/08/19/what-i-learned-from-appendto-selector-101</id>
+    <content type="html"><![CDATA[<ul>
+<li>Every call of jQuery returns a jQuery object</li>
+<li>Selectors:</li>
+</ul>
+
+
+<p>```javascript
+ $(&lsquo;#something&rsquo;); //By ID</p>
+
+<p> $(&lsquo;.something&rsquo;); //By Class</p>
+
+<p> $(&lsquo;input&rsquo;); //By Element</p>
+
+<p> $(&lsquo;table td&rsquo;); //Descendant Selector</p>
+
+<p> $(&lsquo;p > input&rsquo;); //Direct Children</p>
+
+<p> $(&lsquo;p ~ input&rsquo;);  //Siblings</p>
+
+<p> $(&lsquo;p.someclass&rsquo;); //Combined Selector</p>
+
+<p> $(&lsquo;input, select, textarea&rsquo;);  //Multiple Selections
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/DTURK/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><p>If possible use <code>addClass()</code> and <code>removeClass()</code> instead of <code>css()</code> method. Define specific styling on the css rather than JavaScript to separate application logic and markup.</p></li>
+<li><p>There is an implicit iteration in most of the jQuery methods which means that it automatically iterates through the elements that are matched by the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<p>```</p>
+
+<ul id='list'>
+    <li>Ash</li>
+    <li>Misty</li>
+    <li>Brock</li>
+</ul>
+
+
+<p>```</p>
+
+<p>When we select the list items using jQuery its already understood that its going to select all of the li that is a descendant of the element with an id of <code>list</code>.</p>
+
+<p><code>
+$('#list li');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/XxdEu/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>When comparing it to regular expressions, in regular expressions you have to set if its global or not, if its not global then the expression is only
+going to select the first match.</p>
+
+<ul>
+<li><p>Every call to a jQuery method returns a jQuery object therefore the jQuery object holds a collection of element/s.</p></li>
+<li><p>Chaining is only possible because every call to a jQuery method returns a jQuery object. A selector like <code>$('input[type=button]')</code> returns a jQuery object.
+Calling <code>addClass</code> after the selector still returns a jQuery object so you can have as many chains as you want.</p></li>
+<li><p><code>find()</code> looks for the descendants of the specified selector. For example if we have this markup:</p></li>
+</ul>
+
+
+<p>```</p>
+
+<div class="yoh">
+   <p>this is a p</p>
+   <ul>
+        <li>abc</li>
+        <li>def</li>
+        <li>ghi</li>
+   </ul>
+   <div class="inner">
+        I'm inner
+   </div>
+   <div class="inner">
+        I'm also inner
+   </div>
+</div>
+
+
+<p>```</p>
+
+<p>And we want to select all the <code>li</code> that is a descendant of the <code>div</code> with the class of <code>yoh</code></p>
+
+<p><code>
+$('.yoh').find('li');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/9RkJV/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>In this case the <code>div</code> with the class of <code>yoh</code> is no longer the one that is selected.
+The one that is selected here is the <code>li</code> so if you call <code>css</code> on it.</p>
+
+<p><code>
+$('.yoh').find('li').css('background-color','red');
+</code></p>
+
+<p>Each of the <code>li</code> will have a background color of red on it:</p>
+
+<p>```</p>
+
+<div class="yoh">
+   <p>this is a p</p>
+   <ul>
+        <li style="background-color: red; ">abc</li>
+        <li style="background-color: red; ">def</li>
+        <li style="background-color: red; ">ghi</li>
+   </ul>
+   <div class="inner">
+        I'm inner
+   </div>
+   <div class="inner">
+        I'm also inner
+   </div>
+</div>
+
+
+<p>```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Yerd3/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>children()</code> selects the direct children of the specified selector. In the example below(were still using the same markup) were selecting the
+children of the first(were zero indexed remember?) <code>ul</code> on the page:</li>
+</ul>
+
+
+<p><code>
+$($('ul')[0]).children('li'); //alternative: $('ul:first')
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/vnsAC/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>We could also do it this way but that&rsquo;s going to select all of the <code>ul</code> with a children of <code>li</code> on the page:</p>
+
+<p><code>
+$('ul li');
+</code></p>
+
+<ul>
+<li><code>end()</code> goes back to the original element being selected. The selector below selects all the <code>li</code> that is a descendant of the first <code>ul</code>.</li>
+</ul>
+
+
+<p><code>
+$($('ul')[0]).find('li'); //returns li
+</code></p>
+
+<p>If we want to go back to the original selection we simply call <code>end</code>.</p>
+
+<p><code>
+$($('ul')[0]).find('li').end(); //returns ul with all its descendants
+</code></p>
+
+<p>This is specifically useful if you want to do something with a specific selection and then do something with its children.</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tBZdu/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>delay()</code> delays the execution of a function. For example you want to fade out some elements after 5 seconds(were speaking microseconds here so its 5000):</li>
+</ul>
+
+
+<p><code>
+$('li').delay(5000).fadeOut();
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/LkFK8/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>attr()</code> and <code>val()</code> can act as a setter or getter depending on the number of parameters specified. For example if we have this markup:
+<code>
+&lt;input type="text" id="iam_text" value="yoohoo" data-something="something"/&gt;
+</code></li>
+</ul>
+
+
+<p>and we want to get its value we don&rsquo;t need to specify any parameters:</p>
+
+<p><code>
+$('#iam_text').val();
+</code></p>
+
+<p>but if we want to set its value:</p>
+
+<p><code>
+$('#iam_text').val('another value');
+</code></p>
+
+<p>While <code>attr()</code> is slightly different since you have to specify at least one parameter if you are getting the value of a specific attribute.</p>
+
+<p><code>
+$('#iam_text').attr('data-something');
+</code></p>
+
+<p>It can also be:</p>
+
+<p><code>
+$('#iam_text').data('something');
+</code></p>
+
+<p>If you want to set the value of an attribute:</p>
+
+<p><code>
+$('#iam_text').attr('id', 'iam_unique');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/nVvB5/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>attr()</code> can also take in a map(collection of key value pairs) as its parameter.</li>
+</ul>
+
+
+<p>```
+var obj = {
+   &lsquo;data-anime&rsquo;: &lsquo;pokemon&rsquo;,
+   &lsquo;data-id&rsquo;: 11334
+};</p>
+
+<p>$(&lsquo;#iam_text&rsquo;).attr(obj);
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZkCgr/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Instead of a selector you can pass html as a string to create elements.</li>
+</ul>
+
+
+<p><code>
+$('body').html("&lt;strong&gt;awesome&lt;/strong&gt;");
+</code></p>
+
+<ul>
+<li>You can also nest elements when creating new elements:</li>
+</ul>
+
+
+<p><code>
+var html_string = "&lt;ul&gt;&lt;li&gt;abc&lt;/li&gt;&lt;li&gt;def&lt;/li&gt;&lt;/ul&gt;";
+$('body').html(html_string);
+</code></p>
+
+<ul>
+<li><p><code>appendTo()</code> can be used to append a newly created element to an existing element.
+<code>
+var body = $('body');
+$("&lt;strong&gt;yoh!&lt;/strong&gt;").appendTo(body);
+</code></p></li>
+<li><p><code>insertAfter()</code> is just like <code>appendTo</code> the only difference is that you can specify where you want to
+insert the newly created element. Note that in the example below were still using the markup that we used in <code>find()</code>.</p></li>
+</ul>
+
+
+<p><code>
+$("&lt;li&gt;Im inserted after def&lt;/li&gt;").insertAfter('ul:first li:eq(1)');
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/wVDTp/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Its much less performant if you set attributes after appending a new element into the page.</li>
+</ul>
+
+
+<p>```
+<form></form></p>
+
+<script>
+var obj = {
+  type : 'text',
+  value: 'something',
+  id : 'nothing'
+};
+
+//don't do this:
+$('<input>').appendTo('form').attr(obj);
+
+//do this:
+$('<input>').attr(obj).appendTo('form');
+</script>
+
+
+<p>```</p>
+
+<ul>
+<li><code>html()</code> when used as a getter gets the first element from the set of matched elements while <code>text()</code>
+uses implicit iteration and gets all the text of the matched elements and append them together. As you can see
+in the example below(note: were still using the markup from <code>find()</code>) <code>html()</code> only returns <code>abc</code> when in fact
+it should be returning all the html/contents of the <code>li</code> in the first <code>ul</code> on the other hand <code>text</code> returns all
+of the text inside each of the <code>li</code> on the first <code>ul</code>.</li>
+</ul>
+
+
+<p>```
+$(&lsquo;ul:first li&rsquo;).html(); //returns: &ldquo;abc&rdquo;</p>
+
+<p>$(&lsquo;ul:first li&rsquo;).text(); //returns: &ldquo;abcdefIm inserted after defghi&rdquo;
+```</p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mpvAw/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>html()</code> when used as a setter uses implicit iteration which means that all the matched elements shall
+have the html specified as a parameter. In the example below we replaced the html content inside each of the <code>li</code> on
+the first <code>ul</code> with the string <code>yo</code> in bold characters.</li>
+</ul>
+
+
+<p><code>
+$('ul:first li').html('&lt;strong&gt;yo&lt;/strong&gt;');
+</code></p>
+
+<ul>
+<li><code>after()</code> uses the select something then create something pattern while the <code>insertAfter()</code> uses the
+create something then select something pattern. This means that <code>insertAfter()</code> takes in a selector
+and <code>after()</code> takes in an element as its parameter.</li>
+</ul>
+
+
+<p>```
+$(&lsquo;ul:first li:first&rsquo;).after(&lsquo;<li>Another List Item</li>&rsquo;); //select where to insert after then specify what to insert</p>
+
+<p>$(&lsquo;<li>Yet another List Item</li>&rsquo;).insertAfter(&lsquo;ul:first li:first&rsquo;); //specify what to insert then select where to insert
+```</p>
+
+<ul>
+<li><code>remove()</code> removes the element from the page(and all of its children if it has children), it still returns a jQuery object though so you can still
+chain something after it or append the removed object somewhere else to recreate it. But <code>remove()</code> doesn&rsquo;t
+keep the events, data attached to the element. Only use <code>remove()</code> when you&rsquo;re entirely sure that
+you are not going to use the element later.</li>
+</ul>
+
+
+<p><code>
+$('ul:first').remove(); //the first ul and its child is removed from the DOM
+</code></p>
+
+<ul>
+<li><code>empty()</code> empties the contents of the specified element but doesn&rsquo;t remove the selected element.</li>
+</ul>
+
+
+<p><code>
+$('ul:first').empty(); //the descendants of this element is removed from the DOM
+</code></p>
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ShZVX/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li><code>detach()</code> is similar to <code>remove()</code> but when an element is detached any data or events that are attached
+to that element is actually kept so you can still reuse them later on when you append it to another element.. In the example below we
+are detaching the first <code>ul</code> from the DOM and then inserting it again after the last <code>ul</code>.
+<code>
+$('ul:first').detach().insertAfter('ul:last');
+</code></li>
+</ul>
+
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/4zjxm/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<p>You can always using caching if you plan to insert them later. This is also a best practice as you don&rsquo;t have to make the same selections over again:</p>
+
+<p><code>
+var first_ul = $('ul:first').detach().insertAfter('ul:last');
+</code></p>
+
+<ul>
+<li><code>clone()</code> clones the specified element children, data, events. Basically everything about it.</li>
+</ul>
+
+
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/BPQ2D/embedded/js,resources,html,css,result/light/"></iframe></p>
+
+<ul>
+<li>Tip: Utilize the jQuery documentation or the jQuery forum to find out the best way to do something in jQuery. The shortcut to remember when you&rsquo;re not sure what a specific jQuery function does is to access api.jquery.com/function_name. So if you want to know what the <code>hover</code> function does then you type in api.jquery.com/hover</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Caching in PHP - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this post were going to explore how to do caching in PHP. But first let&rsquo;s define what caching is. With a quick Google search we get these &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Caching in PHP</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2014-01-26T09:56:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this post were going to explore how to do caching in PHP. But first let&rsquo;s define what caching is. With a quick Google search we get these definitions:</p>
+
+<blockquote><p>store away in hiding or for future use.</p></blockquote>
+
+
+<p>Another definition from <a href="http://www.citrix.com/glossary/caching.html">citrix.com</a></p>
+
+<blockquote><p>Temporarily storing recently used information. The content, which includes HTML pages, images, files and Web objects, is stored on the local hard drive in order to make it faster for the user to access it, which helps improve the efficiency of the computer and its overall performance</p></blockquote>
+
+
+<p>So we now know that caching is temporarily storing information in order to improve performance.</p>
+
+<!-- more -->
+
+
+<h3>Caching Techniques</h3>
+
+<p>There are different caching methods that we can use with PHP:</p>
+
+<ul>
+<li>Caching content</li>
+<li>Memory Cache</li>
+<li>Database Cache</li>
+</ul>
+
+
+<h3>Caching Content</h3>
+
+<p>We can cache content in PHP by saving the final output of a specific script into the filesystem then simply serving it like a static file for a specific period of time instead of executing the original script.</p>
+
+<p>Below is an example on how to cache content on the filesystem. First we declare a variable which stores the location of the cache file, current time and the time when the cache file was last modified. Once that&rsquo;s done we simply check whether there is a cache file for the particular script that a visitor is currently accessing. If there is a cache file then we simply include it in the page. If not then we access the database for the content and output the HTML. Then all of the output will be stored in the cache file. <a href="http://www.php.net/ob_start">Output buffering</a> is used to store all of the output in a string format so only the HTML that&rsquo;s outputted in the browser is going to be saved in the cache file. This means that the database access is bypassed when we load the cache file later on when a second visitor visits the site. Its like serving plain HTML, which means that it will load faster than the previous request.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$file</span> <span class="o">=</span> <span class="s1">&#39;cache/&#39;</span> <span class="o">.</span> <span class="nb">basename</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;SCRIPT_NAME&#39;</span><span class="p">]);</span> <span class="c1">//location of cache file</span>
+</span><span class='line'><span class="nv">$current_time</span> <span class="o">=</span> <span class="nb">time</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$cache_last_modified</span> <span class="o">=</span> <span class="nb">filemtime</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span> <span class="c1">//time when the cache file was last modified</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$current_time</span> <span class="o">&lt;</span> <span class="nb">strtotime</span><span class="p">(</span><span class="s1">&#39;+1 day&#39;</span><span class="p">,</span> <span class="nv">$cache_last_modified</span><span class="p">))){</span> <span class="c1">//check if cache file exists and hasn&#39;t expired yet</span>
+</span><span class='line'>  <span class="k">include</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span> <span class="c1">//include cache file</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>  <span class="nb">ob_start</span><span class="p">();</span> <span class="c1">//start output buffering</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;h1&gt;Hello World!&lt;/h1&gt;</span>
+</span><span class='line'><span class="x">  </span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm"> some code accessing the database</span>
+</span><span class='line'><span class="cm"> for some data here</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm"> probably some complex computations here</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">);</span> <span class="c1">//open cache file</span>
+</span><span class='line'>  <span class="nb">fwrite</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nb">ob_get_contents</span><span class="p">());</span> <span class="c1">//create new cache file</span>
+</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span> <span class="c1">//close cache file</span>
+</span><span class='line'>  <span class="nb">ob_end_flush</span><span class="p">();</span> <span class="c1">//flush output buffered</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Memory Cache</h3>
+
+<p>Another caching technique is caching via memory. This is a lot more faster than caching in the file system.</p>
+
+<h4>Opcode Cache</h4>
+
+<p>Opcode Cache is mostly used for temporarily storing data and not the actual content. The first time I encountered object cache I couldn&rsquo;t understand what&rsquo;s the difference between it and sessions.
+I did some reading and found out that by default sessions are stored in the filesystem. And data stored via object cache is stored in memory so its faster compared to session.</p>
+
+<h5>APC</h5>
+
+<p>We can implement object caching by using APC. APC isn&rsquo;t packaged with PHP so you have to install it separately. In Ubuntu you can install it by going to the terminal and executing the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install php-apc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done you can simply restart Apache for the changes to reflect.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo service apache2 restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using APC is simple. There are only 3 methods that you need to remember in order to start using it:</p>
+
+<ul>
+<li><strong>apc_add/apc_store</strong> &ndash; store a variable in the cache. The only difference between <code>apc_add</code> and <code>apc_store</code> is that <code>apc_store</code> overwrites the data if it already exists and <code>apc_add</code> does not</li>
+<li><strong>apc_fetch</strong> &ndash; fetch a variable from the cache</li>
+<li><strong>apc_delete</strong> &ndash; delete a variable from the cache</li>
+</ul>
+
+
+<p>Below is a sample implementation of APC. Here were simply checking if the value returned from fetching the <code>db_results</code> cache is null. If its null then we get the data from the database, store the results in the cache then do something with the results that were retrieved. If the call to <code>apc_fetch</code> returned something then we simply use it instead of travelling back to the database to get the data that we need.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$results_array</span> <span class="o">=</span> <span class="nb">apc_fetch</span><span class="p">(</span><span class="s1">&#39;db_results&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$results_array</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$user</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//get data from the database</span>
+</span><span class='line'>  <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT title, SUM(views) AS view_count FROM tbl_octoblog </span>
+</span><span class='line'><span class="s2">     LEFT JOIN tbl_blogviews ON tbl_octoblog.id = tbl_blogviews.post_id</span>
+</span><span class='line'><span class="s2">     GROUP BY title&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$results_array</span> <span class="o">=</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span> <span class="c1">//convert results to associative array</span>
+</span><span class='line'>  <span class="nb">apc_add</span><span class="p">(</span><span class="s1">&#39;db_results&#39;</span><span class="p">,</span> <span class="nv">$results_array</span><span class="p">,</span> <span class="mi">86400</span><span class="p">);</span> <span class="c1">//store results in the cache for 1 day (1 day = 86400 seconds)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with the $results_array</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you wish to learn more about APC, be sure to check out the <a href="http://www.php.net/apc/">official APC documentation</a> on PHP.net.</p>
+
+<h5>Memcached</h5>
+
+<p>Memcached is an in-memory key-value store for small chunks of arbitrary data (strings, objects) from results of database calls, API calls, or page rendering. That&rsquo;s the definition that I got from the memcached site. To put simply, memcached is used for temporarily storing data that came from a specific source (database, API, page rendering).</p>
+
+<p>To install memcached execute the following from your terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo apt-get install memcached</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And just like with APC, you also have to restart apache in order for the changes to take effect:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">sudo service apache2 restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can go ahead and start using memcached. To use memcached you first have to define the memcached server in which you want to connect to. Since this is just a getting started tutorial we can simply use <code>127.0.0.1</code> as the host. This refers to the localhost or the machine that you&rsquo;re currently working on. As for the port, the default port that memcached is running on is port <code>11211</code>. You can change these values by updating the <code>memcached.conf</code> file located under the <code>etc</code> directory.
+After that, declare a new object of the Memcache class then call the <code>connect</code> method using the newly declared object. The <code>connect</code> method takes up the host and port that you declared earlier as its arguments. You can then use the variable that you used to store the result of that call to check whether the connection was successful or not.
+From there the scenario is similar to that of the APC example earlier. First you call the <code>get</code> method and supply a unique key that you will be using to refer to the data as the argument then store the result in a variable. Then you simply check whether this variable contains <code>null</code>. If its <code>null</code> then it means there&rsquo;s no data assigned to the specific key that you used so you have to get the data from its original source, in the case of the example below the database is the original source. Once you get the data from its original source you can then use the <code>set</code> method to save the data into the cache. The <code>set</code> method takes up 2 required arguments, the first is the unique key that will be used to identify the data, the second is the data that you want to store, the third is a flag on whether to use compression or not. If you want to compress the data you can use <code>MEMCACHE_COMPRESSED</code> as the value for the flag, otherwise simply use <code>false</code>. The last argument is the expiration time. You can use either a unix timestamp or the number of seconds in which to store the data in the cache. In the example below we used the number of seconds <code>86400</code> which is the number of seconds in a day.
+The next time the script runs it will no longer go back to the database to get the data. It will get it from the cache instead.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="c1">//define the memcached host and port to connect to</span>
+</span><span class='line'><span class="nv">$memcache_host</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$memcache_port</span> <span class="o">=</span> <span class="s1">&#39;11211&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//connect to memcached server</span>
+</span><span class='line'><span class="nv">$memcache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcache</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$is_cache</span> <span class="o">=</span> <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="nv">$memcache_host</span><span class="p">,</span> <span class="nv">$memcache_port</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$is_cache</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$things</span> <span class="o">=</span> <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;things&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$things</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span> <span class="c1">//if data hasn&#39;t been cached yet</span>
+</span><span class='line'>      <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nv">$db_host</span><span class="p">,</span> <span class="nv">$db_user</span><span class="p">,</span> <span class="nv">$db_password</span><span class="p">,</span> <span class="nv">$db_name</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM tbl_things WHERE needed = &#39;yes&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$things</span> <span class="o">=</span> <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span> <span class="c1">//convert result set to an array</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;things&#39;</span><span class="p">,</span> <span class="nv">$things</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="mi">86400</span><span class="p">);</span> <span class="c1">//cache the data</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//do something with the $things, output it, mess with it, whatever.</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are some of the common methods that you can use with memcached:</p>
+
+<ul>
+<li><strong>add</strong> &ndash; saves a specific data into the cache</li>
+<li><strong>store</strong> &ndash; saves a specific data into the cache. The only difference between <code>store</code> and <code>add</code> is that <code>add</code> will return <code>false</code> if the key already exists but store goes ahead and over-writes the data if it already exists</li>
+<li><strong>delete</strong> &ndash; deletes data from the cache based on the key that you define as its argument</li>
+<li><strong>flush</strong> &ndash; deletes all the data that you have on the cache</li>
+</ul>
+
+
+<p>To learn more about memcached be sure to check out the <a href="http://memcached.org/">official memcached site</a> or the <a href="http://php.net/manual/en/book.memcache.php">memcached documentation for PHP</a>.</p>
+
+<h3>Database Cache</h3>
+
+<p>We have been talking about how to do caching in the application layer but caching can also be in the database layer.
+In this form of caching the caching is done by the database server itself. This works by caching the results of the query so the query is only parsed the first time it runs and in the succeeding requests it won&rsquo;t be parsed since the results from the specific query is already cached by the database server.
+In this section I&rsquo;m going to walk you through how caching is done in MySQL.</p>
+
+<p>To configure caching in MySQL simply open up the <code>my.cnf</code> file under the <code>etc</code> directory and add the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">query_cache_type    = 1</span>
+</span><span class='line'><span class="x">query_cache_limit = 1M</span>
+</span><span class='line'><span class="x">query_cache_size    = 16M</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>query_cache_type</strong> &ndash; whether to enable caching. Set to <code>0</code> if you want to disable, <code>1</code> to enable for all cacheable queries except those that begin with <code>SELECT SQL_NO_CACHE</code>. And <code>2</code> to cache only for cacheable queries that begin with <code>SELECT SQL_CACHE</code></li>
+<li><strong>query_cache_limit</strong> &ndash; limit caching for a specific result set. If the results returned from the query exceeds the value set in this option then it won&rsquo;t be cache</li>
+<li><strong>query_cache_size</strong> &ndash; the amount of memory allocated for caching results</li>
+</ul>
+
+
+<p>The query cache works by storing the text of a SELECT statement together with the result. If the same query is received at a later time, the server retrieves the results from the query cache rather than parsing and executing the statement again. The query cache is shared among sessions, so a result set generated by one client can be sent in response to the same query issued by another client.</p>
+
+<p>But you may ask: &ldquo;What if the contents of a specific table has been changed, will the server return the results from the cache?&rdquo;. The answer is no it doesn&rsquo;t. The server is smart enough to flush the cache when the tables in question is updated or modified in some way.</p>
+
+<p>Here are some of the things that you need to remember when using the query cache in MySQL:</p>
+
+<ul>
+<li>Only full queries are cached. This means that subqueries aren&rsquo;t cached by the server at all</li>
+<li>Query cache stores the text of a SELECT statement together with the result. Yes I already said that earlier but I think its worth emphasizing</li>
+<li>Only works for SELECT queries</li>
+<li>No support for prepared statements</li>
+<li>Only works for queries that are absolutely the same</li>
+</ul>
+
+
+<p>Be sure to read about <a href="http://dev.mysql.com/doc/refman/5.1/en/query-cache-operation.html">how the query caching operates</a> at the official MySQL website if you want to learn more about the query cache.</p>
+
+<h3>Caching Libraries</h3>
+
+<p>To make the caching implementation easier you can also use caching libraries. Caching libraries allows you to use different caching methods such as the file system, sqlite, apc, memcached and xcache.</p>
+
+<h4>PHPFastCache</h4>
+
+<p>First on the list is PHPFastCache. PHPFastCache is a high-performance object caching system for PHP.
+To use PHPFastCache all you have to do is download the library from their site and include the <code>phpfastcache.php</code> file on the script where you plan to use it. Then declare a variable that will contain the configuration details such as the storage, the path for the cache files and the htaccess protection to disable direct access to the data that are cached.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;libs/phpfastcache/phpfastcache.php&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//configuration</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s2">&quot;storage&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;path&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/somewhere/outside/your/web_folder&quot;</span><span class="p">,</span> <span class="c1">//path for cache files</span>
+</span><span class='line'>    <span class="s2">&quot;htaccess&quot;</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span> <span class="c1">//set htaccess protection (default: true)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also supply a <code>fallback</code> option in case the primary caching option that you supplied isn&rsquo;t available on the server where you deploy your application.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s2">&quot;fallback&quot;</span>  <span class="o">=&gt;</span>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;memcache&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="c1">//if memcached isn&#39;t installed use file system instead</span>
+</span><span class='line'>      <span class="s2">&quot;apc&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="c1">//if apc isn&#39;t installed use file system instead</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you used memcached as the cache type, you can provide the memcached server details under the <code>server</code> key of the configuration. If you remember earlier when we used memcached we supplied the <code>server</code> and the <code>port</code>. You also need to pass these details under the configuration.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$config</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'> <span class="s2">&quot;server&quot;</span> <span class="o">=&gt;</span>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">11211</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done with setting up the configuration, simply pass it as the argument for the <code>setup</code> method then declare a new instance of the <code>phpFastCache</code> class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">phpFastCache</span><span class="o">::</span><span class="na">setup</span><span class="p">(</span><span class="nv">$config</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">phpFastCache</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just like with any other caching methods that we&rsquo;ve used so far there&rsquo;s only a couple of methods that you have to remember: <code>get</code> and <code>set</code>. In PHPFastCache we use <code>set</code> to save a specific data into the cache and <code>get</code> to get the data back for processing.
+In the example below were trying to get the products from the cache. If it doesn&rsquo;t exist we simply get the data from the original source and cache it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$products_cache</span> <span class="o">=</span> <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;products&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$products_cache</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT item_name, quantity, price FROM tbl_products LIMIT 10&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$results</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="nv">$products_cache</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can learn more about <a href="http://www.phpfastcache.com/">PHPFastCache</a> on their official site.</p>
+
+<h4>Doctrine/Cache</h4>
+
+<p>The Doctrine Object Relational Mapper also comes with a caching module which you can use separately even if you&rsquo;re not using Doctrine. You can install the Doctrine caching module through composer.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">{</span>
+</span><span class='line'><span class="x">  &quot;require&quot;: {</span>
+</span><span class='line'><span class="x">    &quot;doctrine/cache&quot;: &quot;1.2&quot;</span>
+</span><span class='line'><span class="x">  }</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the <code>autoload.php</code> file and initialize the cache driver that you want to use.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Doctrine\Common\Cache\ApcCache</span><span class="p">();</span> <span class="c1">//use APC as the driver</span>
+</span><span class='line'><span class="nv">$fruits</span> <span class="o">=</span> <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">);</span> <span class="c1">//fetch the data from the cache</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$fruits</span> <span class="o">==</span> <span class="k">null</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$fruits</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;grapes&#39;</span><span class="p">,</span> <span class="s1">&#39;coconut&#39;</span><span class="p">,</span> <span class="s1">&#39;papaya&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$cache</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="nv">$fruits</span><span class="p">);</span> <span class="c1">//save data into the cache</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with $fruits</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With Doctrine you can also use the following as the cache driver:</p>
+
+<ul>
+<li>ArrayCache</li>
+<li>CouchbaseCache</li>
+<li>FileCache</li>
+<li>FilesystemCache</li>
+<li>MemcacheCache</li>
+<li>MemcachedCache</li>
+<li>MongoDBCache</li>
+<li>PhpFileCache</li>
+<li>RedisCache</li>
+<li>RiakCache</li>
+<li>WinCacheCache</li>
+<li>XcacheCache</li>
+<li>ZendDataCache</li>
+</ul>
+
+
+<p>So if you want to use Memcache you do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$memcache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcache</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$memcache</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">11211</span><span class="p">);</span> <span class="c1">//connect to the memcache server</span>
+</span><span class='line'><span class="nv">$cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Doctrine\Common\Cache\MemcacheCache</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see Doctrine doesn&rsquo;t automatically handle connecting to the memcache server so you have to do it manually before initialiazing the cache driver that you want to use. After that you can use the same methods that you use with any other caching driver. Here are the commonly used methods:</p>
+
+<ul>
+<li>fetch($id) &ndash; fetch an item from the cache</li>
+<li>contains($id) &ndash; check if an item exists in the cache</li>
+<li>save($id, $data, $lifetime) &ndash; save the data into the cache. Note that the lifetime is expressed in seconds</li>
+<li>delete($id) &ndash; deletes an item from the cache</li>
+</ul>
+
+
+<p>You can learn more about the Doctrine caching module <a href="http://docs.doctrine-project.org/en/2.0.x/reference/caching.html">here</a>.</p>
+
+<h3>Things to Remember</h3>
+
+<p>Implementing a caching functionality in the applications that you&rsquo;re writing can be great, but like Uncle Ben from Spiderman said &lsquo;With great power comes great responsibility&rsquo;. So as developers we always have to carefully study if caching is appropriate for a specific scenario or not. For example here are some instances in which caching is not recommended:</p>
+
+<ul>
+<li>real-time data</li>
+<li>search results</li>
+<li>latest news</li>
+</ul>
+
+
+<p>A good rule of thumb when trying to implement caching is that to ask yourself whether the data needs to be always fresh or not. For the examples above caching is pretty much not applicable. But if you think about the requirements, for example for the latest news, is there always a latest news every minute? Yes there may be but does publishing a new news in news website (that&rsquo;s a tongue twister that I just came up with) takes less than a minute? Maybe you can actually apply caching but only cache for example 30 seconds. The same is true with search results, if the website doesn&rsquo;t really publish much content then caching can still be applied. Just be sure to think about the expiration time carefully.</p>
+
+<h2>Conclusion</h2>
+
+<p>There you have it! Some of the most common caching techniques that you can use with PHP to improve the performance of the applications that you&rsquo;re writing. Like I just said, caching is a very good way to improve the performance of your app. There&rsquo;s no need to run a query every time a page is requested. If you can cache it somewhere (filesytem, memory) where it will take less time to access, the better.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/548301/what-is-caching">What is Caching</a></li>
+<li><a href="http://www.slideshare.net/anisniit/caching-new">Caching Basics</a></li>
+<li><a href="http://www.mobify.com/blog/beginners-guide-to-http-cache-headers/">Beginners Guide to HTTP Cache Headers</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Database_caching">Database Caching</a></li>
+<li><a href="http://www.mysqlperformanceblog.com/2011/04/04/mysql-caching-methods-and-tips/">MySQL Caching Methods Tips and Tricks</a></li>
+<li><a href="http://www.taos.com/2013/04/10/understanding-mysql-query-cache/">Understanding MySQL Query Cache</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2014-02-02T00:00:00+08:00" class="updated">Updated Feb 2<span>nd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/caching/'>caching</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/01/08/getting-started-with-paypal-api/" title="Previous Post: Getting Started with Paypal API">&laquo; Getting Started with Paypal API</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/02/03/getting-started-with-spbas/" title="Next Post: Getting Started with SPBAS">Getting Started with SPBAS &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers/">A Whirlwind Tour of Web Developer Tools: Web Servers</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2014/01/26/getting-started-with-caching-in-php/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

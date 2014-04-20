@@ -1,0 +1,1534 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Playing with Templating Libraries - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through some of the templating libraries
+that I&rsquo;m currently using for my projects specifically the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Playing With Templating Libraries</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T21:49:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;m going to walk you through some of the templating libraries
+that I&rsquo;m currently using for my projects specifically the following:</p>
+
+<ul>
+<li><a href="https://github.com/janl/mustache.js">Mustache</a></li>
+<li><a href="https://github.com/wycats/handlebars.js/">Handlebars</a></li>
+<li><a href="http://smarty.net/">Smarty</a></li>
+</ul>
+
+
+<p>Mustache is available for a bunch of languages but were going to use the JavaScript version for this tutorial.
+Handlebars is only available on JavaScript. And Smarty is for PHP.</p>
+
+<p>You can either use chrome dev tools, JS Fiddle (or any alternatives) or a local file for this tutorial.</p>
+
+<!--More-->
+
+
+<h3>Mustache</h3>
+
+<p>Let&rsquo;s start by creating the two ingredients that Mustache needs in order
+to create an output: a data source and a template.</p>
+
+<h4>Basics</h4>
+
+<p>Mustache mainly accepts JavaScript objects as its data source
+and an html string for the template.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">name_obj</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;Killua Zoldyc&#39;</span><span class="p">};</span> <span class="c1">//data source</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">name_template</span> <span class="o">=</span> <span class="s2">&quot;&lt;h1&gt;{{name}}&lt;/h1&gt;&quot;</span><span class="p">;</span> <span class="c1">//template</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that, we can call the <code>Mustache.to_html()</code> method
+to merge the data source and the template together:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">name_html</span> <span class="o">=</span> <span class="nx">Mustache</span><span class="p">.</span><span class="nx">to_html</span><span class="p">(</span><span class="nx">name_template</span><span class="p">,</span> <span class="nx">name_obj</span><span class="p">);</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">name_html</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can just use jQuery or plain JavaScript to append the html contained by <code>name_html</code> variable into the DOM.</p>
+
+<h4>Collections</h4>
+
+<p>Next let&rsquo;s do something less basic.
+Let&rsquo;s try to use a group of hunters as our data source:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">hunters</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;hunters&#39;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;Gon&#39;</span><span class="p">,</span> <span class="s1">&#39;nen&#39;</span> <span class="o">:</span> <span class="s1">&#39;Enhancer&#39;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;Killua&#39;</span><span class="p">,</span> <span class="s1">&#39;nen&#39;</span> <span class="o">:</span> <span class="s1">&#39;Transmuter&#39;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;Kurapika&#39;</span><span class="p">,</span> <span class="s1">&#39;nen&#39;</span> <span class="o">:</span> <span class="s1">&#39;Conjurer&#39;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;Leorio&#39;</span><span class="p">,</span> <span class="s1">&#39;nen&#39;</span> <span class="o">:</span> <span class="s1">&#39;Emitter&#39;</span><span class="p">}</span>
+</span><span class='line'>      <span class="p">]</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the template were going to make use of a table to display
+both their names and nen ability:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;hunters&quot;</span> <span class="na">type=</span><span class="s">&quot;text/html&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hunters</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">table</span> <span class="nx">border</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Name</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Nen</span> <span class="nx">Ability</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">#</span><span class="nx">hunters</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">name</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">nen</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">/hunters}}</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/table&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On our previous example we made use of a variable which stores an html string for the template.
+But for the example above were using a <code>script</code> tag which has a type of <code>text/html</code> and plain html on its body.</p>
+
+<p>We also used a new pair of tags for looping through the items in the array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{{#hunters}}
+</span><span class='line'>  #access the value for each of the properties here
+</span><span class='line'>{{/hunters}}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The hash <code>#</code> marks the start of the loop and the forward slash <code>/</code> marks its end.
+Then within those tags you can access the properties of the object.
+In our example the properties are <code>name</code> and <code>nen</code>.</p>
+
+<p>You can then append the html created from calling <code>Mustache.to_html()</code> into a container.
+Just make sure you&rsquo;re doing it after the dom has fully loaded and you can do that by calling the
+method inside jQuery&rsquo;s <code>document.read</code> event.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>var hunters_html = Mustache.to_html($(&#39;#hunters&#39;).html(), hunters);
+</span><span class='line'>$(function(){
+</span><span class='line'>  $(&#39;.container&#39;).html(hunters_html);
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aj73t/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h4>Arrays</h4>
+
+<p>In our previous example we used an object as the data source and then accessed its properties inside the loop.
+But what if the data source is an array?</p>
+
+<p>For example we have this data source and we want to access the items in the <code>hunter_names</code> array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">hunter_names</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;hunter_names&#39;</span> <span class="o">:</span> <span class="p">[</span><span class="s1">&#39;Gon&#39;</span><span class="p">,</span> <span class="s1">&#39;Killua&#39;</span><span class="p">,</span> <span class="s1">&#39;Kurapika&#39;</span><span class="p">,</span> <span class="s1">&#39;Leorio&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To access each of the items in the <code>hunter_names</code> array all we have to do is to place a dot <code>.</code> inside the template tags. The dot represents the current item in the array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/html&quot;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;hunter_names&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="p">{{</span><span class="err">#</span><span class="nx">hunter_names</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="p">{{.}}</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>  <span class="p">{{</span><span class="err">/hunter_names}}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Tb8pu/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h4>Functions</h4>
+
+<p>You can also make use of functions in Mustache.
+For example we have an object which stores the items that we have added to the cart:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">subtotal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>   <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">price</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">quantity</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">cart</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;cart&#39;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;gundam&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">2500</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;racket&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">99</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;flash drive&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">500</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>    <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the object above you can see that we have the <code>subtotal</code> property which we have assigned
+to the <code>subtotal</code> function which returns the product of the <code>price</code> and the <code>quantity</code>.</p>
+
+<p><code>this</code> simply refers to the current context where the function is being called so <code>this.price</code> simply refers to the price of the current item.</p>
+
+<p>We can then define our template.
+Note that were accessing the data from the <code>subtotal</code> property just like a normal property.
+It seems like Mustache already does some of its sorcery once we call the    <code>Mustache.to_html()</code> method which might include computing the subtotal for each item.</p>
+
+<p>So you don&rsquo;t really have to call the method from the template just like what we normally do when accessing the value returned from a property that was assigned to a function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">cart</span><span class="p">.</span><span class="nx">cart</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">subtotal</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;functions&quot;</span> <span class="na">type=</span><span class="s">&quot;text/html&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">table</span> <span class="nx">border</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Name</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Price</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Quantity</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Subtotal</span><span class="o">&lt;</span><span class="err">/th&gt;    </span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">#</span><span class="nx">cart</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">name</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">price</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">quantity</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">subtotal</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">/cart}}</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/table&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The common use cases for functions is when checking for the existence or truthiness of a value, computing values, and adding extra markup based on a certain condition.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mGmPG/2/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h3>Handlebars</h3>
+
+<p>There&rsquo;s not really much difference between Mustache and Handlebars.</p>
+
+<p>They still use the same template tags which looks like a double mustache &#8220;.
+But the template tags also look like the Handlebars of a bicycle so maybe that&rsquo;s the reason behind the naming of this templating library.</p>
+
+<p>Handlebars packs more features than Mustache since it has some simple logic tags which you can use like <code>if</code> , <code>with</code> and <code>each</code>. I believe templates should contain less logic as possible since templates are only for presentation.</p>
+
+<p>Just like how we keep logic to a minimum in the views when working with MVC.
+Handlebars has also limited the logic tags that we can use.</p>
+
+<p>To emphasize that there isn&rsquo;t really much difference between Mustache and Handlebars I&rsquo;ll use the same object that we used earlier on our Mustache example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">subtotal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>   <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">price</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">quantity</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">var</span> <span class="nx">cart</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;cart&#39;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;gundam&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">2500</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;racket&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">99</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;flash drive&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">500</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;subtotal&#39;</span> <span class="o">:</span> <span class="nx">subtotal</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'><span class="p">};</span> 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And for the template the only change that we have here is the value of the type attribute of the script tag.
+In this case the value is <code>text/x-handlebars-template</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;functions&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">table</span> <span class="nx">border</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Name</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Price</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Quantity</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Subtotal</span><span class="o">&lt;</span><span class="err">/th&gt;    </span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">#</span><span class="nx">cart</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">name</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">price</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">quantity</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">subtotal</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">/cart}}</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/table&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Handlebars isn&rsquo;t really picky when it comes to the value of tye <code>type</code> attribute.
+You can actually use <code>text/html</code> as the value or nothing at all.</p>
+
+<p>But its a good practice to always specify the <code>type</code> so that other people will know what that specific <code>script</code> tag is all about. Plus I haven&rsquo;t really tested if the two tags below would really work in all possible scenarios.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/html&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  
+</span><span class='line'><span class="nt">&lt;script&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we can just call <code>Handlebars.compile</code> and supply the html string of our template as an argument to create the template. We can then call the template and supplying the data source <code>cart</code> as the argument then assign it as the html of the container:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>var cart_html = Handlebars.compile($(&#39;#functions&#39;).html());
+</span><span class='line'>$(&#39;.container&#39;).html(cart_html(cart));
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/H8Bac/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<p>In the above example we did not explicitly specify that we want to loop through the items in the cart.
+In handlebars there&rsquo;s actually an alternative syntax for looping through the items in an array.
+And that is by using the <code>each</code> keyword followed by the name of the array.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{{#each cart}}
+</span><span class='line'><span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;td&gt;</span>{{name}}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;td&gt;</span>{{price}}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;td&gt;</span>{{quantity}}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;td&gt;</span>{{subtotal}}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>{{/each}}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>With</h4>
+
+<p><code>With</code> is used to change the context on which the properties that are accessed inside of it are called.</p>
+
+<p>First lets define our data source:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">hunter</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;family_occupation&#39;</span> <span class="o">:</span> <span class="s1">&#39;assassin&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;hunter&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;killua zoldyc&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;ability&#39;</span> <span class="o">:</span> <span class="s1">&#39;transmuter&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then our template:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;hunter&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="p">{{</span><span class="err">#</span><span class="kd">with</span> <span class="nx">hunter</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Name</span><span class="o">:</span> <span class="p">{{</span><span class="nx">name</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Ability</span><span class="o">:</span> <span class="p">{{</span><span class="nx">ability</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h3</span><span class="o">&gt;</span><span class="nx">Family</span><span class="o">:</span> <span class="p">{{..</span><span class="o">/</span><span class="nx">family_occupation</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/h3&gt;</span>
+</span><span class='line'>  <span class="p">{{</span><span class="err">/with}}</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--container--&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the template above we have change the context to <code>hunter</code> so any properties that are defined inside the <code>hunter</code> object will be accessible as long as they are within the <code>with</code> tags.</p>
+
+<p>But if you want to access properties outside of the current context you can use <code>../</code> just like what we do when stepping back a single directory when linking assets relatively in html.
+From our example the <code>family_occupation</code> property is outside the <code>hunter</code> object so we&rsquo;ve used <code>../</code> to step back.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZprP6/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h4>If</h4>
+
+<p><code>if</code> is used to check for the <a href="http://james.padolsey.com/javascript/truthy-falsey/">truthiness</a> of a value.
+It can be used along with <code>else</code> to output something else in case a value is not present.</p>
+
+<p>In our object below there is no value for the <code>box_weapon</code> of the first member.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">family</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s1">&#39;member&#39;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;reborn&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;tsunayoshi sawada&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;sky lion&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;hibari kyoya&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;cloud hedgehog&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;gokudera hayato&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;storm leopard&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;takeshi yamamoto&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;rain swallow&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;ryohei sasagawa&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;sun kangaroo&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;lambo&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;lightning bull&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;rokudo mukuro&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;box_weapon&#39;</span> <span class="o">:</span> <span class="s1">&#39;mist owl&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can then use <code>if</code> and <code>else</code> to check if the value is present or not and output something else if the value is not present:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;ifs&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">vongola</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">table</span> <span class="nx">border</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Family</span> <span class="nx">Member</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Box</span> <span class="nx">Weapon</span><span class="o">&lt;</span><span class="err">/th&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">member</span><span class="p">}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">name</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="p">{{</span><span class="err">#</span><span class="k">if</span> <span class="nx">box_weapon</span><span class="p">}}</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">box_weapon</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/td&gt;</span>
+</span><span class='line'>        <span class="p">{{</span><span class="k">else</span><span class="p">}}</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="nx">No</span> <span class="nx">box</span> <span class="nx">weapon</span><span class="o">&lt;</span><span class="err">/td&gt;&lt;!--if value is not present--&gt;</span>
+</span><span class='line'>        <span class="p">{{</span><span class="err">/if}}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/tr&gt;</span>
+</span><span class='line'>      <span class="p">{{</span><span class="err">/each}}</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/table&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;family&quot;</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--container--&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/J8qXs/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h4>Helpers</h4>
+
+<p>Finally there are <code>helpers</code> which are like functions that you can call inside your Handlebars template.
+They can be used to extend the functionality that Handlebars already provides by default.</p>
+
+<p>For our example let&rsquo;s define the data source which is just an array of numbers from 1 to 10:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s1">&#39;numbers&#39;</span> <span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then let&rsquo;s define our handlebars helper. You can define a helper by calling <code>Handlebars.registerHelper</code>.
+The first argument is the name of the helper, in this case the name is <code>multiply_by_10</code>.
+The second argument is the callback function which contains the logic or the process that you want to perform with the data that you specify. The data that you want the function to use are specified as arguments. In this case we have the <code>num</code> variable. The helper below simply returns the value returned from multiplying the argument <code>num</code> with the number 10.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Handlebars</span><span class="p">.</span><span class="nx">registerHelper</span><span class="p">(</span><span class="s1">&#39;multiply_by_10&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">num</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">num</span> <span class="o">*</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can then create the template and call the helper that we just created, supplying the current item in the array of numbers. The current item in an array is represented by <code>this</code> in Handlebars.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;helpers&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="p">{{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">numbers</span><span class="p">}}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">multiply_by_10</span> <span class="k">this</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'><span class="p">{{</span><span class="err">/each}}</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;num_container&quot;</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--container--&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s do another example, this time were going to use the cart object that we used earlier.
+But now we&rsquo;ll remove the <code>subtotal</code> property since we will let our helper take care of that.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">cart</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;cart&#39;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;gundam&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">2500</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;racket&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">99</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="s1">&#39;name&#39;</span> <span class="o">:</span> <span class="s1">&#39;flash drive&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;quantity&#39;</span> <span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;price&#39;</span> <span class="o">:</span> <span class="mi">500</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For this example were going to use two helpers.
+One will return the header for the table. And the other one will compute the subtotal.</p>
+
+<p>Here&rsquo;s the helper that returns the header:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Handlebars</span><span class="p">.</span><span class="nx">registerHelper</span><span class="p">(</span><span class="s1">&#39;get_headers&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">table_headers</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">x</span><span class="p">)){</span>
+</span><span class='line'>        <span class="nx">table_headers</span> <span class="o">+=</span> <span class="s2">&quot;&lt;th&gt;&quot;</span> <span class="o">+</span> <span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/th&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="k">new</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">SafeString</span><span class="p">(</span><span class="nx">table_headers</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What were doing in the code above is looping through the properties of the object that we specified
+and then wrapping it in <code>th</code> tags. The current property is represented by the value stored in the variable <code>x</code>.
+We then append this value to the the <code>table_headers</code> variable.</p>
+
+<p>After looping through all of the properties of the object we then return the string accumulated by the <code>table_headers</code> variable. We have to return a <code>new Handlebars.SafeString(html_string)</code> because Handlebars automatically escapes HTML tags. This is a way of telling Handlebars not to escape the specific HTML that were trying to return from the helper.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tENVa/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h4>JSON</h4>
+
+<p>Finally were going to use real world data to supply to our template.
+Twitter really makes it easy to retrieve the tweets of a specific user as long as the tweets are set to public
+so were going to make use of the data from Twitter as the data source for our templates.</p>
+
+<p>Here&rsquo;s our template:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;tweets&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Wern</span> <span class="nx">Ancheta</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span><span class='line'>    <span class="p">{{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">tweets</span><span class="p">}}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="p">{{</span><span class="nx">linkify</span> <span class="nx">text</span><span class="p">}}</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span><span class='line'>    <span class="p">{{</span><span class="err">/each}}</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;tweets_container&quot;</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--container--&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then extend the String prototype by adding a method called <code>replaceArray</code> this method will take two arrays as arguments. All it does is to loop through the <code>find</code> array and replaces the current item in the <code>find</code> array with the current item in the <code>replace</code> array and then assign it back to the original string which is represented by <code>this</code>. After looping through all of the items it just returns the string which now has been replaced with the items in the <code>replace</code> array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">replaceArray</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">find</span><span class="p">,</span> <span class="nx">replace</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">replaceString</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">find_length</span> <span class="o">=</span> <span class="nx">find</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">find_length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">replaceString</span> <span class="o">=</span> <span class="nx">replaceString</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">find</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">replace</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">replaceString</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create a helper that would change the url&rsquo;s in a specific tweet to a link that can be clicked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Handlebars</span><span class="p">.</span><span class="nx">registerHelper</span><span class="p">(</span><span class="s1">&#39;linkify&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">linkified</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">urls</span> <span class="o">=</span> <span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(\{(.+?)\}:)?(http:\/\/[\w\-\.]+\.[a-zA-Z]{2,3}(?:\/\S*)?(?:[\w])+)/g</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">urls</span><span class="p">){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">url_count</span> <span class="o">=</span> <span class="nx">urls</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">url_count</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">url_string</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=&#39;&quot;</span> <span class="o">+</span> <span class="nx">urls</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">urls</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/a&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="nx">linkified</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">url_string</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">SafeString</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">replaceArray</span><span class="p">(</span><span class="nx">urls</span><span class="p">,</span> <span class="nx">linkified</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">text</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above were using regex to extract only the urls from the tweet.
+For example we have this tweet:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">really</span> <span class="nx">nice</span> <span class="nx">interactive</span> <span class="nx">course</span> <span class="nx">on</span> <span class="nx">chrome</span> <span class="nx">developer</span> <span class="nx">tools</span> <span class="nx">http</span><span class="o">:</span><span class="c1">//t.co/wHdyEMnWjG</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using the regex that we have above the <code>urls</code> variable will contain a single item:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">[</span><span class="nx">http</span><span class="o">:</span><span class="c1">//t.co/wHdyEMnWjG]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We then loop through all of those url&rsquo;s and wrapping it in anchor tags and then push it to the <code>linkified</code> variable.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">url_count</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">url_string</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=&#39;&quot;</span> <span class="o">+</span> <span class="nx">urls</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&gt;&quot;</span> <span class="o">+</span> <span class="nx">urls</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/a&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">linkified</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">url_string</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we call the <code>replaceArray</code> method that we created earlier to replace all the url&rsquo;s in the tweet to a url wrapped in anchor tags. Then we use it as an argument of the <code>Handlebars.SafeString</code> method so that Handlebars would not escape the HTML:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">return</span> <span class="k">new</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">SafeString</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">replaceArray</span><span class="p">(</span><span class="nx">urls</span><span class="p">,</span> <span class="nx">linkified</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In case there&rsquo;s no url in the current tweet we simply return the tweet without doing anything to it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">return</span> <span class="nx">text</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we can compile the template for the tweets and then issue an AJAX request to the Twitter API to get the tweets.
+The <code>dataType</code> should be <code>jsonp</code> since we can&rsquo;t really make a request to another domain if we don&rsquo;t specify the data type as <code>jsonp</code>. If you want to learn more about it check out this question at stackoverflow: <a href="http://stackoverflow.com/questions/2067472/what-is-jsonp-all-about">What is jsonp all about</a>.</p>
+
+<p>Once the request succeeded we can then replace the HTML of our tweets container with the HTML string returned from merging the template with the data coming from Twitter:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">tweets_template</span> <span class="o">=</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">compile</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#tweets&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;https://api.twitter.com/1/statuses/user_timeline.json?screen_name=wern_ancheta&amp;count=5&amp;exclude_replies=true&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;jsonp&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tweets</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.tweets_container&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">tweets_template</span><span class="p">({</span><span class="s1">&#39;tweets&#39;</span> <span class="o">:</span> <span class="nx">tweets</span><span class="p">}));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aZra5/embedded/js,resources,html,css,result/light/"></iframe>
+
+
+<h3>Smarty</h3>
+
+<p>The last library that were going to play around today is the Smarty templating engine for PHP.
+And for that you need to download Smarty over at <a href="http://www.smarty.net">smarty.net</a>.</p>
+
+<p>The main smarty file is the <code>Smarty.class.php</code> stored in the <code>libs</code> directory.
+Include it on your working file and then do the housekeeping (make an instance of the smarty class, set the template directory):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;libs/Smarty.class.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$smarty</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Smarty</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$smarty</span><span class="o">-&gt;</span><span class="na">setTemplateDir</span><span class="p">(</span><span class="s1">&#39;smarty_templates&#39;</span><span class="p">);</span> <span class="c1">//this is where all your template files are stored</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a template under the <code>smarty_templates</code> directory.
+The file extension for smarty templates is <code>.tpl</code>.</p>
+
+<p>Next, we create our data source:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$names</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;Yoh Asakura&#39;</span><span class="p">,</span> <span class="s1">&#39;Ichigo Kurosaki&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Uzumaki Naruto&#39;</span><span class="p">,</span> <span class="s1">&#39;Edward Elric&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Alibaba Saluja&#39;</span><span class="p">,</span> <span class="s1">&#39;BK201&#39;</span><span class="p">,</span> <span class="s1">&#39;Luffy&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then assign a template variable and call it <code>names</code>.
+You can use the  <code>assign</code> method to assign template variables.
+It takes up 2 arguments which is the name of the variable and then the variable which stores the data.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$smarty</span><span class="o">-&gt;</span><span class="na">assign</span><span class="p">(</span><span class="s1">&#39;names&#39;</span><span class="p">,</span> <span class="nv">$names</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the name of the variable doesn&rsquo;t necessarily need to be the same as the name you gave to the variable which stores the data. So you can also have something like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$smarty</span><span class="o">-&gt;</span><span class="na">assign</span><span class="p">(</span><span class="s1">&#39;anime&#39;</span><span class="p">,</span> <span class="nv">$names</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For our template we simply loop through the items in the array.
+Here were using <code>foreach</code> to loop through the items.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Anime<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>{foreach $names as $n}
+</span><span class='line'>  <span class="nt">&lt;li&gt;</span>{$n}<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>{/foreach}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For our final example were just going to reuse the cart that we had earlier:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$cart</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;racket&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;price&#39;</span> <span class="o">=&gt;</span> <span class="mi">200</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;quantity&#39;</span> <span class="o">=&gt;</span> <span class="mi">5</span>
+</span><span class='line'>    <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;table&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;price&#39;</span> <span class="o">=&gt;</span> <span class="mi">500</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;quantity&#39;</span> <span class="o">=&gt;</span> <span class="mi">4</span>
+</span><span class='line'>    <span class="p">),</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;bat&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;price&#39;</span> <span class="o">=&gt;</span> <span class="mi">300</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;quantity&#39;</span> <span class="o">=&gt;</span> <span class="mi">7</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And for the template:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h2&gt;</span>Cart<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="c">&lt;!--Loop through the properties of the first item (name, price, quantity)--&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>  {foreach $cart[0] as $h =&gt; $p}
+</span><span class='line'>    <span class="nt">&lt;th&gt;</span>{$h}<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>  {/foreach}
+</span><span class='line'>  <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>  {foreach $cart as $i}
+</span><span class='line'>  <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;</span>{$i.name}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;</span>{$i.price}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;</span>{$i.quantity}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>  {/foreach}
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span><span class='line'>
+</span><span class='line'>There are {$cart|count} items in the cart.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Some of the functions that you can use on PHP can also be used inside Smarty templates.
+For the code above we have used the <code>count</code> function. To use a function inside a template you simply specify the value that you want to supply as the argument of the function and then followed by a pipe <code>|</code> and then the function name, in this case the function name is <code>count</code> which simply returns how many items are in the array that was specified.</p>
+
+<h2>Conclusion</h2>
+
+<p>There&rsquo;s not really much difference between PHP and Smarty syntax and you can actually do everything in PHP if you like.</p>
+
+<p>But why would we need to use templates instead of just plain PHP?</p>
+
+<p>Because templates has much more cleaner syntax and it encourages code reuse.
+Sometimes in our projects we need to make use of the same HTML structure for
+the data that were presenting and often times we just repeat ourselves.
+Using a template can help make our code DRYer.</p>
+
+<p>Another reason is that by using Smarty and other templating engines we can avoid writing something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$html_str</span>   <span class="o">=</span> <span class="s2">&quot;&lt;h1&gt;Heading&lt;/h1&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$html_str</span>  <span class="o">.=</span> <span class="s2">&quot;&lt;ul&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$items</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$html_str</span>  <span class="o">.=</span> <span class="s2">&quot;&lt;li&gt;&quot;</span> <span class="o">.</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;&lt;/li&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$html_str</span>  <span class="o">.=</span> <span class="s2">&quot;&lt;/ul&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$html_str</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nb">ob_start</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;h1&gt;Heading&lt;/h1&gt;</span>
+</span><span class='line'><span class="x">&lt;ul&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$items</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"> </span>
+</span><span class='line'><span class="x">  &lt;li&gt;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/li&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/ul&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$html</span> <span class="o">=</span> <span class="nb">ob_get_contents</span><span class="p">();</span>
+</span><span class='line'><span class="nb">ob_end_flush</span><span class="p">();</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$html</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above doesn&rsquo;t really look great and we can avoid having to write those kinds of codes by using templates.
+This is true for all the templating libraries that we have gone around in this article and others which we haven&rsquo;t tackled.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T21:49:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/handlebars/'>handlebars</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/mustache/'>mustache</a>, <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/templating/'>templating</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/10/digging-into-octopress/" title="Previous Post: Digging into Octopress">&laquo; Digging into Octopress</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/04/03/getting-started-with-ebay-finding-api/" title="Next Post: Getting Started with Ebay Finding API">Getting Started with Ebay Finding API &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers/">A Whirlwind Tour of Web Developer Tools: Web Servers</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2013/03/24/playing-with-templating-libraries/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: phpUnit | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/phpunit/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Unit Testing in PHP]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/12/17/getting-started-with-unit-testing-in-php/"/>
+    <updated>2012-12-17T14:39:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/12/17/getting-started-with-unit-testing-in-php</id>
+    <content type="html"><![CDATA[<p>I finally got the time to play around with unit testing in PHP.
+I&rsquo;ve heard about the term months ago but I really never had the time to
+play around with it because I considered it as not absolutely necessary
+for my development workflow. I mean I can still produce useable programs without
+writing a test for it right?</p>
+
+<p>But admit it, testing the program that you have written is not really that exciting
+as writing the program itself. Sometimes we even get lazy and not test the program at
+all only to find things breaking on production. (Note: I&rsquo;m referring to in-browser testing here)</p>
+
+<p>Ok so maybe I haven&rsquo;t convinced you to do unit testing but I&rsquo;m just here to share my first experience
+of doing unit testing in PHP so I think its fine.</p>
+
+<p>Let&rsquo;s get straight to the point and end this boring introduction.</p>
+
+<!--More-->
+
+
+<h3>The Process</h3>
+
+<p>The idea behind Unit Testing is that you should write your test first
+before writing the actual program (the code that you&rsquo;re going to test).
+This doesn&rsquo;t really made sense the first time I&rsquo;ve heard of it, because how will you
+test something that doesn&rsquo;t even exist right? But that&rsquo;s just how TDD (Test Driven Development) works.
+It may seem difficult but if you have a crystal clear understanding of the program
+that you&rsquo;re trying to create then writing a test before writing the actual program
+wont' be that hard. Here&rsquo;s the actual process:</p>
+
+<ol>
+<li>Write the test code</li>
+<li>Write the code to be tested</li>
+<li>Run the tests</li>
+<li>Refactor the code based on the test results</li>
+</ol>
+
+
+<h3>Things You&rsquo;ll Need</h3>
+
+<ul>
+<li><a href="http://www.simpletest.org">Simple Test</a></li>
+<li><a href="http://getcomposer.org/">Composer</a> &ndash; If you&rsquo;re familiar with Node.js this is like <code>npm</code> but for PHP.</li>
+<li><a href="https://github.com/sebastianbergmann/phpunit/">PHPUnit</a></li>
+</ul>
+
+
+<h3>Simple Test</h3>
+
+<p>Before we play around with Composer and PHPUnit we&rsquo;ll play with Simple Test.
+If I have to describe it Simple Test is like the trimmed down version of PHPUnit that&rsquo;s
+why its the perfect starting place for learning unit testing in PHP.</p>
+
+<p>Simple Test can be run on the browser and on the terminal so you have the freedom to choose
+where you want to run your tests.</p>
+
+<p>If you haven&rsquo;t downloaded Simple Test yet, now is the time to do so.
+Once you&rsquo;re done with downloading, extract it on your working directory.
+The simple test directory will look something like this:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_dir.jpg" alt="simple_test_dir" /></p>
+
+<p>Ok cool, now create the test file.
+I guess the convention that most people follow is to append <code>_test</code> to the actual class that were trying to test.
+So if we are planning to create a class called <code>users</code> and were writing a test for it then the
+filename for the test would be <code>test_users.php</code>.</p>
+
+<p>Now put the following code in your <code>test_users.php</code> file.</p>
+
+<p>```php
+&lt;?php
+require_once(dirname(<strong>FILE</strong>) . &lsquo;/simpletest/autorun.php&rsquo;); //this is responsible for running your test code
+require_once(&lsquo;users.php&rsquo;); //the future file that will contain the class that we want to test</p>
+
+<p>//autorun.php file imports unit_tester.php
+//which contains the class that were extending here
+class TestUsers extends UnitTestCase{</p>
+
+<p>}
+?><br/>
+```</p>
+
+<p>Like I said earlier, we must have a clear understanding of the program that we will create
+before we actually code it.</p>
+
+<p>Just for the purpose of trying out unit testing in PHP were just going to create a simple class
+that let&rsquo;s you create, update, delete, and view users.
+Yep CRUD! but were not actually going to touch the database.
+Were just gonna use arrays to store our users.</p>
+
+<p>With this we already know that we have to create methods for:</p>
+
+<ul>
+<li>creating new users</li>
+<li>updating current users</li>
+<li>delete current users</li>
+<li>view users</li>
+</ul>
+
+
+<p>Now we have a clear understanding of the program that were going to write.
+All we have to do now is to imagine that the <code>users</code> class has already
+been created. And all were doing now is calling the methods in that class.</p>
+
+<p>Going back to <code>test_users.php</code>.
+Create a method that will test if a user has really been created
+after calling the imaginary <code>create_user()</code> method.</p>
+
+<p>Methods for classes used for testing also has <code>test</code> as a prefix.
+So if were trying to check if a user has indeed been created.
+Then the name of our method would be something like <code>testUserCreated</code>.</p>
+
+<p>```
+&lt;?php
+public function testUserCreated(){</p>
+
+<pre><code>$users = new Users(); 
+$old_users = $users-&gt;getUsers(); //get current users
+
+//create a new user
+$users-&gt;createUser(
+    array(
+        'name' =&gt; 'kirito', 
+        'age' =&gt; 20, 
+        'address' =&gt; 'sao'
+        ));
+
+$new_users = $users-&gt;getUsers(); //get new users 
+
+//compare the old user count to the new user count, 
+//returns true if the new user count is greater than the old user count
+$newcount_is_greater_than_old_count = (count($new_users) &gt; count($old_users)); 
+$this-&gt;assertTrue($newcount_is_greater_than_old_count);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>We have to create an object for the class that were trying to test for every method
+in the test class. This keep things at an atomic level.
+This also gives us the ability to use more than one class for each method in the test class.</p>
+
+<p>At this point you can already run the test, but of course it would fail since we haven&rsquo;t
+created the class that were trying to test yet.</p>
+
+<p>Ok let&rsquo;s continue writing methods for our test class.
+This time were going to test if the user count is what we expect
+it to be after adding a couple of users.</p>
+
+<p>```
+&lt;?php
+public function testUserCount(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$users-&gt;createUser(array('name' =&gt; 'asuna', 'age' =&gt; 21, 'address' =&gt; 'sao'));
+$current_users = $users-&gt;getUsers();
+$count_is_two = (count($current_users) == 2); //after adding two users we expect that the current number of users is 2
+$this-&gt;assertTrue($count_is_two); //check if our condition has returned true
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Create another test method that will test if the <code>deleteUsers()</code> method is working:</p>
+
+<p>```
+&lt;?php
+public function testUserNothing(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;createUser(array('name' =&gt; 'wern', 'age' =&gt; 20, 'address' =&gt; 'sfc')); //create a new user
+$users-&gt;deleteUsers(); //delete all the users
+$current_users = $users-&gt;getUsers(); //get all the current users
+
+//after deleting all users we expect 
+//that there are no more users, thus the count will be zero
+$count_is_zero = (count($current_users) == 0);
+
+$this-&gt;assertTrue($count_is_zero); //check if our condition has returned true
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next we test if the <code>deleteUser</code> method is really working:</p>
+
+<p>```
+&lt;?php
+public function testUserDeleted(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;deleteUsers();
+$old_users = $users-&gt;getUsers();
+
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$users-&gt;createUser(array('name' =&gt; 'asuna', 'age' =&gt; 21, 'address' =&gt; 'sao'));
+$users-&gt;deleteUser(1);
+
+$current_users = $users-&gt;getUsers();
+$this-&gt;assertEqual(count($current_users), 1);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Finally, create another method that will check if the users details has really been updated:</p>
+
+<p>```
+&lt;?php
+public function testUserUpdate(){</p>
+
+<pre><code>$users = new Users();
+$current_users = $users-&gt;getUsers();
+
+//first user is at index 0, which makes its id 0
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$old_name = $users-&gt;getUser(0)['name'];
+$users-&gt;updateUser(array('name' =&gt; 'kirigaya kazuto'), 0); //supply the user id as 2nd argument
+$new_name = $users-&gt;getUser(0)['name'];
+
+$this-&gt;assertNotEqual($old_name, $new_name); //check that the old user name is not equal to the new name
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>User Class</h3>
+
+<p>Now were ready to create the <code>users</code> class.
+Pretty much we already know what our class would look like
+based on the methods in the test class that we created so here it is:</p>
+
+<p>```
+&lt;?php
+class Users{</p>
+
+<pre><code>public $users = array();
+
+public function createUser($user_details){
+    $current_users = $this-&gt;users;
+    array_push($current_users, $user_details);
+    $this-&gt;users = $current_users;
+    return $current_users;
+}
+
+public function updateUser($user_details, $user_id){
+    $current_users = $this-&gt;users;
+    foreach($user_details as $field =&gt; $value){
+        $current_users[$user_id][$field] = $value;
+    }
+
+    $this-&gt;users = $current_users;
+    return $current_users[$user_id];
+}
+
+public function deleteUser($user_id){
+    $current_users = $this-&gt;users;
+    unset($current_users[$user_id]);
+    $this-&gt;users = $current_users;
+    return $current_users;
+}
+
+public function deleteUsers(){
+    $this-&gt;users = array();
+    return $this-&gt;users;
+}
+
+public function getUser($user_id){
+    $current_users = $this-&gt;users;
+    return $current_users[$user_id];
+}
+
+public function getUsers(){
+    return $this-&gt;users;
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>I can&rsquo;t think of beautiful way to mess this up and make the test fail so
+if you run the test now (either on the browser or on the terminal) it will
+pass.</p>
+
+<h4>Running Simple Test</h4>
+
+<p>You can run the test on the browser by pointing out to the test file.
+Mine is at: <code>http://my.dev/tester/php/unit_testing/user_test.php</code></p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_browser.jpg" alt="simple_test_browser" /></p>
+
+<p>Or you can do it on the terminal by executing the following command:</p>
+
+<p><code>
+php user_test.php
+</code></p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_cmd.jpg" alt="simple_test_cmd" /></p>
+
+<p>I&rsquo;ll just leave it to you how you would want this to fail, maybe remove some
+code on the <code>users</code> class, let it fail then fix it. The best way to learn is to
+mess things up. Try to get yourself in a deep hole then try to climb up again.
+That&rsquo;s learning things the hard way, it would take some time but you will surely not
+forget what you&rsquo;ve learned after seeing Natalie Portman if you learn things this way.</p>
+
+<h3>Composer</h3>
+
+<p>For the part two of this little walkthrough on PHPUnit Testing were going
+to take a look at Composer (PEAR? pftt.) and how we can use it to import PHPUnit
+on our directory.</p>
+
+<h4>Installing Composer</h4>
+
+<p>As stated in the composer website, you can install composer through <code>curl</code> in which
+case you can download <code>curl</code> <a href="http://curl.haxx.se/download.html">here</a> if you don&rsquo;t
+already have it on your system.</p>
+
+<p><code>
+curl -s https://getcomposer.org/installer | php
+</code></p>
+
+<p>There&rsquo;s also the windows installer if you&rsquo;re on windows.</p>
+
+<p>And lastly you can also install it via <code>php</code> itself.</p>
+
+<p><code>
+php -r "eval('?&gt;'.file_get_contents('https://getcomposer.org/installer'));"
+</code></p>
+
+<p>The above methods installs composer globally and you won&rsquo;t have the <code>composer.phar</code> if composer
+is installed globally. But we don&rsquo;t really need that so create a <code>composer.json</code> file instead.</p>
+
+<h4>Installing PHPUnit</h4>
+
+<p>Inside that file were going to specify the dependencies. We only need one and that is PHPUnit.
+There are a bunch of PHPUnit packages in <a href="https://packagist.org/search/?q=phpunit">packagist.org</a> but were
+going to use <code>EHER/PHPUnit</code> since it gives the idea that it can be used with composer plus it has 4000+ downloads
+at the time of writing of this post which means that many people are using it.</p>
+
+<p>```
+{</p>
+
+<pre><code>"require": {
+    "EHER/PHPUnit": "dev-master"
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Once you&rsquo;re done with that you can now run <code>composer install</code>.
+This can take a couple of minutes depending on your connection speed as its going
+to download the dependencies that you&rsquo;ve specified.</p>
+
+<p>Once its done you will now see a new folder called <code>vendor</code> which contains the following files:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_dir.jpg" alt="phpunit_dir" /></p>
+
+<h3>Playing with PHPUnit</h3>
+
+<p>Now were ready to play with PHPUnit.
+Were going to start with something simple, a test for a calculator class.</p>
+
+<p>Our simple calculator would only have 4 methods:</p>
+
+<ul>
+<li>method for adding an array of numbers</li>
+<li>method for subtracting two numbers (we can&rsquo;t do an array of numbers since the difference is affected by the order of the items)</li>
+<li>method for multiplying an array of numbers</li>
+<li>method for dividing two numbers</li>
+</ul>
+
+
+<h4>Calculator Test</h4>
+
+<p>Create a new file and call it <code>calculator_test.php</code>.</p>
+
+<p>```
+&lt;?php
+require_once(&lsquo;calculator.php&rsquo;); //our calculator class which we will creater later.
+class CalculatorTest extends PHPUnit_Framework_TestCase{</p>
+
+<pre><code>//test if the add() method in our calculator class
+//actually returns the sum that
+//were expecting
+public function testAdd(){
+    $calc = new Calculator();
+    $sum = $calc-&gt;add(array(2,3,4,5));
+    $this-&gt;assertEquals(14, $sum); //check if 2+3+4+5 is equal to 14
+}
+
+//test if the subtract() method in our calculator class
+//actually returns the difference that
+//were expecting
+public function testSubtract(){
+    $calc = new Calculator();
+    $difference = $calc-&gt;subtract(5,2);
+    $this-&gt;assertEquals(3, $difference); //check if 5 - 2 is equal to 3
+}
+
+//test if the multiply() method in our calculator class
+//actually returns the product that
+//were expecting    
+public function testMultiply(){
+    $calc = new Calculator();
+    $product = $calc-&gt;multiply(array(1,3,5,6)); 
+    $this-&gt;assertEquals(90, $product); //check if 1*3*5*6 is equal to 90
+}
+
+//test if the divide() method in our calculator class
+//actually returns the quotient that
+//were expecting    
+public function testDivide(){
+    $calc = new Calculator();
+    $quotient = $calc-&gt;divide(10,2); 
+    $this-&gt;assertEquals(5, $quotient); //check if 10/2 is equal to 5
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Calculator Class</h4>
+
+<p>And the calculator class:</p>
+
+<p>```
+&lt;?php
+class Calculator{</p>
+
+<pre><code>public function add($numbers_to_add){
+    $sum = 0;
+    foreach($numbers_to_add as $num){
+        $sum = $num + $num;
+    }
+    return $sum;
+}
+
+public function subtract($x, $y){
+    return $y - $x;
+}
+
+public function multiply($numbers_to_multiply){
+    $product = 0;
+    foreach($numbers_to_multiply as $num){
+        $product = $num * $product;
+    }
+    return $product;
+}
+
+public function divide($x, $y){
+    return $x / $y;
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Ok so I&rsquo;ve intentionally messed up the calculator class so the test would fail.
+By taking a closer look you would notice what methods I&rsquo;ve messed up but don&rsquo;t
+fix it yet because were going to take a look at how the test can help
+us determine what exactly is wrong with our calculator class.</p>
+
+<p>You can go ahead and open up a new terminal at <code>vendor/bin</code> then just specify the location of
+your test file like this:</p>
+
+<p><code>
+phpunit D:\web_files\tester\php\unit_testing\calculator_test.php
+</code></p>
+
+<p>But if you don&rsquo;t want to specify the location of your test file everytime you run the
+test then just add the path for phpunit in your system path.
+Mine looks something like this:</p>
+
+<p><code>
+D:\web_files\tester\php\unit_testing\vendor\bin
+</code></p>
+
+<p>So if I&rsquo;m running my tests I only have to open a new terminal on the directory
+where I have my tests and run phpunit together with the name of the test file:</p>
+
+<p><code>
+phpunit calculator_test.php
+</code></p>
+
+<p>Were going to get an error after running the command above:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_calcfailed.jpg" alt="phpunit_calcfailed" /></p>
+
+<p>We can see from here that we&rsquo;ve messed up the <code>add()</code> and <code>subtract()</code> method.
+For the <code>add()</code> method we were expecting to get <code>14</code> but our method only returned <code>10</code>.
+And for the <code>subtract()</code> method we were expecting to get <code>3</code> but it returned <code>-3</code> instead.</p>
+
+<p>Looking closely at the <code>add()</code> method inside the loop
+instead of adding the current sum to the current number were adding the
+current number with the current number so we ended up with <code>10</code> as a result
+because the last item in our array of number is 5. And <code>5 + 5</code> is <code>10</code>.</p>
+
+<p>```
+&lt;?php
+public function add($numbers_to_add){</p>
+
+<pre><code>$sum = 0;
+foreach($numbers_to_add as $num){
+    $sum = $num + $num; //this line messed it up
+}
+return $sum;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>So were just going to replace it with:</p>
+
+<p><code>
+$sum = $num + $sum
+</code></p>
+
+<p>As for the <code>subtract()</code> method we simply messed up the ordering
+of the variables to be subtracted:</p>
+
+<p>```
+&lt;?php
+public function subtract($x, $y){</p>
+
+<pre><code>return $y - $x;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>So were just going to replace it with:</p>
+
+<p><code>
+return $x - $y;
+</code></p>
+
+<p>Running the test again:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_calcsuccess.jpg" alt="phpunit_calcsuccess" /></p>
+
+<p>Yay! everything passes!</p>
+
+<p>Taking a look closely at the test results it said:</p>
+
+<p><code>
+OK (4 tests, 4 assertions)
+</code></p>
+
+<p>Tests are the methods that you&rsquo;ve written for testing.
+Assertions are the assertion methods that you&rsquo;ve used from the PHPUnit test suite
+like <code>assertEquals()</code>.</p>
+
+<h3>More PHPUnit Fun</h3>
+
+<p>By now you should have probably grokked the basics of unit testing in PHP.
+But were going to play around with it further.</p>
+
+<p>This time without using a class to test out.
+You may think that this beats out the purpose
+of unit testing but were just here to play and see what
+PHPUnit has to offer. Though I&rsquo;m not forcing you to do the same.
+You can always write classes to test
+out if you want.</p>
+
+<h4>No Class Test</h4>
+
+<p>Create another test and call it <code>noclass_test.php</code>.
+As the name suggests were not going to use any class
+to test out. Were going to write the functionality
+itself inside our test methods.</p>
+
+<p>```
+&lt;?php
+class NoClassTest extends PHPUnit_Framework_TestCase{</p>
+
+<p>}
+?>
+```</p>
+
+<h5>Assert Empty</h5>
+
+<p>First let&rsquo;s test out the <code>assertEmpty()</code> method
+which simply checks if the value of a variable is indeed empty.
+The method below will return true since we&rsquo;ve supplied it with an empty
+array.</p>
+
+<p>```
+&lt;?php
+public function testEmptyArray(){</p>
+
+<pre><code>$array = array();
+$this-&gt;assertEmpty($array);
+return $array;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h5>Dependencies</h5>
+
+<p>The methods that we write for a class isn&rsquo;t standalone,
+which means that we don&rsquo;t just call it and be done with it.
+Sometimes some of our methods depends on the return value of
+other methods of our class.</p>
+
+<p>And that&rsquo;s the idea behind dependencies. In PHPUnit we can also
+have test methods that depends on the return values of other test methods.
+We can specify this by adding the <code>@depends</code> keyword together with the
+name of the method in which our method depends on.</p>
+
+<p>As you can see the method below depends on the return value of the <code>testEmptyArray()</code> method.
+We can receive the return value of <code>testEmptyArray()</code> by adding a parameter in this
+case we call it <code>$array</code>. Methods can only have 1 return value so at most we&rsquo;ll only have
+one parameter in our method to receive the return values.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @depends testEmptyArray
+ </em>/
+public function testAddUser(array $array){</p>
+
+<pre><code>//push an item to the empty array returned from testEmptyArray
+array_push($array, array('name' =&gt; 'dom', 'age' =&gt; 21)); 
+$this-&gt;assertNotEmpty($array); //check if array is not empty
+return $array;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Create another method and call it <code>testUpdateUser()</code> which will simply
+check if the old value is not equal to the value after updating.</p>
+
+<p>Again were depending on another methods return value so we need to specify
+at least one parameter to receive that value.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @depends testAddUser
+ </em>/
+public function testUpdateUser(array $user){</p>
+
+<pre><code>//this uses the user that we pushed earlier
+//from the testAddUser() method which is: dom and 21
+
+$old_name = $user[0]['name'];  //dom
+$old_age = $user[0]['age']; //21
+
+//update it with ash and 15
+$user[0]['name'] = 'ash';
+$user[0]['age'] = 15;
+
+//this will return true since we've updated both values
+$this-&gt;assertNotEquals($old_name, $user[0]['name']);
+$this-&gt;assertNotEquals($old_age, $user[0]['age']);
+
+return $user;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h5>Data Providers</h5>
+
+<p>We can also have methods whose only job is to be a <code>data provider</code>.
+A data provider is simply a method which returns values.
+It doesn&rsquo;t have assert methods in it.</p>
+
+<p>Here were returning an array of students with swords and skills:</p>
+
+<p>```
+&lt;?php
+public function sword_and_skills(){</p>
+
+<pre><code>$students = array(
+    'kirito' =&gt; array('sword' =&gt; 'dark repulser', 'skill' =&gt; 'dual blades'),
+    'asuna' =&gt; array('sword' =&gt; 'wind fleuret', 'skill' =&gt; 'two handed assault sphere'),
+    'klein' =&gt; array('sword' =&gt; 'karakurenai', 'skill' =&gt; 'one handed curved blade')
+    );
+
+return $students;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Let&rsquo;s use the above method as a data provider for our <code>testContainsSwordsAndSkills()</code> method.
+Again were using the same format as that of <code>dependencies</code> only this time the keyword is <code>@dataProvider</code> plus
+the name of the method which returns the data.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider sword_and_skills
+ </em>/
+public function testContainsSwordsAndSkills($sword, $skill){</p>
+
+<pre><code>$awesome_swords = array('dark repulser', 'elucidator', 'wind fleuret', 'karakurenai');
+
+$awesome_skills = array(
+    'blade throwing', 'one handed curved blade', 
+    'two handed assault sphere', 
+    'single blade', 'dual blades'
+    );
+
+$this-&gt;assertContains($sword, $awesome_swords); //check if all of the students has the swords considered to be awesome
+$this-&gt;assertContains($skill, $awesome_skills); //check if all of the students has the skills considered to be awesome
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Examining the code above might seem confusing. And I admit that I&rsquo;m still confused even now.
+So if anyone of you knows what the data provider does behind the scenes then let met know in the comments.</p>
+
+<p>So yup I&rsquo;ll give this one a shot but don&rsquo;t kill me if its wrong.</p>
+
+<p>In our data provider we have an array which contains 3 arrays that represents the
+details (swords and skills) of the students.</p>
+
+<p>```
+&lt;?php
+$students = array(</p>
+
+<pre><code>'kirito' =&gt; array('sword' =&gt; 'dark repulser', 'skill' =&gt; 'dual blades'),
+'asuna' =&gt; array('sword' =&gt; 'wind fleuret', 'skill' =&gt; 'two handed assault sphere'),
+'klein' =&gt; array('sword' =&gt; 'karakurenai', 'skill' =&gt; 'one handed curved blade')
+);
+</code></pre>
+
+<p>?><br/>
+```</p>
+
+<p>In our method we have two parameters which represents the index(sword and skill) for each of the student details:</p>
+
+<p><code>
+testContainsSwordsAndSkills($sword, $skill)
+</code></p>
+
+<p>And that&rsquo;s what were checking here:</p>
+
+<p><code>
+$this-&gt;assertContains($sword, $awesome_swords);
+</code></p>
+
+<p>It checks whether the sword equipment of kirito, asuna and klein is in the array of awesome swords if
+one of the equipped sword of the three students isn&rsquo;t on the array of awesome swords then the assertion would fail.
+The same rule is applied with the skills.</p>
+
+<p>I guess we need one more example for data provider.</p>
+
+<p>```
+&lt;?php
+public function anime(){</p>
+
+<pre><code>$data = array(
+        array(
+            array('luffy', 'zoro', 'brook', 'sanji'),
+            array('ichigo', 'zangetsu', 'toshiro', 'byakuya'),
+            array('sai', 'kiba', 'gaara', 'yamato', 'jiraiya')
+            )
+    );
+return $data;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>This time were going to check if the total number of anime characters is what
+we expect it to be. As you can see from the array above we have:</p>
+
+<ul>
+<li>4 characters from Onepiece</li>
+<li>4 characters from Bleach</li>
+<li>5 characters from Naruto</li>
+</ul>
+
+
+<p>Which makes it a total of 13.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider anime
+ </em>/
+public function testTotalStudents($onepiece, $bleach, $naruto){</p>
+
+<pre><code>$this-&gt;assertEquals(13, count($onepiece) + count($bleach) + count($naruto));
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>If you run the test it will pass.</p>
+
+<p>Ok one last example for data provider before we proceed with the next assertion method.
+This time were just going to restructure our data source:</p>
+
+<p>```
+&lt;?php
+public function anime(){</p>
+
+<pre><code>$data = array(
+        array(
+            array('luffy', 'zoro', 'brook', 'sanji')
+            ),
+        array(
+            array('ichigo', 'zangetsu', 'toshiro', 'byakuya')
+            ),
+        array(
+            array('sai', 'kiba', 'gaara', 'yamato')
+            )
+    );
+return $data;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Then we&rsquo;ll utilize it as our data provider:</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider anime
+ </em>/
+public function testTotalStudents($a){</p>
+
+<pre><code>$this-&gt;assertEquals(4, count($a));
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Here were still doing the same thing. But instead of getting the total and
+using it as compare value were going to test if the total number of students
+in each array is 4. Of course this will still return true since we&rsquo;ve already
+removed jiraiya from the naruto characters array.</p>
+
+<p>Did you finally grokked it? Me too! I guess its digging up to the last child of the array.
+In this case its these guys:</p>
+
+<p><code>
+&lt;?php
+array('luffy', 'zoro', 'brook', 'sanji')
+array('sai', 'kiba', 'gaara', 'yamato')
+array('sai', 'kiba', 'gaara', 'yamato')
+?&gt;
+</code></p>
+
+<p>So it doesn&rsquo;t matter how deep your array is as it always ends up in the most deepest part.
+But I can&rsquo;t really say for sure because I&rsquo;m just concluding things based on what I&rsquo;ve observed
+by playing with PHPUnit.</p>
+
+<h4>Expected Output</h4>
+
+<p>There&rsquo;s also a method used for checking the expected output of a method.
+This is useful because we don&rsquo;t always return things using methods,
+most of the time were just using methods to output things.</p>
+
+<p>As you can see from the example below we first have to specify
+our expected output before we actually call the method that will
+output some string.</p>
+
+<p>```
+&lt;?php
+public function testOutput(){</p>
+
+<pre><code>$this-&gt;expectOutputString("what's up world");
+echo "what's up world";
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Expected Type</h4>
+
+<p>Yet another useful assertion method is the <code>assertInternalType()</code> which simply
+checks if a variable or the return value of a method has the expected data type.</p>
+
+<p>```
+&lt;?php
+public function testType(){</p>
+
+<pre><code>$ima_integer = 20;
+$ima_string = "meowth that's right!";
+$ima_boolean = true;
+$ima_array = array('chunibyou', 'hyouka');
+$ima_null = "nope Im not a null, im a string idjit!"; 
+$ima_float = 234.24;
+
+$this-&gt;assertInternalType('integer', $ima_integer);
+$this-&gt;assertInternalType('string', $ima_string);
+$this-&gt;assertInternalType('boolean', $ima_boolean);
+$this-&gt;assertInternalType('array', $ima_array);
+$this-&gt;assertInternalType('null', $ima_null); //this will fail as we supplied a string
+$this-&gt;assertInternalType('float', $ima_float); 
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>That&rsquo;s all folks! You can check out the resources below if you want to learn more about unit testing.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Test-driven_development">Test Driven Development</a></li>
+<li><a href="http://www.phpunit.de/manual/3.7/en/index.html">PHPUnit</a></li>
+<li><a href="http://net.tutsplus.com/sessions/test-driven-php/">Test-Driven PHP</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

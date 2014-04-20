@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: solr | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/solr/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to modify the results from the Search API Solr Module]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module/"/>
+    <updated>2013-10-13T13:15:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/10/13/how-to-modify-the-results-from-the-search-api-solr-module</id>
+    <content type="html"><![CDATA[<p>The <a href="https://drupal.org/project/search_api_solr">Search API Solr module</a> for Drupal is a nice way to use Solr as the server for the <a href="https://drupal.org/project/search_api">Search API module</a>. Its pretty flexible with customizing the data that you want to return from the server but what if you need something that&rsquo;s not directly available from the Solr server? What if you also need the data to be available to the client side and do some kind of data manipulation from there?</p>
+
+<p>In this article I&rsquo;ll be showing you how to do just that. We will be creating a custom module that will tap into the API of the Search API Solr Module to modify the default results that are returned and make it available to the client side.</p>
+
+<h4>Module Information</h4>
+
+<p>Let&rsquo;s begin by creating the <code>.info</code> file for our custom module:</p>
+
+<p><code>
+name = searchapisolrmod
+description = "Modifies the results returned from the Search API Solr Module"
+package = Nrue
+core = 7.x
+files[] = searchapisolrmod.module
+files[] = searchapisolrmod.install
+</code></p>
+
+<h4>Use Case</h4>
+
+<p>Before we dive into the &lsquo;how&rsquo; let me tell you about a sample use case first.
+For example, we have the following data stored in the Solr server:</p>
+
+<p>```json
+[</p>
+
+<pre><code>{
+    id: '123',
+    business_name: 'Antares',
+    business_address:postal_code: '2500 AC'
+},
+{
+    id: '456',
+    business_name: 'Aldebaran',
+    business_address:postal_code: '3420 AD'
+},
+{
+    id: '352',
+    business_name: 'Cassiopeia',
+    business_address:postal_code: '1288 XD'
+},
+{
+    id: '93',
+    business_name: 'Regulus',
+    business_address:postal_code: '671 CC'
+}
+</code></pre>
+
+<p>]
+```</p>
+
+<p>But we want to display the location of the business in Google Maps by using the postal code as the query.
+Normally we would want to actually update the data that&rsquo;s in the Solr server so there will be no need to modify the results from it. But what if we don&rsquo;t have access to the Solr server? What if its a remote server run by someone else? For that we will need to actually modify the results as they are returned.</p>
+
+<h4>Module File</h4>
+
+<p>Now were ready to create the <code>.module</code> file which will contain the code that will tap into the search api solr module. The search api solr search module already provides a hook that we can tap into to modify the search results. It&rsquo;s called the <code>search_api_solr_search_results_alter()</code>. This takes up 3 arguments, the first one is the <code>$results</code> which contains the current result set. As you can see its an argument that&rsquo;s passed by reference so we don&rsquo;t really have to return it. The second is the <code>$query</code>, we won&rsquo;t really use it in our custom module but its the variable that contains the current query. The third argument is the <code>$response</code>, this is the response object returned from Solr.</p>
+
+<p>In the code below we first have to check whether we are in the specific view in which we want to execute our script.
+In this case were checking if we are in the <code>q</code> view.
+Next we declare a variable called <code>$locations</code>, this will store the modified version of the results returned from the Solr server.
+Next we loop through the results and get the business name and the postal code.
+We then use the postal code to query the Google Geocoding API.
+After that, we simply convert the results returned from the Google Geocoding API to an array so we could extract
+the coordinates (latitude and longitude). The coordinates is what we ultimately need in order to display the location of the businesses in a Google Map.
+Finally we assign the modified data to the Drupal JavaScript object so that we could access it from the client-side.</p>
+
+<p>```php
+&lt;?php
+/<em>*
+ * Implements hook_search_api_solr_search_results_alter().
+ </em>/
+function searchapisolrmod_search_api_solr_search_results_alter(&amp;$results, $query, $response){</p>
+
+<p>  if($_GET[&lsquo;q&rsquo;] == &lsquo;q&rsquo;){ //only execute this script if we are in the q view</p>
+
+<pre><code>$locations = array();  
+$rest = $results['results'];
+
+if(!empty($rest)){  
+    foreach($rest as $r){
+
+        $place = $r['fields']['business_name'];
+
+        //encode the postal code to be used as a query for the geocoding api
+        $postal_code =  urlencode($r['fields']['business_address:postal_code']); 
+
+        $api = 'http://maps.googleapis.com/maps/api/geocode/json?address=' .  $postal_code . '&amp;sensor=false';
+        $api_results = file_get_contents($api); //get the results from the google geocoding api
+        $api_data = json_decode($api_results, true);
+
+        if($api_data['status'] == 'OK'){
+            $location = $api_data['results'][0]['geometry']['location'];
+
+            $locations[] = array(
+                'place' =&gt; $place,
+                'lat' =&gt; $location['lat'],
+                'lng' =&gt; $location['lng']
+            );  
+        }
+    }
+}
+
+$data = array(
+    'searchapisolrmod' =&gt; array( //namespacing is very important
+        'locations' =&gt; $locations, 
+        'results' =&gt; $rest //store the original result set that was returned
+    )
+);
+
+drupal_add_js($data, 'setting'); //add the data to the Drupal JavaScript object
+</code></pre>
+
+<p>  }
+}
+?>
+```</p>
+
+<h4>Accessing the data from the client-side</h4>
+
+<p>The modified results is now available from the client side via the <code>Drupal</code> object.
+You can make use of this data however you want.</p>
+
+<p><code>
+Drupal.settings.searchapisolrmod.results
+Drupal.settings.searchapisolrmod.locations
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Apache Solr]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/06/15/getting-started-with-solr/"/>
+    <updated>2013-06-15T12:35:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/06/15/getting-started-with-solr</id>
+    <content type="html"><![CDATA[<p>In this tutorial we&rsquo;ll be looking at Apache Solr.
+Apache Solr is a search server. Its features include blazing fast searches, faceted search, handling of files such as PDF and Word.</p>
+
+<!--More-->
+
+
+<h2>Installing Solr</h2>
+
+<p>If you&rsquo;re on Windows you can install Solr by getting the installer from <a href="http://bitnami.com/stacks">BitNami</a>.
+Just search for Solr, download the installer and install it on your machine.</p>
+
+<h2>Solr Manager</h2>
+
+<p>After the installation is complete you can now access the Solr Manager where you can Start, Stop or Restart the server.
+If its not started yet click on the start button.</p>
+
+<p><img src="/images/posts/getting_started_with_solr/solr_manager.PNG" alt="solr manager" /></p>
+
+<h2>Solr Admin</h2>
+
+<p>To test if Solr is working, access the Solr admin page from your browser. For me its at:</p>
+
+<p><code>
+http://localhost:8080/solr/#/
+</code></p>
+
+<p>The port depends on what port you have selected when you installed Solr.
+If you&rsquo;re using Virtual hosts you can also access the Solr admin page using it:</p>
+
+<p><code>
+http://my.dev:8080/solr
+</code></p>
+
+<p>The Solr admin page currently looks like this. I&rsquo;m running version 4.3.0. It might look a little bit different if you have installed a different version:</p>
+
+<p><img src="/images/posts/getting_started_with_solr/solr_admin.PNG" alt="solr admin" /></p>
+
+<p>There&rsquo;s not really much that you can do with the Solr admin page.
+The only parts that you might want to look at is the Logging and Core Selector.</p>
+
+<p>The logging is where you can find warnings and errors with regards to the whole runtime of the Server.
+The core selector is where you can select the collection that you want to manage.
+Upon installation Solr already creates a default collection called <code>collection1</code>.
+Any documents that you add will be automatically added to this collection.
+That said, you can think of collections as drawers in which you store your documents.
+In database terms they are like your database and the documents that you store on it are like the tables in a database.
+Throughout this tutorial we&rsquo;ll only be working with the <code>collection1</code> collection.</p>
+
+<h3>Overview</h3>
+
+<p>Once you have selected a collection you can see an overview of it by clicking on the overview tab:</p>
+
+<p><img src="/images/posts/getting_started_with_solr/overview.PNG" alt="collection overview" /></p>
+
+<p>Information like the date the collection was last modified, number of documents, maximum number of documents, deleted documents can be seen from this page.</p>
+
+<h3>Query</h3>
+
+<p>The query tab is where you can play with some queries to manipulate the current collection. The default query is the select query which simply returns results which matches your query.
+There&rsquo;s also the update query which is mainly used to update the contents of documents.</p>
+
+<p><blockquote><p>Note that when using the select query in Solr you don&rsquo;t usually specify the document in which the results that you&rsquo;re looking for is stored. Solr simply knows where to find what you&rsquo;re looking for without telling it where to find something.</p></blockquote></p>
+
+<p>To use the query builder you simply need to specify what you&rsquo;re looking for.</p>
+
+<p><img src="/images/posts/getting_started_with_solr/query_json.PNG" alt="query json" /></p>
+
+<p>Here are some of the parameters that you can specify:</p>
+
+<ul>
+<li><strong>request handler</strong> &ndash; the action that you want Solr to do. The most common ones are <code>select</code> and <code>update</code>.
+You can also create your own request handlers but that would be best discuss on another article.</li>
+<li><strong>q</strong> &ndash; your query. Its common format is:</li>
+</ul>
+
+
+<p><code>
+field name:"query"
+</code></p>
+
+<p>So imagine we have added a document into Solr which composed of book names and their authors. If you want to get all the books whose title begins with the word &lsquo;national&rsquo; then here&rsquo;s what your query would look like:</p>
+
+<p><code>
+q=book_title:"national*"
+</code></p>
+
+<ul>
+<li><strong>fq</strong> &ndash; short for filter query. If you want to filter the results returned by your query you can make use of this parameter. For example, if you want to select only the books which has a price within the range of 19 to 90 you do something like this:</li>
+</ul>
+
+
+<p><code>
+fq=price:[19 TO 90]
+</code></p>
+
+<ul>
+<li><strong>sort</strong> &ndash; sort is how you would like the results to be sorted. So if you want to sort the results by price in ascending order, that is books with lower price comes first and books with higher prices comes later. You do something like this:</li>
+</ul>
+
+
+<p><code>
+sort=price asc
+</code></p>
+
+<ul>
+<li><strong>fl</strong> &ndash; short for fields. This is the parameter where you can specify the fields that you want to return. So for example if you only want to return the book title and the price of the book you do something like:</li>
+</ul>
+
+
+<p><code>
+fl=book_title,price
+</code></p>
+
+<ul>
+<li><p><strong>wt</strong> &ndash; short for writer type, but that doesn&rsquo;t make any sense so we&rsquo;ll go by the name response type. This allows you to specify the way the results will be formatted. In solr you can have one of the following:</p>
+
+<ul>
+<li>json</li>
+<li>xml</li>
+<li>php</li>
+<li>ruby</li>
+<li>python</li>
+<li>csv</li>
+</ul>
+</li>
+</ul>
+
+
+<p>The default one used by Solr is <code>xml</code>. But the most commonly used is <code>json</code> since you can simply convert it to a data readable by php, ruby, python, javascript or probably any language that you can think of.</p>
+
+<h3>Schema</h3>
+
+<p>The schema tab is where the <code>schema.xml</code> file can be previewed in a nicely formatted way (with all the syntax highlighting goodness). The <code>schema.xml</code> file simply describes the fields for each collection. If you have worked with MySql database for a while this is like the <code>information_schema</code> database which shows you all the information you want to know about each of the databases, tables and fields in MySql.
+But for the <code>schema.xml</code> file it only contains information about a specific collection. So each collection have its own <code>schema.xml</code> file. The <code>schema.xml</code> file is stored in the following directory for <code>collection1</code>:</p>
+
+<p><code>
+C:\BitNami\solr-4.3.0-0\apache-solr\solr\collection1\schema.xml
+</code></p>
+
+<p>The <code>schema.xml</code> file contains a lot of information regarding the data stored in a collection. You can add new fields and field types into this file so that Solr will know what type of data the specific documents will store.
+Fields in Solr comes in 2 forms:</p>
+
+<ul>
+<li><strong>Fields</strong> &ndash; allows you to specify field names that will directly match what field names you include in the documents that you want to add to Solr. Here&rsquo;s how to define a field that will store book titles:</li>
+</ul>
+
+
+<p><code>xml
+&lt;field name="book_title" type="string" indexed="true"  stored="true"  multiValued="false" /&gt;
+</code></p>
+
+<p>Fields commonly has 5 attributes which you can specify:</p>
+
+<ul>
+<li><p><strong>name</strong> &ndash; the name that you want to give to the field. This would be the same as the naming conventions for every database system or programming language that you can think of. So numbers and symbols can&rsquo;t be used as the start of a field name. Only alphanumeric characters and underscores are allowed for the field name.</p></li>
+<li><p><strong>type</strong> &ndash; the type of data that the field will store. Common data types are: <code>float</code>, <code>long</code>, <code>short</code>, <code>double</code>, <code>string</code>, <code>date</code> and <code>text</code>.</p></li>
+<li><p><strong>indexed</strong> &ndash; can either have a value of <code>true</code> or <code>false</code>. If you do not want the specific field to be searched you can use <code>false</code>. Using <code>false</code> simply means that using the specific field in a query won&rsquo;t return anything since it can&rsquo;t be searched on.</p></li>
+<li><p><strong>stored</strong> &ndash; can either have a value of <code>true</code> or <code>false</code>. Use <code>false</code> if you do not want the field to be retrievable.</p></li>
+<li><p><strong>multivalued</strong> &ndash; can either have a value of <code>true</code> or <code>false</code>. You use <code>true</code> if the field contains more than one value. For example a tag for a specific blog post. A blog post can have many tags so the tag field should have its <code>multivalued</code> attribute set to <code>true</code>.</p></li>
+<li><p><strong>Dynamic Fields</strong> &ndash; allows you to specify a common data type, indexed, and stored value for fields which has a specific suffix. Here&rsquo;s how to define a dynamic field for fields which has integer and string data types:</p></li>
+</ul>
+
+
+<p><code>
+&lt;dynamicField name="*_i"  type="int"    indexed="true"  stored="true" /&gt;
+&lt;dynamicField name="*_s"  type="string"  indexed="true"  stored="true" /&gt;
+</code></p>
+
+<p>You can also add copy fields which are used for copying one document to another when a document is added in the Solr index. It can be used to index the same field in a different way or adding multiple fields to the same field for faster indexing. Copy fields has 2 attributes, the <code>source</code> and the <code>destination</code>. The <code>source</code> is the field which you want to add a copy field to. And the destination can either have a value of a data type or an existing field.</p>
+
+<p>Here&rsquo;s how to add a copy field into the <code>book_title</code> field to store a copy of the field with a data type of text:</p>
+
+<p><code>
+&lt;field name="book_title" type="string" indexed="true"  stored="true"  multiValued="false" /&gt;
+&lt;copyField source="book_title" dest="text"/&gt;
+</code></p>
+
+<p>Dynamic fields can also be used as the value for destination. So for example you have a field called <code>author</code> which has a data type of <code>text_general</code>. You add a copy field to it using the dynamic field which has a suffix of <code>_s</code>. So the value for destination would be the name of the field plus the suffix used in the dynamic field. The copy field would now be stored as a string since it will simply inherit the data type of the dynamic field:</p>
+
+<p><code>
+&lt;field name="author" type="text_general" indexed="true" stored="true" /&gt;
+&lt;dynamicField name="*_s"  type="string"  indexed="true"  stored="true" /&gt;
+&lt;copyField source="author" dest="author_s" /&gt;
+</code></p>
+
+<h2>Adding Documents</h2>
+
+<p>By default Solr doesn&rsquo;t have any documents that you can work on. You&rsquo;ll have to manually add them.
+There are 2 ways in which you can add documents. Either by using <code>post.sh</code> or <code>curl</code>.</p>
+
+<p>There are some sample documents stored in the following directory in Windows once you install Solr:</p>
+
+<p><code>
+C:\BitNami\solr-4.3.0-0\apache-solr\exampledocs
+</code></p>
+
+<p>Examine each of those files to see what&rsquo;s common with them. Solr expects a specific format in which the documents will be. For xml files it should adhere with this format:</p>
+
+<p>```
+<add></p>
+
+<pre><code>&lt;doc&gt;
+    &lt;field name="id"&gt;123&lt;/field&gt;
+    &lt;field name="book_title"&gt;Don't Make me think&lt;/field&gt;
+    &lt;field name="price"&gt;39&lt;/field&gt;
+&lt;/doc&gt;
+&lt;doc&gt;
+    ...
+&lt;/doc&gt;
+&lt;doc&gt;
+    ...
+&lt;/doc&gt;
+</code></pre>
+
+<p></add>
+```</p>
+
+<p>You can see from the markup above that you have to use <code>add</code> tags as a wrapper. This will tell Solr that the documents inside of it will be added to the index.
+And each row in that document will be wrapped in <code>doc</code> tags. Each field will be wrapped in <code>field</code> tags.
+Each field will have an attribute called <code>name</code> in which you specify the name of the field in which the value specified belongs.</p>
+
+<p><blockquote><p>Note that documents has a required field called id. Your document won&rsquo;t be indexed by Solr if it doesn&rsquo;t have an <code>id</code> field. This uniquely identifies the row. If you have examined the sample documents you will see that each of them has an id field. Also note that the fields that you used in the documents that you want to add to Solr has fields which are already added to the schema.xml file otherwise the document won&rsquo;t be added.</p></blockquote></p>
+
+<p>To add those documents into the Solr index open the command line and navigate to the directory where the documents are stored:</p>
+
+<p><code>
+cd c:\BitNami\solr-4.3.0-0\apache-solr\exampledocs
+</code></p>
+
+<p>Then run the following command to add all of the xml documents to the Solr index:</p>
+
+<p><code>
+post.sh *.xml
+</code></p>
+
+<p>If you want to add a specific xml file:</p>
+
+<p><code>
+post.sh books.xml
+</code></p>
+
+<p><blockquote><p>Note that only xml documents can be added using post.sh. You can try using the curl method if you want to add a json document or any other type of document to the solr index.</p></blockquote></p>
+
+<p>If you don&rsquo;t see any sort of errors once the command finished executing then you&rsquo;re good to go.
+If not then you might need to add the fields used in each of those documents in the <code>schema.xml</code> file which you can find in the following directory if you&rsquo;re on Windows:</p>
+
+<p><code>
+C:\BitNami\solr-4.3.0-0\apache-solr\solr\collection1\conf
+</code></p>
+
+<p>To add a field you simply add a line like this in your <code>schema.xml</code> file:</p>
+
+<p><code>
+&lt;field name="book_title" type="string" indexed="true"  stored="true"  multiValued="false" /&gt;
+</code></p>
+
+<p>This will tell Solr that the <code>book_title</code> field can be used in any of the documents that you will add to the Solr index.</p>
+
+<p><blockquote><p>Note that you have to stop the Solr service from running when you&rsquo;re editing the schema.xml file.<br/>Once you&rsquo;re done with the changes you can simply start the service again so that the changes that you have in the schema.xml file will be reflected to the current instance of the service.</p></blockquote></p>
+
+<h2>Manipulating the Data</h2>
+
+<p>You can access the data from Solr server by going to the browser and visiting the following address:</p>
+
+<p><code>
+http://localhost:8080/solr/select?q=*:*
+</code></p>
+
+<p>The host will normally be <code>localhost</code> if you&rsquo;re using Solr on your machine. The port depends on the port that you selected when you installed Solr. I&rsquo;ve already discussed earlier how you can query the Solr server. So what I&rsquo;ll discuss in this section is how to access and manipulate the data coming from Solr using PHP and JavaScript.</p>
+
+<h3>Getting Data using JavaScript</h3>
+
+<p>You can use an ajax request to request for the data from the Solr server. The easiest way to perform an ajax request is by using the jQuery library. In the example below were specifying the value for the request url to be the same as the url that were using to access the data directly from the browser. Were also specifying the type as <code>GET</code>, this means that we will perform a <code>GET</code> request to the server. The value used for the <code>dataType</code> is <code>jsonp</code> since the Solr server is running on a different port from the apache server on the local machine.</p>
+
+<p>```javascript
+$.ajax({</p>
+
+<pre><code>url: 'http://localhost:8080/solr/select?q=*:*',
+type: 'GET',
+dataType: 'jsonp',
+success: function(response){
+    //do some magic with the data
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Getting Data using PHP</h3>
+
+<p>You can get the data using PHP by using the <code>file_get_contents</code> method. Then you can convert the json string returned using the <code>json_decode</code> method. After that you can just loop through the data like a normal PHP array.</p>
+
+<p><code>php
+&lt;?php
+$url = 'http://localhost:8080/solr/select?q=*:*';
+$contents = file_get_contents($url);
+$data = json_decode($contents, true);
+?&gt;
+</code></p>
+
+<h3>Updating the Data using PHP</h3>
+
+<p>You can update the data in Solr by updating the contents of the document that you want to update and then re-indexing it again using the <code>post.sh</code> utility. But you can also update the documents using PHP.</p>
+
+<p>First get the data that you want to update:</p>
+
+<p><code>php
+&lt;?php
+$url = 'http://localhost:8080/solr/select?q=*:*';
+$contents = file_get_contents($url);
+$data = json_decode($contents, true);
+$docs = $data['response']['docs'];
+?&gt;
+</code></p>
+
+<p>Next do the updates. In the example below were adding a new field called course into the document. We also have to unset the version since Solr will be the one to update this attribute. Then we simply copy the current row into the <code>$new_docs</code> variable:</p>
+
+<p>```
+&lt;?php
+$new_docs = array();
+foreach($docs as $d){</p>
+
+<pre><code>$id = $d['id'];
+$course = get_course($id);
+$d['course'] = $course;
+unset($d['_version_']);
+
+$new_docs[] = $d;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Then we use <code>curl</code> to update the document in Solr. Solr allows you to update documents using the <code>update</code> path and the format in which the data passed is formatted. In this case its in json format.</p>
+
+<p>```
+&lt;?php
+$json_doc = json_encode($new_docs); //convert the array to a json string</p>
+
+<p>$curl = curl_init();</p>
+
+<p>curl_setopt_array($curl, array(</p>
+
+<pre><code>CURLOPT_RETURNTRANSFER =&gt; 1, //curl will return something instead of directly outputting
+CURLOPT_HTTPHEADER =&gt; array("Content-type:application/json"), //specify content type as json
+CURLOPT_URL =&gt; 'http://localhost:8080/solr/update/json', //the request url
+CURLOPT_POST =&gt; 1, //set the request type to POST
+CURLOPT_POSTFIELDS =&gt; $json_doc, //the data that we want to pass in
+</code></pre>
+
+<p>));</p>
+
+<p>curl_exec($curl); //execute, you can assign a variable to this to check if the request suceeded or not
+curl_close($curl);
+?>
+```</p>
+
+<p>The data has already been updated but it hasn&rsquo;t been committed yet. So we have to make a separate request to commit the recent changes. That is by using the parameter <code>commit</code> and specifying its value as <code>true</code>.</p>
+
+<p>```
+&lt;?php
+//commit the changes
+$curl = curl_init();
+curl_setopt_array($curl, array(</p>
+
+<pre><code>CURLOPT_URL =&gt; 'http://localhost:8080/solr/update?commit=true'
+</code></pre>
+
+<p>));</p>
+
+<p>curl_exec($curl);
+?>
+```</p>
+
+<p>Once you check the results returned from the browser you&rsquo;ll see that the data has already been updated.</p>
+
+<p><code>
+http://localhost:8080/solr/select?q=*:*
+</code></p>
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it! We have only scratched the surface in this introduction to Solr.
+Be sure to check out the resources below if you want to learn more about Solr.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://bitnami.com/stacks">BitNami</a></li>
+<li><a href="http://wiki.apache.org/solr/FrontPage">SolrWiki</a></li>
+<li><a href="http://www.solrtutorial.com/">SolrTutorial</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

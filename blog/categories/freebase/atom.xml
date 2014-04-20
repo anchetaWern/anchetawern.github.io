@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: freebase | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/freebase/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Freebase API]]></title>
+    <link href="http://anchetaWern.github.io/blog/2013/02/11/getting-started-with-freebase-api/"/>
+    <updated>2013-02-11T19:55:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2013/02/11/getting-started-with-freebase-api</id>
+    <content type="html"><![CDATA[<p>In this blog post I&rsquo;m going to show you the basics of using the Freebase API.</p>
+
+<h3>What is Freebase?</h3>
+
+<p>Freebase is a collection of data from different sources.
+So its basically like an encyclopedia in which you can pull data from.</p>
+
+<p>Here&rsquo;s a diagram that shows exactly what type of data you can fetch from Freebase:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/Freebase-Domains.jpg" alt="freebase diagram" /></p>
+
+<p>You can also watch this video Introducing the knowledge graph:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/mmQl6VGvX-c "></iframe></div></p>
+
+<!--More-->
+
+
+<h3>Playing with the API</h3>
+
+<p>Most API&rsquo;s requires an API Key so that you could access its data but Freebase is different.
+You have the choice whether or not to register an API key. If you just want to try things out
+you can simply access the data from Freebase like this:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=nirvana&amp;indent=true
+</code></p>
+
+<p>There are 2 parameters used in this url:</p>
+
+<ul>
+<li>query &ndash; what you want to search.</li>
+<li>indent &ndash; can either be true or false, specify the value of true if you want to return a formatted json string so that you can easily read it.</li>
+</ul>
+
+
+<h4>Specifying Language</h4>
+
+<p>You can also specify the language by using the <code>lang</code> parameter.
+If you specified a non-supported language the API will also tell you:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/unsupported_language.jpg" alt="unsupported language" /></p>
+
+<h4>Filters</h4>
+
+<p>But the true power of this API lies on the filters that you can use to specify what is exactly the type
+of data that you&rsquo;re looking for. For example you want to be able to find music that has the name &ldquo;Robot&rdquo; on it:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=robot&amp;indent=true&amp;filter=(all%20type:music)
+</code></p>
+
+<p>The query above would return:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/robot_music.jpg" alt="robot music" /></p>
+
+<p>Another example would be if you&rsquo;re looking for &ldquo;One piece&rdquo; not the swimsuit but the <a href="http://en.wikipedia.org/wiki/One_Piece">manga/anime</a>:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=one%20piece&amp;indent=true&amp;filter=(all%20type:animation)
+</code></p>
+
+<p>And as expected it returns only the data which refers to the &ldquo;One Piece&rdquo; anime/manga:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/one_piece.jpg" alt="one piece anime" /></p>
+
+<h3>Read Services</h3>
+
+<p>The Freebase API is actually composed of several services which you can use separately or in tandem with other services. We will go over some of these services later on and implement it using PHP.</p>
+
+<ul>
+<li>Search Service</li>
+<li>MQL Read Service</li>
+<li>Topic API</li>
+<li>RDF API</li>
+<li>Text Service</li>
+<li>Image Service</li>
+<li>Freebase Suggest</li>
+</ul>
+
+
+<h3>Getting an API Key</h3>
+
+<p>Once you&rsquo;ve played around the Freebase API a bit you might want to register an API key.
+You can register from the <a href="https://code.google.com/apis/console/">Google API Console</a>.
+It&rsquo;s free to register but when your application gets more and more users and it exceeds the limit for the free service Google will have you pay for the service.</p>
+
+<p>If you haven&rsquo;t created a project with the Google console before you might need to create a new project.</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/new_project.jpg" alt="new project" /></p>
+
+<p>Once that&rsquo;s done look for the Freebase API in the services tab and then enable it by turning it on:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/freebase.jpg" alt="freebase" /></p>
+
+<p>Accept the service agreement and then click on the API Access tab:</p>
+
+<p><img src="/images/posts/getting_started_with_freebase/api_key.jpg" alt="api key" /></p>
+
+<p>All you have to do now is copy the API key and use it on your requests by specifying a key parameter.
+Using our previous query, your query will now look like this with the api key specified:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=one%20piece&amp;indent=true&amp;filter=(all%20type:animation)&amp;key=xyz
+</code></p>
+
+<h3>Freebase with PHP</h3>
+
+<p>Now that we&rsquo;ve played around with the Freebase API in the browser its time to access it using PHP.</p>
+
+<p>First were going to build a simple class that will query the Freebase API for us.</p>
+
+<p>```php
+&lt;?php
+class Freebase{</p>
+
+<p>}
+?><br/>
+```</p>
+
+<p>Create a new private variable that will store the API key that we got from the Google console earlier.</p>
+
+<p><code>
+private $api_key = 'xyz';
+</code></p>
+
+<h4>Search Service</h4>
+
+<p>Like I mentioned earlier we will go through some of the read services that the Freebase API offers.
+So were going to create a method which will utilize these services in our class.</p>
+
+<p>The service that we have gone over earlier was the Search service which simply allows you to search based on keywords.</p>
+
+<p>Create a new method and call it search this will utilize the search service.
+Here we have 1 required parameter ($query) and 5 optional parameters.
+You can see a full list of the parameters that you can specify in the wiki for the <a href="http://wiki.freebase.com/wiki/ApiSearch">Search API</a>.</p>
+
+<p>As you can see from the code below
+were just building the URL from the arguments that we will supply later on when we call the method.</p>
+
+<p>`&ldquo;
+&lt;?php
+public function search($query, $filter = &rdquo;, $start = 0, $limit = 10, $exact = &lsquo;false&rsquo;){</p>
+
+<pre><code>if(!empty($query)){
+    $query = urlencode($query);
+    $url    = 'https://www.googleapis.com/freebase/v1/search?query='. $query;
+    $url .= '&amp;filter=(' . urlencode($filter) . ')';
+    $url .= '&amp;start=' . $start;
+    $url .= '&amp;limit=' . $limit;
+    $url .= '&amp;exact=' . $exact;
+    $url .= '&amp;key=' . $this-&gt;api_key;
+
+    return json_decode(file_get_contents($url), true)['result'];
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>The important thing to note here is that the query should be <a href="http://php.net/manual/en/function.urlencode.php">url encoded</a> otherwise your query won&rsquo;t work properly if for example the query has spaces in it or some special characters.</p>
+
+<p>You can see url encoding in action when you input your query manually in the address bar of the browser.
+If you manually input our query earlier it will look like this before you type in enter:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=one piece&amp;indent=true&amp;filter=(all type:animation)&amp;key=xyz
+</code></p>
+
+<p>But once you press on enter all those spaces will be replaced with <code>%20</code> or <code>+</code>:</p>
+
+<p><code>
+https://www.googleapis.com/freebase/v1/search?query=one%20piece&amp;indent=true&amp;filter=(all%20type:animation)&amp;key=xyz
+</code></p>
+
+<p>Here&rsquo;s a <a href="http://www.w3schools.com/tags/ref_urlencode.asp">url encoding reference</a> from W3Schools.</p>
+
+<p>The main meat of all the methods that we will be creating
+for this class is the actual fetching of the data from the Freebase API.
+We do the fetching by using a method called <code>file_get_contents</code> which takes a <code>url</code> as an argument and returns the contents (both html, javascript and text) of the page referenced by the url that you supplied.</p>
+
+<p>But do note that <code>file_get_contents</code> doesn&rsquo;t work with every site or every API out there.
+So in the case it doesn&rsquo;t work then you can use CURL instead.
+There&rsquo;s a very gentle introduction on <a href="http://codular.com/curl-with-php">how to perform cURL request using PHP</a> at codular.</p>
+
+<p>Also note that <code>file_get_contents</code> returns a warning if the content that you&rsquo;re requesting doesn&rsquo;t exist because of an HTTP Error or the API simply didn&rsquo;t find the data that you&rsquo;re requesting for.
+In those cases you might want to include an <code>@</code> sign before the actual method name like <code>@file_get_contents</code> that way it wouldn&rsquo;t return a warning even if nothing is returned.</p>
+
+<p>Lastly we use the <code>json_decode</code> method to convert the json string to a PHP array which we can easily manipulate or loop through.</p>
+
+<h4>Image Service</h4>
+
+<p>There&rsquo;s also the Image Service which simply returns an image base on the entity ID.
+The entity ID can be a string or a number representing the entity.
+But in my experience I notice that this service doesn&rsquo;t generalize if you query for something like &lsquo;naruto&rsquo;, &lsquo;ichigo&rsquo; or &lsquo;gundam&rsquo;. It can only return an image for a certain entity that is globally known like the following people or works:</p>
+
+<ul>
+<li>vincent_van_gogh</li>
+<li>pablo_picasso</li>
+<li>mona_lisa</li>
+<li>the_scream</li>
+<li>jose_rizal</li>
+<li>andres_bonifacio</li>
+<li>leonardo_da_vinci</li>
+</ul>
+
+
+<p>For the others which aren&rsquo;t globally known or entities which didn&rsquo;t deserve to have an actual index for the image service you can use the search service to get the entity ID and then use that entity ID to query the image service.
+We&rsquo;ll go through that in a minute.</p>
+
+<p>For now let&rsquo;s look at the method for fetching image from the image service.
+We have 3 parameters, 1 required and 2 optional.</p>
+
+<p>There&rsquo;s not really much parameters that you can specify for the image service, be sure to check out the wiki for the <a href="http://wiki.freebase.com/wiki/ApiImage">image service</a> to learn more.</p>
+
+<p>The first parameter is the <code>entity_id</code> which for globally known entities can be just words separated by underscores like we saw earlier.
+As you can see were not actually using the <code>file_get_contents</code> method here since we only need the url for the image we only return the url itself.</p>
+
+<p>```
+&lt;?php
+public function image($entity_id, $max_width = 150, $max_height = 150){</p>
+
+<pre><code>if(!empty($entity_id)){
+    $url = 'https://usercontent.googleapis.com/freebase/v1/image' . $entity_id;
+    $url .= '?maxwidth=' . $max_width;
+    $url .= '&amp;maxheight=' . $max_height;
+    $url .= '&amp;key=' . $this-&gt;api_key;
+
+    return $url;        
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Text Service</h4>
+
+<p>The text service is different from the image service in that the
+image service actually accepts the title or name of well-known entities as a value for the entity ID as well as the ID representing the entity itself.
+But for the text service we can only utilize it once we&rsquo;ve
+called the search service which returns the entity ID that we need.</p>
+
+<p>The method has also a  <code>max_length</code> parameter which is simply used to specify the maximum length of the text that will be returned. <code>0</code> being no limit so it basically returns everything it can return.</p>
+
+<p>```
+&lt;?php
+public function text($entity_id, $max_length = &lsquo;0&rsquo;){</p>
+
+<pre><code>if(!empty($entity_id)){
+    $url    = 'https://www.googleapis.com/freebase/v1/text/' . $entity_id;
+    $url .= '?maxlength=' . $max_length;
+    $url .= '&amp;key=' . $this-&gt;api_key;
+
+    return json_decode(file_get_contents($url), true)['result'];        
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h4>Topic API</h4>
+
+<p>Lastly there&rsquo;s the topic API. There&rsquo;s actually 3 more services in the Freebase API which we haven&rsquo;t gone over but I&rsquo;ll leave those for another day. The topic API just like the text service and image service requires an entity ID for the request.</p>
+
+<p>```
+&lt;?php
+public function topic($entity_id){</p>
+
+<pre><code>if(!empty($entity_id)){
+    $url = 'https://www.googleapis.com/freebase/v1/topic' . $entity_id;
+    return json_decode(file_get_contents($url), true);      
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Calling the Methods</h3>
+
+<p>Now that were done creating the class its now time to actually call the methods
+to produce some output. Create a new file and then import the class that we created earlier.
+Also create an object of that class so that we can use it to call the methods.</p>
+
+<p>What the code below does is just using the search method as the base data source
+and then the image and text methods to fetch the image and a description for each entity
+returned from our main search.</p>
+
+<p>```
+&lt;?php
+require_once(&lsquo;class.freebase.php&rsquo;);</p>
+
+<p>$freebase = new Freebase();
+$result = $freebase->search(&lsquo;Dragon ball z&rsquo;, &lsquo;all type:manga&rsquo;);</p>
+
+<p>foreach($result as $entity){</p>
+
+<pre><code>$id = $entity['mid'];
+$name = $entity['name'];
+
+$image = $freebase-&gt;image($id);
+$text = $freebase-&gt;text($id);
+</code></pre>
+
+<p>?>
+<li></p>
+
+<pre><code>&lt;h3&gt;&lt;?php echo $name; ?&gt;&lt;/h3&gt;
+&lt;img src="&lt;?php echo $image; ?&gt;" alt="&lt;?php echo $name; ?&gt;"&gt;
+&lt;p&gt;
+&lt;?php echo $text; ?&gt;    
+&lt;/p&gt;    
+</code></pre>
+
+<p></li>
+&lt;?php
+}
+?>
+```</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://wiki.freebase.com/wiki/ApiSearch">Search Service</a></li>
+<li><a href="http://wiki.freebase.com/wiki/ApiImage">Image Service</a></li>
+<li><a href="http://wiki.freebase.com/wiki/ApiText">Text Service</a></li>
+<li><a href="http://wiki.freebase.com/wiki/Topic_API">Topic API</a></li>
+<li><a href="http://wiki.freebase.com/wiki/Search_Cookbook">Search Cookbook</a></li>
+<li><a href="http://www.w3schools.com/tags/ref_urlencode.asp">URL Encoding Reference</a></li>
+<li><a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_freebase_api.7z">Sample Application Source Code</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

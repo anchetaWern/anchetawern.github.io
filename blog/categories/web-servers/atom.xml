@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: web-servers | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/web-servers/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Web Servers]]></title>
+    <link href="http://anchetaWern.github.io/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers/"/>
+    <updated>2014-03-01T08:35:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers</id>
+    <content type="html"><![CDATA[<p>In this part four of the series A Whirlwind Tour of Web Developer Tools I&rsquo;m going to walk you through web servers. Web servers are computers that commonly delivers web pages. But when talking about web development web server refers to the software used for serving up the web pages. In this blog post I&rsquo;m going to talk about 4 web servers that you can use in serving up your web projects.</p>
+
+<!--more-->
+
+
+<h3>Python Simple HTTP Server</h3>
+
+<p>First on the list is the simple http server that is built-in to python. So in order to use this you would need to have Python installed. Python already comes pre-installed in Ubuntu and other Linux distributions so you already have the simple http server by default. For Mac OS X its also pre-installed. But for Windows you would need to get an installer from the <a href="http://python.org/download/">Python website</a>.
+You can use it by opening up a terminal from any directory that you want to serve and execute the following command:</p>
+
+<p><code>
+python -m SimpleHTTPServer
+</code></p>
+
+<p>To test it out you can create a new <code>index.html</code> file on the directory where you executed the command above and access <a href="http://localhost:8000">http://localhost:8000</a> from your browser.</p>
+
+<p>Note that the simple http server will simply list out all the files in that directory if you do not have an <code>index.html</code> file:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/simplehttpserver.png" alt="simple http server" /></p>
+
+<p>You can also implement your own web server by creating a new python file (<code>server.py</code>) and putting the following code:</p>
+
+<p>```python
+import SimpleHTTPServer
+import SocketServer</p>
+
+<p>PORT = 1234</p>
+
+<p>Handler = SimpleHTTPServer.SimpleHTTPRequestHandler</p>
+
+<p>httpd = SocketServer.TCPServer((&ldquo;&rdquo;, PORT), Handler)</p>
+
+<p>print &ldquo;serving at port&rdquo;, PORT
+httpd.serve_forever()
+<code>``
+You can then execute the</code>server.py` file from the terminal to start the server. Note that the file must be inside the same directory that you want to serve.</p>
+
+<h4>PHP Server</h4>
+
+<p>There is also the built-in server for PHP version 5.4.0 and above. This comes with PHP so you need to install it first before you can start using it. You can install PHP by executing the following command from your terminal</p>
+
+<p><code>
+sudo apt-get install php5
+</code></p>
+
+<p>Once you&rsquo;re done installing it you can now start using the server by navigating to the directory that you want to serve and executing the following command from the terminal:</p>
+
+<p><code>
+php -S localhost:8000
+</code></p>
+
+<p>This will serve up the current directory under port 8000 of your local machine so to access it from the browser you can open up the following url: <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+
+<p>Note that if you do not have a default file (either <code>index.html</code> or <code>index.php</code> file) in the directory that you are serving the PHP server is going to return a 404 not found:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/php-server.png" alt="php-server" /></p>
+
+<p>The advantage of using the PHP server over simple http server is that you can actually create some php files in the directory that you are serving, write some code in it and the server will also be able to interpret it for you.</p>
+
+<h3>Apache</h3>
+
+<p>Next is the Apache HTTP Server from the Apache Foundation. You can install it by executing the following command from the terminal:</p>
+
+<p><code>
+sudo apt-get install apache2
+sudo /etc/init.d/apache2 restart
+</code></p>
+
+<p>For Windows users there is this thing called <a href="http://www.wampserver.com/en/">WAMP</a> which you can install. Apache is packaged with it along with MySQL and PHP so you can start playing with it immediately without doing a lot of configuration. You can also have them installed separately but you will have to do some configuration before you can start playing with it. I&rsquo;ve written a tutorial about it before: <a href="http://kyokasuigetsu25.wordpress.com/2012/04/12/how-to-install-and-configure-apache-php-and-mysql/">How to install and configure apache, php, and mysql</a> so check that out if you do not want to use packaged versions.</p>
+
+<p>For MAC OS there&rsquo;s <a href="http://www.mamp.info/en/index.html">MAMP</a>.</p>
+
+<p>There&rsquo;s also <a href="http://www.apachefriends.org/index.html">XAMPP</a> which is a cross-platform solution for easily setting up Apache, PHP, and MySQL on your machine.</p>
+
+<p>If you&rsquo;re a beginner I definitely recommend using either WAMP, MAMP or XAMPP as it can be sometimes frustrating to configure everything on your own.</p>
+
+<p>Ok back to the main topic of this section which is Apache. If you&rsquo;re on Linux and you have installed Apache separately you might want to <a href="http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">configure the default web directory</a> since the default web directory that is used by Apache isn&rsquo;t writeable if you do not access the file explorer as a super user. This becomes a problem when accessing the web directory from the browser as Apache throws you a forbidden error. If you haven&rsquo;t catch it the first time you can go ahead and use the following tutorial: <a href="[configure%20the%20default%20web%20directory](http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/">fixing the forbidden error in Apache</a>) to properly configure Apache. Once you&rsquo;re done with that you can go back to this blog post.</p>
+
+<p>After configuring the default web directory used by Apache you can now put some test files on the web directory. Something like <code>index.html</code> and put the following contents:</p>
+
+<p>```html</p>
+
+<h1>Hello World from Apache!</h1>
+
+
+<p><code>``
+Now if you go to [http://localhost](http://localhost) you can now see the</code>index.html` being served by Apache. Apache serves everything on port 80 by default so we didn&rsquo;t have to add the port when we access it from the browser. This is because the browser knows by default that web pages are served at port 80. If you already have PHP installed you can also serve php files. Apache already knows how to serve those by default so there&rsquo;s no need for further configuration.</p>
+
+<h3>Nginx</h3>
+
+<p>Lastly there&rsquo;s Nginx one of the HTTP servers that&rsquo;s gaining market share lately. You can install it by executing the following command from your terminal:</p>
+
+<p><code>
+sudo apt-get install nginx
+</code></p>
+
+<p>If you&rsquo;re on Windows there&rsquo;s a guide from the Nginx website on <a href="http://nginx.org/en/docs/windows.html">how to install Nginx on Windows</a>.</p>
+
+<p>For Mac you can install it via homebrew:</p>
+
+<p><code>
+brew install nginx
+</code></p>
+
+<p>Once Nginx is installed you can run it by executing <code>sudo nginx</code>. Note that if you already have Apache installed you would have a problem starting Nginx up. Most likely you would get an error similar to the one below:</p>
+
+<p><img src="/images/posts/whirlwind_tour_webservers/nginx-port.png" alt="nginx port error" /></p>
+
+<p>This is Nginx telling you that port 80 is already in use. We learned earlier that Apache uses port 80 by default so running another server which serves web pages at port 80 will lead to that issue.
+What we need to do is to configure Nginx to listen to another port. And you can do that by navigating to the following path:</p>
+
+<p><code>
+cd /etc/nginx/sites-available
+</code></p>
+
+<p>Then open up the <code>default</code> file:</p>
+
+<p><code>
+sudo gedit default
+</code></p>
+
+<p>From there scroll down to the line which is similar to the following:</p>
+
+<p>```
+server {</p>
+
+<pre><code>listen 80 default_server;
+listen [::]:80 default_server ipv6only=on;
+
+root /usr/share/nginx/html;
+index index.html index.htm;
+</code></pre>
+
+<p>```</p>
+
+<p>There are 2 things that you can do from here. First replace the 2 instances of <code>80</code> which is the default port used by Nginx to something like <code>6789</code>. Then you can also change the default web directory. Nginx uses <code>/usr/share/nginx/html</code> as its default, you can change it to something like <code>/home/your_user_name/nginx_web_files</code>. After updating the <code>default</code> file it should now look like this:</p>
+
+<p>```
+server {</p>
+
+<pre><code>listen 6789 default_server;
+listen [::]:6789 default_server ipv6only=on;
+
+root /home/your_user_name/nginx_web_files;
+index index.html index.htm;
+</code></pre>
+
+<p>```</p>
+
+<p>After that save the file and restart Nginx using the following command:</p>
+
+<p><code>
+sudo nginx -s reload
+</code></p>
+
+<p>You can now go ahead and create a sample <code>index.html</code> file in your chosen web directory and put the following contents:</p>
+
+<p>```html</p>
+
+<h1>hello world from nginx!</h1>
+
+
+<p>```</p>
+
+<p>To access it from your browser go to <a href="http://localhost:6789">http://localhost:6789</a>.</p>
+
+<h4>Configuring PHP in Nginx</h4>
+
+<p>Not unlike Apache, Nginx doesn&rsquo;t work with PHP by default so if you try serving up a PHP file Nginx won&rsquo;t understand it and it will give you a bad gateway error.</p>
+
+<p>In order to make PHP work with Nginx you first have to install the <code>php5-fpm</code> package via the terminal:</p>
+
+<p><code>
+sudo apt-get install php5-fpm
+</code></p>
+
+<p>Once that&rsquo;s done you can now update the <code>default</code> file under the <code>/etc/nginx/sites-availble</code> directory.</p>
+
+<p><code>
+sudo gedit default
+</code></p>
+
+<p>Scroll down to the line where you have something similar to the following:</p>
+
+<p>```</p>
+
+<h1>location ~ .php$ {</h1>
+
+<h1>fastcgi_split_path_info ^(.+.php)(/.+)$;</h1>
+
+<h1>NOTE: You should have &ldquo;cgi.fix_pathinfo = 0;&rdquo; in php.ini</h1>
+
+<p>#</p>
+
+<h1># With php5-cgi alone:</h1>
+
+<h1>fastcgi_pass 127.0.0.1:9000;</h1>
+
+<h1># With php5-fpm:</h1>
+
+<h1>#fastcgi_pass unix:/var/run/php5-fpm.sock;</h1>
+
+<h1>fastcgi_index index.php;</h1>
+
+<h1>include fastcgi_params;</h1>
+
+<h1>}</h1>
+
+<p>```</p>
+
+<p>Then uncomment the lines that are necessary to make PHP work:</p>
+
+<p>```
+location ~ .php$ {
+fastcgi_split_path_info ^(.+.php)(/.+)$;</p>
+
+<h1>NOTE: You should have &ldquo;cgi.fix_pathinfo = 0;&rdquo; in php.ini</h1>
+
+<p>#</p>
+
+<h1># With php5-cgi alone:</h1>
+
+<pre><code>fastcgi_pass 127.0.0.1:9000;
+</code></pre>
+
+<h1># With php5-fpm:</h1>
+
+<h1>#fastcgi_pass unix:/var/run/php5-fpm.sock;</h1>
+
+<pre><code>fastcgi_index index.php;
+include fastcgi_params;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Save the changes and restart php5-fpm and Nginx:</p>
+
+<p><code>
+sudo service php5-fpm restart
+nginx -s reload
+</code></p>
+
+<p>You can now request a PHP file from Nginx.</p>
+
+<h3>Conclusion</h3>
+
+<p>You&rsquo;ve learned how to serve up web pages using the following http servers:</p>
+
+<ul>
+<li>SimpleHTTPServer</li>
+<li>PHP Server</li>
+<li>Apache HTTP Server</li>
+<li>Nginx</li>
+</ul>
+
+
+<p>Web Servers are flexible by default. They can serve up different types of content and they can also serve up interpreted language such as PHP. You can pretty much live with the just the defaults but if your web project is something that&rsquo;s used by many people across the world then its important that you configure your web server to accommodate the needs of every user. And that is to be able to access your website fast and securely.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://docs.python.org/2/library/simplehttpserver.html">Simple HTTP Server</a></li>
+<li><a href="http://www.php.net/manual/en/features.commandline.webserver.php">PHP Built-in Web Server</a></li>
+<li><a href="http://httpd.apache.org/docs/">Apache HTTP Server</a></li>
+<li><a href="http://nginx.org/en/docs/">Nginx</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

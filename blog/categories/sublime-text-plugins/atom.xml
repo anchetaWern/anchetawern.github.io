@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sublime-text plugins | Wern Ancheta]]></title>
+  <link href="http://anchetaWern.github.io/blog/categories/sublime-text-plugins/atom.xml" rel="self"/>
+  <link href="http://anchetaWern.github.io/"/>
+  <updated>2014-03-30T09:02:59+08:00</updated>
+  <id>http://anchetaWern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Playing with Emmet]]></title>
+    <link href="http://anchetaWern.github.io/blog/2012/11/24/playing-with-emmet/"/>
+    <updated>2012-11-24T10:57:00+08:00</updated>
+    <id>http://anchetaWern.github.io/blog/2012/11/24/playing-with-emmet</id>
+    <content type="html"><![CDATA[<p>The next generation ZenCoding has been released recently so I tried to play with it as soon as I had the time.
+Just to give a bit of a background ZenCoding is a plugin for most text-editors that is used for faster generation
+of html and css code. Emmet is like the next level of it, smarter and more powerful.</p>
+
+<p>You can install Emmet through the <a href="http://wbond.net/sublime_packages/package_control">Sublime Text 2 package manager</a>
+which isn&rsquo;t included in Sublime text by default at the time of writing of this blog post.</p>
+
+<p>I&rsquo;m on Windows so I had to press <code>ctrl+shift+p</code> on the keyboard to bring out the command pallete then search for <code>install</code> then press <code>enter</code>
+which loads the sublime text plugins. Once that&rsquo;s done go ahead and hit <code>ctrl+shift+p</code> again then press <code>enter</code>
+which then brings out the packages that are currently on package control. Search for <code>emmet</code> remember to uninstall <code>Zen Coding</code> before trying to use
+Emmet because it will most likely have some conflicts with emmet.
+To uninstall ZenCoding just go to the <code>Data\Packages</code> directory in sublime and look for the zencoding folder then delete it.</p>
+
+<p>Once that&rsquo;s done were ready to play with Emmet.</p>
+
+<p>If you&rsquo;re familiar with ZenCoding and CSS selectors there&rsquo;s pretty much Zero learning curve when using Emmet
+because the syntax is almost the same.</p>
+
+<h4>Syntax</h4>
+
+<p>```javascript
+.dog //can expand to any element with the class of dog</p>
+
+<h1>cat //can expand to any element with the id of cat depending on context</h1>
+
+<p>p.imaparagraph //expands to: <p class="imaparagraph"></p></p>
+
+<p>p{text inside paragraph} //expands to: <p>text inside paragraph</p>
+```</p>
+
+<h4>Tag Names</h4>
+
+<p>I&rsquo;ve noticed that Emmet is smarter than ZenCoding (or maybe I just haven&rsquo;t noticed this while using ZenCoding)
+When expanding an abbreviation which doesn&rsquo;t specify the element to be used Emmet does some magic in
+determining which element should be used by checking out the elements inside the block where its written.
+For example if the sibling that came before it is a div then its also going to expand as a div:</p>
+
+<p>```html
+ <body></p>
+
+<pre><code>&lt;div class="row"&gt;
+&lt;/div&gt;
+#imadiv //expands to: &lt;div id="imadiv"&gt;&lt;/div&gt;
+</code></pre>
+
+<p> </body>
+```</p>
+
+<p>But when the abbreviation is inside a <code>&lt;ul&gt;</code> element it simply uses the <code>&lt;li&gt;</code> tag:</p>
+
+<p>```
+  <ul></p>
+
+<pre><code>&lt;li&gt;&lt;/li&gt;
+.what_am_i //expands to: &lt;li class="what_am_i"&gt;&lt;/li&gt;
+</code></pre>
+
+<p>  </ul>
+```</p>
+
+<p>The default element in which it expands to if it can&rsquo;t determine which element should be used is either <code>&lt;span&gt;</code> or <code>&lt;div&gt;</code></p>
+
+<h4>Abbreviations</h4>
+
+<p>Checkout the <code>snippets.json</code> file for the abbreviations and their corresponding values:</p>
+
+<p>```
+&ldquo;abbreviations&rdquo;: {</p>
+
+<pre><code>"!": "html:5",
+"a": "&lt;a href=\"\"&gt;",
+"a:link": "&lt;a href=\"http://|\"&gt;",
+"a:mail": "&lt;a href=\"mailto:|\"&gt;",
+"abbr": "&lt;abbr title=\"\"&gt;",
+"acronym": "&lt;acronym title=\"\"&gt;",
+"base": "&lt;base href=\"\" /&gt;",
+"bdo": "&lt;bdo dir=\"\"&gt;",
+"bdo:r": "&lt;bdo dir=\"rtl\"&gt;",
+"bdo:l": "&lt;bdo dir=\"ltr\"&gt;",
+"link": "&lt;link rel=\"stylesheet\" href=\"\" /&gt;",
+"link:css": "&lt;link rel=\"stylesheet\" href=\"${1:style}.css\" media=\"all\" /&gt;",
+"link:print": "&lt;link rel=\"stylesheet\" href=\"${1:print}.css\" media=\"print\" /&gt;",
+"link:favicon": "&lt;link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"${1:favicon.ico}\" /&gt;",
+"link:touch": "&lt;link rel=\"apple-touch-icon\" href=\"${1:favicon.png}\" /&gt;",
+"link:rss": "&lt;link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"${1:rss.xml}\" /&gt;",
+"link:atom": "&lt;link rel=\"alternate\" type=\"application/atom+xml\" title=\"Atom\" href=\"${1:atom.xml}\" /&gt;",
+"meta:utf": "&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" /&gt;",
+"meta:win": "&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=windows-1251\" /&gt;",
+"meta:compat": "&lt;meta http-equiv=\"X-UA-Compatible\" content=\"${1:IE=7}\" /&gt;",
+"style": "&lt;style&gt;",
+"script": "&lt;script&gt;",
+"script:src": "&lt;script src=\"\"&gt;",
+"img": "&lt;img src=\"\" alt=\"\" /&gt;",
+"iframe": "&lt;iframe src=\"\" frameborder=\"0\"&gt;",
+"embed": "&lt;embed src=\"\" type=\"\" /&gt;",
+"object": "&lt;object data=\"\" type=\"\"&gt;",
+"param": "&lt;param name=\"\" value=\"\" /&gt;",
+"map": "&lt;map name=\"\"&gt;",
+"area": "&lt;area shape=\"\" coords=\"\" href=\"\" alt=\"\" /&gt;",
+"area:d": "&lt;area shape=\"default\" href=\"\" alt=\"\" /&gt;",
+"area:c": "&lt;area shape=\"circle\" coords=\"\" href=\"\" alt=\"\" /&gt;",
+"area:r": "&lt;area shape=\"rect\" coords=\"\" href=\"\" alt=\"\" /&gt;",
+"area:p": "&lt;area shape=\"poly\" coords=\"\" href=\"\" alt=\"\" /&gt;",
+"form": "&lt;form action=\"\"&gt;",
+"form:get": "&lt;form action=\"\" method=\"get\"&gt;",
+"form:post": "&lt;form action=\"\" method=\"post\"&gt;",
+"label": "&lt;label for=\"\"&gt;",
+"input": "&lt;input type=\"\" /&gt;",
+"input:hidden": "&lt;input type=\"hidden\" name=\"\" /&gt;",
+"input:h": "&lt;input type=\"hidden\" name=\"\" /&gt;",
+"input:text": "&lt;input type=\"text\" name=\"\" id=\"\" /&gt;",
+"input:t": "&lt;input type=\"text\" name=\"\" id=\"\" /&gt;",
+"input:search": "&lt;input type=\"search\" name=\"\" id=\"\" /&gt;",
+"input:email": "&lt;input type=\"email\" name=\"\" id=\"\" /&gt;",
+"input:url": "&lt;input type=\"url\" name=\"\" id=\"\" /&gt;",
+"input:password": "&lt;input type=\"password\" name=\"\" id=\"\" /&gt;",
+"input:p": "&lt;input type=\"password\" name=\"\" id=\"\" /&gt;",
+"input:datetime": "&lt;input type=\"datetime\" name=\"\" id=\"\" /&gt;",
+"input:date": "&lt;input type=\"date\" name=\"\" id=\"\" /&gt;",
+"input:datetime-local": "&lt;input type=\"datetime-local\" name=\"\" id=\"\" /&gt;",
+"input:month": "&lt;input type=\"month\" name=\"\" id=\"\" /&gt;",
+"input:week": "&lt;input type=\"week\" name=\"\" id=\"\" /&gt;",
+"input:time": "&lt;input type=\"time\" name=\"\" id=\"\" /&gt;",
+"input:number": "&lt;input type=\"number\" name=\"\" id=\"\" /&gt;",
+"input:color": "&lt;input type=\"color\" name=\"\" id=\"\" /&gt;",
+"input:checkbox": "&lt;input type=\"checkbox\" name=\"\" id=\"\" /&gt;",
+"input:c": "&lt;input type=\"checkbox\" name=\"\" id=\"\" /&gt;",
+"input:radio": "&lt;input type=\"radio\" name=\"\" id=\"\" /&gt;",
+"input:r": "&lt;input type=\"radio\" name=\"\" id=\"\" /&gt;",
+"input:range": "&lt;input type=\"range\" name=\"\" id=\"\" /&gt;",
+"input:file": "&lt;input type=\"file\" name=\"\" id=\"\" /&gt;",
+"input:f": "&lt;input type=\"file\" name=\"\" id=\"\" /&gt;",
+"input:submit": "&lt;input type=\"submit\" value=\"\" /&gt;",
+"input:s": "&lt;input type=\"submit\" value=\"\" /&gt;",
+"input:image": "&lt;input type=\"image\" src=\"\" alt=\"\" /&gt;",
+"input:i": "&lt;input type=\"image\" src=\"\" alt=\"\" /&gt;",
+"input:reset": "&lt;input type=\"reset\" value=\"\" /&gt;",
+"input:button": "&lt;input type=\"button\" value=\"\" /&gt;",
+"input:b": "&lt;input type=\"button\" value=\"\" /&gt;",
+"select": "&lt;select name=\"\" id=\"\"&gt;&lt;/select&gt;",
+"option": "&lt;option value=\"\"&gt;&lt;/option&gt;",
+"textarea": "&lt;textarea name=\"\" id=\"\" cols=\"${1:30}\" rows=\"${2:10}\"&gt;",
+"menu:context": "&lt;menu type=\"context\"&gt;",
+"menu:c": "&lt;menu type=\"context\"&gt;",
+"menu:toolbar": "&lt;menu type=\"toolbar\"&gt;",
+"menu:t": "&lt;menu type=\"toolbar\"&gt;",
+"video": "&lt;video src=\"\"&gt;",
+"audio": "&lt;audio src=\"\"&gt;",
+"html:xml": "&lt;html xmlns=\"http://www.w3.org/1999/xhtml\"&gt;",
+
+"bq": "blockquote",
+"acr": "acronym",
+"fig": "figure",
+"figc": "figcaption",
+"ifr": "iframe",
+"emb": "embed",
+"obj": "object",
+"src": "source",
+"cap": "caption",
+"colg": "colgroup",
+"fst": "fieldset",
+"btn": "button",
+"optg": "optgroup",
+"opt": "option",
+"tarea": "textarea",
+"leg": "legend",
+"sect": "section",
+"art": "article",
+"hdr": "header",
+"ftr": "footer",
+"adr": "address",
+"dlg": "dialog",
+"str": "strong",
+"prog": "progress",
+"fset": "fieldset",
+"datag": "datagrid",
+"datal": "datalist",
+"kg": "keygen",
+"out": "output",
+"det": "details",
+"cmd": "command",
+
+"ol+": "ol&gt;li",
+"ul+": "ul&gt;li",
+"dl+": "dl&gt;dt+dd",
+"map+": "map&gt;area",
+"table+": "table&gt;tr&gt;td",
+"colgroup+": "colgroup&gt;col",
+"colg+": "colgroup&gt;col",
+"tr+": "tr&gt;td",
+"select+": "select&gt;option",
+"optgroup+": "optgroup&gt;option",
+"optg+": "optgroup&gt;option"
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As you can see its geared towards html5:</p>
+
+<p>```
+! //expands to a basic html template with the html5 doctype (sweet!)</p>
+
+<p>&lt;!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body></p>
+
+<p></body>
+</html>
+```</p>
+
+<p>And they&rsquo;ve already removed the <code>type</code> attribute for <code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> tags as well (double sweet!!)</p>
+
+<p>Specifying input types using colon (triple sweet!!!):</p>
+
+<p>```
+input:text //expands to <input type="text" name="" id=""></p>
+
+<p>```</p>
+
+<p>And when you press tab it automatically goes inside the name and id for you to specify the values for those attributes (How cool is that?)</p>
+
+<p>I remember having done this in ZenCoding like:
+<code>
+input[type=text]
+</code></p>
+
+<p>That saves my fingers from typing 6 more characters for every form input.</p>
+
+<p>The good thing is that you can customize these abbreviations the way you want it.
+You can definitely save your fingers from typing some characters by specifying shorter abbreviations.
+But remember not to sacrifice readability and memorizability (does that word exists? sorry grammar natzis, please don&rsquo;t kill me).
+But its probably ok to have abbreviations like  <code>i:t</code> or <code>i:r</code> or <code>i:c</code> if you can remember what they mean after an hour.</p>
+
+<p>You can even add your own snippets (if you&rsquo;re not a fan of the default feature in sublime text for storing code snippets).
+Here are some of the default snippets that are available in Emmet (mostly doctypes and code for dealing with ie6).</p>
+
+<p>```
+&ldquo;snippets&rdquo;: {</p>
+
+<pre><code>        "c": "&lt;!-- |${child} --&gt;",
+        "cc:ie6": "&lt;!--[if lte IE 6]&gt;\n\t${child}|\n&lt;![endif]--&gt;",
+        "cc:ie": "&lt;!--[if IE]&gt;\n\t${child}|\n&lt;![endif]--&gt;",
+        "cc:noie": "&lt;!--[if !IE]&gt;&lt;!--&gt;\n\t${child}|\n&lt;!--&lt;![endif]--&gt;",
+        "html:4t": "&lt;!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"&gt;\n&lt;html lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\"&gt;\n\t&lt;title&gt;${1:Document}&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;",
+        "html:4s": "&lt;!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"&gt;\n&lt;html lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\"&gt;\n\t&lt;title&gt;${1:Document}&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;",
+        "html:xt": "&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"&gt;\n&lt;html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" /&gt;\n\t&lt;title&gt;&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;",
+        "html:xs": "&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"&gt;\n&lt;html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" /&gt;\n\t&lt;title&gt;${1:Document}&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;",
+        "html:xxs": "&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"&gt;\n&lt;html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" /&gt;\n\t&lt;title&gt;${1:Document}&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;",
+        "html:5": "&lt;!doctype html&gt;\n&lt;html lang=\"${lang}\"&gt;\n&lt;head&gt;\n\t&lt;meta charset=\"${charset}\"&gt;\n\t&lt;title&gt;${1:Document}&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n\t${child}${2}\n&lt;/body&gt;\n&lt;/html&gt;"
+    }
+</code></pre>
+
+<p>```</p>
+
+<p>If you&rsquo;re using Zurb&rsquo;s Foundation or Twitter Bootstrap and you plan to use it for your future projects.
+Maybe you can store snippets to make your life easier (css frameworks are notorious at using a lot of html to have a foundation for styling):</p>
+
+<p><code>
+"d:6c" : "&lt;div class=\"six columns\"&gt;",
+"d:10c3mc" : "&lt;div class=\"ten mobile-three columns\"&gt;"
+</code></p>
+
+<h4>Other Fun Stuff</h4>
+
+<p>Of course there&rsquo;s a lot more stuff that you can do in Emmet (Lorem ipsum generators, vendor prefixes) but time is limited and those cool stuff are all
+in the documentation. There&rsquo;s also a text-editor in the site which you can play with Emmet as much as you want.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://docs.emmet.io/">Emmet</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

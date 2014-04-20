@@ -1,0 +1,838 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Paypal API - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;m going to show you how you can get started with using the Paypal API. I&rsquo;ll walk you through the steps needed in order &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetaWern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Paypal API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-08T18:15:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;m going to show you how you can get started with using the Paypal API. I&rsquo;ll walk you through the steps needed in order to get you started with using the Paypal API in your projects.</p>
+
+<!-- more -->
+
+
+<h3>Concepts to Remember</h3>
+
+<p>Here are some of the concepts that you have to remember when working with the Paypal API in any of your projects:</p>
+
+<ul>
+<li><strong>Sandbox</strong> &ndash; this is used for testing requests to the Paypal API. Sandbox Paypal accounts can be assigned with funds of up to 5000 USD and then you can use it for testing.</li>
+<li><strong>Live</strong> &ndash; the live Paypal website. You can switch your API calls to use the live endpoints upon deploying your project.</li>
+<li><strong>API Request</strong> &ndash; you can use either NVP (Name-Value Pair) or SOAP when making request to the API. We will use name-value pairs in this tutorial.</li>
+<li><strong>API Credentials</strong> &ndash; the credentials that you will use in order to make API calls.</li>
+<li><strong>API</strong> &ndash; short for Application Programming Interface. Paypal is composed of different APIs such as the adaptive accounts, adaptive payments, invoicing, merchant APIs and permissions. In this tutorial I&rsquo;m going to discuss about the merchant API.</li>
+<li><strong>Service Endpoint</strong> &ndash; this simply refers to the URL of the server that will handle a specific request. Note that the endpoints used for testing (sandbox) and production (live) are different. So you have to update the endpoints after you&rsquo;re done with the testing.</li>
+<li><strong>Call Payload</strong> &ndash; the minimum data required by paypal that you have to submit as part of the request to the API.</li>
+<li><strong>Request and Response Formats</strong> &ndash; the format in which your API request and the response that&rsquo;s going to be returned after a successful call.</li>
+<li><strong>HTTP Headers</strong> &ndash; the HTTP request header information that you have to specify in each API call.</li>
+</ul>
+
+
+<h3>Create a Paypal Account</h3>
+
+<p>First you have to create either a Paypal Personal Account or a Paypal Business Account on the Paypal website.
+After creating an account go to <a href="https://developer.paypal.com/">developer.paypal.com</a> and login using the account that you created.</p>
+
+<h3>Create a Sandbox Account</h3>
+
+<p>Once you&rsquo;re logged in to the paypal developer website, click on the applications tab then go to sandbox accounts. In this page you will see the default paypal account that you can use for testing. The default account contains information that you can use to authenticate your API calls. In most cases you would only need to take note of the username, password and the signature in order to authenticate API calls.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/default-test-account.png" alt="default account" /></p>
+
+<p>The default test account is a business account so if you need to test on a personal account you may need to create a new test account which you can do on the same page by clicking on the <code>Create Account</code> button.</p>
+
+<p><img src="/images/posts/getting_started_with_paypal/paypal-create-testacc.png" alt="create test account" /></p>
+
+<p>The default test account along with any test account that you create can be used to login in the <a href="https://www.sandbox.paypal.com">sandbox paypal website</a>. This is great as you can use this like a real paypal account to view your transactions, make payments, etc.</p>
+
+<h3>Getting Live API Credentials</h3>
+
+<p>Note that the API credentials that comes along with the default test account can&rsquo;t be used to make API calls with the live version of the API. For that you would need to login to <a href="http://paypal.com">paypal</a> then go to <strong>My Account</strong> &ndash;> <strong>Profile</strong> &ndash;> <strong>My Selling Tools</strong> then click on the <strong>update</strong> link beside the <strong>API Access</strong> section. After that click on the <strong>Request API Credentials</strong> link. Finally, select <strong>Request API signature</strong> and click <strong>Agree and Submit</strong>. This will generate the API Username, Password and Signature that you can use in your live API calls.</p>
+
+<h3>Paypal Class</h3>
+
+<p>Now were ready to build the class that we will be using later on to make requests to the Paypal API.
+First create a new class and call it <code>Paypal</code>. Then declare the following class variables:</p>
+
+<ul>
+<li><strong>request method</strong> &ndash; the request method to use. This can be either CURL or file_get_contents.</li>
+<li><strong>errors</strong> &ndash; stores the current errors that occured while making the requests.</li>
+<li><strong>credentials</strong> &ndash; stores the API credentials.</li>
+<li><strong>endpoint</strong> &ndash; the URL of the service end point to use.</li>
+<li><strong>version</strong> &ndash; the version of the API. Currently its 74.0</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Paypal</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nv">$request_method</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nv">$_errors</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">protected</span> <span class="nv">$_credentials</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">protected</span> <span class="nv">$_endPoint</span> <span class="o">=</span> <span class="s1">&#39;https://api-3t.sandbox.paypal.com/nvp&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">protected</span> <span class="nv">$_version</span> <span class="o">=</span> <span class="s1">&#39;74.0&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next declare the constructor. This will take 3 required arguments and two optional arguments:</p>
+
+<ul>
+<li><strong>user</strong> &ndash; the API username that you got from paypal. Note that this should correspond with the endpoint that you use. If the endpoint is a sandbox endpoint then use the sandbox credentials otherwise use the live credentials.</li>
+<li><strong>pass</strong> &ndash; the API password</li>
+<li><strong>signature</strong> &ndash; the API signature</li>
+<li><strong>paypal server</strong> &ndash; this can either be set to sandbox or live. This is set to sandbox by default so its using the sandbox endpoint. Setting this to live will set the endpoint to the live endpoint.</li>
+<li><strong>request method</strong> &ndash; the request method to use, this can be either file_get_contents or curl. Its recommended to use curl since its more secure. The file_get_contents method is only there in case the server where you are deploying has no support for CURL.</li>
+</ul>
+
+
+<p>What the constructor does is to initialize the values for the class variables based on the arguments supplied when an object for the class is declared.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$user</span><span class="p">,</span> <span class="nv">$pass</span><span class="p">,</span> <span class="nv">$signature</span><span class="p">,</span> <span class="nv">$paypal_server</span> <span class="o">=</span> <span class="s1">&#39;sandbox&#39;</span><span class="p">,</span> <span class="nv">$request_method</span> <span class="o">=</span> <span class="s1">&#39;file_get_contents&#39;</span><span class="p">){</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;USER&#39;</span> <span class="o">=&gt;</span> <span class="nv">$user</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;PWD&#39;</span> <span class="o">=&gt;</span> <span class="nv">$pass</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;SIGNATURE&#39;</span> <span class="o">=&gt;</span> <span class="nv">$signature</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request_method</span> <span class="o">=</span> <span class="nv">$request_method</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$paypal_server</span> <span class="o">==</span> <span class="s1">&#39;live&#39;</span><span class="p">){</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_endPoint</span> <span class="o">=</span> <span class="s1">&#39;https://api-3t.paypal.com/nvp&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the request method. This will be the primary method that we will call from this class once we make the request to the API. This accepts two arguments:</p>
+
+<ul>
+<li><strong>method</strong> &ndash; the API method to use.</li>
+<li><strong>params</strong> &ndash; the parameters required by the method that we specified.</li>
+</ul>
+
+
+<p>What this method does is to build the name-value pair that will be used for the request. It also builds the required HTTP header based on the credentials supplied through the constructor earlier. Once its done building all the information required by a specific API method it makes the request depending on the request method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">request</span><span class="p">(</span><span class="nv">$method</span><span class="p">,</span> <span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">()){</span>
+</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_errors</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$method</span><span class="p">)){</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_errors</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;There is no API Method&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$requestParams</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>       <span class="s1">&#39;METHOD&#39;</span> <span class="o">=&gt;</span> <span class="nv">$method</span><span class="p">,</span>
+</span><span class='line'>       <span class="s1">&#39;VERSION&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_version</span>
+</span><span class='line'>    <span class="p">)</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$request</span> <span class="o">=</span> <span class="nb">http_build_query</span><span class="p">(</span><span class="nv">$requestParams</span> <span class="o">+</span> <span class="nv">$params</span><span class="p">);</span> <span class="c1">//build a query string based on the array of request parameters</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request_method</span> <span class="o">==</span> <span class="s1">&#39;curl&#39;</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//build the HTTP header required by Paypal</span>
+</span><span class='line'>      <span class="nv">$http_header</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;X-PAYPAL-SECURITY-USERID&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;USER&#39;</span><span class="p">],</span>
+</span><span class='line'>          <span class="s1">&#39;X-PAYPAL-SECURITY-PASSWORD&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">],</span>
+</span><span class='line'>          <span class="s1">&#39;X-PAYPAL-SECURITY-SIGNATURE&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;SIGNATURE&#39;</span><span class="p">],</span>
+</span><span class='line'>          <span class="s1">&#39;X-PAYPAL-REQUEST-DATA-FORMAT&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;JSON&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;X-PAYPAL-RESPONSE-DATA-FORMAT&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;JSON&#39;</span>
+</span><span class='line'>      <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//set options for CURL</span>
+</span><span class='line'>      <span class="nv">$curlOptions</span> <span class="o">=</span> <span class="k">array</span> <span class="p">(</span>
+</span><span class='line'>          <span class="nx">CURLOPT_HTTPHEADER</span> <span class="o">=&gt;</span> <span class="nv">$http_header</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_URL</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_endPoint</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_VERBOSE</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_SSL_VERIFYPEER</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_SSL_VERIFYHOST</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_CAINFO</span> <span class="o">=&gt;</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;/cert/cacert.pem&#39;</span><span class="p">,</span> <span class="c1">//CA cert file</span>
+</span><span class='line'>          <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_POST</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">CURLOPT_POSTFIELDS</span> <span class="o">=&gt;</span> <span class="nv">$request</span>
+</span><span class='line'>      <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>      <span class="nb">curl_setopt_array</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nv">$curlOptions</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span> <span class="c1">//make the request</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$ch</span><span class="p">)){</span>
+</span><span class='line'>          <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_errors</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>          <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>          <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>          <span class="nv">$responseArray</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>          <span class="nb">parse_str</span><span class="p">(</span><span class="nv">$response</span><span class="p">,</span> <span class="nv">$responseArray</span><span class="p">);</span> <span class="c1">//convert the response string to an array</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nv">$responseArray</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request_method</span> <span class="o">==</span> <span class="s1">&#39;file_get_contents&#39;</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//build the HTTP header required by Paypal</span>
+</span><span class='line'>      <span class="nv">$context_options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s2">&quot;http&quot;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s2">&quot;method&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;header&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;Content-type: application/x-www-form-urlencoded</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;X-PAYPAL-SECURITY-USERID: &quot;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;USER&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;X-PAYPAL-SECURITY-PASSWORD: &quot;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;X-PAYPAL-SECURITY-SIGNATURE: &quot;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_credentials</span><span class="p">[</span><span class="s1">&#39;SIGNATURE&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;X-PAYPAL-REQUEST-DATA-FORMAT: JSON</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>                  <span class="s2">&quot;X-PAYPAL-RESPONSE-DATA-FORMAT: JSON</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;content&quot;</span> <span class="o">=&gt;</span> <span class="nv">$request</span>
+</span><span class='line'>          <span class="p">)</span>
+</span><span class='line'>      <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$context</span> <span class="o">=</span> <span class="nb">stream_context_create</span><span class="p">(</span><span class="nv">$context_options</span><span class="p">);</span> <span class="c1">//create context for file_get_contents</span>
+</span><span class='line'>      <span class="nv">$response</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_endPoint</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$context</span><span class="p">);</span> <span class="c1">//make the request</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$responseArray</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>      <span class="nb">parse_str</span><span class="p">(</span><span class="nv">$response</span><span class="p">,</span> <span class="nv">$responseArray</span><span class="p">);</span> <span class="c1">//convert the response string to an array</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$responseArray</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>API Methods</h3>
+
+<p>Before we dive into actually making an API request its important that we first understand the API methods that we will actually use. In this tutorial were only going to use 3 methods: SetExpressCheckout, GetExpressCheckoutDetails, and DoExpressCheckoutPayment. Were going to use these methods to create an application that accepts payments using Paypal.</p>
+
+<h4>SetExpressCheckout</h4>
+
+<p>The <code>SetExpressCheckout</code> method allows you to initiate an express checkout transaction. This is the easiest way to implement a payment operation in your application. What this does is to generate a unique token that can be appended into the paypal URL which is used for making payments. The URL to be used for sandbox and live are different so you have to make sure that the URL that you&rsquo;re using corresponds to the current API endpoint that you&rsquo;re using:</p>
+
+<ul>
+<li><strong>sandbox</strong> &ndash; <a href="https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+<li><strong>live</strong> &ndash; <a href="https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
+</ul>
+
+
+<p>The <code>SetExpressCheckout</code> method requires the following parameters:</p>
+
+<ul>
+<li><p><strong>METHOD</strong> &ndash; must be set to <code>SetExpressCheckout</code></p></li>
+<li><p><strong>RETURNURL</strong> &ndash; this is the URL where the buyer will be redirected after a successful payment</p></li>
+<li><strong>CANCELURL</strong> &ndash; this is the URL where the buyer will be redirected if he doesn&rsquo;t accept to make the payment</li>
+<li><strong>NOSHIPPING</strong> &ndash; you can use this to specify if shipping information is enabled or not. If the customer is paying for a specific service that doesn&rsquo;t require shipping then you can simply set the value to <code>1</code></li>
+<li><p><strong>ALLOWNOTE</strong> &ndash; you can use this to specify if notes are allowed. You can set this to <code>0</code> if you don&rsquo;t want buyers to send a note along with the payment information. Otherwise set it to <code>1</code></p></li>
+<li><p><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; the total cost of the product or service. If you have more than one item then the value for this parameter should be the total of those items. Note that any value that you supply for any parameter that requires an amount should be expressed in 2 decimal places. So if the item is worth 25 dollars then it should be written as <code>25.00</code>.</p></li>
+<li><strong>PAYMENTREQUEST_0_SHIPPINGAMT</strong> &ndash; the shipping cost. If the <code>NOSHIPPING</code> is set to <code>1</code> then there&rsquo;s no need to supply a value for this parameter</li>
+<li><p><strong>PAYMENTREQUEST_0_ITEMAMT</strong> &ndash; the cost of the product or service. Note that if you have more than one product you can simply set this to <code>PAYMENTREQUEST_1_ITEMAMT</code>, <code>PAYMENTREQUEST_2_ITEMAMT</code> and so on. Just be sure to get the total of the values that you supplied to those parameters</p></li>
+<li><p><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; the currency in which the <code>PAYMENTREQUEST_0_AMT</code> and <code>PAYMENTREQUEST_0_ITEMAMT</code> is expressed. Here&rsquo;s a <a href="https://developer.paypal.com/docs/classic/api/currency_codes/">list of currency codes</a> that you can use. If you don&rsquo;t specify a value for this parameter the default value of <code>USD</code> will be used.</p></li>
+<li><p><strong>L_PAYMENTREQUEST_0_NAME0</strong> &ndash; the name of the product or service</p></li>
+<li><strong>L_PAYMENTREQUEST_0_DESC0</strong> &ndash; the description of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_AMT0</strong> &ndash; the cost of the product or service</li>
+<li><strong>L_PAYMENTREQUEST_0_QTY0</strong> &ndash; the quantity of the product or service</li>
+</ul>
+
+
+<p>After a successfull request it returns the following response:</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that can be appended to the URL of the paypal website where the payment can be made.</li>
+</ul>
+
+
+<h4>GetExpressCheckoutDetails</h4>
+
+<p>The <code>GetExpressCheckoutDetails</code> method is used for getting additional information regarding a specific express checkout transaction. This is called after a payment has successfully been made through the paypal website. This happens when paypal successfully redirects to the <code>RETURNURL</code> that we specified in the <code>SetExpressCheckout</code> method.</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. You can get the token by using <code>$_GET['token']</code>.</li>
+</ul>
+
+
+<p>After a successful request paypal returns a bunch of information regarding the payment. This includes information about the transaction itself and some payer information. Check out the <a href="https://developer.paypal.com/docs/classic/api/merchant/GetExpressCheckoutDetails_API_Operation_NVP/">official documentation</a> if you want to see a full list of the response objects returned from calling the <code>GetExpressCheckoutDetails</code> method.</p>
+
+<h4>DoExpressCheckoutPayment</h4>
+
+<p>The <code>DoExpressCheckoutPayment</code> method is used for completing the express checkout transaction. You might think that once the payment has been made its already completed but actually its not. The transaction isn&rsquo;t actually completed unless the payment is confirmed on both sides (paypal and your website).</p>
+
+<ul>
+<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. Yes this is the same as the token that you used for the <code>GetExpressCheckoutDetails</code> method.</li>
+<li><strong>PAYMENTREQUEST_n_PAYMENTACTION</strong> &ndash; specifies how you want to obtain the payment. There are 3 possible values for this: <code>Authorization</code>, <code>Order</code>, and <code>Sale</code>. In most cases the value used here is <code>Sale</code>.</li>
+<li><strong>PAYERID</strong> &ndash; the unique ID of the buyer. This information is also appended in the return URL, you can get it by using <code>$_GET['PayerID']</code></li>
+<li><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_AMT</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+<li><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_CURRENCYCODE</code> parameter on the <code>SetExpressCheckout</code> method.</li>
+</ul>
+
+
+<p>After a successful request the express checkout transaction is now completed.</p>
+
+<h3>Making API Requests</h3>
+
+<p>Now were ready to actually make requests to the API. First include the file where the Paypal class is located. Then create a new object for the Paypal class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;Paypal.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//get credentials from DB</span>
+</span><span class='line'><span class="nv">$credentials</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;tbl_credentials&quot;</span><span class="p">,</span> <span class="s2">&quot;paypal&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">extract</span><span class="p">(</span><span class="nv">$credentials</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$paypal</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Paypal</span><span class="p">(</span><span class="nv">$user</span><span class="p">,</span> <span class="nv">$pass</span><span class="p">,</span> <span class="nv">$signature</span><span class="p">,</span> <span class="nv">$paypal_server</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;TOKEN&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;PayerID&#39;</span><span class="p">])){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$request_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>     <span class="s1">&#39;RETURNURL&#39;</span> <span class="o">=&gt;</span> <span class="nv">$success_url</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;CANCELURL&#39;</span> <span class="o">=&gt;</span> <span class="nv">$cancel_url</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;NOSHIPPING&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;ALLOWNOTE&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1&#39;</span>
+</span><span class='line'>  <span class="p">);</span>   
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$order_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>     <span class="s1">&#39;PAYMENTREQUEST_0_AMT&#39;</span> <span class="o">=&gt;</span> <span class="nv">$amount</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;PAYMENTREQUEST_0_ITEMAMT&#39;</span> <span class="o">=&gt;</span> <span class="nv">$amount</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;PAYMENTREQUEST_0_CURRENCYCODE&#39;</span> <span class="o">=&gt;</span> <span class="nv">$currency</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$item</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>     <span class="s1">&#39;L_PAYMENTREQUEST_0_NAME0&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Oldies Anime Collection&#39;</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;L_PAYMENTREQUEST_0_DESC0&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;old anime&#39;</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;L_PAYMENTREQUEST_0_AMT0&#39;</span> <span class="o">=&gt;</span> <span class="nv">$amount</span><span class="p">,</span>
+</span><span class='line'>     <span class="s1">&#39;L_PAYMENTREQUEST_0_QTY0&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1&#39;</span>
+</span><span class='line'>  <span class="p">);</span>   
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//initiate express checkout transaction</span>
+</span><span class='line'>  <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$paypal</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">&#39;SetExpressCheckout&#39;</span><span class="p">,</span> <span class="nv">$request_params</span> <span class="o">+</span> <span class="nv">$order_params</span> <span class="o">+</span> <span class="nv">$item</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$response</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;ACK&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Success&#39;</span><span class="p">){</span>
+</span><span class='line'>      <span class="nv">$token</span> <span class="o">=</span> <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;TOKEN&#39;</span><span class="p">];</span>
+</span><span class='line'>      <span class="c1">//redirect to paypal where the buyer will make his payment</span>
+</span><span class='line'>      <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=&#39;</span> <span class="o">.</span> <span class="nv">$token</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>  <span class="c1">//after a successful redirect, complete the express checkout transaction</span>
+</span><span class='line'>  <span class="nv">$request_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;TOKEN&#39;</span> <span class="o">=&gt;</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">],</span>
+</span><span class='line'>      <span class="s1">&#39;PAYMENTACTION&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Sale&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;PAYERID&#39;</span> <span class="o">=&gt;</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;PayerID&#39;</span><span class="p">],</span>
+</span><span class='line'>      <span class="s1">&#39;PAYMENTREQUEST_0_AMT&#39;</span> <span class="o">=&gt;</span> <span class="nv">$amount</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;PAYMENTREQUEST_0_CURRENCYCODE&#39;</span> <span class="o">=&gt;</span> <span class="nv">$currency</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$paypal</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">&#39;DoExpressCheckoutPayment&#39;</span><span class="p">,</span> <span class="nv">$request_params</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$response</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nv">$response</span><span class="p">[</span><span class="s1">&#39;ACK&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Success&#39;</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//commit the transaction in your database</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial you&rsquo;ve learned the basics of making API requests to the Paypal API. We have specifically used the Merchant API. But there are other Paypal APIs which we can use for different use cases.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developer.paypal.com/docs/classic/api/gs_PayPalAPIs/">Paypal Classic API Getting Started Guide</a></li>
+<li><a href="https://developer.paypal.com/docs/classic/api/">Paypal Classic API Reference</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-08T18:15:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/api/'>api</a>, <a class='category' href='/blog/categories/paypal/'>paypal</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/" data-via="wern_ancheta" data-counturl="http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/15/php-security-best-practices/" title="Previous Post: PHP Security Best Practices">&laquo; PHP Security Best Practices</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/01/26/getting-started-with-caching-in-php/" title="Next Post: Getting Started with Caching in PHP">Getting Started with Caching in PHP &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/01/a-whirlwind-tour-of-web-developer-tools-web-servers/">A Whirlwind Tour of Web Developer Tools: Web Servers</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/';
+        var disqus_url = 'http://anchetaWern.github.io/blog/2014/01/08/getting-started-with-paypal-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
