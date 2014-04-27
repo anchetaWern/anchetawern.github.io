@@ -1,0 +1,1530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: build-tools | Wern Ancheta]]></title>
+  <link href="http://anchetawern.github.io/blog/categories/build-tools/atom.xml" rel="self"/>
+  <link href="http://anchetawern.github.io/"/>
+  <updated>2014-04-27T17:20:53+08:00</updated>
+  <id>http://anchetawern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Build Tools]]></title>
+    <link href="http://anchetawern.github.io/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/"/>
+    <updated>2014-04-27T09:45:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools</id>
+    <content type="html"><![CDATA[<p>In this part seven of this series I&rsquo;m going to walk you through build tools. As usual I&rsquo;m going to summon a <a href="http://en.wikipedia.org/wiki/Build_automation">Wikipedia page</a> to do the definition for me because I really suck at defining things:</p>
+
+<p><blockquote><p>Build automation is the act of scripting or automating a wide variety of tasks that software developers do in their day-to-day activities including things like compiling computer source code into binary code, packaging binary code, running tests, deployment to production systems, creating documentation and/or release notes</p></blockquote></p>
+
+<p>In other words build tools makes developers life easier by automating mundane tasks. In the web development world we commonly use build tools to lint, test, minify and deploy source code.</p>
+
+<h4>Test Project</h4>
+
+<p>Before we move on to actually playing with the build tools first let me discuss about the test project that we will be working with. The test project is a useless project in which we will use all of the build tools that I&rsquo;m going to discuss in this tutorial.</p>
+
+<p><code>
+test-proj
+ - css
+   - normalize.css
+   - main.css
+ - js
+   - jquery.js
+   - main.js
+ - img
+   - dfrag.png
+   - hamatora.png
+   - magis.jpg
+   - spacedandy.png
+ - dist
+   - css
+   - js
+   - img
+   - index.html
+</code></p>
+
+<p><code>test-proj</code> is our working directory. The first 3 folders (css, js, img) is pretty self-explanatory, that is where our project assets goes. The <code>dist</code> folder is where the processed files goes. And what I mean by processing is that all the css files will get minified and concatenated, the same is true with all the javascript files. Then the html will also get minified. Finally all the images will get compressed. So the idea is that the <code>dist</code> folder will have the processed version of same folders and files that are in the root of our working directory.</p>
+
+<h4>Bash</h4>
+
+<p>First on the list is bash. With simple bash scripts you can actually do some pretty decent web development task automation.</p>
+
+<h5>Concatenation</h5>
+
+<p>You can concatenate the contents of files by using the <code>cat</code> command then passing in the name of the files to concatenate and then redirect its output to a non existent file. The <code>cat</code> command is primarily used for outputting all the contents of a file from the command line. But when passing in two or more files you get the effect of outputting the contents of both files. Here&rsquo;s an example:</p>
+
+<p><code>
+cat jquery.js accounting.js &gt; script.js
+</code></p>
+
+<p>Since the <code>script.min.js</code> file doesn&rsquo;t exist yet it will have a side-effect of creating the file which contains the contents of both <code>jquery.js</code> and <code>accounting.js</code>.</p>
+
+<p>The above script is fine but what if you want to concatenate the contents of a specific file type within a directory? Well its also fairly simple:</p>
+
+<p><code>
+cat *.js &gt; script.js
+</code></p>
+
+<p>Note that the default behavior for the above command is that it will concatenate the contents of the files based on the filename so if you have <code>accounting.js</code> and <code>jquery.js</code> in the directory where you executed the command <code>accounting.js</code> comes first and then <code>jquery.js</code> is appended to it.</p>
+
+<p>You can also add an alias on <code>.bash_aliases</code>:</p>
+
+<p><code>
+alias min_js='cat *.js'
+</code></p>
+
+<p>Then you can just call the alias and redirect the output to a filename that you want:</p>
+
+<p><code>
+min_js &gt; script.js
+</code></p>
+
+<p>You can use bash with simple stuff like concatenating the contents of file. But if you want to do more automation you can use the tools the below.
+We won&rsquo;t use bash with the test project that I discussed earlier I just showed an example to you so that you&rsquo;ll know that bash can be used for simple automation stuff.</p>
+
+<h4>Apache Ant</h4>
+
+<p>Next on the list is Apache Ant, the automation tool from the same guys who brought us Apache Web Server. Ant uses the  <code>build.xml</code> files to do its magic. So you basically specify what it needs to do in the <code>build.xml</code> file. Ant already comes with some <a href="http://ant.apache.org/manual/tasksoverview.html">default tasks</a> that you can use but you can also create custom tasks.</p>
+
+<h5>Installing Ant</h5>
+
+<p>To install Ant on Ubuntu and other debian based Linux distributions:</p>
+
+<p><code>
+sudo apt-get install ant
+</code></p>
+
+<p>If you get a message similar to the following when executing an ant task:</p>
+
+<p><code>
+unable to locate tools.jar
+</code></p>
+
+<p>You might also need to install openjdk:</p>
+
+<p><code>
+sudo apt-get install openjdk-7-jdk
+</code></p>
+
+<p>On Windows you can <a href="https://code.google.com/p/winant/">winant</a> which is an Ant installer specifically made for Windows. If that doesn&rsquo;t work out for you you can also follow the following tutorial on <a href="http://www.nczonline.net/blog/2012/04/12/how-to-install-apache-ant-on-windows/">how to install apache ant on windows</a>.</p>
+
+<p>If you&rsquo;re on Mac OS X ant is already installed by default. If you don&rsquo;t already have it on your version of Mac you can also have it installed using <a href="http://homebrew.sh/">homebrew</a>:</p>
+
+<p><code>
+brew install ant
+</code></p>
+
+<h5>Using Apache Ant</h5>
+
+<p>Once you&rsquo;re done installing Apache Ant you can check if its successfully installed by executing the following command:</p>
+
+<p><code>
+ant -version
+</code></p>
+
+<p>At the time of writing of this tutorial its in version 1.9.2.</p>
+
+<p>To begin using ant create a <code>build.xml</code> file in the root of the test project that we talked about earlier. Once created paste in the following contents:</p>
+
+<p>```xml
+&lt;?xml version=&ldquo;1.0&rdquo;?>
+<project name="Webdev task processor" default="init">
+<target name="get_config"></p>
+
+<pre><code>&lt;property file="ant.properties" /&gt;
+&lt;echo&gt;Got the configuration!&lt;/echo&gt;
+</code></pre>
+
+<p></target>
+<target name="concat_css"></p>
+
+<pre><code>&lt;concat destfile="${dist_dir}/css/style.css"&gt;
+    &lt;filelist id="files" dir="${css_dir}"&gt;
+        &lt;file name="normalize.css" /&gt; 
+        &lt;file name="main.css" /&gt; 
+    &lt;/filelist&gt;
+&lt;/concat&gt;
+</code></pre>
+
+<p></target>
+<target name="concat_js"></p>
+
+<pre><code>&lt;concat destfile="${dist_dir}/js/script.js"&gt;
+    &lt;filelist id="files" dir="${js_dir}"&gt;
+        &lt;file name="jquery.js" /&gt;  
+        &lt;file name="main.js" /&gt; 
+    &lt;/filelist&gt;
+&lt;/concat&gt;
+</code></pre>
+
+<p></target>
+<target name="minify_css_js"></p>
+
+<pre><code>&lt;java jar="/usr/bin/yuicompressor.jar" fork="true"&gt;
+    &lt;arg value="${file}" /&gt;
+    &lt;arg value="-o" /&gt;
+    &lt;arg value="${file}" /&gt;
+&lt;/java&gt;
+&lt;echo&gt;${file}&lt;/echo&gt; 
+</code></pre>
+
+<p></target>
+<target name="minify_html"></p>
+
+<pre><code>&lt;java jar="/usr/bin/htmlcompressor.jar" fork="true"&gt;
+    &lt;arg value="index.html" /&gt;
+    &lt;arg value="-o" /&gt;
+    &lt;arg value="${dist_dir}/index.html" /&gt;
+&lt;/java&gt;
+&lt;echo&gt;${file}&lt;/echo&gt; 
+</code></pre>
+
+<p></target>
+<target name="minify_css" depends="concat_css"></p>
+
+<pre><code>&lt;antcall target="minify_css_js"&gt;
+    &lt;param name="file" value="${dist_dir}/css/style.css" /&gt;
+&lt;/antcall&gt;
+</code></pre>
+
+<p></target>
+<target name="minify_js" depends="concat_js"></p>
+
+<pre><code>&lt;antcall target="minify_css_js"&gt;
+    &lt;param name="file" value="${dist_dir}/js/script.js" /&gt;
+&lt;/antcall&gt;
+</code></pre>
+
+<p></target>
+<target name="delete_existing" depends="get_config"></p>
+
+<pre><code>&lt;delete dir="${dist_dir}" /&gt;
+</code></pre>
+
+<p></target>
+<target name="create_new" depends="delete_existing"></p>
+
+<pre><code>&lt;mkdir dir="${dist_dir}/css" /&gt;
+&lt;mkdir dir="${dist_dir}/js" /&gt;
+&lt;mkdir dir="${dist_dir}/img" /&gt;
+</code></pre>
+
+<p></target>
+<target name="minify_img"></p>
+
+<pre><code>&lt;taskdef name="optipng" classname="com.pensioenpage.jynx.optipng.OptiPNGTask" classpath="optipng-ant-task/build/optipng-ant-task.jar" /&gt;
+&lt;optipng dir="img" todir="dist/img" /&gt;
+</code></pre>
+
+<p></target>
+<target name="init" depends="get_config,delete_existing,create_new"></p>
+
+<pre><code>&lt;mkdir dir="${dist_dir}" /&gt;
+&lt;antcall target="minify_css" /&gt;
+&lt;antcall target="minify_js"  /&gt;
+&lt;antcall target="minify_html"  /&gt;
+&lt;antcall target="minify_img" /&gt;
+&lt;echo&gt;Done!&lt;/echo&gt;
+</code></pre>
+
+<p></target>
+</project>
+```</p>
+
+<p>Ok so that&rsquo;s a lot of xml, but don&rsquo;t worry since I&rsquo;ll walk you through what each line does.</p>
+
+<p>The first line is where the xml version goes:</p>
+
+<p><code>
+&lt;?xml version="1.0"?&gt;
+</code></p>
+
+<p>If you&rsquo;re using html its basically the same as the doctype declaration:</p>
+
+<p><code>
+&lt;!doctype html&gt;
+</code></p>
+
+<p>What it does is telling ant want specific xml version we are working with.</p>
+
+<p>Next is the project body. This is where you put all the task configuration for your project:</p>
+
+<p><code>
+&lt;project name="Webdev task processor" default="init"&gt;
+&lt;/project&gt;
+</code></p>
+
+<p>In ant the actual tag that you use has a special meaning so using the <code>project</code> tag tells ant that we are working with a project. The <code>project</code> tag takes 2 attributes:  <code>name</code> and <code>default</code>. <code>name is basically the name that you want to give to your project.</code>default<code>is where you tell ant the name of the default task. In this case we give it a name of</code>init<code>. This means that when you execute</code>ant<code>from your working directory it will look for the</code>init` task and it will execute it.</p>
+
+<h6>Directory Configuration</h6>
+
+<p>Next we create an ant task. We can do this by using the <code>target</code> tag. We can give a name to task by specifying a value for the <code>name</code> attribute, note that this has to be a machine friendly name (no special characters or spaces). Inside the task  we specify the property file to be <code>ant.properties</code>. This is the file where we need to put our directory configuration.</p>
+
+<p>```
+<target name="get_config"></p>
+
+<pre><code>&lt;property file="ant.properties" /&gt;
+&lt;echo&gt;Got the configuration!&lt;/echo&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>In our test project the <code>ant.properties</code> file contains the following:</p>
+
+<p><code>
+css_dir = css
+js_dir = js
+dist_dir = dist
+</code></p>
+
+<p>So what were actually doing is giving a specific directory an alias that we can refer to later from our <code>build.xml</code> file.</p>
+
+<p>Finally the <code>echo</code> tag is where we can specify text to output whenever this specific task is done executing.</p>
+
+<h6>Concatenating Files</h6>
+
+<p>Next we create a task that will concatenate specific file types together. If you don&rsquo;t know what concatenating is its basically putting all the contents of specific files together. For css files we name the task <code>concat_css</code> and for javascript files it will be <code>concat_js</code>. Here&rsquo;s what we have for the <code>concat_js</code> task:</p>
+
+<p>```
+<target name="concat_js"></p>
+
+<pre><code>&lt;concat destfile="${dist_dir}/js/script.js"&gt;
+    &lt;filelist id="files" dir="${js_dir}"&gt;
+        &lt;file name="jquery.js" /&gt;  
+        &lt;file name="main.js" /&gt; 
+    &lt;/filelist&gt;
+&lt;/concat&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>Note that to ant there&rsquo;s really no special meaning to the name of the task so you can just give it any name. Just be sure to give a task a name that makes sense the moment you read it later on.</p>
+
+<p>Ant already comes with a concatenation task so we can just refer to it from inside the task itself. The <code>concat</code> task takes up an attribute called <code>destfile</code>, this is the path to which the output file will be saved. In this case we are referring to the <code>dist_dir</code> that we declared earlier in our <code>ant.properties</code> file. You can refer to the config inside the <code>ant.properties</code> file by using the <code>$</code> and wrapping the actual config name with curly brackets <code>{}</code>. We specified our output file to be <code>script.js</code> so it will get created under our <code>dist/js</code> directory once the task is done executing:</p>
+
+<p><code>
+&lt;concat destfile="${dist_dir}/js/script.js"&gt;
+&lt;/concat&gt;
+</code></p>
+
+<p>We can then specify a list of files to work with inside the <code>concat</code> task. This will be the list of files that the concat task will process. To tell ant that we are working with a list of files you can use the <code>filelist</code> tag. You can then specify the individual files using the <code>file</code> tag and giving it a <code>name</code> attribute that is the same as the actual name of the file that you want to process:</p>
+
+<p>```
+<filelist id="files" dir="${js_dir}"></p>
+
+<pre><code>&lt;file name="jquery.js" /&gt;  
+&lt;file name="main.js" /&gt; 
+</code></pre>
+
+<p></filelist>
+```</p>
+
+<p>You can also use a more concised alternative:</p>
+
+<p><code>
+&lt;filelist dir="${js_dir}" files="jquery.js,main.js" /&gt;
+</code></p>
+
+<p>If you do not care about the ordering of files when they get concatenated you can use the <code>fileset</code> tag. This allows you to specify a pattern for targetting specific file types under the directory that you specify. The example below will use all the javascript files inside the <code>js</code> directory as the input. You can also set the <code>casesensitive</code> attribute to <code>yes</code> to tell ant that you want to match for the exact pattern that you specified and it will be case sensitive. This means that it won&rsquo;t match files with the <code>.JS</code> extension:</p>
+
+<p><code>
+&lt;fileset dir="${js_dir}" casesensitive="yes" includes="*.js" /&gt;
+</code></p>
+
+<p>Similarly the task for concatenating all the css files together has the same pattern:</p>
+
+<p>```
+<target name="concat_css"></p>
+
+<pre><code>&lt;concat destfile="${dist_dir}/css/style.css"&gt;
+    &lt;filelist dir="${css_dir}"&gt;
+        &lt;file name="normalize.css" /&gt; 
+        &lt;file name="main.css" /&gt; 
+    &lt;/filelist&gt;
+&lt;/concat&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<h6>Minifying Files</h6>
+
+<p>Next is the task for minifying files. What minification does is remove all the whitespaces, comments and all other unnecessary characters from code. And what I mean by unnecessary is all the stuff that the computer doesn&rsquo;t need to run your script.</p>
+
+<p>To keep our <code>build.xml</code> file dry we will create a generalized task in which other tasks that&rsquo;s specifically made for minifying css or javascript files will call. Think of this like declaring a function. So the name of the task will be <code>minify_css_js</code> to indicate that this is a generalized task that can be used later on to minify css or javascript files.</p>
+
+<p>```
+<target name="minify_css_js"></p>
+
+<pre><code>&lt;java jar="/usr/bin/yuicompressor.jar" fork="true"&gt;
+    &lt;arg value="${file}" /&gt;
+    &lt;arg value="-o" /&gt;
+    &lt;arg value="${file}" /&gt;
+&lt;/java&gt;
+&lt;echo&gt;${file}&lt;/echo&gt; 
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>Inside it will be a <code>java</code> tag to tell ant that we want to execute a java class. In this case we want to use <a href="http://yui.github.io/yuicompressor/">yui compressor</a>. The yui compressor has an executable jar file that you can use to minify css or javascript files so its perfect for our needs. With the <code>java</code> tag we specify 2 attributes: the <code>jar</code> in which we pass in the location of the executable jar file and the <code>fork</code> attribute takes up a boolean value, specifying <code>true</code> will tell ant to execute the jar file in another java VM separate from the one that runs ant itself.</p>
+
+<p>Before we move on further let&rsquo;s examine how the <code>yuicompressor.jar</code> file can be executed from the command line:</p>
+
+<p><code>
+java -jar yuicompressor.jar script.js -o script.min.js
+</code></p>
+
+<p>As you can see from the above command it takes up 2 arguments the input which is <code>script.js</code> and the name of the output file which is <code>script.min.js</code>.</p>
+
+<p>Going back to the <code>minify_css_js</code> task we now have an idea what the following line does is basically the same as what we are doing when executing the command from the terminal. So the first <code>arg</code> tag is the input file, the second <code>arg</code> tag is for specifying the output option, and the third one is for the output file. As you can see we are using the same variable for the output and input file so this means that they will have the same filename. The value for the <code>file</code> variable will be supplied from the task that will call this task so you can think of it as the arguments for a function:</p>
+
+<p><code>
+&lt;arg value="${file}" /&gt;
+&lt;arg value="-o" /&gt;
+&lt;arg value="${file}" /&gt;
+</code></p>
+
+<p>Next create the task that will minify css files. Give it a name of <code>minify_css</code>. It will take a <code>depends</code> attribute. This tells ant to execute the task that is specified as a value for this attribute first before executing this task. In this case this will tell ant to execute the <code>concat_css</code> task before executing this task. Inside it is the <code>antcall</code> tag, this tells ant to execute the task specified as the value for the <code>target</code> attribute, in this case this will execute the <code>minify_css_js</code> task that we created earlier. Inside it we can pass the arguments that the <code>minify_css_js</code> task needs to work. We can do that using the <code>param</code> tag. The value of the <code>name</code> attribute for the <code>param</code> tag should be the same as the value of the <code>value</code> attribute for the <code>arg</code> tag in the main task. And then the <code>value</code> attribute for the <code>param</code> task would be the actual file path to the minified css file:</p>
+
+<p>```
+<target name="minify_css" depends="concat_css"></p>
+
+<pre><code>&lt;antcall target="minify_css_js"&gt;
+    &lt;param name="file" value="${dist_dir}/css/style.css" /&gt;
+&lt;/antcall&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>The task for minifying javascript file would have the same pattern:</p>
+
+<p>```
+<target name="minify_js" depends="concat_js"></p>
+
+<pre><code>&lt;antcall target="minify_css_js"&gt;
+    &lt;param name="file" value="${dist_dir}/js/script.js" /&gt;
+&lt;/antcall&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>Next is the task for minifying the html. Its basically the same as the 2 previous tasks only this time we are directly specifying the values that we need for the input and output since we are using a different jar file (<code>htmlcompressor.jar</code>):</p>
+
+<p>```
+<target name="minify_html"></p>
+
+<pre><code>&lt;java jar="/usr/bin/htmlcompressor.jar" fork="true"&gt;
+    &lt;arg value="index.html" /&gt;
+    &lt;arg value="-o" /&gt;
+    &lt;arg value="${dist_dir}/index.html" /&gt;
+&lt;/java&gt;
+&lt;echo&gt;${file}&lt;/echo&gt; 
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>You can download the htmlcompressor jar file from <a href="https://code.google.com/p/htmlcompressor/downloads/list">google code&rsquo;s html compressor download page</a>.</p>
+
+<h6>Compressing Images</h6>
+
+<p>Next is compressing images. Unlike the other tasks that we have used so far this will take a little bit of work.</p>
+
+<p>First you have to install <a href="http://optipng.sourceforge.net/">optipng</a>.</p>
+
+<p>In Ubuntu and other debian based Linux distribution you can install optipng by executing the following commands:</p>
+
+<ol>
+<li><code>wget --quiet http://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-0.7.3/optipng-0.7.4.tar.gz</code></li>
+<li><code>tar xf optipng-0.7.3.tar.gz</code></li>
+<li><code>cd optipng-0.7.4</code></li>
+<li><code>./configure &gt; /dev/null 2&gt;&amp;1</code></li>
+<li><code>make &gt; /dev/null 2&gt;&amp;1</code></li>
+<li><code>cd ..</code></li>
+<li><code>cp optipng-0.7.3/src/optipng/optipng /usr/bin/</code></li>
+</ol>
+
+
+<p>The commands above will build optipng from source. Be sure to use the current version of optipng when executing the <code>wget</code> command. If you don&rsquo;t know what the current version is then visit the <a href="http://optipng.sourceforge.net/">official sourceforge page of the optipng project</a>.</p>
+
+<p>For Mac OS X users you can install it with Homebrew:</p>
+
+<p><code>
+brew install optipng
+</code></p>
+
+<p>And for Windows you can simply download the Windows (32-bit) build for optipng then extract the <code>zip</code> file and then include the path to the <code>optipng.exe</code> file into your <a href="http://kyokasuigetsu25.wordpress.com/2010/10/29/how-to-set-environment-variables/">environment path</a>.</p>
+
+<p>Next clone the <a href="https://github.com/znerd/optipng-ant-task">optipng ant task project</a> using the following command:</p>
+
+<p><code>
+git clone https://github.com/znerd/optipng-ant-task.git
+</code></p>
+
+<p>Note that you must have git installed on your system to execute the command above. If you don&rsquo;t have git then just download the <code>zip</code> file from <a href="https://github.com/znerd/optipng-ant-task">their github page</a> then extract it in your working directory.</p>
+
+<p>After that <code>cd</code> into the cloned github repo:</p>
+
+<p><code>
+cd optipng-ant-task
+</code></p>
+
+<p>Then execute <code>ant jar</code>. This will create the <code>optipng-ant-task.jar</code> file under the <code>build</code> directory of the <code>optipng-ant-task</code>.</p>
+
+<p>Once that&rsquo;s successful you can then create the corresponding task:</p>
+
+<p>```
+<target name="minify_img"></p>
+
+<pre><code>&lt;taskdef name="optipng" classname="com.pensioenpage.jynx.optipng.OptiPNGTask" classpath="optipng-ant-task/build/optipng-ant-task.jar" /&gt;
+&lt;optipng dir="img" todir="dist/img" /&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>The only thing that you need to modify in the task above is the <code>dir</code> and <code>todir</code> attribute for the <code>optipng</code> tag. Those 2 attributes lets you specify the source path and destination path for the images.</p>
+
+<p>If you have cloned or downloaded the optipng-ant-task under a different directory then you might also need to modify the value for the <code>classpath</code> attribute under the <code>taskdef</code> tag to include the actual path to the <code>optipng-ant-task.jar</code> file.</p>
+
+<h6>Cleaning up</h6>
+
+<p>Next is the task for cleaning up the <code>dist</code> directory. Apache ant already comes with a <code>delete</code> task so we can just call it directly by specifying the path to the directory that we want to delete in the <code>dir</code> attribute, in this case we just want to delete the <code>dist_dir</code>:</p>
+
+<p>```
+<target name="delete_existing" depends="get_config"></p>
+
+<pre><code>&lt;delete dir="${dist_dir}" /&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<h6>Recreating</h6>
+
+<p>After we delete the <code>dist</code> directory we would also need to create it back. The sole purpose of the task for deleting the <code>dist</code> directory and creating it again is to clean up all the files that are no longer needed. This can happen quite often when we change the dependencies of our project. Of course this task will depend on the the <code>delete_existing</code> task to be executed first. Again were using a built-in ant task called <code>mkdir</code> to create the <code>css</code> and <code>js</code> directories under the <code>dist</code> dir:</p>
+
+<p>```
+<target name="create_new" depends="delete_existing"></p>
+
+<pre><code>&lt;mkdir dir="${dist_dir}/css" /&gt;
+&lt;mkdir dir="${dist_dir}/js" /&gt;
+</code></pre>
+
+<p></target>
+```</p>
+
+<p>That&rsquo;s it! Once you&rsquo;re happy with your <code>build.xml</code> file you can just call <code>ant</code> in your working directory and ant will do its thing. If you want to learn more about ant be sure to check out the resources below.</p>
+
+<h5>Resources for learning Ant</h5>
+
+<ul>
+<li><a href="http://ant.apache.org/manual/index.html">Ant Manual</a></li>
+<li><a href="http://code.tutsplus.com/tutorials/automate-your-projects-with-apache-ant--net-18595">Automate your Projects with Apache Ant</a></li>
+<li><a href="http://www.julienlecomte.net/blog/2007/09/16/">Building Web Applications with Apache Ant</a></li>
+</ul>
+
+
+<h4>Grunt</h4>
+
+<p>Another tool that we can use to automate mundane web development tasks is Grunt. Just like what the name sounds like Grunt is your friendly task runner that will do your bidding for you. Just tell it what specific tasks to run and it will do it for you. Here are some tasks that Grunt allows you to run:</p>
+
+<ul>
+<li><strong>linting</strong> &ndash; this allows you to determine common errors in your code or check if follows a specific coding standard.</li>
+<li><strong>testing</strong> &ndash; this allows you to run tests on your code.</li>
+<li><strong>compiling</strong> &ndash; this allows you to compile languages such as Coffeescript into JavaScript, LESS or SASS into CSS, Mustache or Handlebars templates into JavaScript, etc.</li>
+<li><strong>minifying</strong> &ndash; this allows you to minify source code. Minifying is the process of removing unnecessary characters in a source code. Things such as whitespaces, line breaks, optional block delimiters and comments are removed by using minification.</li>
+<li><strong>concatenating</strong> &ndash; this allows you to concatenate related source code into a single file. This improves performance because instead of requesting several files from the server there will be only one request made. Each requested file carries a certain amount of latency therefore minimizing the number of files requested means lesser latency this then leads to faster download times.</li>
+<li><strong>image compression</strong> &ndash; this allows you to compress image sizes. Again this has something to do with improving performance.</li>
+<li><strong>benchmarking</strong> &ndash; this allows you measure the performance of your website based on specific standards and best practices.</li>
+<li><strong>server</strong> &ndash; this allows you to serve the files in your project so you can access it through your browser.</li>
+<li><strong>watcher</strong> &ndash; watches changes in your project and automatically calls linting, minifying and concatenating tasks.</li>
+</ul>
+
+
+<h5>Installing Grunt</h5>
+
+<p>Before you can install grunt you first need to have <a href="http://nodejs.org/download/">node.js</a> installed. Grunt is preferred to be installed globally so you can use it on all of your projects. That is specified by using the <code>-g</code> option. Execute the following command in your terminal to install grunt:</p>
+
+<p><code>
+npm install -g grunt-cli
+</code></p>
+
+<p>Note that you might need to prefix it with <code>sudo</code> or any command that allows you to run a specific command as an administrator if you get any errors when installing grunt.</p>
+
+<h5>Package.json</h5>
+
+<p>The <code>package.json</code> file is where we specify project details. Things such as the project name, version, author and dependencies can be added from this file. Here&rsquo;s an example <code>package.json</code> file:</p>
+
+<p>```
+{
+  &ldquo;name&rdquo;: &ldquo;my-superawesomeproject&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.1&rdquo;,
+  &ldquo;author&rdquo;: &ldquo;Hitler&rdquo;,
+  &ldquo;devDependencies&rdquo;: {</p>
+
+<pre><code>"grunt": "~0.4.2",
+"grunt-contrib-watch": "~0.5.3",
+"grunt-contrib-htmlmin": "~0.2.0",
+"grunt-contrib-jshint": "~0.6.3"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Note that if you&rsquo;re reading this 1 or more years later after the first time I published this be sure to use the current version of the plugins, a simple Google search will give you the version that you need. Better yet start with an empty <code>devDependencies</code> object and install the plugins by explicitly using their name. This ensures the the latest version is installed:</p>
+
+<p><code>
+npm install grunt grunt-contrib-htmlmin grunt-contrib-jshint grunt-contrib-watch --save-dev
+</code></p>
+
+<p>Going back to <code>package.json</code> file. Breaking it down:</p>
+
+<ul>
+<li><code>name</code> &ndash; a machine-friendly name for your project.</li>
+<li><code>version</code> &ndash; the version number of your project.</li>
+<li><code>author</code> &ndash; you.</li>
+<li><code>devDependencies</code> &ndash; the grunt tasks that you want to use in your project.</li>
+</ul>
+
+
+<p>Under the <code>devDependencies</code> we specified the task that we want grunt to use. The first one should be <code>grunt</code> as this is the main npm module. You can consider this the framework in which the plugins build upon. The current version as of the time of writing of this tutorial is <code>0.4.2</code> so we specified that. You can determine the grunt version installed by executing the following command:</p>
+
+<p><code>
+grunt --version
+</code></p>
+
+<p>This will output 2 versions of grunt. One for the <code>grunt-cli</code> and one for the core grunt. The version returned for the core grunt is what you need to input in your <code>package.json</code> file.</p>
+
+<p>Once you&rsquo;re happy with your <code>package.json</code> file simply run <code>npm install</code> on your current working directory to install all the packages that you&rsquo;ve specified under <code>devDependencies</code>.
+After the installation you will have a <code>node_modules</code> folder created in the root of your working directory. It will have contents similar to the following:</p>
+
+<p><img src="/images/posts/2014-03-09-a-whirlwind-tour-of-web-developer-tools-build-tools/node-modules.png" alt="grunt tasks" /></p>
+
+<p>If you want to install more tasks you can visit the <a href="http://gruntjs.com/plugins">grunt plugins</a> page. You can simply refer to the name when installing. Just prefix the name that you see from the plugins page with <code>grunt</code>. And be sure that you&rsquo;re running this in your working directory and add the <code>--save-dev</code> option to let npm know that it should update the <code>package.json</code> file to include the grunt plugin under the <code>devDependencies</code> after its done with the installation. In the example below were installing the <code>contrib-uglify</code>:</p>
+
+<p><code>
+npm install grunt-contrib-uglify --save-dev
+</code></p>
+
+<h5>Gruntfile</h5>
+
+<p>The Gruntfile is were all the magic happens. This is where you specify all the tasks that grunt needs to do. Here&rsquo;s the <code>Gruntfile.js</code> that utilizes the packages that we installed above:</p>
+
+<p>```javascript
+module.exports = function(grunt) {</p>
+
+<p>  grunt.initConfig({</p>
+
+<pre><code>pkg: grunt.file.readJSON('package.json'),
+jshint: {
+  options: {
+    jshintrc: '.jshintrc'
+  },
+  all: ['Gruntfile.js', 'js/*.js']
+},
+htmlmin: {                                    
+dist: {                                    
+  options: {                                
+    removeComments: true,
+    collapseWhitespace: true,
+        removeRedundantAttributes: true
+ },
+ expand: true,
+ src: ['*.html'],
+ dest: 'dist/'
+   }
+},
+watch: {
+  js: {
+    files: [
+      'js/*.js',
+      'Gruntfile.js'
+    ],
+    tasks: ['jshint']
+  },
+  html: {
+    files: [
+        '*.html'
+    ],
+    tasks: ['htmlmin']
+  }
+}   
+</code></pre>
+
+<p>  });</p>
+
+<p>  grunt.loadNpmTasks(&lsquo;grunt-contrib-watch&rsquo;);
+  grunt.loadNpmTasks(&lsquo;grunt-contrib-jshint&rsquo;);
+  grunt.loadNpmTasks(&lsquo;grunt-contrib-htmlmin&rsquo;);</p>
+
+<p>  grunt.registerTask(&lsquo;default&rsquo;, [&lsquo;watch&rsquo;]);
+};
+```</p>
+
+<p>Ok so that&rsquo;s a bunch of code I&rsquo;ve just thrown at you. But don&rsquo;t be intimidated I&rsquo;ll walk you through what it does line by line.</p>
+
+<p>First we have the grunt wrapper. Every gruntfile should start with this particular code:</p>
+
+<p><code>
+module.exports = function(grunt) {
+  //all things grunt here
+};
+</code></p>
+
+<p>If you&rsquo;re familiar with node this is how custom functions is usually defined with node. This simply means that all of the code defined inside of it depends on the grunt module that we installed.</p>
+
+<p>Next is the project configuration. We specify it inside the <code>initConfig</code> function:</p>
+
+<p><code>
+grunt.initConfig({
+  //project configuration here
+});
+</code></p>
+
+<p>Next specify the package file that were using:</p>
+
+<p><code>
+pkg: grunt.file.readJSON('package.json')
+</code></p>
+
+<p>This allows us to refer to the project details inside the gruntfile later on. An example would be using the package name as the filename for a JavaScript output file:</p>
+
+<p><code>
+'&lt;%= pkg.name %&gt;.js'
+</code></p>
+
+<p>You can also refer to other information that&rsquo;s available in your <code>package.json</code> all through the <code>pkg</code> variable:</p>
+
+<ul>
+<li><code>pkg.author</code> &ndash; returns the author&rsquo;s name</li>
+<li><code>pkg.version</code> &ndash; returns the project&rsquo;s version number</li>
+</ul>
+
+
+<p>Just be sure to wrap it in ruby style template tags and wrap it in quotes if you want to use these values:</p>
+
+<p><code>
+'&lt;%= pkg.version %&gt;'
+</code></p>
+
+<p>As an additional note you can also apply this technique when referring to information inside the gruntfile itself. We can see this in action later.</p>
+
+<p>Now were ready to actually give instructions as to what each task will do.</p>
+
+<h6>JSHint</h6>
+
+<p>First is the <a href="https://github.com/gruntjs/grunt-contrib-jshint">jshint</a> task. This allows us to check the quality of our code against a specific coding standard. Things like always using identity (<code>===</code>) operator instead of the equality (<code>==</code>) operator when comparing values.</p>
+
+<p>Note that information about how to use a specific task is always available on the github page for a specific task. Here&rsquo;s the one for <a href="https://github.com/gruntjs/grunt-contrib-jshint">jshint</a>. Under the <code>jshint</code> task we have the following:</p>
+
+<p>```
+jshint: {
+  options: {</p>
+
+<pre><code> jshintrc: '.jshintrc'
+</code></pre>
+
+<p>   },
+   all: [&lsquo;Gruntfile.js&rsquo;, &lsquo;js/*.js&rsquo;]
+}
+```</p>
+
+<p>Here&rsquo;s a breakdown of the <code>jshint</code> configuration:</p>
+
+<ul>
+<li><code>options</code> &ndash; this is where you can specify all the options that jshint will use. In the example we just supplied <code>jshintrc</code> as the option because we want to be as portable as possible. Specifying <code>jshintrc</code> allows us to use a <code>.jshintrc</code> file as the source of configuration. Inside the <code>.jshintrc</code> file we can specify the following options:</li>
+</ul>
+
+
+<p><code>
+{
+ "camelcase": true,
+ "curly": true,
+ "eqeqeq": true,
+ "plusplus": true
+}
+</code></p>
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>camelcase</code> &ndash; force all variable names to use camelCase or UPPER_CASE with underscores.</li>
+<li><code>curly</code> &ndash; requires you to always put curly braces to wrap blocks even if its optional.</li>
+<li><code>eqeqeq</code> &ndash; requires you to use <code>===</code> instead of <code>==</code> annd <code>!==</code> instead of <code>!=</code> when comparing values.</li>
+<li><code>plusplus</code> &ndash; requires you to use alternatives to <code>++</code> when incrementing a value.</li>
+</ul>
+
+
+<p>More information on the available options can be found <a href="http://www.jshint.com/docs/options/">here</a>.</p>
+
+<p>Going back to our gruntfile under the jshint configuration we have the <code>all</code> attribute where we can specify an array of files or paths that we want to lint. In our example we want to lint <code>Gruntfile.js</code> and all the javascript files inside the <code>js</code> directory:</p>
+
+<p><code>
+all: ['Gruntfile.js', 'js/*.js']
+</code></p>
+
+<h6>HTML Min</h6>
+
+<p>Next we have the <a href="https://github.com/gruntjs/grunt-contrib-htmlmin">HTML min</a> task. This allows us to compress HTML files by removing whitespaces, line breaks, comments and other unnecessary attributes. Here&rsquo;s the configuration that we used for htmlmin:</p>
+
+<p>```
+htmlmin: {</p>
+
+<pre><code>dist: {                                    
+    options: {                                
+        removeComments: true,
+        collapseWhitespace: true,
+                    removeRedundantAttributes: true
+    },
+    expand: true,
+    src: ['*.html'],
+    dest: 'dist/'
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>dist</code> &ndash; this refers to distribution or production. With htmlmin you can specify different options for <code>dev</code> or <code>dist</code>.</li>
+<li><code>options</code> &ndash; these are the options for a specific environment. There are a number of options that we can use but I only chose <code>removeComments</code>,  <code>collapseWhitespace</code>, and <code>removeRedundantAttributes</code> for this particular project. This is because all the other options that are available can be dangerous. You know what I mean when you check out the <a href="https://github.com/gruntjs/grunt-contrib-htmlmin">page for htmlmin</a>.</li>
+<li><code>expand</code> &ndash; allows you to use wildcards for <code>src</code> and <code>dest</code>.</li>
+<li><code>src</code> &ndash; the directory in which the source HTML files are stored. In the example above were simply telling htmlmin to use all the html files in the current working directory as the source.</li>
+<li><code>dest</code> &ndash; the directory in which all the files processed by htmlmin is saved.</li>
+</ul>
+
+
+<h6>Watch</h6>
+
+<p>Lastly there&rsquo;s <a href="https://github.com/gruntjs/grunt-contrib-watch">watch</a>. This allows you to watch changes to specific files and automatically call up a specific grunt task when a file is updated. Here&rsquo;s the configuration for the watch task:</p>
+
+<p>```
+watch: {
+  js: {</p>
+
+<pre><code>files: [
+  'js/*.js',
+  'Gruntfile.js'
+],
+tasks: ['jshint']
+</code></pre>
+
+<p>  },
+  html: {</p>
+
+<pre><code>files: [
+    '*.html'
+],
+tasks: ['htmlmin']
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Breaking it down we can see that under the <code>watch</code> task we have defined <code>js</code> and <code>html</code>. This is a means of separating which specific tasks to run for a specific project asset. Under the <code>js</code> we can specify an array of file paths and files. In this case we have specified all the files under the <code>js</code> directory as well as the gruntfile.</p>
+
+<p>If you remember earlier we have done the same thing with the jshint task so if you don&rsquo;t want to repeat yourself you can also do something like:</p>
+
+<p><code>
+files: '&lt;%= jshint.all %&gt;'
+</code></p>
+
+<p>This passes whatever it is that&rsquo;s inside the <code>all</code> attribute under the <code>jshint</code> object.</p>
+
+<p>Then under the <code>tasks</code> we can specify any number of tasks to execute targeting the files that we specified. In this case were simply going to execute the <code>jshint</code> task. By default the watch task executes the task that you specify whenever you hit <code>ctrl + s</code> on any targeted file.</p>
+
+<p>Going back to the watch task, under the <code>html</code> we simply tell watch to target all the html files under the current working directory and the task to execute will be <code>htmlmin</code>.</p>
+
+<p>Ok were almost done, the only thing left to do now is to let grunt know what specific tasks we want to load. We can do that using the <code>loadNpmTasks</code> command.</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-contrib-watch');
+grunt.loadNpmTasks('grunt-contrib-jshint');
+grunt.loadNpmTasks('grunt-contrib-htmlmin');
+</code></p>
+
+<p>You can do it this way or install <a href="https://github.com/sindresorhus/load-grunt-tasks">load-grunt-tasks</a>. This allows you to automatically load whatever it is that&rsquo;s inside the <code>node_modules</code> directory of your current working directory.</p>
+
+<p>You can install it by using the following command:</p>
+
+<p><code>
+npm install --save-dev load-grunt-tasks
+</code></p>
+
+<p>Once that&rsquo;s done you can just require load-grunt-tasks:</p>
+
+<p><code>
+require('load-grunt-tasks')(grunt);
+</code></p>
+
+<p>Instead of loading each task manually:</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-contrib-watch');
+grunt.loadNpmTasks('grunt-contrib-jshint');
+grunt.loadNpmTasks('grunt-contrib-htmlmin');
+</code></p>
+
+<p>Going back to running the tasks. After that we can just call it a day with just that and execute the watch task like this:</p>
+
+<p><code>
+grunt watch
+</code></p>
+
+<p>But if you&rsquo;re executing the same command frequently its best practice to tell grunt to use it as a default. You can do that by executing the <code>registerTask</code> function and specifying the default inside an array. Note that you can specify more than one task as the default one.</p>
+
+<p><code>
+grunt.registerTask('default', ['watch']);
+</code></p>
+
+<p>This allows you to just execute <code>grunt</code> and it will automatically run the watch task. Pretty neat!</p>
+
+<p>You can also create aliases for specific grunt tasks using this method:</p>
+
+<p><code>
+grunt.registerTask('hm', ['htmlmin']);
+grunt.registerTask('jh', ['jshint']);
+</code></p>
+
+<p>So when you want to execute the htmlmin task you just have to type in <code>grunt hm</code> instead of <code>grunt htmlmin</code>. But of course if your laziness doesn&rsquo;t permit even this then you can shove your alias inside the <code>.bash_aliases</code> file in your home directory.</p>
+
+<h5>Useful grunt plugins</h5>
+
+<p>Here are some useful grunt plugins:</p>
+
+<h6>General</h6>
+
+<ul>
+<li><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> &ndash; starts a static web server</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a> &ndash; run specific grunt tasks whenever project files are updated</li>
+<li><a href="https://github.com/nDmitry/grunt-autoprefixer">grunt-autoprefixer</a> &ndash; automatically add vendor prefix to css files</li>
+<li><a href="https://github.com/sindresorhus/grunt-shell">grunt-shell</a> &ndash; run shell commands</li>
+</ul>
+
+
+<h6>Code Quality</h6>
+
+<ul>
+<li><a href="https://github.com/yaniswang/grunt-htmlhint">grunt-htmlhint</a> &ndash; validates html files</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-csslint">grunt-contrib-csshint</a> &ndash; lint CSS files</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a> &ndash; lint JavaScript files</li>
+<li><a href="https://github.com/jsoverson/grunt-plato">grunt-plato</a> &ndash; provides static analysis report</li>
+<li><a href="https://github.com/vigetlabs/grunt-complexity">grunt-complexity</a> &ndash; checks the complexity of your JavaScript code</li>
+</ul>
+
+
+<h6>Testing</h6>
+
+<ul>
+<li><a href="https://github.com/kmiyashiro/grunt-mocha">grunt-mocha</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jasmine">grunt-contrib-jasmine</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
+</ul>
+
+
+<h6>Performance Optimization</h6>
+
+<ul>
+<li><a href="https://github.com/gruntjs/grunt-contrib-htmlmin">grunt-contrib-htmlmin</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-cssmin">grunt-contrib-cssmin</a> &ndash; minify css files.</li>
+<li><a href="https://github.com/addyosmani/grunt-uncss">grunt-uncss</a> &ndash; removes unused css.</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-imagemin">grunt-contrib-imagemin</a> &ndash; for compressing images.</li>
+<li><a href="https://github.com/sindresorhus/grunt-svgmin">grunt-svg-min</a> &ndash; minifying svg images.</li>
+<li><a href="https://github.com/somerandomdude/grunt-webp">grunt-webp</a> &ndash; converts images to webp format.</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a> &ndash; minify and concatenate javascript files.</li>
+<li><a href="https://github.com/gmarty/grunt-closure-compiler">grunt-closure-compiler</a> &ndash; can be used as an alternative to grunt-contrib-uglify.</li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-concat">grunt-contrib-concat</a> &ndash; concatenates files.</li>
+</ul>
+
+
+<h5>Resources for learning grunt</h5>
+
+<ul>
+<li><a href="http://gruntjs.com/getting-started">Official Grunt Getting Started Guide</a></li>
+<li><a href="http://coding.smashingmagazine.com/2013/10/29/get-up-running-grunt/">Get Up and Running with Grunt</a></li>
+<li><a href="http://www.sitepoint.com/writing-awesome-build-script-grunt/">Writing an Awesome Build Script with Grunt</a></li>
+<li><a href="http://chrisawren.com/posts/Advanced-Grunt-tooling">Advanced Grunt Tooling</a></li>
+</ul>
+
+
+<h4>Gulp</h4>
+
+<p>Gulp is the new kid on the block when it comes to running tasks. Its basically an alternative to Grunt. Why would you want to use it instead of Grunt? Here&rsquo;s why?</p>
+
+<ul>
+<li>with Gulp your build file is code, not config</li>
+<li>You use standard libraries to do things</li>
+<li>Plugins are simple and do one thing</li>
+<li>Tasks are executed with maximum concurrency</li>
+<li>I/O works the way you picture it</li>
+</ul>
+
+
+<p>That was taken from the <a href="http://slid.es/contra/gulp">Gulp slides</a> by Eric Schoffstall. To sum it up Gulp is easier on the eyes.</p>
+
+<h5>Installing Gulp</h5>
+
+<p>Just like Grunt Gulp can be installed using npm:</p>
+
+<p><code>
+npm install -g gulp
+</code></p>
+
+<p>This install gulp globally.</p>
+
+<p>Now create your working directory if you haven&rsquo;t already done so. Under the root of your working directory create a <code>package.json</code> file and put the following contents:</p>
+
+<p><code>
+{
+  "name": "gulp-test-project",
+  "version": "0.1.0",
+  "author": "Nobunaga",
+  "devDependencies": {
+  }
+}
+</code></p>
+
+<p>Next install gulp locally:</p>
+
+<p><code>
+npm install gulp --save-dev
+</code></p>
+
+<p>Now were ready to install the plugins that we will use. Execute the following:</p>
+
+<p><code>
+npm install gulp-cssmin gulp-imagemin gulp-uglify --save-dev
+</code></p>
+
+<h5>gulpfile.js</h5>
+
+<p>Once everything is installed we can now start using gulp. Just like with grunt gulp uses a file wherein all the tasks that you want to run is specified. The equivalent of <code>Gruntfile.js</code> in the gulp world is <code>gulpfile.js</code> (Yup! I know its shocking). Under the <code>gulpfile.js</code> we have the following:</p>
+
+<p>```
+var gulp = require(&lsquo;gulp&rsquo;);
+var jshint = require(&lsquo;gulp-jshint&rsquo;);
+var imagemin = require(&lsquo;gulp-imagemin&rsquo;);
+var cssmin = require(&lsquo;gulp-cssmin&rsquo;);
+var htmlmin = require(&lsquo;gulp-minify-html&rsquo;);
+var uglify = require(&lsquo;gulp-uglify&rsquo;);</p>
+
+<p>gulp.task(&lsquo;lint_js&rsquo;, function(){
+  gulp.src(&lsquo;js/*.js&rsquo;)</p>
+
+<pre><code>.pipe(jshint())
+.pipe(jshint.reporter('default'))
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;min_html&rsquo;, function() {
+  var opts = {comments: true};
+  gulp.src(&lsquo;*.html&rsquo;)</p>
+
+<pre><code>.pipe(htmlmin(opts))
+.pipe(gulp.dest('dist/'))
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;min_js&rsquo;, function(){
+  gulp.src(&lsquo;js/*.js&rsquo;)</p>
+
+<pre><code>.pipe(uglify({outSourceMap: true}))
+.pipe(gulp.dest('dist/js'))
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;min_css&rsquo;, function(){</p>
+
+<pre><code>gulp.src('css/*.css')
+    .pipe(cssmin())
+    .pipe(gulp.dest('dist/css'))
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;min_img&rsquo;, function(){</p>
+
+<pre><code>gulp.src(['img/*.png', 'img/*.jpg'])
+    .pipe(imagemin())
+    .pipe(gulp.dest('dist/img'))
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;watch&rsquo;, function() {</p>
+
+<pre><code>gulp.watch('js/*.js', ['lint_js', 'min_js']);
+gulp.watch('*.html', ['min_html']);
+gulp.watch('css/*.css', ['min_css']);
+gulp.watch('img/', ['min_img']);
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;default&rsquo;, [&lsquo;watch&rsquo;]);
+gulp.task(&lsquo;min&rsquo;, [&lsquo;min_js&rsquo;, &lsquo;min_css&rsquo;, &lsquo;min_img&rsquo;, &lsquo;min_html&rsquo;]);
+```</p>
+
+<p>Yup! Gulp is really easier on the eyes. It&rsquo;s like were writing code and not config files. The gulpfile has 3 parts. The first part is where we define the plugins that we want to run, the second part is where we specify the configuration for each task, and the third is where we define aliases to the tasks that we want to run.</p>
+
+<p>Breaking it down. Here were loading the tasks using node.js style code:</p>
+
+<p><code>
+var gulp = require('gulp');
+var jshint = require('gulp-jshint');
+var imagemin = require('gulp-imagemin');
+var cssmin = require('gulp-cssmin');
+var htmlmin = require('gulp-minify-html');
+var uglify = require('gulp-uglify');
+</code></p>
+
+<p>Next we define the options for each tasks:</p>
+
+<h6>JS Hint</h6>
+
+<p>To define what a specific task will do we use the <code>task</code> method. This takes up 2 arguments, the first is the alias for the task that we want to run. The second is the actual function to run whenever this task is called. Here were giving the JS hint task an alias of <code>lint_js</code>.</p>
+
+<p>Then under the function we specify it to use all the <code>.js</code> files in the <code>js</code> directory as the source file. We can do this by calling the <code>src</code> method. Note the the <code>src</code> method can take up a string or an array of strings. Another thing that you have to remember is that you can only use globbing patterns and not solo paths like <code>js/</code> or just <code>js</code>. Gulp wouldn&rsquo;t know what to do with just a path you have to specify the actual file extension to target.</p>
+
+<p>Next you call the <code>pipe</code> method to specify the actual task to call when this specific task is run.
+Lastly call the <code>pipe</code> method again to set the jshint reporter to default.</p>
+
+<p>```
+gulp.task(&lsquo;lint_js&rsquo;, function(){
+  gulp.src(&lsquo;js/*.js&rsquo;)</p>
+
+<pre><code>.pipe(jshint())
+.pipe(jshint.reporter('default'))
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>HTML min</h6>
+
+<p>Next is the HTML min task. This will remove all the whitespaces from the targeted html files and save them in your desired output folder. You can also pass in options to remove all the comments, empty and redundant attributes, cdata or quotes. It follows the same pattern as the previous task, only this time we have declared a variable <code>opts</code> that stores the options for this specific task. We have set the <code>comments</code> to <code>true</code>. This will remove all the comments from the minified HTML output. Then we call the <code>src</code> method and pass in <code>*.html</code> which targets all the html files in your working directory. Then we call the <code>pipe</code> method and pass in <code>htmlmin</code> with the options as its argument. Lastly we pipe it again and call the <code>dest</code> method passing in the path to where we want to save the output files. In this case we simply want to save in the <code>dist</code> directory:</p>
+
+<p>```
+gulp.task(&lsquo;min_html&rsquo;, function() {
+  var opts = {comments: true};
+  gulp.src(&lsquo;*.html&rsquo;)</p>
+
+<pre><code>.pipe(htmlmin(opts))
+.pipe(gulp.dest('dist/'))
+</code></pre>
+
+<p>});
+```</p>
+
+<p>If you want to know more about HTML min be sure to check out its <a href="https://github.com/jonathanepollack/gulp-minify-html">Github page</a>.</p>
+
+<h6>Uglify JS</h6>
+
+<p>Next is the Uglify task, this will minify all the targeted JavaScript files and save them in your desired output folder. Again it uses the same pattern as the previous tasks that we have seen so far. <code>src</code> is where you pass in the path of the files that you want to process and <code>dest</code> is where you pass in the destination. The first <code>pipe</code> method call is where you pass in the actual task that you want to call. Here were passing an object to the <code>uglify</code> method which sets <code>outSourceMap</code> to <code>true</code>, what this does is save the source map in the same directory which the final JavaScript file is saved. Source maps basically allows you to debug your minified code. Here&rsquo;s the uglify task:</p>
+
+<p>```
+gulp.task(&lsquo;min_js&rsquo;, function(){
+  gulp.src(&lsquo;js/*.js&rsquo;)</p>
+
+<pre><code>.pipe(uglify({outSourceMap: true}))
+.pipe(gulp.dest('dist/js'))
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Image Min</h6>
+
+<p>Next is the image min task. This time we are passing an array to the <code>src</code> method so that we can target both png&rsquo;s and jpg&rsquo;s:</p>
+
+<p>```
+gulp.task(&lsquo;min_img&rsquo;, function(){</p>
+
+<pre><code>gulp.src(['img/*.png', 'img/*.jpg'])
+    .pipe(imagemin())
+    .pipe(gulp.dest('dist/img'))
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Watch</h6>
+
+<p>Unlike grunt where we had to install the watch task separately gulp has it by default. You can use it by calling the <code>watch</code> method and passing in the files that you want to target as the first argument and the tasks that you want to run when the targeted files are updated:</p>
+
+<p>```
+gulp.task(&lsquo;watch&rsquo;, function() {</p>
+
+<pre><code>gulp.watch('js/*.js', ['lint_js', 'min_js']);
+gulp.watch('*.html', ['min_html']);
+gulp.watch('css/*.css', ['min_css']);
+gulp.watch('img/', ['min_img']);
+</code></pre>
+
+<p>});
+```</p>
+
+<h6>Defining aliases</h6>
+
+<p>Lastly we define our aliases. Again we can use the <code>task</code> method for this. This time it takes the alias that we want to give to a specific task that we have already defined and then a string or an array of tasks that gulp will run when the specific alias is called. In the example below were telling gulp to use the <code>watch</code> task as its default task. This means that when we call either <code>gulp default</code> or just <code>gulp</code> from the command-line it will execute the watch task for us. On the second line we specify a minification task giving it an alias of <code>min</code>. This will simply call the tasks for minifying html, css, javascript and images:</p>
+
+<p><code>
+gulp.task('default', ['watch']);
+gulp.task('min', ['min_js', 'min_css', 'min_img', 'min_html']);
+</code></p>
+
+<h5>Useful Gulp Plugins</h5>
+
+<h6>General</h6>
+
+<ul>
+<li><a href="https://github.com/peter-vilja/gulp-clean">gulp-clean</a> &ndash; removes files and folders</li>
+<li><a href="http://github.com/wearefractal/gulp-concat">gulp-concat</a> &ndash; concatenate files</li>
+<li><a href="http://github.com/lazd/gulp-replace.git">gulp-replace</a> &ndash; replaces strings</li>
+</ul>
+
+
+<h5>Code Quality</h5>
+
+<ul>
+<li><a href="http://github.com/wearefractal/gulp-jshint">gulp-jshint</a> &ndash; jshint plugin for gulp</li>
+<li><a href="https://github.com/sindresorhus/gulp-plato">gulp-plato</a> &ndash; generate complexity analysis reports</li>
+<li><a href="https://github.com/dylanb/gulp-coverage">gulp-coverage</a> &ndash; instrument and generate code coverage independent of test runner</li>
+<li><a href="https://github.com/sindresorhus/gulp-jscs">gulp-jscs</a> &ndash; checks JavaScript code style with jscs</li>
+<li><a href="https://github.com/bezoerb/gulp-htmlhint">gulp-htmllint</a> &ndash; checks html files</li>
+</ul>
+
+
+<h5>Testing</h5>
+
+<ul>
+<li><a href="https://github.com/sindresorhus/gulp-mocha">gulp-mocha</a></li>
+<li><a href="https://github.com/sindresorhus/gulp-jasmine">gulp-jasmine</a></li>
+<li><a href="https://github.com/jonkemp/gulp-qunit">gulp-qunit</a></li>
+</ul>
+
+
+<h5>Performance Optimization</h5>
+
+<ul>
+<li><a href="https://github.com/jonschlinkert/gulp-htmlmin">gulp-htmlmin</a> &ndash; minify html files</li>
+<li><a href="https://github.com/chilijung/gulp-cssmin/">gulp-cssmin</a> &ndash; minifying css</li>
+<li><a href="https://github.com/ben-eb/gulp-uncss">gulp-uncss</a> &ndash; remove unused css</li>
+<li><a href="https://github.com/sindresorhus/gulp-imagemin">gulp-imagemin</a> &ndash; compressing image sizes</li>
+<li><a href="https://github.com/ben-eb/gulp-svgmin">gulp-svgmin</a> &ndash; compressing svg images</li>
+<li><a href="https://github.com/sindresorhus/gulp-webp">gulp-webp</a> &ndash; converting images to webp format</li>
+<li><a href="https://github.com/terinjokes/gulp-uglify">gulp-uglify</a> &ndash; minify JavaScript files</li>
+<li><a href="https://github.com/chilijung/gulp-jsmin/">gulp-jsmin</a> &ndash; minify JavaScript files</li>
+</ul>
+
+
+<h5>Resources for learning gulp</h5>
+
+<ul>
+<li><a href="http://travismaynard.com/writing/getting-started-with-gulp">Getting Started with Gulp</a></li>
+</ul>
+
+
+<h4>Rake</h4>
+
+<p>Lastly there&rsquo;s Rake. Rake is a build tool for Ruby.</p>
+
+<h5>Installing Rake</h5>
+
+<p>Rake depends on Ruby and Ruby Gems to be installed. You can install Ruby by using <a href="http://rvm.io/">RVM</a>. You can get RVM using curl. You can install curl in Ubuntu and other debian based Linux distributions by executing the following command:</p>
+
+<p><code>
+sudo apt-get install curl
+</code></p>
+
+<p>In Windows all you have to do is download the zip file from the <a href="http://curl.haxx.se/download.html">Curl downloads page</a>, extract it and <code>cd</code> into the extracted directory. You can then use curl from that directory.</p>
+
+<p>For Mac OS X users you can install it with homebrew (yes you can pretty much install everything using homebrew, and yes I know you&rsquo;re probably tired of me mentioning homebrew every time we need to install something).</p>
+
+<p><code>
+brew install curl
+</code></p>
+
+<p>After installing curl we can then use the <code>curl</code> command to get and install rvm:</p>
+
+<p><code>
+curl -L https://get.rvm.io | bash -s stable
+</code></p>
+
+<p>Next we tell rvm to install ruby 1.9.3 (you can also use a later version if you want):</p>
+
+<p><code>
+rvm install 1.9.3
+</code></p>
+
+<p>Then tell rvm to use the version that you just installed:</p>
+
+<p><code>
+rvm use 1.9.3
+</code></p>
+
+<p>Next install ruby gems:</p>
+
+<p><code>
+rvm rubygems latest
+</code></p>
+
+<p>Lastly install rake:</p>
+
+<p><code>
+gem install rake
+</code></p>
+
+<h5>Using Rake</h5>
+
+<p>To use rake all you have to do is create a new <code>Rakefile</code> in the root of your project and put the following contents:</p>
+
+<p>```ruby
+require &lsquo;rake&rsquo;</p>
+
+<p>task :default => :concat_files</p>
+
+<p>dist_dir = &lsquo;dist&rsquo;</p>
+
+<p>task :create_dir => :delete_dir do</p>
+
+<pre><code>if !File.exists? dist_dir
+    Dir.mkdir(dist_dir, 0700)
+end
+dirs = ['js', 'css', 'img']
+dirs.each do |dir_name|
+    Dir.mkdir(dist_dir + '/' + dir_name, 0700)
+    puts "creating " + dist_dir + '/' + dir_name
+end
+puts "done creating dist directory"
+</code></pre>
+
+<p>end</p>
+
+<p>task :delete_dir do</p>
+
+<pre><code>Dir[dist_dir + '/*'].each do |dir_name|
+    Dir.rmdir dir_name
+    puts dir_name + " is deleted"
+end
+</code></pre>
+
+<p>end</p>
+
+<p>task :concat_files => :create_dir do</p>
+
+<pre><code>out = ""
+js_files = ['jquery', 'main']
+js_files.each do |file|
+    out += File.read('js/' + file + '.js')
+end
+
+File.open('dist/js/script.js', 'a') { |file|
+    file.write(out)
+}
+puts "done concatenating javascript files"
+
+out = ""
+css_files = ['normalize', 'main']
+css_files.each do |file|
+    out += File.read('css/' + file + '.css')
+end
+File.open('dist/css/style.css', 'a'){ |file|
+    file.write(out)
+}
+puts "done concatenating css files"
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Breaking it down, this line allows you to use the rake gem that you installed earlier in your <code>Rakefile</code>:</p>
+
+<p><code>
+require 'rake'
+</code></p>
+
+<p>Next is the line where we specify the default task. Rake allows you to specify a default task, a default task will automatically run when you execute the <code>rake</code> command from your terminal. In this case the default task is <code>concat_files</code>.</p>
+
+<p><code>
+task :default =&gt; :concat_files
+</code></p>
+
+<p>Next we set the distribution directory to <code>dist</code>. This is where the files processed by rake will be saved.</p>
+
+<p><code>
+dist_dir = 'dist'
+</code></p>
+
+<p>Next we define the <code>create_dir</code> method. What this does is create the <code>dist</code> directory if it doesn&rsquo;t already exists. We use the <code>mkdir</code> method in the <code>Dir</code> class to create the <code>dist</code> directory. This takes up 2 arguments: the path to the directory that you want to create and then the file permissions. If you&rsquo;re not familiar with file permissions in Unix systems <code>0700</code> basically means that the creator of the directory will have write(4), read(2), and execute(1) permissions.
+Next we declare an array that contains the names of the folders that we want to create inside the <code>dist</code> directory. We simply loop over this array using the <code>each</code> method and then call the <code>mkdir</code> method to create those. Once its created it will output to the terminal the name of the directory that was created. Finally we also output that the <code>dist</code> directory has been created.</p>
+
+<p>```
+task :create_dir => :delete_dir do</p>
+
+<pre><code>if !File.exists? dist_dir
+    Dir.mkdir(dist_dir, 0700)
+end
+dirs = ['js', 'css', 'img']
+dirs.each do |dir_name|
+    Dir.mkdir(dist_dir + '/' + dir_name, 0700)
+    puts "creating " + dist_dir + '/' + dir_name
+end
+puts "done creating dist directory"
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Before we move on to the next task you might be wondering what the fat arrow (<code>=&gt;</code>) does and why did we place <code>:delete_dir</code> after it. Well the answer is that this lets us specify a task that the task that were defining depends on. So this basically means that the <code>create_dir</code> task depends on the <code>delete_dir</code> task. This means that rake will execute the <code>delete_dir</code> task first before executing the <code>create_dir</code> task.</p>
+
+<p><code>
+task :create_dir =&gt; :delete_dir do
+</code></p>
+
+<p>You can then use this knowledge to specify the order of execution of different tasks. For example if we have task A, task B, task C, and task D. And we want them to execute in the following order:</p>
+
+<p><code>
+A
+B
+C
+D
+</code></p>
+
+<p>Converting our requirements to code it will look like the following:</p>
+
+<p>```
+require &lsquo;rake&rsquo;</p>
+
+<p>task :default => :D</p>
+
+<p>task :D => :C do</p>
+
+<pre><code>puts "this is task D\n"
+</code></pre>
+
+<p>end</p>
+
+<p>task :C => :B do</p>
+
+<pre><code>puts "this is task C\n"
+</code></pre>
+
+<p>end</p>
+
+<p>task :B => :A do</p>
+
+<pre><code>puts "this is task B\n"
+</code></pre>
+
+<p>end</p>
+
+<p>task :A do</p>
+
+<pre><code>puts "this is task A\n"
+</code></pre>
+
+<p>end
+```</p>
+
+<p>As you can see from the code above we have specified the default task to the <code>D</code> task, but the <code>D</code> task depends on <code>C</code> task and the <code>C</code> task depends on <code>B</code> task, finally <code>B</code> task depends on <code>A</code> task. So this means that <code>A</code> task ends up executed first and then <code>B</code> and so on. You can see from the screenshot below that indeed the tasks were executed in the order that we wanted:</p>
+
+<p><img src="/images/posts/2014-03-09-a-whirlwind-tour-of-web-developer-tools-build-tools/rake-output.png" alt="rake output" /></p>
+
+<p>Going back to our original <code>Rakefile</code> let&rsquo;s now go through what the <code>delete_dir</code> task does:</p>
+
+<p>```
+task :delete_dir do</p>
+
+<pre><code>Dir[dist_dir + '/*'].each do |dir_name|
+    Dir.rmdir dir_name
+    puts dir_name + " is deleted"
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>The code is very straightforward. What were doing in the above code is looping through all the directories in the <code>dist</code> directory and then delete them using the <code>rmdir</code> method in the <code>Dir</code> class. The <code>rmdir</code> method takes up a single argument which is the name of the directory that you want to delete. Once its deleted the directory in the current iteration of the loop it just outputs into the terminal that the directory is deleted.</p>
+
+<p>Lastly let&rsquo;s go through the <code>concat_files</code> method. What this does is concatenate the contents of the files that you specify. So all the javascript files gets concatenated and all the css files gets concatenated. This method depends on the <code>create_dir</code> method to be executed first. The first thing that were doing in this task is declaring the <code>out</code> variable and instantiate it with an empty string value. Next we define the filenames of the javascript files that we want to concatenate in order. Here we have declared <code>jquery</code> and then <code>main</code> which means that the contents of the <code>jquery</code> file will come first and then the contents of the <code>main</code> file will get appended after it.
+Next we loop over these files then use the <code>read</code> method in the <code>File</code> class to get the contents of the file. The <code>read</code> method takes up the path to the file as its argument. We simply append its contents to the <code>out</code> variable that we declared initially. Next we call the <code>open</code> command in the <code>File</code> class and pass in the path to the main javascript file where we want to put all the contents of all the javascript files that we defined in the <code>js_files</code> array. The <code>open</code> command has a side effect of creating the file if it doesn&rsquo;t already exists so were taking advantage of that side effect in this method. Next we just call the <code>write</code> method from the file and pass in the <code>out</code> variable. Lastly we just output in the terminal that concatenating the javascript files is already done.</p>
+
+<p>For the concatenation of css files were basically doing the same thing only this time were reading from all the css files and putting all of its contents in the <code>style.css</code> file.</p>
+
+<p>```
+task :concat_files => :create_dir do</p>
+
+<pre><code>out = ""
+js_files = ['jquery', 'main']
+js_files.each do |file|
+    out += File.read('js/' + file + '.js')
+end
+
+File.open('dist/js/script.js', 'a') { |file|
+    file.write(out)
+}
+puts "done concatenating javascript files"
+
+out = ""
+css_files = ['normalize', 'main']
+css_files.each do |file|
+    out += File.read('css/' + file + '.css')
+end
+File.open('dist/css/style.css', 'a'){ |file|
+    file.write(out)
+}
+puts "done concatenating css files"
+</code></pre>
+
+<p>end
+```</p>
+
+<h5>Useful resources for task automation</h5>
+
+<p>If you would like to use Ruby for your task automation needs you don&rsquo;t really need to be writing code from scratch like what we have done above. Most of the boring tasks that we need to do as web developers are already taken care by some brilliant people so all you have to do is install the software that they wrote and use it on your own projects. Here are some resources for task automation in ruby:</p>
+
+<ul>
+<li><a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipeline</a></li>
+<li><a href="https://github.com/rquinlivan/jshint-gem">JSHint Gem</a></li>
+<li><a href="http://mintdigital.github.io/asset_hat/">Asset Hat</a></li>
+<li><a href="https://github.com/mcollina/rake-minify">Rake Minify</a></li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>Build tools are very important tools to have in our web development arsenal. They make boring, repetitive or unsexy manual tasks easier to handle. After all computers were originally made to make tasks easier so we as developers have to take advantage of that.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://gruntjs.com/">Grunt JS</a></li>
+<li><a href="http://gulpjs.com/">Gulp JS</a></li>
+<li><a href="http://rake.rubyforge.org/">Rake</a></li>
+</ul>
+
+
+<p>=======================================</p>
+]]></content>
+  </entry>
+  
+</feed>
