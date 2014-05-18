@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: phpunit | Wern Ancheta]]></title>
-  <link href="http://anchetawern.github.io/blog/categories/phpunit/atom.xml" rel="self"/>
-  <link href="http://anchetawern.github.io/"/>
-  <updated>2014-04-27T17:20:53+08:00</updated>
-  <id>http://anchetawern.github.io/</id>
+  <title><![CDATA[Category: phpUnit | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/phpunit/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2014-05-18T18:57:16+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
     
@@ -14,31 +14,353 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Unit Testing Wordpress Plugins]]></title>
-    <link href="http://anchetawern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins/"/>
-    <updated>2013-09-29T15:30:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2013/09/29/unit-testing-wordpress-plugins</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how to do unit testing in Wordpress plugins.
-Previously I&rsquo;ve written an article on <a href="http://anchetawern.github.io/blog/2013/05/26/getting-started-with-wordpress-plugin-development/">Getting Started with Wordpress Plugin Development</a> and in that article I&rsquo;ve created a simple Wordpress plugin that saves some tweets in the Wordpress database and displays them on a widget.
-This time I&rsquo;m going to walk you through setting up unit testing in Wordpress then write some tests for that specific plugin. If you want to follow along you can download the source from <a href="https://dl.dropboxusercontent.com/u/126688107/tutorials/zam.7z">here</a>.</p>
+    <title type="html"><![CDATA[Getting Started with Unit Testing in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2012/12/17/getting-started-with-unit-testing-in-php/"/>
+    <updated>2012-12-17T14:39:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2012/12/17/getting-started-with-unit-testing-in-php</id>
+    <content type="html"><![CDATA[<p>I finally got the time to play around with unit testing in PHP.
+I&rsquo;ve heard about the term months ago but I really never had the time to
+play around with it because I considered it as not absolutely necessary
+for my development workflow. I mean I can still produce useable programs without
+writing a test for it right?</p>
 
-<h3>Installing Composer</h3>
+<p>But admit it, testing the program that you have written is not really that exciting
+as writing the program itself. Sometimes we even get lazy and not test the program at
+all only to find things breaking on production. (Note: I&rsquo;m referring to in-browser testing here)</p>
 
-<p>First you have to install composer. From your terminal execute the following command to install composer:</p>
+<p>Ok so maybe I haven&rsquo;t convinced you to do unit testing but I&rsquo;m just here to share my first experience
+of doing unit testing in PHP so I think its fine.</p>
+
+<p>Let&rsquo;s get straight to the point and end this boring introduction.</p>
+
+<!--More-->
+
+
+<h3>The Process</h3>
+
+<p>The idea behind Unit Testing is that you should write your test first
+before writing the actual program (the code that you&rsquo;re going to test).
+This doesn&rsquo;t really made sense the first time I&rsquo;ve heard of it, because how will you
+test something that doesn&rsquo;t even exist right? But that&rsquo;s just how TDD (Test Driven Development) works.
+It may seem difficult but if you have a crystal clear understanding of the program
+that you&rsquo;re trying to create then writing a test before writing the actual program
+wont' be that hard. Here&rsquo;s the actual process:</p>
+
+<ol>
+<li>Write the test code</li>
+<li>Write the code to be tested</li>
+<li>Run the tests</li>
+<li>Refactor the code based on the test results</li>
+</ol>
+
+
+<h3>Things You&rsquo;ll Need</h3>
+
+<ul>
+<li><a href="http://www.simpletest.org">Simple Test</a></li>
+<li><a href="http://getcomposer.org/">Composer</a> &ndash; If you&rsquo;re familiar with Node.js this is like <code>npm</code> but for PHP.</li>
+<li><a href="https://github.com/sebastianbergmann/phpunit/">PHPUnit</a></li>
+</ul>
+
+
+<h3>Simple Test</h3>
+
+<p>Before we play around with Composer and PHPUnit we&rsquo;ll play with Simple Test.
+If I have to describe it Simple Test is like the trimmed down version of PHPUnit that&rsquo;s
+why its the perfect starting place for learning unit testing in PHP.</p>
+
+<p>Simple Test can be run on the browser and on the terminal so you have the freedom to choose
+where you want to run your tests.</p>
+
+<p>If you haven&rsquo;t downloaded Simple Test yet, now is the time to do so.
+Once you&rsquo;re done with downloading, extract it on your working directory.
+The simple test directory will look something like this:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_dir.jpg" alt="simple_test_dir" /></p>
+
+<p>Ok cool, now create the test file.
+I guess the convention that most people follow is to append <code>_test</code> to the actual class that were trying to test.
+So if we are planning to create a class called <code>users</code> and were writing a test for it then the
+filename for the test would be <code>test_users.php</code>.</p>
+
+<p>Now put the following code in your <code>test_users.php</code> file.</p>
+
+<p>```php
+&lt;?php
+require_once(dirname(<strong>FILE</strong>) . &lsquo;/simpletest/autorun.php&rsquo;); //this is responsible for running your test code
+require_once(&lsquo;users.php&rsquo;); //the future file that will contain the class that we want to test</p>
+
+<p>//autorun.php file imports unit_tester.php
+//which contains the class that were extending here
+class TestUsers extends UnitTestCase{</p>
+
+<p>}
+?><br/>
+```</p>
+
+<p>Like I said earlier, we must have a clear understanding of the program that we will create
+before we actually code it.</p>
+
+<p>Just for the purpose of trying out unit testing in PHP were just going to create a simple class
+that let&rsquo;s you create, update, delete, and view users.
+Yep CRUD! but were not actually going to touch the database.
+Were just gonna use arrays to store our users.</p>
+
+<p>With this we already know that we have to create methods for:</p>
+
+<ul>
+<li>creating new users</li>
+<li>updating current users</li>
+<li>delete current users</li>
+<li>view users</li>
+</ul>
+
+
+<p>Now we have a clear understanding of the program that were going to write.
+All we have to do now is to imagine that the <code>users</code> class has already
+been created. And all were doing now is calling the methods in that class.</p>
+
+<p>Going back to <code>test_users.php</code>.
+Create a method that will test if a user has really been created
+after calling the imaginary <code>create_user()</code> method.</p>
+
+<p>Methods for classes used for testing also has <code>test</code> as a prefix.
+So if were trying to check if a user has indeed been created.
+Then the name of our method would be something like <code>testUserCreated</code>.</p>
+
+<p>```
+&lt;?php
+public function testUserCreated(){</p>
+
+<pre><code>$users = new Users(); 
+$old_users = $users-&gt;getUsers(); //get current users
+
+//create a new user
+$users-&gt;createUser(
+    array(
+        'name' =&gt; 'kirito', 
+        'age' =&gt; 20, 
+        'address' =&gt; 'sao'
+        ));
+
+$new_users = $users-&gt;getUsers(); //get new users 
+
+//compare the old user count to the new user count, 
+//returns true if the new user count is greater than the old user count
+$newcount_is_greater_than_old_count = (count($new_users) &gt; count($old_users)); 
+$this-&gt;assertTrue($newcount_is_greater_than_old_count);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>We have to create an object for the class that were trying to test for every method
+in the test class. This keep things at an atomic level.
+This also gives us the ability to use more than one class for each method in the test class.</p>
+
+<p>At this point you can already run the test, but of course it would fail since we haven&rsquo;t
+created the class that were trying to test yet.</p>
+
+<p>Ok let&rsquo;s continue writing methods for our test class.
+This time were going to test if the user count is what we expect
+it to be after adding a couple of users.</p>
+
+<p>```
+&lt;?php
+public function testUserCount(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$users-&gt;createUser(array('name' =&gt; 'asuna', 'age' =&gt; 21, 'address' =&gt; 'sao'));
+$current_users = $users-&gt;getUsers();
+$count_is_two = (count($current_users) == 2); //after adding two users we expect that the current number of users is 2
+$this-&gt;assertTrue($count_is_two); //check if our condition has returned true
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Create another test method that will test if the <code>deleteUsers()</code> method is working:</p>
+
+<p>```
+&lt;?php
+public function testUserNothing(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;createUser(array('name' =&gt; 'wern', 'age' =&gt; 20, 'address' =&gt; 'sfc')); //create a new user
+$users-&gt;deleteUsers(); //delete all the users
+$current_users = $users-&gt;getUsers(); //get all the current users
+
+//after deleting all users we expect 
+//that there are no more users, thus the count will be zero
+$count_is_zero = (count($current_users) == 0);
+
+$this-&gt;assertTrue($count_is_zero); //check if our condition has returned true
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Next we test if the <code>deleteUser</code> method is really working:</p>
+
+<p>```
+&lt;?php
+public function testUserDeleted(){</p>
+
+<pre><code>$users = new Users();
+$users-&gt;deleteUsers();
+$old_users = $users-&gt;getUsers();
+
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$users-&gt;createUser(array('name' =&gt; 'asuna', 'age' =&gt; 21, 'address' =&gt; 'sao'));
+$users-&gt;deleteUser(1);
+
+$current_users = $users-&gt;getUsers();
+$this-&gt;assertEqual(count($current_users), 1);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Finally, create another method that will check if the users details has really been updated:</p>
+
+<p>```
+&lt;?php
+public function testUserUpdate(){</p>
+
+<pre><code>$users = new Users();
+$current_users = $users-&gt;getUsers();
+
+//first user is at index 0, which makes its id 0
+$users-&gt;createUser(array('name' =&gt; 'kirito', 'age' =&gt; 20, 'address' =&gt; 'sao'));
+$old_name = $users-&gt;getUser(0)['name'];
+$users-&gt;updateUser(array('name' =&gt; 'kirigaya kazuto'), 0); //supply the user id as 2nd argument
+$new_name = $users-&gt;getUser(0)['name'];
+
+$this-&gt;assertNotEqual($old_name, $new_name); //check that the old user name is not equal to the new name
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>User Class</h3>
+
+<p>Now were ready to create the <code>users</code> class.
+Pretty much we already know what our class would look like
+based on the methods in the test class that we created so here it is:</p>
+
+<p>```
+&lt;?php
+class Users{</p>
+
+<pre><code>public $users = array();
+
+public function createUser($user_details){
+    $current_users = $this-&gt;users;
+    array_push($current_users, $user_details);
+    $this-&gt;users = $current_users;
+    return $current_users;
+}
+
+public function updateUser($user_details, $user_id){
+    $current_users = $this-&gt;users;
+    foreach($user_details as $field =&gt; $value){
+        $current_users[$user_id][$field] = $value;
+    }
+
+    $this-&gt;users = $current_users;
+    return $current_users[$user_id];
+}
+
+public function deleteUser($user_id){
+    $current_users = $this-&gt;users;
+    unset($current_users[$user_id]);
+    $this-&gt;users = $current_users;
+    return $current_users;
+}
+
+public function deleteUsers(){
+    $this-&gt;users = array();
+    return $this-&gt;users;
+}
+
+public function getUser($user_id){
+    $current_users = $this-&gt;users;
+    return $current_users[$user_id];
+}
+
+public function getUsers(){
+    return $this-&gt;users;
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>I can&rsquo;t think of beautiful way to mess this up and make the test fail so
+if you run the test now (either on the browser or on the terminal) it will
+pass.</p>
+
+<h4>Running Simple Test</h4>
+
+<p>You can run the test on the browser by pointing out to the test file.
+Mine is at: <code>http://my.dev/tester/php/unit_testing/user_test.php</code></p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_browser.jpg" alt="simple_test_browser" /></p>
+
+<p>Or you can do it on the terminal by executing the following command:</p>
+
+<p><code>
+php user_test.php
+</code></p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/simpletest_cmd.jpg" alt="simple_test_cmd" /></p>
+
+<p>I&rsquo;ll just leave it to you how you would want this to fail, maybe remove some
+code on the <code>users</code> class, let it fail then fix it. The best way to learn is to
+mess things up. Try to get yourself in a deep hole then try to climb up again.
+That&rsquo;s learning things the hard way, it would take some time but you will surely not
+forget what you&rsquo;ve learned after seeing Natalie Portman if you learn things this way.</p>
+
+<h3>Composer</h3>
+
+<p>For the part two of this little walkthrough on PHPUnit Testing were going
+to take a look at Composer (PEAR? pftt.) and how we can use it to import PHPUnit
+on our directory.</p>
+
+<h4>Installing Composer</h4>
+
+<p>As stated in the composer website, you can install composer through <code>curl</code> in which
+case you can download <code>curl</code> <a href="http://curl.haxx.se/download.html">here</a> if you don&rsquo;t
+already have it on your system.</p>
 
 <p><code>
 curl -s https://getcomposer.org/installer | php
 </code></p>
 
-<h3>Installing PHPUnit</h3>
+<p>There&rsquo;s also the windows installer if you&rsquo;re on windows.</p>
 
-<p>Next on your project directory. In my case its in:</p>
+<p>And lastly you can also install it via <code>php</code> itself.</p>
 
 <p><code>
-home/wern/web_files/wordpress/wp-content/plugins/zam
+php -r "eval('?&gt;'.file_get_contents('https://getcomposer.org/installer'));"
 </code></p>
 
-<p>Create a <code>composer.json</code> file then put the following contents:</p>
+<p>The above methods installs composer globally and you won&rsquo;t have the <code>composer.phar</code> if composer
+is installed globally. But we don&rsquo;t really need that so create a <code>composer.json</code> file instead.</p>
+
+<h4>Installing PHPUnit</h4>
+
+<p>Inside that file were going to specify the dependencies. We only need one and that is PHPUnit.
+There are a bunch of PHPUnit packages in <a href="https://packagist.org/search/?q=phpunit">packagist.org</a> but were
+going to use <code>EHER/PHPUnit</code> since it gives the idea that it can be used with composer plus it has 4000+ downloads
+at the time of writing of this post which means that many people are using it.</p>
 
 <p>```
 {</p>
@@ -51,498 +373,586 @@ home/wern/web_files/wordpress/wp-content/plugins/zam
 <p>}
 ```</p>
 
-<p>Once you&rsquo;re done, save the file then execute the following command from your terminal:</p>
+<p>Once you&rsquo;re done with that you can now run <code>composer install</code>.
+This can take a couple of minutes depending on your connection speed as its going
+to download the dependencies that you&rsquo;ve specified.</p>
 
-<p><code>
-composer install
-</code></p>
+<p>Once its done you will now see a new folder called <code>vendor</code> which contains the following files:</p>
 
-<p>This will install PHPUnit which we will be using for unit testing.</p>
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_dir.jpg" alt="phpunit_dir" /></p>
 
-<h3>Setting Up Wordpress Tests</h3>
+<h3>Playing with PHPUnit</h3>
 
-<p>Another prerequisite before we can start writing our unit tests is installing <a href="https://github.com/nb/wordpress-tests">Wordpress Tests</a> which is a tool that was created to help in unit testing Wordpress plugins. The main benefit of using this tool is that it has access to all the Wordpress classes so the unit testing environment is pretty much the same as the environment where your Wordpress plugins runs.</p>
+<p>Now were ready to play with PHPUnit.
+Were going to start with something simple, a test for a calculator class.</p>
 
-<p>Next create a <code>src</code> folder from the root directory of your plugin.
-Then install Wordpress Tests inside of it. You can install by cloning the repo by executing the following command from the terminal:</p>
+<p>Our simple calculator would only have 4 methods:</p>
 
-<p><code>
-git clone https://github.com/nb/wordpress-tests.git
-</code></p>
+<ul>
+<li>method for adding an array of numbers</li>
+<li>method for subtracting two numbers (we can&rsquo;t do an array of numbers since the difference is affected by the order of the items)</li>
+<li>method for multiplying an array of numbers</li>
+<li>method for dividing two numbers</li>
+</ul>
 
-<p>Or simply download the <code>master.zip</code> file from the master branch of the project if you don&rsquo;t have <a href="http://git-scm.com/">Git</a> installed.</p>
 
-<p>Next create a <code>tests</code> directory (still on the root directory of your plugin). Then inside it create another directory and name it the same name where your Wordpress plugin is stored. In this case I&rsquo;ve named it <code>zam</code> since its the name of the directory where the main plugin file is located.</p>
+<h4>Calculator Test</h4>
 
-<p>Then create a <code>bootstrap.php</code> file just beside the directory that you&rsquo;ve just created and put the following contents:</p>
+<p>Create a new file and call it <code>calculator_test.php</code>.</p>
 
-<p>```php
+<p>```
 &lt;?php
-$path = &lsquo;/home/wern/web_files/wordpress/wp-content/plugins/zam/src/wordpress-tests/bootstrap.php&rsquo;;</p>
+require_once(&lsquo;calculator.php&rsquo;); //our calculator class which we will creater later.
+class CalculatorTest extends PHPUnit_Framework_TestCase{</p>
 
-<p>if( file_exists( $path ) ) {</p>
+<pre><code>//test if the add() method in our calculator class
+//actually returns the sum that
+//were expecting
+public function testAdd(){
+    $calc = new Calculator();
+    $sum = $calc-&gt;add(array(2,3,4,5));
+    $this-&gt;assertEquals(14, $sum); //check if 2+3+4+5 is equal to 14
+}
 
-<pre><code>require_once $path;
-</code></pre>
+//test if the subtract() method in our calculator class
+//actually returns the difference that
+//were expecting
+public function testSubtract(){
+    $calc = new Calculator();
+    $difference = $calc-&gt;subtract(5,2);
+    $this-&gt;assertEquals(3, $difference); //check if 5 - 2 is equal to 3
+}
 
-<p>} else {</p>
+//test if the multiply() method in our calculator class
+//actually returns the product that
+//were expecting    
+public function testMultiply(){
+    $calc = new Calculator();
+    $product = $calc-&gt;multiply(array(1,3,5,6)); 
+    $this-&gt;assertEquals(90, $product); //check if 1*3*5*6 is equal to 90
+}
 
-<pre><code>exit( "Couldn't find path to wordpress-tests/bootstrap.php\n" );
+//test if the divide() method in our calculator class
+//actually returns the quotient that
+//were expecting    
+public function testDivide(){
+    $calc = new Calculator();
+    $quotient = $calc-&gt;divide(10,2); 
+    $this-&gt;assertEquals(5, $quotient); //check if 10/2 is equal to 5
+}
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p>Ok not exactly the same contents but at least the same format. All you&rsquo;re going to need to have to change here is the value for the <code>$path</code>. It should be where the main <code>bootstrap.php</code> file is stored. Not the <code>bootstrap.php</code> that you&rsquo;ve just created but the <code>bootstrap.php</code> file that&rsquo;s inside the <code>wordpress-tests</code> project which you cloned earlier.</p>
+<h4>Calculator Class</h4>
 
-<p>Next inside the <code>tests/zam</code> directory create the file were we are going to write all the tests later on. As a convention the naming should be the name of the plugin followed by the word <code>Test</code>. So for the sample plugin that were going to test the name would be <code>zamTest.php</code>.</p>
-
-<p>Next navigate to the root directory of your plugin and create a <code>phpunit.xml</code> file and put the following contents:</p>
-
-<p>```xml
-&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?></p>
-
-<p>&lt;phpunit backupGlobals=&ldquo;false&rdquo;</p>
-
-<pre><code>     backupStaticAttributes="false"
-     colors="true"
-     convertErrorsToExceptions="true"
-     convertNoticesToExceptions="true"
-     convertWarningsToExceptions="true"
-     processIsolation="false"
-     stopOnFailure="false"
-     syntaxCheck="false"
-     bootstrap="tests/bootstrap.php"
-</code></pre>
-
-<blockquote><pre><code>&lt;testsuites&gt;
-    &lt;testsuite name="Ecom Test Suite"&gt;
-        &lt;directory&gt;tests/&lt;/directory&gt;
-    &lt;/testsuite&gt;
-&lt;/testsuites&gt;
-</code></pre>
-
-<p></phpunit>
-```</p></blockquote>
-
-<p>The <code>phpunit.xml</code> file simply points out where the test directory is located and some options for PHPUnit.
-In the <code>phpunit.xml</code> file above we&rsquo;ve used the following options:</p>
-
-<ul>
-<li><strong>backupGlobals</strong> &ndash; setting this to <code>false</code> tells PHPUnit to disable global state between tests</li>
-<li><strong>backupStaticAttributes</strong> &ndash; setting this to <code>false</code> disables the backup and restore operations for static class attributes</li>
-<li><strong>colors</strong> &ndash; setting this to <code>true</code> enables syntax highlighting when running tests on the terminal</li>
-<li><strong>convertErrorsToExceptions</strong> &ndash; setting this to <code>true</code> converts errors to exceptions</li>
-<li><strong>convertNoticesToExceptions</strong> &ndash; setting this to <code>true</code> converts notices to exceptions</li>
-<li><strong>convertWarningsToExceptions</strong> &ndash; setting this to <code>true</code> converts warnings to exceptions</li>
-<li><strong>processIsolation</strong> &ndash; setting this to <code>false</code> disables running each test in a separate PHP process</li>
-<li><strong>stopOnFailure</strong> &ndash; setting this to <code>false</code> disables stopping of execution upon first error or failure. This means that the test will continue to run even after encountering a failure</li>
-<li><strong>syntaxCheck</strong> &ndash; setting this to <code>false</code> disables checking of syntax</li>
-<li><strong>bootstrap</strong> &ndash; where the <code>bootstrap.php</code> file is located</li>
-</ul>
-
-
-<h3>Setting Up the Test Database</h3>
-
-<p>If your plugin uses the Wordpress database then its a requirement that you also have to setup the testing database so that running the tests won&rsquo;t affect your actual database.</p>
-
-<p>To do that go ahead and backup your Wordpress database using a tool like <a href="http://www.phpmyadmin.net/home_page/index.php">Phpmyadmin</a>.
-Then restore the backup this time giving it a different name, something like <code>wp_db_tests</code> to indicate that its a database that will be used for testing.
-Next modify <code>wp-config.php</code> to make use of the test database temporarily.</p>
-
-<p><code>php
-&lt;?php
-define('DB_NAME', 'wp_db_tests');
-?&gt;
-</code></p>
-
-<p>After that you can install the <a href="http://wordpress.org/plugins/wordpress-reset/">Wordpress reset plugin</a> to reset the database that will be used for testing.</p>
-
-<p>Once the test database has been successfully reset you can now revert the changes to <code>wp-config.php</code> and use your old database:</p>
-
-<p><code>
-&lt;?php
-define('DB_NAME', 'wp_db');
-?&gt;
-</code></p>
-
-<h3>Unit Test Configuration</h3>
-
-<p>Next we can now specify the options to the unit test configuration file (<code>unittests-config.php</code>) which you can find inside the <code>src/wordpress-tests</code> directory.
-The only things that you might want to change here are the values for <code>ABSPATH</code>, <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_HOST</code>, <code>WP_TESTS_DOMAIN</code>, <code>WP_TESTS_EMAIL</code>, <code>WP_TESTS_TITLE</code>, and <code>WP_TESTS_NETWORK_TITLE</code>.</p>
+<p>And the calculator class:</p>
 
 <p>```
 &lt;?php
-/<em> Path to the WordPress codebase you&rsquo;d like to test. Add a backslash in the end. </em>/
-define(&lsquo;ABSPATH&rsquo;, &lsquo;/home/wern/web_files/wordpress/&rsquo;);</p>
+class Calculator{</p>
 
-<p>define( &lsquo;DB_NAME&rsquo;, &lsquo;wp_db_tests&rsquo; ); //the database that will be used for testing
-define( &lsquo;DB_USER&rsquo;, &lsquo;root&rsquo; );
-define( &lsquo;DB_PASSWORD&rsquo;, &lsquo;&rsquo; );
-define( &lsquo;DB_HOST&rsquo;, &lsquo;localhost&rsquo; );
-define( &lsquo;DB_CHARSET&rsquo;, &lsquo;utf8&rsquo; );
-define( &lsquo;DB_COLLATE&rsquo;, &lsquo;&rsquo; );</p>
+<pre><code>public function add($numbers_to_add){
+    $sum = 0;
+    foreach($numbers_to_add as $num){
+        $sum = $num + $num;
+    }
+    return $sum;
+}
 
-<p>define( &lsquo;WP_DEBUG&rsquo;, true ); //display all errors, warnings and notices
-define( &lsquo;WP_DEBUG_DISPLAY&rsquo;, true );</p>
+public function subtract($x, $y){
+    return $y - $x;
+}
 
-<p>define( &lsquo;WP_TESTS_DOMAIN&rsquo;, &lsquo;localhost/wordpress&rsquo; );
-define( &lsquo;WP_TESTS_EMAIL&rsquo;, &lsquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#121;&#111;&#117;&#x72;&#101;&#x6d;&#x61;&#x69;&#108;&#x40;&#x67;&#109;&#97;&#105;&#108;&#46;&#x63;&#111;&#x6d;">&#x79;&#111;&#117;&#114;&#x65;&#x6d;&#x61;&#105;&#108;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#46;&#99;&#x6f;&#x6d;</a>&rsquo; );
-define( &lsquo;WP_TESTS_TITLE&rsquo;, &lsquo;Some Site&rsquo; );
-define( &lsquo;WP_TESTS_NETWORK_TITLE&rsquo;, &lsquo;Test Network&rsquo; );
-define( &lsquo;WP_TESTS_SUBDOMAIN_INSTALL&rsquo;, true );
-$base = &lsquo;/&rsquo;;</p>
+public function multiply($numbers_to_multiply){
+    $product = 0;
+    foreach($numbers_to_multiply as $num){
+        $product = $num * $product;
+    }
+    return $product;
+}
 
-<p>/<em> Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only </em>/
-define( &lsquo;DISABLE_WP_CRON&rsquo;, true );</p>
+public function divide($x, $y){
+    return $x / $y;
+}
+</code></pre>
 
-<p>$table_prefix  = &lsquo;wp_&rsquo;;</p>
-
-<p>define( &lsquo;WP_PHP_BINARY&rsquo;, &lsquo;php&rsquo; );
+<p>}
 ?>
 ```</p>
 
-<h3>Examining the Testing Suite</h3>
+<p>Ok so I&rsquo;ve intentionally messed up the calculator class so the test would fail.
+By taking a closer look you would notice what methods I&rsquo;ve messed up but don&rsquo;t
+fix it yet because were going to take a look at how the test can help
+us determine what exactly is wrong with our calculator class.</p>
 
-<p>Now were ready to write some unit tests. Go ahead and navigate to the following directory:</p>
+<p>You can go ahead and open up a new terminal at <code>vendor/bin</code> then just specify the location of
+your test file like this:</p>
 
 <p><code>
-/home/wern/web_files/wordpress/wp-content/plugins/zam/tests/zam/zamTest.php
+phpunit D:\web_files\tester\php\unit_testing\calculator_test.php
 </code></p>
 
-<p>Open up the <code>zamTest.php</code> file and put the following contents:</p>
+<p>But if you don&rsquo;t want to specify the location of your test file everytime you run the
+test then just add the path for phpunit in your system path.
+Mine looks something like this:</p>
+
+<p><code>
+D:\web_files\tester\php\unit_testing\vendor\bin
+</code></p>
+
+<p>So if I&rsquo;m running my tests I only have to open a new terminal on the directory
+where I have my tests and run phpunit together with the name of the test file:</p>
+
+<p><code>
+phpunit calculator_test.php
+</code></p>
+
+<p>Were going to get an error after running the command above:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_calcfailed.jpg" alt="phpunit_calcfailed" /></p>
+
+<p>We can see from here that we&rsquo;ve messed up the <code>add()</code> and <code>subtract()</code> method.
+For the <code>add()</code> method we were expecting to get <code>14</code> but our method only returned <code>10</code>.
+And for the <code>subtract()</code> method we were expecting to get <code>3</code> but it returned <code>-3</code> instead.</p>
+
+<p>Looking closely at the <code>add()</code> method inside the loop
+instead of adding the current sum to the current number were adding the
+current number with the current number so we ended up with <code>10</code> as a result
+because the last item in our array of number is 5. And <code>5 + 5</code> is <code>10</code>.</p>
+
+<p>```
+&lt;?php
+public function add($numbers_to_add){</p>
+
+<pre><code>$sum = 0;
+foreach($numbers_to_add as $num){
+    $sum = $num + $num; //this line messed it up
+}
+return $sum;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>So were just going to replace it with:</p>
+
+<p><code>
+$sum = $num + $sum
+</code></p>
+
+<p>As for the <code>subtract()</code> method we simply messed up the ordering
+of the variables to be subtracted:</p>
+
+<p>```
+&lt;?php
+public function subtract($x, $y){</p>
+
+<pre><code>return $y - $x;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>So were just going to replace it with:</p>
+
+<p><code>
+return $x - $y;
+</code></p>
+
+<p>Running the test again:</p>
+
+<p><img src="/images/posts/playing_with_unit_testing_php/phpunit_calcsuccess.jpg" alt="phpunit_calcsuccess" /></p>
+
+<p>Yay! everything passes!</p>
+
+<p>Taking a look closely at the test results it said:</p>
+
+<p><code>
+OK (4 tests, 4 assertions)
+</code></p>
+
+<p>Tests are the methods that you&rsquo;ve written for testing.
+Assertions are the assertion methods that you&rsquo;ve used from the PHPUnit test suite
+like <code>assertEquals()</code>.</p>
+
+<h3>More PHPUnit Fun</h3>
+
+<p>By now you should have probably grokked the basics of unit testing in PHP.
+But were going to play around with it further.</p>
+
+<p>This time without using a class to test out.
+You may think that this beats out the purpose
+of unit testing but were just here to play and see what
+PHPUnit has to offer. Though I&rsquo;m not forcing you to do the same.
+You can always write classes to test
+out if you want.</p>
+
+<h4>No Class Test</h4>
+
+<p>Create another test and call it <code>noclass_test.php</code>.
+As the name suggests were not going to use any class
+to test out. Were going to write the functionality
+itself inside our test methods.</p>
+
+<p>```
+&lt;?php
+class NoClassTest extends PHPUnit_Framework_TestCase{</p>
+
+<p>}
+?>
+```</p>
+
+<h5>Assert Empty</h5>
+
+<p>First let&rsquo;s test out the <code>assertEmpty()</code> method
+which simply checks if the value of a variable is indeed empty.
+The method below will return true since we&rsquo;ve supplied it with an empty
+array.</p>
+
+<p>```
+&lt;?php
+public function testEmptyArray(){</p>
+
+<pre><code>$array = array();
+$this-&gt;assertEmpty($array);
+return $array;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h5>Dependencies</h5>
+
+<p>The methods that we write for a class isn&rsquo;t standalone,
+which means that we don&rsquo;t just call it and be done with it.
+Sometimes some of our methods depends on the return value of
+other methods of our class.</p>
+
+<p>And that&rsquo;s the idea behind dependencies. In PHPUnit we can also
+have test methods that depends on the return values of other test methods.
+We can specify this by adding the <code>@depends</code> keyword together with the
+name of the method in which our method depends on.</p>
+
+<p>As you can see the method below depends on the return value of the <code>testEmptyArray()</code> method.
+We can receive the return value of <code>testEmptyArray()</code> by adding a parameter in this
+case we call it <code>$array</code>. Methods can only have 1 return value so at most we&rsquo;ll only have
+one parameter in our method to receive the return values.</p>
 
 <p>```
 &lt;?php
 /<em>*
- * Zam Tests
+ * @depends testEmptyArray
  </em>/
-require_once(&lsquo;/home/wern/web_files/wordpress/wp-content/plugins/zam/zam.php&rsquo;); //path to the main plugin file</p>
+public function testAddUser(array $array){</p>
 
-<p>class ZamTest extends WP_UnitTestCase{</p>
-
-<pre><code>public $zam;
-public $plugin_slug = 'zam';
-public $options;
-
-
-public function setUp() {
-
-}
-
-
-public function tearDown() {
-
-}
-
-//unit tests here
+<pre><code>//push an item to the empty array returned from testEmptyArray
+array_push($array, array('name' =&gt; 'dom', 'age' =&gt; 21)); 
+$this-&gt;assertNotEmpty($array); //check if array is not empty
+return $array;
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p>The unit testing class will simply extend the <code>WP_UnitTestCase</code> class which is inside the <code>src/wordpress-tests/lib/testcase.php</code> file.</p>
+<p>Create another method and call it <code>testUpdateUser()</code> which will simply
+check if the old value is not equal to the value after updating.</p>
 
-<p>Let&rsquo;s take a moment to inspect it before proceeding with writing our tests.
-As you can see the <code>WP_UnitTestCase</code> class is simply extending the <code>PHPUnit_Framework_TestCase</code> which is the main testing suite that is used for most PHPUnit based test classes.</p>
+<p>Again were depending on another methods return value so we need to specify
+at least one parameter to receive that value.</p>
 
 <p>```
 &lt;?php
-class WP_UnitTestCase extends PHPUnit_Framework_TestCase {</p>
+/<em>*
+ * @depends testAddUser
+ </em>/
+public function testUpdateUser(array $user){</p>
 
-<pre><code>function setUp() {
-    global $wpdb;
-    $wpdb-&gt;suppress_errors = false;
-    $wpdb-&gt;show_errors = true;
-    $wpdb-&gt;db_connect();
-    ini_set('display_errors', 1 );
-    $this-&gt;clean_up_global_scope();
-    $this-&gt;start_transaction();
-}
+<pre><code>//this uses the user that we pushed earlier
+//from the testAddUser() method which is: dom and 21
 
-function tearDown() {
-    global $wpdb;
-    $wpdb-&gt;query( 'ROLLBACK' );
-}
+$old_name = $user[0]['name'];  //dom
+$old_age = $user[0]['age']; //21
 
-function clean_up_global_scope() {
-    $_GET = array();
-    $_POST = array();
-    $this-&gt;flush_cache();
-}
+//update it with ash and 15
+$user[0]['name'] = 'ash';
+$user[0]['age'] = 15;
 
-function flush_cache() {
-    global $wp_object_cache;
-    $wp_object_cache-&gt;group_ops = array();
-    $wp_object_cache-&gt;stats = array();
-    $wp_object_cache-&gt;memcache_debug = array();
-    $wp_object_cache-&gt;cache = array();
-    if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
-        $wp_object_cache-&gt;__remoteset();
-    }
-    wp_cache_flush();
-}
+//this will return true since we've updated both values
+$this-&gt;assertNotEquals($old_name, $user[0]['name']);
+$this-&gt;assertNotEquals($old_age, $user[0]['age']);
 
-function start_transaction() {
-    global $wpdb;
-    $wpdb-&gt;query( 'SET autocommit = 0;' );
-    $wpdb-&gt;query( 'START TRANSACTION;' );
-}
-
-function assertWPError( $actual, $message = '' ) {
-    $this-&gt;assertTrue( is_wp_error( $actual ), $message );
-}
-
-function assertEqualFields( $object, $fields ) {
-    foreach( $fields as $field_name =&gt; $field_value ) {
-        if ( $object-&gt;$field_name != $field_value ) {
-            $this-&gt;fail();
-        }
-    }
-}
-
-function assertDiscardWhitespace( $expected, $actual ) {
-    $this-&gt;assertEquals( preg_replace( '/\s*/', '', $expected ), preg_replace( '/\s*/', '', $actual ) );
-}
-
-function checkAtLeastPHPVersion( $version ) {
-    if ( version_compare( PHP_VERSION, $version, '&lt;' ) ) {
-        $this-&gt;markTestSkipped();
-    }
-}
-
-function go_to( $url ) {
-    // note: the WP and WP_Query classes like to silently fetch parameters
-    // from all over the place (globals, GET, etc), which makes it tricky
-    // to run them more than once without very carefully clearing everything
-    $_GET = $_POST = array();
-    foreach (array('query_string', 'id', 'postdata', 'authordata', 'day', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages', 'pagenow') as $v) {
-        if ( isset( $GLOBALS[$v] ) ) unset( $GLOBALS[$v] );
-    }
-    $parts = parse_url($url);
-    if (isset($parts['scheme'])) {
-        $req = $parts['path'];
-        if (isset($parts['query'])) {
-            $req .= '?' . $parts['query'];
-            // parse the url query vars into $_GET
-            parse_str($parts['query'], $_GET);
-        } else {
-            $parts['query'] = '';
-        }
-    }
-    else {
-        $req = $url;
-    }
-
-    $_SERVER['REQUEST_URI'] = $req;
-    unset($_SERVER['PATH_INFO']);
-
-    $this-&gt;flush_cache();
-    unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
-    $GLOBALS['wp_the_query'] =&amp; new WP_Query();
-    $GLOBALS['wp_query'] =&amp; $GLOBALS['wp_the_query'];
-    $GLOBALS['wp'] =&amp; new WP();
-
-    // clean out globals to stop them polluting wp and wp_query
-    foreach ($GLOBALS['wp']-&gt;public_query_vars as $v) {
-        unset($GLOBALS[$v]);
-    }
-    foreach ($GLOBALS['wp']-&gt;private_query_vars as $v) {
-        unset($GLOBALS[$v]);
-    }
-
-    $GLOBALS['wp']-&gt;main($parts['query']);
-}
+return $user;
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p>The <code>setUp</code> method sets the <code>supress_errors</code> attribute of the <code>$wpdb</code> object to <code>false</code> this means that all database errors will be displayed if there are any. The <code>$wpdb</code> variable is an instance of the Wordpress database class. It&rsquo;s also setting the <code>show_errors</code> attribute to <code>true</code>. Then it connects to the database that we have set on the <code>unittests-config.php</code> file earlier using the <code>db_connect()</code> method. It also sets <code>display_errors</code> to <code>1</code> which basically means that all errors, warnings and notices will be displayed if there are any.
-Then the <code>clean_up_global_scope()</code> method is called, this simply empties out global variables such as <code>$_GET</code> or <code>$_POST</code>. This method also calls up another method which is the <code>flush_cache()</code> which simply resets the Wordpress object cache. All of this is done to prevent any external variable or cached data from interfering with the values used for the current test. The <code>setUp</code> method also calls up the <code>start_transaction()</code> method which sets database <code>autocommit</code> to <code>0</code>. This means that even if you execute a query like:</p>
+<h5>Data Providers</h5>
+
+<p>We can also have methods whose only job is to be a <code>data provider</code>.
+A data provider is simply a method which returns values.
+It doesn&rsquo;t have assert methods in it.</p>
+
+<p>Here were returning an array of students with swords and skills:</p>
+
+<p>```
+&lt;?php
+public function sword_and_skills(){</p>
+
+<pre><code>$students = array(
+    'kirito' =&gt; array('sword' =&gt; 'dark repulser', 'skill' =&gt; 'dual blades'),
+    'asuna' =&gt; array('sword' =&gt; 'wind fleuret', 'skill' =&gt; 'two handed assault sphere'),
+    'klein' =&gt; array('sword' =&gt; 'karakurenai', 'skill' =&gt; 'one handed curved blade')
+    );
+
+return $students;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Let&rsquo;s use the above method as a data provider for our <code>testContainsSwordsAndSkills()</code> method.
+Again were using the same format as that of <code>dependencies</code> only this time the keyword is <code>@dataProvider</code> plus
+the name of the method which returns the data.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider sword_and_skills
+ </em>/
+public function testContainsSwordsAndSkills($sword, $skill){</p>
+
+<pre><code>$awesome_swords = array('dark repulser', 'elucidator', 'wind fleuret', 'karakurenai');
+
+$awesome_skills = array(
+    'blade throwing', 'one handed curved blade', 
+    'two handed assault sphere', 
+    'single blade', 'dual blades'
+    );
+
+$this-&gt;assertContains($sword, $awesome_swords); //check if all of the students has the swords considered to be awesome
+$this-&gt;assertContains($skill, $awesome_skills); //check if all of the students has the skills considered to be awesome
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Examining the code above might seem confusing. And I admit that I&rsquo;m still confused even now.
+So if anyone of you knows what the data provider does behind the scenes then let met know in the comments.</p>
+
+<p>So yup I&rsquo;ll give this one a shot but don&rsquo;t kill me if its wrong.</p>
+
+<p>In our data provider we have an array which contains 3 arrays that represents the
+details (swords and skills) of the students.</p>
+
+<p>```
+&lt;?php
+$students = array(</p>
+
+<pre><code>'kirito' =&gt; array('sword' =&gt; 'dark repulser', 'skill' =&gt; 'dual blades'),
+'asuna' =&gt; array('sword' =&gt; 'wind fleuret', 'skill' =&gt; 'two handed assault sphere'),
+'klein' =&gt; array('sword' =&gt; 'karakurenai', 'skill' =&gt; 'one handed curved blade')
+);
+</code></pre>
+
+<p>?><br/>
+```</p>
+
+<p>In our method we have two parameters which represents the index(sword and skill) for each of the student details:</p>
 
 <p><code>
-INSERT INTO wp_tbl_users SET name = 'matthew', age = 21
+testContainsSwordsAndSkills($sword, $skill)
 </code></p>
 
-<p>It won&rsquo;t actually commit the changes to the database. This means that the changes aren&rsquo;t permanently added into the database. After that it also starts a transaction using the <code>START_TRANSACTION</code> command. What this does is to ensure that the <code>autocommit</code> remains disabled while the transaction hasn&rsquo;t been ended yet. You can only end a transaction using either the <code>COMMIT</code> or <code>ROLLBACK</code> command. The <code>COMMIT</code> command simply commits all the changes in the database. The <code>ROLLBACK</code> command rolls back everything that was done after the <code>START_TRANSACTION</code> command.</p>
+<p>And that&rsquo;s what were checking here:</p>
 
-<p>When you check out the <code>tearDown()</code> method you will see that the <code>WP_UnitTestCase</code> class uses the <code>ROLLBACK</code> command. This means that every change brought by each test is rolled back to its previous state.</p>
+<p><code>
+$this-&gt;assertContains($sword, $awesome_swords);
+</code></p>
 
-<p>So even if a test method does a couple of queries:</p>
+<p>It checks whether the sword equipment of kirito, asuna and klein is in the array of awesome swords if
+one of the equipped sword of the three students isn&rsquo;t on the array of awesome swords then the assertion would fail.
+The same rule is applied with the skills.</p>
+
+<p>I guess we need one more example for data provider.</p>
+
+<p>```
+&lt;?php
+public function anime(){</p>
+
+<pre><code>$data = array(
+        array(
+            array('luffy', 'zoro', 'brook', 'sanji'),
+            array('ichigo', 'zangetsu', 'toshiro', 'byakuya'),
+            array('sai', 'kiba', 'gaara', 'yamato', 'jiraiya')
+            )
+    );
+return $data;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>This time were going to check if the total number of anime characters is what
+we expect it to be. As you can see from the array above we have:</p>
+
+<ul>
+<li>4 characters from Onepiece</li>
+<li>4 characters from Bleach</li>
+<li>5 characters from Naruto</li>
+</ul>
+
+
+<p>Which makes it a total of 13.</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider anime
+ </em>/
+public function testTotalStudents($onepiece, $bleach, $naruto){</p>
+
+<pre><code>$this-&gt;assertEquals(13, count($onepiece) + count($bleach) + count($naruto));
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>If you run the test it will pass.</p>
+
+<p>Ok one last example for data provider before we proceed with the next assertion method.
+This time were just going to restructure our data source:</p>
+
+<p>```
+&lt;?php
+public function anime(){</p>
+
+<pre><code>$data = array(
+        array(
+            array('luffy', 'zoro', 'brook', 'sanji')
+            ),
+        array(
+            array('ichigo', 'zangetsu', 'toshiro', 'byakuya')
+            ),
+        array(
+            array('sai', 'kiba', 'gaara', 'yamato')
+            )
+    );
+return $data;
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Then we&rsquo;ll utilize it as our data provider:</p>
+
+<p>```
+&lt;?php
+/<em>*
+ * @dataProvider anime
+ </em>/
+public function testTotalStudents($a){</p>
+
+<pre><code>$this-&gt;assertEquals(4, count($a));
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Here were still doing the same thing. But instead of getting the total and
+using it as compare value were going to test if the total number of students
+in each array is 4. Of course this will still return true since we&rsquo;ve already
+removed jiraiya from the naruto characters array.</p>
+
+<p>Did you finally grokked it? Me too! I guess its digging up to the last child of the array.
+In this case its these guys:</p>
 
 <p><code>
 &lt;?php
-$wpdb-&gt;query("INSERT INTO wp_postmeta SET post_id = '23', meta_key = 'somekey', meta_value = 'somevalue'");
-$wpdb-&gt;query("INSERT INTO wp_options SET option_name = 'some_option', option_value = 'some_optionvalue'");
+array('luffy', 'zoro', 'brook', 'sanji')
+array('sai', 'kiba', 'gaara', 'yamato')
+array('sai', 'kiba', 'gaara', 'yamato')
 ?&gt;
 </code></p>
 
-<p>Once the the execution of the test method ends, the <code>tearDown()</code> method will be called and the database will be rolled back to its previous state before any of the queries above were executed.
-This effectively brings back the test database to a state similar to that of when your first installed Wordpress on every test.</p>
+<p>So it doesn&rsquo;t matter how deep your array is as it always ends up in the most deepest part.
+But I can&rsquo;t really say for sure because I&rsquo;m just concluding things based on what I&rsquo;ve observed
+by playing with PHPUnit.</p>
 
-<p>There&rsquo;s also the <code>assertWPError()</code> method which simply asserts a Wordpress error if its <code>true</code>.</p>
+<h4>Expected Output</h4>
 
-<p>The <code>assertEqualFields()</code> method simply checks if each key-value pair that you supply it has equal values. If not the test will fail.</p>
+<p>There&rsquo;s also a method used for checking the expected output of a method.
+This is useful because we don&rsquo;t always return things using methods,
+most of the time were just using methods to output things.</p>
 
-<p>The <code>assertDiscardWhitespace()</code> method simply removes all the whitespace from 2 strings and compare it with each other.</p>
-
-<p>The <code>checkAtLeastPHPVersion()</code> method checks if the PHP Version number that you specify as its argument is higher than that of PHP Version in the machine where you are running the tests.</p>
-
-<p>Lastly there&rsquo;s the <code>go_to()</code> method which sets up the objects which you might want to check when navigating a specific URL. For example if you want to assert the title of a specific page you do something like:</p>
-
-<p><code>
-$this-&gt;go_to('http://mysite.me/?p=125');
-</code></p>
-
-<p>Then you simply use an instance of the <code>$wp_query</code> class to get the queried objects from that specific URL.
-This will then contain some attributes like the <code>post_title</code> or <code>post_content</code> which you can assert:</p>
-
-<p>```
-&lt;?php</p>
-
-<p>public function testPostTitle() {</p>
-
-<pre><code>global $wp_query;
-$post = $wp_query-&gt;get_queried_object();
-$this-&gt;assertEquals('Zup World!', $post-&gt;post_title);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h3>Writing Unit Tests</h3>
-
-<p>Now that we know what the <code>WP_UnitTestCase</code> class does we can now proceed with writing the actual tests for our simple plugin.</p>
-
-<h4>The Setup</h4>
-
-<p>The <code>setUp</code> method is where we setup the things that the plugin needs during its runtime. For example if the plugin that you are testing involves creating database tables or adding new entries to the <code>wp_options</code> table then you set those all up in the <code>setUp</code> method. Think of it as emulating what would usually happen once the plugin is activated on a Wordpress site. The same thing should happen in the <code>setUp</code> method.</p>
-
-<p>The first thing that we need to do inside the <code>setUp</code> method is call the <code>setUp</code> method in the <code>WP_UnitTestCase</code> class. This simply cleans up the global scope and start a database transaction as we discussed earlier.</p>
-
-<p>Next we create a new object for the <code>Zam</code> plugin class and call its <code>installation_housekeeping()</code> method which creates the tables that will be needed by the plugin. Finally, we set the option that will be used by the plugin.
-Here were setting the <code>zam_twitter_id</code> under the <code>zam_options</code> option group to be equal to <code>Wern_Ancheta</code>. This should be a valid twitter username otherwise it wouldn&rsquo;t work.</p>
+<p>As you can see from the example below we first have to specify
+our expected output before we actually call the method that will
+output some string.</p>
 
 <p>```
 &lt;?php
-public function setUp() {</p>
+public function testOutput(){</p>
 
-<pre><code>parent::setUp();
-$z = new Zam();
-
-$z-&gt;installation_housekeeping();
-update_option('zam_options', array(
-    'zam_twitter_id' =&gt; 'Wern_Ancheta'
-));
+<pre><code>$this-&gt;expectOutputString("what's up world");
+echo "what's up world";
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p><blockquote><p>Remember that the <code>setUp</code> method runs before every test is executed.</p></blockquote></p>
+<h4>Expected Type</h4>
 
-<h4>Teardown</h4>
-
-<p>Next is the <code>tearDown()</code> method. This is the opposite of the <code>setUp</code> method in that it is run after every test has been executed. What it does is to simply clean up the things which aren&rsquo;t cleaned up by the <code>setUp</code> method. In this case were simply calling the <code>uninstall_housekeeping()</code> method which drops the tables that are used by the plugin.</p>
+<p>Yet another useful assertion method is the <code>assertInternalType()</code> which simply
+checks if a variable or the return value of a method has the expected data type.</p>
 
 <p>```
 &lt;?php
-public function tearDown() {</p>
+public function testType(){</p>
 
-<pre><code>Zam::uninstall_housekeeping();
+<pre><code>$ima_integer = 20;
+$ima_string = "meowth that's right!";
+$ima_boolean = true;
+$ima_array = array('chunibyou', 'hyouka');
+$ima_null = "nope Im not a null, im a string idjit!"; 
+$ima_float = 234.24;
+
+$this-&gt;assertInternalType('integer', $ima_integer);
+$this-&gt;assertInternalType('string', $ima_string);
+$this-&gt;assertInternalType('boolean', $ima_boolean);
+$this-&gt;assertInternalType('array', $ima_array);
+$this-&gt;assertInternalType('null', $ima_null); //this will fail as we supplied a string
+$this-&gt;assertInternalType('float', $ima_float); 
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p>Now were ready to test the actual methods in the plugin. For this tutorial were only going to test 2 core methods which the plugin uses, the <code>get_tweets()</code> and <code>save_tweets()</code> method.</p>
+<p>That&rsquo;s all folks! You can check out the resources below if you want to learn more about unit testing.</p>
 
-<p>The convention that I&rsquo;ve used in the following methods is to prefix the actual name of the methods that I&rsquo;m testing with the word <code>test_</code>. Of course you can use other conventions but remember to use one that&rsquo;s already followed by your plugin. For example here I&rsquo;ve used underscores to separate each word in the method. You can also use camel casing or hungarian notation if you&rsquo;re already using it. What&rsquo;s important is that the test should follow the convention used by the actual class that you&rsquo;re testing.</p>
+<h3>Resources</h3>
 
-<h4>Get Tweets Test</h4>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Test-driven_development">Test Driven Development</a></li>
+<li><a href="http://www.phpunit.de/manual/3.7/en/index.html">PHPUnit</a></li>
+<li><a href="http://net.tutsplus.com/sessions/test-driven-php/">Test-Driven PHP</a></li>
+</ul>
 
-<p>To test the <code>get_tweets()</code> method first you have to instantiate the plugin.
-This should be true for every method to avoid storing of values in the class itself.
-Once you&rsquo;ve instantiated the class, call the <code>get_tweets()</code> method using the object that you&rsquo;ve used.</p>
-
-<p>We expect the <code>get_tweets()</code> method to return 11 tweets by default so we use <code>assertCount</code> to assert that the number of items stored in the <code>$tweets</code> variable is indeed 11.</p>
-
-<p>```
-&lt;?php
-public function test_get_tweets(){</p>
-
-<pre><code>$z = new Zam();
-
-$tweets = $z-&gt;get_tweets();
-$this-&gt;assertCount(11, $tweets);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Save Tweets Test</h4>
-
-<p>Finally we test the <code>save_tweet</code> method. This method saves a random tweet from a page specified by the user in a specific Wordpress post.</p>
-
-<p>```
-&lt;?php
-public function test_save_tweets(){</p>
-
-<pre><code>global $wpdb;
-$z = new Zam();
-
-$page = '1';
-$post = array(
-    'post_title' =&gt; 'sample save tweet',
-    'post_content' =&gt; '[zam_tweets page=' . $page . ']',
-    'post_type' =&gt; 'post'
-);
-
-$post_id = wp_insert_post($post);
-
-$tweets_table = $wpdb-&gt;prefix . 'zam_tweets';
-$content = $wpdb-&gt;get_var("SELECT tweet FROM $tweets_table WHERE post_id = '$post_id'");
-
-$tweets = $z-&gt;get_tweets($page);
-$result = in_array($content, $tweets);
-$this-&gt;assertTrue($result);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>This method is using the <a href="http://codex.wordpress.org/Shortcode_API">Shortcode API</a> which has a general syntax similar to this one:</p>
-
-<p><code>
-[zam_tweets page=3]
-</code></p>
-
-<p>Where <code>zam_tweets</code> is the specific shortcode ID used by the plugin. And <code>page</code> is the attribute and <code>3</code> is the value for that attribute.</p>
-
-<p>What were doing here is simply emulating what would actually happen in an actual scenario. First the user creates a new post, puts in the shortcode then publish the post. But when testing we can take shortcuts as we don&rsquo;t need to navigate to the post page and click on the add new post. All that we need to do is to publish the actual post and that is done by calling the <code>wp_insert_post()</code> method. This takes a couple of arguments but here were only specify the <code>post_title</code> or the actual title of the post, the <code>post_content</code> or the shortcode itself, and the <code>post_type</code> which is <code>post</code>.</p>
-
-<p>Then we get the tweet from the tweets table, call the <code>get_tweets()</code> method, this time specifying the same page that was used in the shortcode. Finally we simply assert that the <code>in_array()</code> method which checks if the tweet that was found in the database is in the array of tweets returned by the <code>get_tweets()</code> method is <code>true</code>.</p>
-
-<h3>Running the Tests</h3>
-
-<p>Once you&rsquo;re done writing the tests you can simply open up the terminal on the root directory of the plugin and execute the following command:</p>
-
-<p><code>
-phpunit
-</code></p>
-
-<p>Once its done running you will see a screen similar to this:</p>
-
-<p><img src="/images/posts/unit_testing_wordpress_plugins/terminal.png" alt="passing tests" /></p>
 ]]></content>
   </entry>
   
