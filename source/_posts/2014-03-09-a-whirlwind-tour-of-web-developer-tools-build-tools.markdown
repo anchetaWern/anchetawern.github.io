@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Build Tools"
-date: 2014-03-30 16:58
+date: 2014-04-27 9:45
 comments: true
-categories: 
-published: false
+categories: [build-tools, grunt, gulp, apache-ant, rake]
+published: true
 ---
 
 In this part seven of this series I'm going to walk you through build tools. As usual I'm going to summon a [Wikipedia page](http://en.wikipedia.org/wiki/Build_automation) to do the definition for me because I really suck at defining things:
@@ -15,6 +15,7 @@ Build automation is the act of scripting or automating a wide variety of tasks t
 
 In other words build tools makes developers life easier by automating mundane tasks. In the web development world we commonly use build tools to lint, test, minify and deploy source code.
 
+<!-- more -->
 
 ####Test Project
 
@@ -1312,5 +1313,3 @@ Build tools are very important tools to have in our web development arsenal. The
 - [Grunt JS](http://gruntjs.com/)
 - [Gulp JS](http://gulpjs.com/)
 - [Rake](http://rake.rubyforge.org/)
-
-=======================================
