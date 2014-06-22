@@ -4,13 +4,12 @@ title: "Things I learned on my second job"
 date: 2013-02-10 15:58
 updated: 2013-10-20 12:45
 comments: true
-categories: [job, learning]
+categories: [job, learnings]
 published: true
 ---
 
 
-In this blog post I'm going to share some of the things that I learned on my second job.
-
+Its been 2 months since I joined Zencap, a web development company based in Istanbul, Turkey. Just like with my first job I'm also working for them as a remote worker. In this blog post I'm going to share some of the things that I learned while working with them.
 
 <!--More-->
 
@@ -59,7 +58,7 @@ I've also learned how to use API's like the [Flickr API](http://www.flickr.com/s
 Since this will be used by the Wordpress plugin that I'm developing. 
 
 
-####Ebay API
+####Ebay Finding API
 
 The Ebay API was particularly easy to use since they have a very good documentation. 
 And by good documentation I mean things are easy to find. 
@@ -100,6 +99,11 @@ Authenticating API calls can be done using either the API Key or [OAuth2](http:/
 YOu can also use the [Coinbase PHP](https://github.com/coinbase/coinbase-php) library to easily communicate with the Coinbase service.
 
 
+####Bitpay API
+
+Bitpay is just like Coinbase, a service for working with Bitcoins. As I'm mainly using PHP for my projects I used the [official Bitpay SDK for PHP](https://github.com/bitpay/php-client).
+
+
 ###Drupal Custom Module Development
 
 I also learned a bit about custom module development in Drupal. I can say that its tough, you can't just hack your way out to produce a working solution. But the good thing is that most of the problems is more or less already solved by an existing module. All you have to do is install it and figure out how to integrate your own custom module with it.
@@ -120,6 +124,7 @@ Shopify really did a great job with their documentation, you can get up and runn
 - [http://docs.shopify.com/themes](Shopify Themes)
 
 
-That's all for this blog post. I will continue to update this blog post once I learn more things from my second job.
+###SPBAS
 
+Short for SolidPHP Business Automation Software. Just like as it sounds you can use SPBAS for automating your development business. You can use it for selling software. Pretty much like [Themeforest](http://themeforest.net/) or [Codecanyon](http://codecanyon.net/). The only difference is that they won't take any commission for every sale you make. You just have to pay a one time fee, host it on your server, set it up and start selling.
  
