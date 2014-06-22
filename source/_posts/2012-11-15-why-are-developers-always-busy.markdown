@@ -3,7 +3,7 @@ layout: post
 title: "Why are developers always busy"
 date: 2012-11-15 22:16
 comments: true
-categories: 
+categories: [thoughts]
 published: true
 ---
 

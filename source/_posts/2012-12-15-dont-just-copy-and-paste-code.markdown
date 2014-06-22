@@ -3,7 +3,7 @@ layout: post
 title: "Dont Just Copy and Paste Code"
 date: 2012-12-15 11:45
 comments: true
-categories: [code]
+categories: [thoughts]
 published: true
 ---
 

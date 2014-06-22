@@ -3,7 +3,7 @@ layout: post
 title: "My Linux Development Environment"
 date: 2013-07-13 21:34
 comments: true
-categories: [ubuntu, development-tools]
+categories: [ubuntu, tools]
 published: true
 ---
 

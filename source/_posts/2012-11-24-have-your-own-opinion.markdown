@@ -3,7 +3,7 @@ layout: post
 title: "Have your own opinion"
 date: 2012-12-05 12:29
 comments: true
-categories: 
+categories: [thoughts]
 published: true
 ---
 

@@ -3,7 +3,7 @@ layout: post
 title: "On Working Remotely"
 date: 2013-04-28 17:52
 comments: true
-categories: [work]
+categories: [thoughts]
 published: true
 ---
 

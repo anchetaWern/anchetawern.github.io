@@ -3,7 +3,7 @@ layout: post
 title: "Learning and how I did it wrong"
 date: 2013-03-03 08:58
 comments: true
-categories: [learning]
+categories: [thoughts]
 published: true
 ---
 

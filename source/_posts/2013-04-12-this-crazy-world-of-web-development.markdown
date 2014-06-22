@@ -3,7 +3,7 @@ layout: post
 title: "This crazy world of web development"
 date: 2013-04-13 13:45
 comments: true
-categories: [web-development]
+categories: [thoughts, web-development]
 ---
 
 Need a css framework? There's Foundation, Bootstrap, HTML Kickstart, Kube, Skeleton, Baseline, Gumby, Ink, Groundwork. 

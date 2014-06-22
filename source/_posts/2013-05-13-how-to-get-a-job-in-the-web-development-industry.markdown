@@ -3,7 +3,7 @@ layout: post
 title: "How to get a job in the Web Development Industry"
 date: 2013-05-13 13:19
 comments: true
-categories: [job-finding]
+categories: [tips, job-finding]
 published: true
 ---
 

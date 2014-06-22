@@ -3,7 +3,7 @@ layout: post
 title: "How to stay healthy as a developer"
 date: 2013-05-11 19:14
 comments: true
-categories: [health]
+categories: [thoughts, health]
 published: true
 ---
 

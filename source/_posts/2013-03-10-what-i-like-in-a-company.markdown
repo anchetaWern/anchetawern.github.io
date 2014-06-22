@@ -3,7 +3,7 @@ layout: post
 title: "What I Like in a Company"
 date: 2013-03-10 10:44
 comments: true
-categories: [work, company]
+categories: [thoughts]
 published: true
 ---
 

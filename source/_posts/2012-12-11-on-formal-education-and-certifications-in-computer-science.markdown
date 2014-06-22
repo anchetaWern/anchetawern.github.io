@@ -3,7 +3,7 @@ layout: post
 title: "On Formal Education and Certifications in Computer Science"
 date: 2012-12-15 20:37
 comments: true
-categories: [career]
+categories: [thoughts]
 published: true
 ---
 

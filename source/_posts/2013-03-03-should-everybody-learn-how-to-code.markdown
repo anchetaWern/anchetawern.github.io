@@ -3,7 +3,7 @@ layout: post
 title: "Should everyone learn how to code?"
 date: 2013-03-03 08:47
 comments: true
-categories: [learning, opinions]
+categories: [thoughts]
 published: true
 ---
 
