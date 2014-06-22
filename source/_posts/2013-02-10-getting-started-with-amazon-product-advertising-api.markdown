@@ -32,7 +32,9 @@ Just click on the "Create new access key" link to create a new access key. Once 
 
 ![amazon access key](/images/posts/getting_started_with_amazon_product_advertising_api/access_key.jpg)
 
-You can also sign up for an amazon affiliate account: [Amazon affiliate program](https://affiliate-program.amazon.com/) so that you will have your own affiliate ID which you can also use in the class for accessing the API. Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the 'signed in as' label.
+Once that's done sign up for an amazon affiliate account: [Amazon affiliate program](https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html) so that you will have your own affiliate ID which you can use for accessing the API. The amazon affiliate site where you register should be the same as the amazon website where you plan to make your API requests later on. So if you're planning to use the amazon UK website then you have to register here: [Amazon UK Affiliate program](https://affiliate-program.amazon.co.uk/gp/advertising/api/detail/main.html). Once you are in that page click on the 'Sign Up now' button to sign up for the amazon affiliate service. This will ask you to login with your amazon account. You can use your AWS login credentials from earlier for this one. Once you're logged in it will ask for a couple of information about your website. Just make it up if you don't really have a website, nobody will know.
+
+Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the 'signed in as' label.
 
 ###API Basics
 
@@ -142,6 +144,7 @@ I noticed that the default host that is used in there is somewhat obsolete.
 So instead of this:
 
 ```
+<?php
 $method = "GET";
 $host = "webservices.amazon.".$region; 
 $uri = "/onca/xml";
@@ -151,11 +154,13 @@ $params["AWSAccessKeyId"]   = $public_key;
 $params["AssociateTag"]     = $associate_tag;
 $params["Timestamp"]        = gmdate("Y-m-d\TH:i:s\Z");
 $params["Version"]          = "2009-03-31";
+?>
 ```
 
 It should be:
 
 ```
+<?php
 if($region == 'jp'){
     $host = "ecs.amazonaws.".$region;
 }else{
@@ -171,6 +176,7 @@ $params["AWSAccessKeyId"]   = $public_key;
 $params["AssociateTag"]     = $associate_tag;
 $params["Timestamp"]        = gmdate("Y-m-d\TH:i:s\Z");
 $params["Version"]          = "2011-08-01";
+?>
 ```
 
 Not really much change in here. All we did was to make the host a little bit flexible and level up the version a bit (from version 2009-03-31 to 2011-08-01). As of the writing of this article Amazon.co.jp is the only amazon site that doesn't work with `webservices.amazon.{region}` so we had to do that little `if` statement to check if the region that is specified is Japan.
