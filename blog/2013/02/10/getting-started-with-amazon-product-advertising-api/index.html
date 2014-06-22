@@ -121,7 +121,9 @@ Just click on the &ldquo;Create new access key&rdquo; link to create a new acces
 
 <p><img src="/images/posts/getting_started_with_amazon_product_advertising_api/access_key.jpg" alt="amazon access key" /></p>
 
-<p>You can also sign up for an amazon affiliate account: <a href="https://affiliate-program.amazon.com/">Amazon affiliate program</a> so that you will have your own affiliate ID which you can also use in the class for accessing the API. Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the &lsquo;signed in as&rsquo; label.</p>
+<p>Once that&rsquo;s done sign up for an amazon affiliate account: <a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html">Amazon affiliate program</a> so that you will have your own affiliate ID which you can use for accessing the API. The amazon affiliate site where you register should be the same as the amazon website where you plan to make your API requests later on. So if you&rsquo;re planning to use the amazon UK website then you have to register here: <a href="https://affiliate-program.amazon.co.uk/gp/advertising/api/detail/main.html">Amazon UK Affiliate program</a>. Once you are in that page click on the &lsquo;Sign Up now&rsquo; button to sign up for the amazon affiliate service. This will ask you to login with your amazon account. You can use your AWS login credentials from earlier for this one. Once you&rsquo;re logged in it will ask for a couple of information about your website. Just make it up if you don&rsquo;t really have a website, nobody will know.</p>
+
+<p>Note that the associate tag is the same thing as the affiliate ID so if the code refers to the associate tag then all you have to do is to supply the ID that you got from signing up for the Amazon affiliate program. At the time of writing of this tutorial, the affiliate ID can be found on the upper left corner of the screen after signing in to your Amazon affiliate account. The one that is directly below the &lsquo;signed in as&rsquo; label.</p>
 
 <h3>API Basics</h3>
 
@@ -257,15 +259,19 @@ I noticed that the default host that is used in there is somewhat obsolete.</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$method = &quot;GET&quot;;</span>
-</span><span class='line'><span class="x">$host = &quot;webservices.amazon.&quot;.$region; </span>
-</span><span class='line'><span class="x">$uri = &quot;/onca/xml&quot;;</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$host</span> <span class="o">=</span> <span class="s2">&quot;webservices.amazon.&quot;</span><span class="o">.</span><span class="nv">$region</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$uri</span> <span class="o">=</span> <span class="s2">&quot;/onca/xml&quot;</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$params[&quot;Service&quot;]          = &quot;AWSECommerceService&quot;;</span>
-</span><span class='line'><span class="x">$params[&quot;AWSAccessKeyId&quot;]   = $public_key;</span>
-</span><span class='line'><span class="x">$params[&quot;AssociateTag&quot;]     = $associate_tag;</span>
-</span><span class='line'><span class="x">$params[&quot;Timestamp&quot;]        = gmdate(&quot;Y-m-d\TH:i:s\Z&quot;);</span>
-</span><span class='line'><span class="x">$params[&quot;Version&quot;]          = &quot;2009-03-31&quot;;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Service&quot;</span><span class="p">]</span>          <span class="o">=</span> <span class="s2">&quot;AWSECommerceService&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;AWSAccessKeyId&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="nv">$public_key</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;AssociateTag&quot;</span><span class="p">]</span>     <span class="o">=</span> <span class="nv">$associate_tag</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">]</span>        <span class="o">=</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s2">&quot;Y-m-d</span><span class="se">\T</span><span class="s2">H:i:s\Z&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Version&quot;</span><span class="p">]</span>          <span class="o">=</span> <span class="s2">&quot;2009-03-31&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -286,21 +292,25 @@ I noticed that the default host that is used in there is somewhat obsolete.</p>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">if($region == &#39;jp&#39;){</span>
-</span><span class='line'><span class="x">    $host = &quot;ecs.amazonaws.&quot;.$region;</span>
-</span><span class='line'><span class="x">}else{</span>
-</span><span class='line'><span class="x">    $host = &quot;webservices.amazon.&quot;.$region;</span>
-</span><span class='line'><span class="x">}</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$region</span> <span class="o">==</span> <span class="s1">&#39;jp&#39;</span><span class="p">){</span>
+</span><span class='line'>    <span class="nv">$host</span> <span class="o">=</span> <span class="s2">&quot;ecs.amazonaws.&quot;</span><span class="o">.</span><span class="nv">$region</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>    <span class="nv">$host</span> <span class="o">=</span> <span class="s2">&quot;webservices.amazon.&quot;</span><span class="o">.</span><span class="nv">$region</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$method = &quot;GET&quot;;</span>
-</span><span class='line'><span class="x">$uri = &quot;/onca/xml&quot;;</span>
+</span><span class='line'><span class="nv">$method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$uri</span> <span class="o">=</span> <span class="s2">&quot;/onca/xml&quot;</span><span class="p">;</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'><span class="x">$params[&quot;Service&quot;]          = &quot;AWSECommerceService&quot;;</span>
-</span><span class='line'><span class="x">$params[&quot;AWSAccessKeyId&quot;]   = $public_key;</span>
-</span><span class='line'><span class="x">$params[&quot;AssociateTag&quot;]     = $associate_tag;</span>
-</span><span class='line'><span class="x">$params[&quot;Timestamp&quot;]        = gmdate(&quot;Y-m-d\TH:i:s\Z&quot;);</span>
-</span><span class='line'><span class="x">$params[&quot;Version&quot;]          = &quot;2011-08-01&quot;;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Service&quot;</span><span class="p">]</span>          <span class="o">=</span> <span class="s2">&quot;AWSECommerceService&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;AWSAccessKeyId&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="nv">$public_key</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;AssociateTag&quot;</span><span class="p">]</span>     <span class="o">=</span> <span class="nv">$associate_tag</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">]</span>        <span class="o">=</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s2">&quot;Y-m-d</span><span class="se">\T</span><span class="s2">H:i:s\Z&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$params</span><span class="p">[</span><span class="s2">&quot;Version&quot;</span><span class="p">]</span>          <span class="o">=</span> <span class="s2">&quot;2011-08-01&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
