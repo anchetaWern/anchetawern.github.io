@@ -6,6 +6,10 @@ comments: true
 categories: [job, learnings]
 ---
 
+Its been almost 2 months since I joined [RNLTEK media](http://rnltek.com/), a web design company based in Abucay, Bataan. I work for them remotely as a web developer. In this blog post I'm going to share some of the things that I learned while working with them.
+
+<!--more-->
+
 ####Non-technical
 
  * Nothing is ever written on stone, the clients mind changes all the time. It's always wise to prepare for
