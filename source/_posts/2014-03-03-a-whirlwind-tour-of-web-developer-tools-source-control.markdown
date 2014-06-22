@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "A Whirlwind Tour of Web Developer Tools: Source Control"
-date: 2014-03-24 13:26
+date: 2014-04-20 13:26
 comments: true
 categories: [source-control, git, mercurial, svn] 
-published: false
+published: true
 ---
 
 This is part seven of the series A Whirlwind Tour of Web Developer Tools. In this part I'm going to walk you through source control. Source control is also known as Version Control or Revision Control. Which ever term you have heard of before it means the same thing. Like I did with the previous parts of this series I bring you the definition of source control from [Wikipedia](http://en.wikipedia.org/wiki/Revision_control) since they really do a great job at defining things:
@@ -14,6 +14,8 @@ Revision control, also known as version control and source control (and an aspec
 {% endblockquote %}
 
 In simple terms version control is a way in which we can manage changes to a specific document. In the context of Web Development, the documents that we need to manage are the source files of the websites or web applications that we are building. Things like html files, stylesheets, script files, images, and other assets.
+
+<!-- more -->
 
 ###Terms
 
@@ -776,140 +778,7 @@ Lastly there's version control for database. Its not just source code and other 
 
 #####DBV
 
-DBV is a database version control system written in PHP for MySQL database so you need to have Apache, PHP and MySQL installed before you can use it. An important note about this software is that it is not a stand-alone database version control system. It needs a version control system for syncing changes with your team. You can use any of the version control systems that I've mentioned above so you can pretty much apply it in your current workflow.
-
-
-######Installing DBV
-
-To start working with DBV first you have to download the installer from their [website](http://dbv.vizuina.com/) and extract it into your project directory so you will have the following path:
-
-```
-my_project/dbv
-``` 
-
-######DBV Configuration
-
-Next open up the `.gitignore` file and add the following contents. Note the following `.gitignore` file assumes that the rest of your team already has dbv installed that's why all the dbv core files are included here:
-
-```
-.buildpath
-.project
-.settings
-languages
-lib
-public
-templates
-index.php
-DBV.php
-.htaccess
-README.md
-data/meta
-```
-
-Note that the `.gitignore` file is specific to git. It's mercurial equivalent is `.hgignore`. If you're using svn you can set the files or directories to ignore by using the `svn propset svn:ignore` command. The following example excludes the `bin` directory in the root of your current project from being tracked by svn:
-
-```
-svn propset svn:ignore "bin" .
-```
-
-Next you need to update the `config.php` in the root of the `dbv` directory. The only thing that you need to update here are the first two sections. Just substitute the values for `my_username`, `my_password`, `my_database` for the values in your current database configuration:
-
-```php
-<?php
-/**
- * Your database authentication information goes here
- * @see http://dbv.vizuina.com/documentation/
- */
-define('DB_HOST', 'localhost');
-define('DB_PORT', 3306);
-define('DB_USERNAME', 'my_username');
-define('DB_PASSWORD', 'my_password');
-define('DB_NAME', 'my_database');
-
-/**
- * Authentication data for access to DBV itself
- * If you leave any of the two constants below blank, authentication will be disabled
- * @see http://dbv.vizuina.com/documentation/#optional-settings
- */
-define('DBV_USERNAME', 'my_username');
-define('DBV_PASSWORD', 'my_password');
-?>
-```
-
-######DBV Workflow
-
-Once that's done you can fire up dbv from your browser by accessing the following URL:
-
-```
-http://localhost/your_project/dbv
-```
-
-This will give you an interface similar to the following:
-
-![dbv](/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/dbv.png)
-
-From the screenshot above you will see the tables that are in the database that you supplied in the `config.php` earlier. There's also an `In DB` field that displays whether a specific table is currently in the database and the `On disk` which displays whether the current table is saved in your filesystem. With this information you're pretty much aware whether you currently have the latest database in your local copy.
-
-If you create a new table in the database you have to export it to disk. All the tables that are exported to disk are saved in the `data/schema` directory of your dbv installation. You can see from the screenshot below that we currently do not have the `tbl_leadinfo` table in our filesystem as displayed in the dbv interface:
-
-![disk copy](/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/dbv-disk.png)
- 
-After exporting the newly created table to disk you have to commit it using the version control system of your choice:
-
-```
-git add data/schema/tbl_tasks.sql
-git commit -m "add tbl_task table"
-```
-
-Then you can just push it to your central repository:
-
-```
-git push
-```
-
-At this point you can just tell to your team mates that you have created a new table in the database and that you have already pushed it to the central repo. Now they can just `pull` it down to their local copy.
-
-```
-git pull
-```
-
-Next your team mate can just visit the dbv page (`http://localhost/your_project/dbv`). Your team mate will probably have a screen similar to the following:
-
-![dbv team mate](/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/dbv-teammate.png)
-
-At this point he can just tick the checkbox next to the `tbl_tasks` table and click on the 'Push to database' button to create the `tbl_tasks` table in the database.
-
-And that's the workflow for working with dbv. Pretty easy isn't it? But what if you need to update the current database schema? That's where revisions comes in. 
-
-######Revisions
-
-If you're like me and you tried updating the schema (added a new field, remove a field, updated the data type, etc.) for a specific table you might have noticed that dbv isn't aware of it by default. For those changes you need to create a revision file. You can do that by creating a new folder in the `data/revisions` directory in your dbv installation. The convention for naming the folder is making use of a number. So the first time you make a revision the folder name would be `1` and then the next time it would be `2` and so on.
-
-Let's try creating a new field inside the `tbl_users` table and name it `email`:
-
-```sql
-ALTER TABLE `tbl_users`
-ADD `email` varchar(160) COLLATE 'latin1_swedish_ci' NOT NULL
-```
-
-Next create a new file in the `data/revisions/1` directory in your dbv installation and put the query that you just executed as the contents. Name the file to `tbl_users.sql`. The convention here is using the name of the modified table as the name for the revision file.
-
-After that you can now commit the new file into your source control:
-
-```
-git add data/revisions/1/tbl_users.sql
-git commit -m "add email field to tbl_users"
-```
-
-And then push it to your central repository:
-
-```
-git push
-```
-
-Again you can inform your team mates about it. Now if they access dbv from the browser they can now see the revision. All they have to do now is to tick the checkbox beside the revision and then click on the 'Run selected revisions' button. This will commit your changes to their local database copy:
-
-![dbv revisions](/images/posts/2014-03-03-a-whirlwind-tour-of-web-developer-tools-source-control/dbv-revisions.png)
+DBV is a database version control system written in PHP for MySQL database. I have written about it in a recent Sitepoint article: [database versioning with DBV](www.sitepoint.com/database-versioning-dbv/) so be sure to check it out if you're interested.
 
 #####Other Database Version Control Systems
 
