@@ -12,6 +12,9 @@ footer: true
 
 Personal Project
 
+####Project Dates
+
+February 2012 to March 2012
 
 ####Project Description
 

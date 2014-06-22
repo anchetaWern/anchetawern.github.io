@@ -12,6 +12,9 @@ footer: true
 
 Client Project
 
+####Project Dates
+
+July 2012 to September 2012
 
 ####Client
 

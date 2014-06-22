@@ -23,8 +23,27 @@ An information system used for processing business applications from the registr
 - PHP
 - MySQL
 
-
 [View More Details](/projects/bpls)
+
+## 
+
+###EUP
+
+Allows sellers to automatically update the prices of products which they sell on ebay.
+Prices are based on the current price in the Amazon website and a configurable profit setting.
+
+{% img right /images/pages/projects/eup/small-admin.png 'EUP Admin' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Amazon Product Advertising API
+- Ebay Trading API
+
+[View More Details](/projects/eup)
 
 # 
 
@@ -107,6 +126,46 @@ A Wordpress plugin that handles site subscriptions. It integrates with the Bitpa
 
 
 [View More Details](/projects/wp-donations)
+
+## 
+
+###Home Value
+
+A Wordpress plugin that allows real estate agents to capture leads from people who wants to sell their house.
+
+{% img right /images/pages/projects/homevalue/small-homevalue-leads.png 'leads' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Wordpress
+- Google Maps API
+- Zillow API
+
+[View More Details](/projects/homevalue)
+
+## 
+
+###Vmonial
+
+A voice feedback platform that clients can use to capture voice feedback from their customers. Feedbacks that are approved can then be embedded in the clients website for people to view.
+
+{% img right /images/pages/projects/vmonial/small-embed-black.png 'vmonial embedded widget' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- Stripe API
+- Twilio API
+
+[View More Details](/projects/vmonial)
 
 ## 
 

@@ -11,8 +11,11 @@ footer: true
 
 ####Project Type
 
-Company Project
+Company Project (Zencap)
 
+####Project Dates
+
+September 2013
 
 ####Project Description
 
