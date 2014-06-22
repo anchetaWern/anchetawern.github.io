@@ -169,6 +169,27 @@ A voice feedback platform that clients can use to capture voice feedback from th
 
 ## 
 
+###Property Blink
+
+Allows real-estate agents to advertise properties that are for sale. Each property can be accessed in their own domain name.
+
+{% img right /images/pages/projects/propertyblink/small-propertypage.png 'property page' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- MySQL
+- Google Maps API
+- Stripe API
+
+[View More Details](/projects/propertyblink)
+
+## 
+
 ###Birthday Freebies Shouts
 
 Birthday Freebies shouts is a web application used for automatically sending out birthday greetings to Facebook or Gmail Contacts.
