@@ -32,6 +32,7 @@ If you have an interesting project or an idea that you want to implement please 
 
 If you want to learn more about me you can always visit any of my online profiles below:
 
+- [Sitepoint](http://www.sitepoint.com/author/wancheta/)
 - [Twitter](https://twitter.com/Wern_Ancheta)
 - [Github](https://github.com/anchetaWern/)
 - [Stackoverflow](http://careers.stackoverflow.com/wern)
