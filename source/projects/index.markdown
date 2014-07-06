@@ -9,6 +9,28 @@ footer: true
 
 ##Client Projects
 
+
+###Ebay Store Automator
+
+Allows sellers to automatically update the prices of products which they sell on ebay.
+Prices are based on the current price in the Amazon website and a configurable profit setting.
+
+{% img right /images/pages/projects/esa/small-admin.png 'ESA Admin' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Amazon Product Advertising API
+- Ebay Trading API
+
+[View More Details](/projects/esa)
+
+## 
+
+
 ###BPLS
 
 An information system used for processing business applications from the registration of business to the issuing of permit. It has also the ability to collect taxes, notify taxpayers on the business application status via email.
@@ -25,25 +47,6 @@ An information system used for processing business applications from the registr
 
 [View More Details](/projects/bpls)
 
-## 
-
-###EUP
-
-Allows sellers to automatically update the prices of products which they sell on ebay.
-Prices are based on the current price in the Amazon website and a configurable profit setting.
-
-{% img right /images/pages/projects/eup/small-admin.png 'EUP Admin' %}
-
-####Technologies Used
-
-- HTML
-- CSS 
-- JavaScript
-- PHP 
-- Amazon Product Advertising API
-- Ebay Trading API
-
-[View More Details](/projects/eup)
 
 # 
 
