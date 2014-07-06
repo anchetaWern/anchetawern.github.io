@@ -33,7 +33,7 @@ A Wordpress plugin that handles site subscriptions. It integrates with the Bitpa
 - Bitpay API
 
 
-####Demo
+####URL
 
 [WP-Donations](http://boxingmanager.co.uk/subscribe/)
 

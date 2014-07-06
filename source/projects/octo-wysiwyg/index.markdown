@@ -35,9 +35,9 @@ A version control feature is also available if you want to manage the updates in
 
 [Octo-wysiwyg](https://github.com/anchetaWern/octo-wysiwyg)
 
-####Demo
+####URL
 
-You can try out octo-wysiwyg by visiting [this link](http://ruby-wern.rhcloud.com/edit/2014-02-19-super-duper-post.markdown).
+You can try out octo-wysiwyg by visiting [this page](http://ruby-wern.rhcloud.com/edit/2014-02-19-super-duper-post.markdown).
 Note that I have limited the features to avoid usage abuse. The following features are not available in the demo:
 
 - image upload

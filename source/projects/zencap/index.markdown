@@ -28,9 +28,6 @@ A responsive website using Twitter Bootstrap for base styling and responsive des
 - JavaScript
 - PHP (Laravel)
 
-####Demo
-
-[Zencap](http://www.zencap.com/site/public/)
 
 
 ####Screenshots

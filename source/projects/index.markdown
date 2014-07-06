@@ -173,7 +173,7 @@ A voice feedback platform that clients can use to capture voice feedback from th
 
 Allows real-estate agents to advertise properties that are for sale. Each property can be accessed in their own domain name.
 
-{% img right /images/pages/projects/propertyblink/small-propertypage.png 'property page' %}
+{% img right /images/pages/projects/propertyblink/small-homepage.png 'home page' %}
 
 ####Technologies Used
 

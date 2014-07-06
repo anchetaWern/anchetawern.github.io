@@ -47,7 +47,7 @@ It's main features are:
 - Wordpress
 
 
-####Demo
+####URL
 
 [ecom](http://digitalprices.com/)
 

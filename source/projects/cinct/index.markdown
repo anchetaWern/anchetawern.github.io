@@ -35,7 +35,7 @@ It also shows a map in which the polling center is located.
 
 [Cinct](http://github.com/anchetaWern/cinct)
 
-####Demo
+####URL
 
 [Cinct](http://cinct-class.rhcloud.com/)
 
