@@ -9,8 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.
-There&rsquo;s really no bullet-proof method of doing this &hellip;">
+  <meta name="description" content="In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests. When making AJAX requests you would normally do something &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,15 +104,12 @@ There&rsquo;s really no bullet-proof method of doing this &hellip;">
   </header>
 
 
-<div class="entry-content"><p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.
-There&rsquo;s really no bullet-proof method of doing this. It might work, it might not since AJAX requests should only be performed within the same domain due to security concerns.</p>
+<div class="entry-content"><p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.</p>
 
 <!-- more -->
 
 
-<p>Note that I&rsquo;m not going to show how to perform an AJAX request to any domain from any domain. What I&rsquo;m going to show you is how to perform an AJAX request to a different domain which you have control over the code.</p>
-
-<p>For example you want to get some data via AJAX from <code>xyz.com</code>. You are making the request from <code>abc.com</code> so it wouldn&rsquo;t work if you do something like:</p>
+<p>When making AJAX requests you would normally do something like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -124,7 +120,11 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
+<p>But if you&rsquo;re making the request from a domain different than the current domain your script is being called then it wouldn&rsquo;t work.</p>
+
+<h4>JSONP</h4>
+
+<p>The first method if via JSONP. If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -183,7 +183,9 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>If this doesn&rsquo;t work you can also use the <a href="https://github.com/nbio/csshttprequest">csshttprequest</a> library:</p>
+<h4>CSS HTTP Request</h4>
+
+<p>If the first method doesn&rsquo;t work for you. You can also use the <a href="https://github.com/nbio/csshttprequest">csshttprequest</a> library. What this library does is to convert the data that you&rsquo;re passing to another server to something similar to css. Css isn&rsquo;t subjected to the same domain origin policy so this works. The only downside is that you can only send <code>GET</code> requests:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -200,7 +202,7 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Note that you can only use this library to pass in arguments using GET:</p>
+<p>If you want to pass in arguments:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -218,6 +220,30 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
 </span><span class='line'>      <span class="c1">//do something with the response</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Enable Cross Origin Resource Sharing</h4>
+
+<p>Lastly if you have access to the server you are making the request to then you can just enable cross domain resource sharing or CORS. There&rsquo;s a whole <a href="http://enable-cors.org/index.html">website</a> dedicate to it. And instructions on how you can set it up on the <a href="http://enable-cors.org/server.html">server</a>. If you are using PHP its as simple as setting the following header information:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;Access-Control-Allow-Origin: *&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the code above tells the client (browser) that the resource returned is available to all. Which means that the request can be made from any server and the browser would happily utilize the returned data. If you do not want that then you can also specify a specific domain from which access is allowed:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;Access-Control-Allow-Origin: http://my-awesomesite.com&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -298,6 +324,10 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/07/12/how-i-work-remotely/">How I work remotely</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/06/what-ive-been-up-to-lately/">What I've been up to lately</a>
       </li>
     
@@ -311,10 +341,6 @@ There&rsquo;s really no bullet-proof method of doing this. It might work, it mig
     
       <li class="post">
         <a href="/blog/2014/04/20/a-whirlwind-tour-of-web-developer-tools-source-control/">A Whirlwind Tour of Web Developer Tools: Source Control</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">A Whirlwind Tour of Web Developer Tools: Package Managers</a>
       </li>
     
   </ul>
