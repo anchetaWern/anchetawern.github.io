@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ajax | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/ajax/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2014-07-12T16:01:58+08:00</updated>
+  <updated>2014-07-12T17:04:39+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -18,15 +18,12 @@
     <link href="http://anchetawern.github.io/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/"/>
     <updated>2013-10-24T18:30:00+08:00</updated>
     <id>http://anchetawern.github.io/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.
-There&rsquo;s really no bullet-proof method of doing this. It might work, it might not since AJAX requests should only be performed within the same domain due to security concerns.</p>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.</p>
 
 <!-- more -->
 
 
-<p>Note that I&rsquo;m not going to show how to perform an AJAX request to any domain from any domain. What I&rsquo;m going to show you is how to perform an AJAX request to a different domain which you have control over the code.</p>
-
-<p>For example you want to get some data via AJAX from <code>xyz.com</code>. You are making the request from <code>abc.com</code> so it wouldn&rsquo;t work if you do something like:</p>
+<p>When making AJAX requests you would normally do something like this:</p>
 
 <p>```javascript
 $.get(&lsquo;<a href="http://xyz.com/get_data">http://xyz.com/get_data</a>&rsquo;, {&lsquo;data&rsquo; : &lsquo;abc&rsquo;}, function(response){</p>
@@ -37,7 +34,11 @@ $.get(&lsquo;<a href="http://xyz.com/get_data">http://xyz.com/get_data</a>&rsquo
 <p>});
 ```</p>
 
-<p>If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
+<p>But if you&rsquo;re making the request from a domain different than the current domain your script is being called then it wouldn&rsquo;t work.</p>
+
+<h4>JSONP</h4>
+
+<p>The first method if via JSONP. If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
 
 <p><code>php
 &lt;?php
@@ -82,7 +83,9 @@ data : {
 <p>});
 ```</p>
 
-<p>If this doesn&rsquo;t work you can also use the <a href="https://github.com/nbio/csshttprequest">csshttprequest</a> library:</p>
+<h4>CSS HTTP Request</h4>
+
+<p>If the first method doesn&rsquo;t work for you. You can also use the <a href="https://github.com/nbio/csshttprequest">csshttprequest</a> library. What this library does is to convert the data that you&rsquo;re passing to another server to something similar to css. Css isn&rsquo;t subjected to the same domain origin policy so this works. The only downside is that you can only send <code>GET</code> requests:</p>
 
 <p>```
 CSSHttpRequest.get(</p>
@@ -96,7 +99,7 @@ function(response){
 <p>);
 ```</p>
 
-<p>Note that you can only use this library to pass in arguments using GET:</p>
+<p>If you want to pass in arguments:</p>
 
 <p>```
 var title = $(&lsquo;#title&rsquo;).val();</p>
@@ -111,6 +114,24 @@ function(response){
 
 <p>);
 ```</p>
+
+<h4>Enable Cross Origin Resource Sharing</h4>
+
+<p>Lastly if you have access to the server you are making the request to then you can just enable cross domain resource sharing or CORS. There&rsquo;s a whole <a href="http://enable-cors.org/index.html">website</a> dedicate to it. And instructions on how you can set it up on the <a href="http://enable-cors.org/server.html">server</a>. If you are using PHP its as simple as setting the following header information:</p>
+
+<p><code>php
+&lt;?php
+header("Access-Control-Allow-Origin: *");
+?&gt;
+</code></p>
+
+<p>Note that the code above tells the client (browser) that the resource returned is available to all. Which means that the request can be made from any server and the browser would happily utilize the returned data. If you do not want that then you can also specify a specific domain from which access is allowed:</p>
+
+<p><code>
+&lt;?php
+header("Access-Control-Allow-Origin: http://my-awesomesite.com");
+?&gt;
+</code></p>
 ]]></content>
   </entry>
   
