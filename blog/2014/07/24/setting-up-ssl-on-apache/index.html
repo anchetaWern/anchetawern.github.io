@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Setting Up SSL on Apache - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this blog post I&rsquo;ll walk you through setting up SSL on Apache.
+When talking about SSL the popular choice is OpenSSL, an open source toolkit &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetawern.github.io/blog/2014/07/24/setting-up-ssl-on-apache">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script> 
+<script src="/javascripts/google_form.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetawern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Setting Up SSL on Apache</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-24T17:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this blog post I&rsquo;ll walk you through setting up SSL on Apache.
+When talking about SSL the popular choice is OpenSSL, an open source toolkit for implementing Secure Sockets Layer (SSL) and Transport Layer Security (TLS). So we will be using OpenSSL for this tutorial.</p>
+
+<h3>Install OpenSSL</h3>
+
+<p>The first thing that you need to do is to determine the latest version of OpenSSL from the <a href="http://www.openssl.org/source/">sources page</a>. Its usually the one that has a red color. Once you find that, copy its address then use <code>wget</code> to download it to your preferred directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://www.openssl.org/source/openssl-1.0.1h.tar.gz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the directory where you want to install openssl:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir /usr/local/openssl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Extract the archive:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tar -xvzf openssl-1.0.1h.tar.gz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then <code>cd</code> into it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd openssl-1.0.1h</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next execute the <code>config</code> command to set the installation path for openssl and check for any errors. This should be the same as the directory you created earlier:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next execute <code>make</code> to compile the source code. If this doesn&rsquo;t work for you try adding <code>sudo</code> before the actual command.
+After <code>make</code> is done and there aren&rsquo;t any errors you can now execute <code>make install</code> to install the source files in there appropriate directories.</p>
+
+<p>Once that&rsquo;s done you can verify that openssl is successfully installed by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/local/openssl/bin/openssl version</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Generate Keys</h3>
+
+<p>Once you&rsquo;re done with installing openssl you can now assign it to a variable:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export OpenSSL_HOME=/usr/local/openssl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then add it to your system path:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export PATH=$PATH:$OpenSSL_HOME/bin</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a private key:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl genrsa 2048 &gt; privatekey.pem</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above command <code>genrsa 2048</code> tells openssl to generate an RSA key that is 2048 bits long. <a href="http://en.wikipedia.org/wiki/RSA_%28cryptosystem%29">RSA</a> is basically just an algorithm used for encryption.</p>
+
+<p>Next create a CSR (Certificate Signing Request) using the private key that we have just generated:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl req -new -key privatekey.pem -out csr.pem</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above will ask for the following:</p>
+
+<p><strong>Country Name</strong> &ndash; use the 2 letter abbreviation of your country name
+<strong>State or Province</strong> &ndash; (e.g California)
+<strong>Locality Name</strong> &ndash; (e.g Palm Desert)
+<strong>Organization Name</strong> &ndash; name of your company
+<strong>Organization Unit</strong> &ndash; name of website
+<strong>Common Name</strong> &ndash; domain name of website (e.g mywebsite.com)
+<strong>Email Address</strong> &ndash; your email address</p>
+
+<p>The information above will be used for the certificate that will be assigned to you later on so be sure to supply the correct information.</p>
+
+<h3>Enable SSL on Apache</h3>
+
+<p>Now that we have generated all the keys we need we can now configure apache to use those keys. First you have to enable the SSL module by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2enmod ssl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then restart apache for changes to take effect:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo service apache2 restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next edit the ssl configuration file for apache:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano /etc/apache2/sites-available/default-ssl.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Comment out the following lines by adding a pound (#) sign before them:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+</span><span class='line'>SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next look for the following line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;VirtualHost _default_:443&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then under it set the server information:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ServerAdmin admin@mywebsite.com
+</span><span class='line'>ServerName mywebsite.com
+</span><span class='line'>ServerAlias www.mywebsite.com
+</span><span class='line'>DocumentRoot /home/www</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next look for <code>SSLEngine On</code> and then under it add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SSLCertificateFile /home/wern/signed-certificate.crt 
+</span><span class='line'>SSLCertificateKeyFile /home/wern/privatekey.pem </span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>SSLCertificateFile</code> is where you specify the path to your websites digital certificate. I didn&rsquo;t cover this step because there are a lot of certificate authorities out there. So far I&rsquo;ve only tried with Namecheap and its pretty easy to acquire a certificate from them. Just create an account and then log in to it. Once you&rsquo;re logged in just click on the security menu then select SSL certificates. From there just click on the button under the domain validation, add your preferred certificate to the cart and then just go through the steps. Once you have purchased a certificate just hover over your user name on the upper left side of the screen and then select manage ssl certificates. That will bring you to the page where all your certificates are listed. By default its just sitting there waiting to be configured. So all you have to do is configure it then select <code>Apache + OpenSSL</code> when it asks for your server configuration. And then it will ask for the csr. Just copy the contents of the <code>csr.pem</code> file that we generated earlier and paste it on the textarea which is asking for it. After that just click on submit and go through the steps provided by namecheap. Once everything is ok namecheap will send you the certificate via email. Just copy it and then save it on your server. The path to that file is what you need to assign to the <code>SSLCertificateFile</code> in apache.
+Next is the <code>SSLCertificateKeyFile</code> that&rsquo;s the path to your private key. In our case its the <code>privatekey.pem</code> file.</p>
+
+<p>Once that&rsquo;s done you just have to enable it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2ensite default-ssl.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then restart apache so that the changes will take effect:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo service apache2 restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it! Enjoy your new https enabled website. The next step would be to redirect all http request to https but I&rsquo;ll leave that one to you.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-24T17:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache/'>apache</a>, <a class='category' href='/blog/categories/https/'>https</a>, <a class='category' href='/blog/categories/ssl/'>ssl</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetawern.github.io/blog/2014/07/24/setting-up-ssl-on-apache/" data-via="wern_ancheta" data-counturl="http://anchetawern.github.io/blog/2014/07/24/setting-up-ssl-on-apache/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/13/how-i-work-with-clients/" title="Previous Post: How I work with Clients">&laquo; How I work with Clients</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/24/setting-up-ssl-on-apache/">Setting Up SSL on Apache</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/13/how-i-work-with-clients/">How I work with Clients</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/06/what-ive-been-up-to-lately/">What I've been up to lately</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/things-i-learned-on-my-third-job/">Things I learned on my third job</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">A Whirlwind Tour of Web Developer Tools: Build Tools</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetawern.github.io/blog/2014/07/24/setting-up-ssl-on-apache/';
+        var disqus_url = 'http://anchetawern.github.io/blog/2014/07/24/setting-up-ssl-on-apache/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
