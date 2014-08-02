@@ -22,10 +22,14 @@ Note that this is what I do most of the time. But I also work with JavaScript (N
 
 ###Contact
 
-If you have an interesting project or an idea that you want to implement please contact me:
+If you have an interesting project or an idea that you want to implement, please contact me through the following:
 
 - [Email](mailto:ancheta.wern@gmail.com)
 - Skype name: wernancheta
+
+Or use the contact form below:
+
+{% contact 328f686a-2cfe-42ad-a178-198f442e6116 http://wern-ancheta.com/aboutme?form=ok#alert-box %}
 
 
 ###Elsewhere
@@ -46,8 +50,3 @@ If you want to learn more about me you can always visit any of my online profile
 - [Delicious](https://delicious.com/wernancheta)
 - [CodeAcademy](http://www.codecademy.com/nrew)
 - [Smarterer](http://smarterer.com/Wern_Ancheta)
-
-
-###Donation
-
-If you like this blog and you want to say thanks please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UR4FM6YHK6K38&lc=PH&item_name=Wern%20Ancheta%27s%20Blog&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). I'd really appreciate it. 
