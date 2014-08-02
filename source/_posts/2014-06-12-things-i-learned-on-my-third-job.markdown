@@ -2,7 +2,7 @@
 layout: post
 title: "Things I learned on my third job"
 date: 2014-06-12 20:51
-update: 2014-06-22
+update: 2014-07-12
 comments: true
 categories: [job, learnings]
 published: true
@@ -10,6 +10,9 @@ published: true
 
 Its been 3 months since I joined [Islick Media](http://islickmedia.com/), a Web Development shop based in Palm Desert, California. Just like with my previous jobs I work for them as a remote worker. In this blog post I'll be sharing some of the things I've learned on the job.
 
+###Synxis
+
+Synxis is a reservation system. Its a pain in the neck to work with this one. Any code which has something to do with their reservation features are not accessible. At most you can only update the HTML for the header and footer part of the page. Uploading new files is also painful as you either have to install Java so you can run their image uploader or suck it up and upload files one by one.
 
 ###Wordpress Theme Customization API
 
@@ -63,6 +66,11 @@ Elastic search is an open source, distributed and RESTful search engine. Its lik
 ###Prediction IO
 
 Prediction IO is an open source machine learning server. You can use it for creating personalized applications. With Prediction IO you can predict your users behavior, offer personalized content (E.g news, ads, jobs), help them discover things that they might like. All of this can be done by having the server silently record the users activity within your app such as viewing, liking, disliking, and rating something. 
+
+
+###Phonegap / Cordova
+
+Phonegap allows developers for creating mobile apps using web technologies (HTML, CSS, JavaScript). Installing stuff for compiling those HTML, CSS, and JavaScript files is really a pain. Sometimes you get an error that takes hours to solve. Thankfully there's the Phonegap build service by Adobe that allows you to upload your source files and then after a second or two you can readily download the app installers for devices that you support. This is pretty neat since all you have to do is to write HTML, CSS, and JavaScript code like you always do, upload it to Phonegap build and boom! you now have an installer for every mobile app that you support. A QR code is also generated every time you update the source code of your app. You can then just use your phone or tablet's QR code reader and it will directly download the installer provided you're connected to the internet. There's also hydration which allows you to easily update already installed apps. So if you upload a new version of your app on Phonegap build, and then you open up the app on the mobile device hydration will detect the updates and then it will ask you to update the app or not. So no more need to re-install the app every time a new version is uploaded. Lastly there's also debugging tools provided that allows you to debug the current instance of the app on your mobile device from the browser. This is all really sweet and awesome but we still need to think about performance, app permissions, and writing the code in such a way that it will be easily maintainable. There's also this mobile development mindset that you have to get into. What I'm saying is that you shouldn't really write Phonegap apps the way you write web applications. Because the environment is different. In a browser environment clicking on the link will load up a new page but in an app what it will do is open up the browser and then navigate to that link. So basically most of the things that you need to perform in the server side will have to be done using AJAX requests. Updating the UI can be done by using templates and so on.
 
 
 That's it! for now. In the coming months I'll be updating this post and share some more of the things I've learned on my current job.
