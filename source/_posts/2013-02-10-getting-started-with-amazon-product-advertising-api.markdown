@@ -5,7 +5,7 @@ date: 2013-02-10 19:31
 comments: true
 categories: [amazon, api]
 published: true
-updated: 2014-02-06
+updated: 2014-06-06
 ---
 
 In this blog post I'm going to show you how you can get started using Amazon's product advertising API in PHP.
