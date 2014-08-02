@@ -172,11 +172,11 @@ A voice feedback platform that clients can use to capture voice feedback from th
 
 ## 
 
-###Property Blink
+###Blink
 
 Allows real-estate agents to advertise properties that are for sale. Each property can be accessed in their own domain name.
 
-{% img right /images/pages/projects/propertyblink/small-homepage.png 'home page' %}
+{% img right /images/pages/projects/blink/small-homepage.png 'home page' %}
 
 ####Technologies Used
 
@@ -189,7 +189,7 @@ Allows real-estate agents to advertise properties that are for sale. Each proper
 - Google Maps API
 - Stripe API
 
-[View More Details](/projects/propertyblink)
+[View More Details](/projects/blink)
 
 ## 
 
