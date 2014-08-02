@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2014-08-02T16:08:21+08:00</updated>
+  <updated>2014-08-02T21:22:03+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Contact plugin for Octopress]]></title>
+    <link href="http://anchetawern.github.io/blog/2014/08/02/introduction-to-contact-plugin-for-octopress/"/>
+    <updated>2014-08-02T21:01:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2014/08/02/introduction-to-contact-plugin-for-octopress</id>
+    <content type="html"><![CDATA[<p>In this blog post I&rsquo;ll be introducing the <a href="https://github.com/anchetaWern/jekyll-contact">Contact plugin for Octopress</a>.
+This plugin allows you to create contact forms with ease. Its using the <a href="http://pooleapp.com/">pooleapp.com</a> for saving the data for the forms that are submitted.</p>
+
+<h3>Create a Pooleapp account</h3>
+
+<p>First lets go through pooleapp. Poole is a free, hosted data store for static sites. It allows you to post data into it and then later on you can retrieve the data using a simple API.</p>
+
+<p>You don&rsquo;t have to register to start using pooleapp but its recommended so that you can keep track of the forms that you create. Another bonus feature is that when someones submits a data to your contact form, pooleapp will immediately notify you via email.</p>
+
+<p>Once you&rsquo;ve registered an account, you can now create a new form. Just give your form a unique name and click on the &lsquo;create form&rsquo; button. Once created, pooleapp will ask you for the email in which you want the notifications to be sent to.</p>
+
+<h3>Installing the plugin</h3>
+
+<p>Octopress doesn&rsquo;t really have a plugin system so we&rsquo;ll have to do things manually. First thing that you need to do is to add the <code>contact.rb</code> file into the <code>octopress/plugins</code> directory.</p>
+
+<p>So that we can show a success message once the visitor submits his data through the contact form, we also need to add the <code>contact.js</code> file inside the <code>source/javascripts</code> directory. Basically what it does is to check for the existence of the <code>form</code> query parameter. If it exists then it makes the success message visible.</p>
+
+<p>For the styling, add the <code>_contact.scss</code> file inside the <code>sass/partials</code> directory. Then in your <code>sass/_partials.scss</code> file, import the css for the contact form by adding the following on the last line:</p>
+
+<p><code>
+@import "partials/contact";
+</code></p>
+
+<p>Lastly, under the <code>source/_includes/custom</code> directory, add a script tag that points out to the <code>contact.js</code> file on the last line:</p>
+
+<p>```</p>
+
+<script src="/javascripts/contact.js"></script>
+
+
+<p>```</p>
+
+<h3>Using the plugin</h3>
+
+<p>To use the plugin in any of your pages, simply use the <code>contact</code> liquid tag then supply your pooleapp API key as the first argument, and the redirect URL for when the form is submitted:</p>
+
+<p>
+<code>
+{% contact YOUR_POOLE_APP_API_KEY http://YOURSITE.COM/PAGE?form=ok#alert-box %}
+</code>
+</p>
+
+<h3>Demo</h3>
+
+<p>You can try out the demo on the <a href="http://wern-ancheta.com/aboutme">about me page of this blog</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Portfolio plugin for Octopress]]></title>
