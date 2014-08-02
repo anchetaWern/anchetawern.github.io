@@ -5,17 +5,14 @@ date: 2013-10-24 18:30
 comments: true
 categories: [ajax, jquery, php, quick-tip]
 published: true
-updated: 2013-02-03
+updated: 2014-07-12
 ---
 
 In this article I'm going to show you how you can perform cross-domain AJAX requests.
-There's really no bullet-proof method of doing this. It might work, it might not since AJAX requests should only be performed within the same domain due to security concerns.
 
 <!-- more -->
 
-Note that I'm not going to show how to perform an AJAX request to any domain from any domain. What I'm going to show you is how to perform an AJAX request to a different domain which you have control over the code.
-
-For example you want to get some data via AJAX from `xyz.com`. You are making the request from `abc.com` so it wouldn't work if you do something like:
+When making AJAX requests you would normally do something like this:
 
 ```javascript
 $.get('http://xyz.com/get_data', {'data' : 'abc'}, function(response){
@@ -23,7 +20,11 @@ $.get('http://xyz.com/get_data', {'data' : 'abc'}, function(response){
 });
 ```
 
-If you have control over the code that returns the response that you need, all you need to do is to convert the data that you're returning to JSON string and then wrap it up with a function call. Here's an example:
+But if you're making the request from a domain different than the current domain your script is being called then it wouldn't work.
+
+####JSONP
+
+The first method if via JSONP. If you have control over the code that returns the response that you need, all you need to do is to convert the data that you're returning to JSON string and then wrap it up with a function call. Here's an example:
 
 ```php
 <?php
@@ -59,7 +60,9 @@ $.ajax({
 });
 ```
 
-If this doesn't work you can also use the [csshttprequest](https://github.com/nbio/csshttprequest) library:
+####CSS HTTP Request
+
+If the first method doesn't work for you. You can also use the [csshttprequest](https://github.com/nbio/csshttprequest) library. What this library does is to convert the data that you're passing to another server to something similar to css. Css isn't subjected to the same domain origin policy so this works. The only downside is that you can only send `GET` requests:
 
 ```
 CSSHttpRequest.get(
@@ -70,7 +73,7 @@ CSSHttpRequest.get(
 );
 ```
 
-Note that you can only use this library to pass in arguments using GET:
+If you want to pass in arguments:
 
 ```
 var title = $('#title').val();
@@ -81,5 +84,23 @@ CSSHttpRequest.get(
 		//do something with the response
     }
 );
+```
+
+####Enable Cross Origin Resource Sharing
+
+Lastly if you have access to the server you are making the request to then you can just enable cross domain resource sharing or CORS. There's a whole [website](http://enable-cors.org/index.html) dedicate to it. And instructions on how you can set it up on the [server](http://enable-cors.org/server.html). If you are using PHP its as simple as setting the following header information:
+
+```php
+<?php
+header("Access-Control-Allow-Origin: *");
+?>
+```
+
+Note that the code above tells the client (browser) that the resource returned is available to all. Which means that the request can be made from any server and the browser would happily utilize the returned data. If you do not want that then you can also specify a specific domain from which access is allowed:
+
+```
+<?php
+header("Access-Control-Allow-Origin: http://my-awesomesite.com");
+?>
 ```
 
