@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: process-manager | Wern Ancheta]]></title>
+  <link href="http://anchetawern.github.io/blog/categories/process-manager/atom.xml" rel="self"/>
+  <link href="http://anchetawern.github.io/"/>
+  <updated>2014-08-15T20:15:37+08:00</updated>
+  <id>http://anchetawern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Supervisor]]></title>
+    <link href="http://anchetawern.github.io/blog/2014/08/15/getting-started-with-supervisor/"/>
+    <updated>2014-08-15T19:32:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2014/08/15/getting-started-with-supervisor</id>
+    <content type="html"><![CDATA[<p>Recently in my work I had this node.js script that I had to run persistently. Its basically a server that will generate images based on some JSON data that&rsquo;s passed from the client side. So I did some searching and found <a href="http://supervisord.org/">Supervisor</a>, a process control system. It allows you to run programs persistently.</p>
+
+<h3>Installation</h3>
+
+<p>You can install install Supervisor by executing the following command in your terminal:</p>
+
+<p><code>
+sudo apt-get install supervisor
+</code></p>
+
+<h3>Configuration</h3>
+
+<p>Once the installation is done, you can now create the config file. This is where you specify which script you want to run, the directory in where you want to run it, and a log file in which the output is redirected.</p>
+
+<p><code>
+sudo nano /etc/supervisor/conf.d/image-creator.conf
+</code></p>
+
+<p>Here&rsquo;s what a config file looks like:</p>
+
+<p><code>
+[program:imagecreator]
+command=node image-creator.js
+directory=/home/ubuntu/www
+stdout_logfile=/home/ubuntu/logs/image-creator.log
+redirect_stderr=true
+</code></p>
+
+<p>Breaking it down. This is where we set the name of the program. Yes the <code>program:</code> is always there, only the thing that comes after it is updated. In this case the name of the program that I gave is <code>imagecreator</code>.</p>
+
+<p><code>
+[program:imagecreator]
+</code></p>
+
+<p>Next is the command that you execute when you&rsquo;re running the program in the terminal. In this case were executing the script via the <code>node</code> command:</p>
+
+<p><code>
+command=node image-creator.js
+</code></p>
+
+<p>Next is the directory where the program is stored. This can also be the directory where you want to execute the program:</p>
+
+<p><code>
+directory=/home/ubuntu/www
+</code></p>
+
+<p>This is where you specify the file where you want to redirect the output of the program:</p>
+
+<p><code>
+stdout_logfile=/home/ubuntu/logs/image-creator.log
+</code></p>
+
+<p>Lastly, we specify whether to send back the <code>stderr</code> output to supervisord on its stdout file descriptor:</p>
+
+<p><code>
+redirect_stderr=true
+</code></p>
+
+<p>That&rsquo;s pretty much all we need for the configuration file. You can go ahead and save it. If you want to specify more settings, check out the <a href="http://supervisord.org/configuration.html">docs on configuration</a></p>
+
+<h3>Adding the Process</h3>
+
+<p>Now that we have a configuration file in place we can now tell supervisor to add it to the list of processes that it currently manages. You can do that by using <code>supervisorctl</code>:</p>
+
+<p><code>
+sudo supervisorctl
+</code></p>
+
+<p>Executing the command above will let you enter the supervisor program. Next execute the following commands in order:</p>
+
+<p><code>
+reread
+add imagecreator
+start imagecreator
+</code></p>
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>reread</code> tells supervisor to read the configuration files that are available.</li>
+<li><code>add</code> tells supervisor to add the program into the list of programs that it will manage.</li>
+<li><code>start</code> tells supervisor to run the program.</li>
+</ul>
+
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it! Supervisor is a neat little program that allows you to run programs persistently. Just be sure that errors are handled accordingly because supervisor wouldn&rsquo;t continue running your program if an error occurs while its running.</p>
+]]></content>
+  </entry>
+  
+</feed>
