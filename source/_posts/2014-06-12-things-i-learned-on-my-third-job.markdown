@@ -18,6 +18,11 @@ Synxis is a reservation system. Its a pain in the neck to work with this one. An
 
 I've worked with the Wordpress Theme Customization API on my first project on the company. I've used it to give the users of the Wordpress theme that I've created a simple way of customizing the look and feel of the theme. Things like customizing the color of links, header and background images can go a long way in making your Wordpress theme easily customizable to non-programmers.
 
+###Roots
+
+Roots is a starter theme for Wordpress. Its useful when creating new Wordpress themes as you don't have to write boilerplate code from scratch. It also supports Grunt task runner which makes processing front-end code easier.
+
+
 ###Zillow
 
 Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement. 
@@ -72,5 +77,25 @@ Prediction IO is an open source machine learning server. You can use it for crea
 
 Phonegap allows developers for creating mobile apps using web technologies (HTML, CSS, JavaScript). Installing stuff for compiling those HTML, CSS, and JavaScript files is really a pain. Sometimes you get an error that takes hours to solve. Thankfully there's the Phonegap build service by Adobe that allows you to upload your source files and then after a second or two you can readily download the app installers for devices that you support. This is pretty neat since all you have to do is to write HTML, CSS, and JavaScript code like you always do, upload it to Phonegap build and boom! you now have an installer for every mobile app that you support. A QR code is also generated every time you update the source code of your app. You can then just use your phone or tablet's QR code reader and it will directly download the installer provided you're connected to the internet. There's also hydration which allows you to easily update already installed apps. So if you upload a new version of your app on Phonegap build, and then you open up the app on the mobile device hydration will detect the updates and then it will ask you to update the app or not. So no more need to re-install the app every time a new version is uploaded. Lastly there's also debugging tools provided that allows you to debug the current instance of the app on your mobile device from the browser. This is all really sweet and awesome but we still need to think about performance, app permissions, and writing the code in such a way that it will be easily maintainable. There's also this mobile development mindset that you have to get into. What I'm saying is that you shouldn't really write Phonegap apps the way you write web applications. Because the environment is different. In a browser environment clicking on the link will load up a new page but in an app what it will do is open up the browser and then navigate to that link. So basically most of the things that you need to perform in the server side will have to be done using AJAX requests. Updating the UI can be done by using templates and so on.
 
+###Node JS
+
+I was also able to re-aquaint with Node JS which I've already used before in some of my personal projects. What has changed is that I've started to look for existing packages that might be helpful to the thing I'm trying to accomplish. Because before I tried to implement everything from scratch. And the solution that I come up with is mostly suboptimal.
+
+###Fabric JS
+
+Fabric JS is a JavaScript library that can be used for generating images. Pretty much like MS Paint, Photoshop or GIMP. You can do things like insert text, shapes into a canvas which you can then export into an image.
+
+###Social API's
+
+I've also learned how to interact with various Social API's, such as Facebook's Graph API, Twitter API, and LinkedIn Sharing API. It was hard at first especially Facebook's API because there's no quality documentation available. And most of the resources you will find on the web refers to the previous versions of the API which isn't really that useful. 
+
+###Youtube and Vimeo API
+
+There's also this project in which needs to interact with the Youtube and Vimeo API. I've had a bit of a trouble using the Youtube API because the API key that I was using didn't seem to work. The solution I came up with is to just delete the existing API key and create a new one. Another gotcha is that the type of key should be browser instead of server even if the request is actually made on the server. 
+As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Simple API is pretty simple and you don't need application keys in order to make a request to it. The Advanced API is a bit more complex, but it was made simple because there's already an existing PHP library that made making requests to the API easier.
+
+###Yahoo Finance API
+
+Lastly there's the Yahoo Finance API which I used to get the most recent stocks information about various companies from NYSE and NASDAQ.
 
 That's it! for now. In the coming months I'll be updating this post and share some more of the things I've learned on my current job.
