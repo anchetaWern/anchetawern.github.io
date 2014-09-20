@@ -193,6 +193,25 @@ Allows real-estate agents to advertise properties that are for sale. Each proper
 
 ## 
 
+###Vestor
+
+Vestor is a real-time stock market simulation app.
+
+{% img right /images/pages/projects/vestor/small-portfolio.png 'portfolio' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- Yahoo Finance API
+
+[View More Details](/projects/vestor)
+
+## 
+
 ###Birthday Freebies Shouts
 
 Birthday Freebies shouts is a web application used for automatically sending out birthday greetings to Facebook or Gmail Contacts.
