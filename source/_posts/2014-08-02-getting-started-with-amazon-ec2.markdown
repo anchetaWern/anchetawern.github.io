@@ -44,19 +44,19 @@ For inbound rules you would commonly have the following settings:
 - **Port:** 22
 - **Source:** 0.0.0.0/0 - if you got a static IP assigned to your computer, its more secure if you set that IP for this field. Otherwise just select 'Anywhere' which allows access to any IP.
 
-- *Type:* - HTTP - this allows you to access your instance from the browser.
+- **Type:** - HTTP - this allows you to access your instance from the browser.
 - **Protocol:** TCP
 - **Port:** 80
 - **Source:** 0.0.0.0/0 - this means anyone which has access to the internet can access your instance via the DNS provided by Amazon or the public IP assigned to your instance.
 
 For outbound rules:
 
-- *Type:* - HTTP - this allows your instance to download stuff from the internet.
+- **Type:** - HTTP - this allows your instance to download stuff from the internet.
 - **Protocol:** TCP
 - **Port:** 80
 - **Destination:** 0.0.0.0/0 - this means that your instance can make the request to any server.
 
-- *Type:* MYSQL - this allows your instance to make a request to the MySQL server. 
+- **Type:** MYSQL - this allows your instance to make a request to the MySQL server. 
 - **Protocol:** TCP
 - **Port:** 3306
 - **Destination:** 0.0.0.0/0 - this allows your instance access to any MySQL server. You can also set this to the private IP of your instance. You can only specify a single IP so if you're planning to access other MySQL servers aside from the one installed on your ec2 instance then just select 'Anywhere'.
