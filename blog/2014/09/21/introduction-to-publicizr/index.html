@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Publicizr - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="A couple of weeks ago I started building a project called Publicizr. I created it for the sole purpose of easily publishing a link to my Facebook, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetawern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Publicizr</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-21T09:11:00+08:00" pubdate data-updated="true">Sep 21<span>st</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A couple of weeks ago I started building a project called <a href="https://github.com/anchetaWern/publicizr">Publicizr</a>. I created it for the sole purpose of easily publishing a link to my Facebook, Twitter and LinkedIn profile whenever I publish a new post on this blog.</p>
+
+<h3>Dependencies</h3>
+
+<p>This project depends on the following Ruby gems in order to work:</p>
+
+<ul>
+<li><a href="https://github.com/hexgnu/linkedin">linkedin</a> &ndash; used for connecting/publishing to Linkedin.</li>
+<li><a href="https://github.com/sferik/twitter">twitter</a> &ndash; used for connecting/publishing to Twitter.</li>
+<li><a href="https://github.com/arsduo/koala">koala</a> &ndash; used for connecting/publishing to Facebook.</li>
+<li><a href="https://github.com/mperham/em-resolv-replace">em-resolv-replace</a> &ndash; used for fixing the issue with koala not being able to publish to Facebook from the localhost.</li>
+</ul>
+
+
+<h3>How to Install</h3>
+
+<p>You can install Publicizr by requiring the following Ruby gems in the Gemfile used by your static blogging engine:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'linkedin', '~&gt; 1.0.0'
+</span><span class='line'>gem 'twitter', '~&gt; 5.11.0'
+</span><span class='line'>gem 'koala', '~&gt; 1.10.1'
+</span><span class='line'>gem 'em-resolv-replace', '~&gt; 1.1.3'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;ve added those, save the changes to the Gemfile then execute <code>bundle install</code> on your terminal.</p>
+
+<p>Once everything is installed, look for the <code>Rakefile</code> used in your static blogging engine. For Octopress/Jekyll its located in its root directory. Next add the following on the <code>Rakefile</code>. If the <code>Rakefile</code> is requiring other gems, just put these below those gems. If not then put it on the first line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require "twitter"
+</span><span class='line'>require "koala"
+</span><span class='line'>require "linkedin"
+</span><span class='line'>require "resolv-replace"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, put these on the last line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "Publish post to facebook, twitter and linkedin"
+</span><span class='line'>task :publish, :content do |t, args|
+</span><span class='line'>
+</span><span class='line'>  if args.content
+</span><span class='line'>    post = args.content
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    #start post to twitter
+</span><span class='line'>    tweet = Twitter::REST::Client.new do |config|
+</span><span class='line'>      config.consumer_key        = "twitter-app-key"
+</span><span class='line'>      config.consumer_secret     = "twitter-app-secret"
+</span><span class='line'>      config.access_token        = "twitter-user-token"
+</span><span class='line'>      config.access_token_secret = "twitter-user-secret"
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    tweet.update(post)
+</span><span class='line'>    #end post to twitter
+</span><span class='line'>
+</span><span class='line'>    #start post to facebook
+</span><span class='line'>    @graph = Koala::Facebook::API.new("facebook-user-token")
+</span><span class='line'>    @graph.put_wall_post(post)
+</span><span class='line'>    #end post to facebook
+</span><span class='line'>
+</span><span class='line'>    #start post to linkedin
+</span><span class='line'>    linked_in = LinkedIn::Client.new('linkedin-app-key', 'linkedin-app-secret')
+</span><span class='line'>    linked_in.authorize_from_access('linkedin-user-token', 'linkedin-user-secret')
+</span><span class='line'>
+</span><span class='line'>    linked_in.add_share(:comment =&gt; post)
+</span><span class='line'>    #end post to linkedin
+</span><span class='line'>
+</span><span class='line'>    puts "Your post has been shared!"
+</span><span class='line'>
+</span><span class='line'>  else
+</span><span class='line'>    puts "Supply your post!"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Basically what it does is declaring a rake task that will publish whatever content you pass into it. If you don&rsquo;t need to publish to all 3 (Facebook, Twitter, LinkedIn), feel free to comment out the lines between the lines which says &lsquo;#start post to facebook&rsquo; and &lsquo;#end post to facebook&rsquo;. Just replace &lsquo;facebook&rsquo; with your social network of choice.</p>
+
+<p>At this point the project still requires you to create your own app on each of the social networks. You can do that by visiting the following links and then look for the page for creating a new app:</p>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook</a></li>
+<li><a href="https://dev.twitter.com/">Twitter</a></li>
+<li><a href="https://developer.linkedin.com/">LinkedIn</a></li>
+</ul>
+
+
+<p>Once that&rsquo;s done, you also need to create an app using your language of choice (PHP, Ruby, or Python) that will allow you to retrieve user tokens. If you&rsquo;re primarily a PHP developer you can use the following libraries to ease the work that you need to do:</p>
+
+<ul>
+<li><a href="https://github.com/thephpleague/oauth2-client">thephpleagues/oauth2-client</a> &ndash; supports facebook and linkedin.</li>
+<li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
+</ul>
+
+
+<h3>How to Use</h3>
+
+<p>You can use publicizr by executing the <code>publish</code> task then supplying the content of your post as an argument:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake publish["new blog post: newsletters I subscribe to http://wern-ancheta.com/blog/2014/09/07/newsletters-i-subscribe-to/"]</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Support</h3>
+
+<p>Any Ruby based static blogging engine is supported. You can check out this <a href="http://blog.iwantmyname.com/2014/05/the-updated-big-list-of-static-website-generators-for-your-site-blog-or-wiki.html">big list of static blogging engines</a> and look for the ones that are built using Ruby.</p>
+
+<h3>Future Plans</h3>
+
+<p>Publicizr is already useable but still requires a bunch of work in order to get setup and running. That&rsquo;s why I plan to add the following features in the future:</p>
+
+<ul>
+<li>automatically detect last post that was created and publish it automatically when the blog is deployed.</li>
+<li>website for retrieving user access tokens which you can then paste into the rake file. This removes the need for creating your own apps and retrieving your keys from it.</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-21T09:11:00+08:00" pubdate data-updated="true">Sep 21<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/projects/'>projects</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/" data-via="wern_ancheta" data-counturl="http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/07/newsletters-i-subscribe-to/" title="Previous Post: Newsletters I subscribe to">&laquo; Newsletters I subscribe to</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/21/introduction-to-publicizr/">Introduction to Publicizr</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/07/newsletters-i-subscribe-to/">Newsletters I subscribe to</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/31/podcasts-i-listen-to/">Podcasts I listen to</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/24/getting-started-with-amazon-ec2/">Getting Started with Amazon EC2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/15/getting-started-with-supervisor/">Getting Started with Supervisor</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=UR4FM6YHK6K38&amp;lc=PH&amp;item_name=Wern%20Ancheta%27s%20Blog&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Buy me a cup of coffee</a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/';
+        var disqus_url = 'http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

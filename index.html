@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Following last weeks post on Podcasts I listen to. This time I&rsquo;ll talk about some of the newsletters I subscribe to. Ruby Weekly Ruby Weekly is &hellip;">
+  <meta name="description" content="A couple of weeks ago I started building a project called Publicizr. I created it for the sole purpose of easily publishing a link to my Facebook, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,205 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/09/21/introduction-to-publicizr/">Introduction to Publicizr</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-21T09:11:00+08:00" pubdate data-updated="true">Sep 21<span>st</span>, 2014</time>
+        
+         | <a href="/blog/2014/09/21/introduction-to-publicizr/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A couple of weeks ago I started building a project called <a href="https://github.com/anchetaWern/publicizr">Publicizr</a>. I created it for the sole purpose of easily publishing a link to my Facebook, Twitter and LinkedIn profile whenever I publish a new post on this blog.</p>
+
+<h3>Dependencies</h3>
+
+<p>This project depends on the following Ruby gems in order to work:</p>
+
+<ul>
+<li><a href="https://github.com/hexgnu/linkedin">linkedin</a> &ndash; used for connecting/publishing to Linkedin.</li>
+<li><a href="https://github.com/sferik/twitter">twitter</a> &ndash; used for connecting/publishing to Twitter.</li>
+<li><a href="https://github.com/arsduo/koala">koala</a> &ndash; used for connecting/publishing to Facebook.</li>
+<li><a href="https://github.com/mperham/em-resolv-replace">em-resolv-replace</a> &ndash; used for fixing the issue with koala not being able to publish to Facebook from the localhost.</li>
+</ul>
+
+
+<h3>How to Install</h3>
+
+<p>You can install Publicizr by requiring the following Ruby gems in the Gemfile used by your static blogging engine:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'linkedin', '~&gt; 1.0.0'
+</span><span class='line'>gem 'twitter', '~&gt; 5.11.0'
+</span><span class='line'>gem 'koala', '~&gt; 1.10.1'
+</span><span class='line'>gem 'em-resolv-replace', '~&gt; 1.1.3'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;ve added those, save the changes to the Gemfile then execute <code>bundle install</code> on your terminal.</p>
+
+<p>Once everything is installed, look for the <code>Rakefile</code> used in your static blogging engine. For Octopress/Jekyll its located in its root directory. Next add the following on the <code>Rakefile</code>. If the <code>Rakefile</code> is requiring other gems, just put these below those gems. If not then put it on the first line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require "twitter"
+</span><span class='line'>require "koala"
+</span><span class='line'>require "linkedin"
+</span><span class='line'>require "resolv-replace"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, put these on the last line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "Publish post to facebook, twitter and linkedin"
+</span><span class='line'>task :publish, :content do |t, args|
+</span><span class='line'>
+</span><span class='line'>  if args.content
+</span><span class='line'>    post = args.content
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    #start post to twitter
+</span><span class='line'>    tweet = Twitter::REST::Client.new do |config|
+</span><span class='line'>      config.consumer_key        = "twitter-app-key"
+</span><span class='line'>      config.consumer_secret     = "twitter-app-secret"
+</span><span class='line'>      config.access_token        = "twitter-user-token"
+</span><span class='line'>      config.access_token_secret = "twitter-user-secret"
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    tweet.update(post)
+</span><span class='line'>    #end post to twitter
+</span><span class='line'>
+</span><span class='line'>    #start post to facebook
+</span><span class='line'>    @graph = Koala::Facebook::API.new("facebook-user-token")
+</span><span class='line'>    @graph.put_wall_post(post)
+</span><span class='line'>    #end post to facebook
+</span><span class='line'>
+</span><span class='line'>    #start post to linkedin
+</span><span class='line'>    linked_in = LinkedIn::Client.new('linkedin-app-key', 'linkedin-app-secret')
+</span><span class='line'>    linked_in.authorize_from_access('linkedin-user-token', 'linkedin-user-secret')
+</span><span class='line'>
+</span><span class='line'>    linked_in.add_share(:comment =&gt; post)
+</span><span class='line'>    #end post to linkedin
+</span><span class='line'>
+</span><span class='line'>    puts "Your post has been shared!"
+</span><span class='line'>
+</span><span class='line'>  else
+</span><span class='line'>    puts "Supply your post!"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Basically what it does is declaring a rake task that will publish whatever content you pass into it. If you don&rsquo;t need to publish to all 3 (Facebook, Twitter, LinkedIn), feel free to comment out the lines between the lines which says &lsquo;#start post to facebook&rsquo; and &lsquo;#end post to facebook&rsquo;. Just replace &lsquo;facebook&rsquo; with your social network of choice.</p>
+
+<p>At this point the project still requires you to create your own app on each of the social networks. You can do that by visiting the following links and then look for the page for creating a new app:</p>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook</a></li>
+<li><a href="https://dev.twitter.com/">Twitter</a></li>
+<li><a href="https://developer.linkedin.com/">LinkedIn</a></li>
+</ul>
+
+
+<p>Once that&rsquo;s done, you also need to create an app using your language of choice (PHP, Ruby, or Python) that will allow you to retrieve user tokens. If you&rsquo;re primarily a PHP developer you can use the following libraries to ease the work that you need to do:</p>
+
+<ul>
+<li><a href="https://github.com/thephpleague/oauth2-client">thephpleagues/oauth2-client</a> &ndash; supports facebook and linkedin.</li>
+<li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
+</ul>
+
+
+<h3>How to Use</h3>
+
+<p>You can use publicizr by executing the <code>publish</code> task then supplying the content of your post as an argument:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake publish["new blog post: newsletters I subscribe to http://wern-ancheta.com/blog/2014/09/07/newsletters-i-subscribe-to/"]</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Support</h3>
+
+<p>Any Ruby based static blogging engine is supported. You can check out this <a href="http://blog.iwantmyname.com/2014/05/the-updated-big-list-of-static-website-generators-for-your-site-blog-or-wiki.html">big list of static blogging engines</a> and look for the ones that are built using Ruby.</p>
+
+<h3>Future Plans</h3>
+
+<p>Publicizr is already useable but still requires a bunch of work in order to get setup and running. That&rsquo;s why I plan to add the following features in the future:</p>
+
+<ul>
+<li>automatically detect last post that was created and publish it automatically when the blog is deployed.</li>
+<li>website for retrieving user access tokens which you can then paste into the rake file. This removes the need for creating your own apps and retrieving your keys from it.</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/09/07/newsletters-i-subscribe-to/">Newsletters I Subscribe To</a></h1>
     
     
@@ -108,43 +307,49 @@
 
 <p>Ruby Weekly is an email round-up of Ruby news and articles. This newsletter is mainly about Ruby but you can also find some interesting stuff here even if you&rsquo;re not a Ruby developer. Links to articles about command line tools, databases and version control are also included in every issue.</p>
 
-<p>Schedule: Every Friday
-<a href="http://rubyweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://rubyweekly.com/">Visit Site</a></p>
 
 <h3>JavaScript Weekly</h3>
 
 <p>JavaScript Weekly is an email round-up of interesting JavaScript news and articles. It also has a jobs section in which you can find jobs exclusively for JavaScript developers or engineers.</p>
 
-<p>Schedule: Every Friday
-<a href="http://javascriptweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://javascriptweekly.com/">Visit Site</a></p>
 
 <h3>Webtools Weekly</h3>
 
 <p>Web Tools Weekly is a front-end development and web design newsletter with a focus on tools. Each issue features a brief tip or tutorial, followed by a weekly round-up of various apps, scripts, plugins, and other resources to help front-end developers solve problems and be more productive.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://webtoolsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://webtoolsweekly.com/">Visit Site</a></p>
 
 <h3>Gamedev.js Weekly</h3>
 
 <p>Gamedev.js Weekly is a newsletter all about HTML5 game development. I&rsquo;m not really a game developer myself so reading articles from this newsletter is just for me to have an idea how games for the browser are being developed.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://gamedevjsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://gamedevjsweekly.com/">Visit Site</a></p>
 
 <h3>StackExchange Programmers Newsletter</h3>
 
 <p>A curated list of interesting programming questions from the programmers.stackexchange website.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://programmers.stackexchange.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://programmers.stackexchange.com/">Visit Site</a></p>
 
 <h3>DB Weekly</h3>
 
 <p>A weekly round-up of database technology news and articles covering new developments, SQL, NoSQL, document databases, graph databases, and more.</p>
 
-<p>Schedule: Every Friday
-<a href="http://dbweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://dbweekly.com/">Visit Site</a></p>
 
 <h3>Versioning</h3>
 
@@ -156,120 +361,137 @@
 
 <p>If you can&rsquo;t keep up with Hacker News, Hacker Newsletter is the way to go. Kale Davis curates only the most interesting stuff that you might find on Hacker News.</p>
 
-<p>Schedule: Every Friday
-<a href="http://www.hackernewsletter.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://www.hackernewsletter.com/">Visit Site</a></p>
 
 <h3>Responsive Design Weekly</h3>
 
 <p>A free, once–weekly round-up of responsive design articles, tools, tips, tutorials and inspirational links.</p>
 
-<p>Schedule: Every Friday
-<a href="http://responsivedesignweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://responsivedesignweekly.com/">Visit Site</a></p>
 
 <h3>Node Weekly</h3>
 
 <p>Node Weekly is a free, once–weekly e-mail round-up of Node.js news and articles. Its still from the same guy (Peter Cooper) who brought us the awesome JavaScript Weekly Newsletter. But this is primarily focused on Node.js.</p>
 
-<p>Schedule: Every Friday
-<a href="A%20free,%20once%E2%80%93weekly%20e-mail%20round-up%20of%20Node.js%20news%20and%20articles">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="A%20free,%20once%E2%80%93weekly%20e-mail%20round-up%20of%20Node.js%20news%20and%20articles">Visit Site</a></p>
 
 <h3>WPMail.me</h3>
 
 <p>WPMail.me is a free WordPress Newsletter, once a week, with a round-up of WordPress news and articles.</p>
 
-<p>Schedule: Every Friday
-<a href="http://wpmail.me/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://wpmail.me/">Visit Site</a></p>
 
 <h3>PyCoder&rsquo;s Weekly</h3>
 
 <p>A free weekly e-mail newsletter, on Fridays, for those interested in python development and various topics around python.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://pycoders.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://pycoders.com/">Visit Site</a></p>
 
 <h3>Python Weekly</h3>
 
 <p>If PyCoder&rsquo;s Weekly isn&rsquo;t enough, Python Weekly has got you covered. Its a free weekly e-mail newsletter, for those interested in python development and various topics around python.</p>
 
-<p>Schedule: Every Friday
-<a href="http://www.pythonweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://www.pythonweekly.com/">Visit Site</a></p>
 
 <h3>PHP Weekly</h3>
 
 <p>As the name suggests, PHP Weekly is a newsletter featuring the best articles, tutorials, talks, news, jobs, and tools about PHP. Based on my experience so far, every issue is a fat one. And when I say fat it means that there&rsquo;s bunch of stuff in there for you to consume. You couldn&rsquo;t ask for more from this newsletter. Its the best thing there is if you want to keep yourself updated about PHP stuff.</p>
 
-<p>Schedule: Every Thursday
-<a href="http://www.phpweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Thursday</p>
+
+<p><a href="http://www.phpweekly.com/">Visit Site</a></p>
 
 <h3>Postgres Weekly</h3>
 
 <p>Postgres Weekly is a free, once–weekly e-mail round-up of PostgreSQL news and articles.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://postgresweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://postgresweekly.com/">Visit Site</a></p>
 
 <h3>Web Design Update</h3>
 
 <p>Web Design Update is a plain text email digest dedicated to disseminating news and information about web design and development with emphasis on elements of user experience, accessibility, web standards and more</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://lists.d.umn.edu/mailman/listinfo/webdev">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://lists.d.umn.edu/mailman/listinfo/webdev">Visit Site</a></p>
 
 <h3>ng-newsletter</h3>
 
 <p>Ng-newsletter is a weekly newsletter of the best AngularJS content on the web.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://www.ng-newsletter.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://www.ng-newsletter.com/">Visit Site</a></p>
 
 <h3>Ember Weekly</h3>
 
 <p>Ember Weekly is a newsletter dedicated to bring you the latest Ember.js news, tips and libraries.</p>
 
-<p>Schedule: Every Monday
-<a href="http://emberweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://emberweekly.com/">Visit Site</a></p>
 
 <h3>HTML5 Weekly</h3>
 
 <p>HTML5 Weekly is a newsletter that features HTML5 and Web Platform technology roundup, CSS 3, Canvas, WebSockets, WebGL, Native Client, and more. Basically all things HTML5 and related technologies.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://html5weekly.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://html5weekly.com/">Visit Site</a></p>
 
 <h3>Perl Weekly</h3>
 
 <p>Perl Weekly features hand-picked news and articles about Perl.</p>
 
-<p>Schedule: Every Monday
-<a href="http://perlweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://perlweekly.com/">Visit Site</a></p>
 
 <h3>DevOps Weekly</h3>
 
 <p>Devops Weekly curates the best and latest articles all about DevOps. If you&rsquo;re not familiar with DevOps, its basically a short term for Development and Operations. Its mainly focused on IT operations, tooling and collaboration.</p>
 
-<p>Schedule: Every Monday
-<a href="http://www.devopsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://www.devopsweekly.com/">Visit Site</a></p>
 
 <h3>UX Newsletter</h3>
 
 <p>Another newsletter from Stackexchange which features the most interesting questions about User Experience in the past week.</p>
 
-<p>Schedule: Every Monday
-<a href="http://ux.stackexchange.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://ux.stackexchange.com/">Visit Site</a></p>
 
 <h3>Web Developer Reading List</h3>
 
 <p>An all in one newsletter for web developers. It contains news on both front-end and back-end stuff.</p>
 
-<p>Schedule: Every Friday
-<a href="http://wdrl.info/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://wdrl.info/">Visit Site</a></p>
 
 <h3>CSS Weekly</h3>
 
 <p>A weekly e-mail roundup of css articles, tutorials, experiments and tools curated by Zoran Jambor. There&rsquo;s not much in every issue but the quality makes up for it.</p>
 
-<p>Schedule: Every Tuesday
-<a href="http://css-weekly.com/">Visit Site</a></p>
+<p>Schedule: Every Tuesday</p>
+
+<p><a href="http://css-weekly.com/">Visit Site</a></p>
 </div>
   
   
@@ -429,7 +651,7 @@ Its hosted by Chris Coyier and Dave Rupert. Each week they either interview some
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 22</li>
 <li><p><strong>Source:</strong> 0.0.0.0/0 &ndash; if you got a static IP assigned to your computer, its more secure if you set that IP for this field. Otherwise just select &lsquo;Anywhere&rsquo; which allows access to any IP.</p></li>
-<li><p><em>Type:</em> &ndash; HTTP &ndash; this allows you to access your instance from the browser.</p></li>
+<li><p><strong>Type:</strong> &ndash; HTTP &ndash; this allows you to access your instance from the browser.</p></li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 80</li>
 <li><strong>Source:</strong> 0.0.0.0/0 &ndash; this means anyone which has access to the internet can access your instance via the DNS provided by Amazon or the public IP assigned to your instance.</li>
@@ -439,11 +661,11 @@ Its hosted by Chris Coyier and Dave Rupert. Each week they either interview some
 <p>For outbound rules:</p>
 
 <ul>
-<li><em>Type:</em> &ndash; HTTP &ndash; this allows your instance to download stuff from the internet.</li>
+<li><strong>Type:</strong> &ndash; HTTP &ndash; this allows your instance to download stuff from the internet.</li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 80</li>
 <li><p><strong>Destination:</strong> 0.0.0.0/0 &ndash; this means that your instance can make the request to any server.</p></li>
-<li><p><em>Type:</em> MYSQL &ndash; this allows your instance to make a request to the MySQL server.</p></li>
+<li><p><strong>Type:</strong> MYSQL &ndash; this allows your instance to make a request to the MySQL server.</p></li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 3306</li>
 <li><strong>Destination:</strong> 0.0.0.0/0 &ndash; this allows your instance access to any MySQL server. You can also set this to the private IP of your instance. You can only specify a single IP so if you&rsquo;re planning to access other MySQL servers aside from the one installed on your ec2 instance then just select &lsquo;Anywhere&rsquo;.</li>
@@ -1367,99 +1589,6 @@ I&rsquo;ve waited but I didn&rsquo;t get a reply after a week so I thought they&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/12/things-i-learned-on-my-third-job/">Things I Learned on My Third Job</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-12T20:51:00+08:00" pubdate data-updated="true">Jun 12<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/06/12/things-i-learned-on-my-third-job/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Its been 3 months since I joined <a href="http://islickmedia.com/">Islick Media</a>, a Web Development shop based in Palm Desert, California. Just like with my previous jobs I work for them as a remote worker. In this blog post I&rsquo;ll be sharing some of the things I&rsquo;ve learned on the job.</p>
-
-<h3>Synxis</h3>
-
-<p>Synxis is a reservation system. Its a pain in the neck to work with this one. Any code which has something to do with their reservation features are not accessible. At most you can only update the HTML for the header and footer part of the page. Uploading new files is also painful as you either have to install Java so you can run their image uploader or suck it up and upload files one by one.</p>
-
-<h3>Wordpress Theme Customization API</h3>
-
-<p>I&rsquo;ve worked with the Wordpress Theme Customization API on my first project on the company. I&rsquo;ve used it to give the users of the Wordpress theme that I&rsquo;ve created a simple way of customizing the look and feel of the theme. Things like customizing the color of links, header and background images can go a long way in making your Wordpress theme easily customizable to non-programmers.</p>
-
-<h3>Zillow</h3>
-
-<p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.
-I&rsquo;ve used their API in providing zestimates (zillow estimates) for real properties.</p>
-
-<h3>Laravel</h3>
-
-<p>This is not the first time that I&rsquo;ve learned about Laravel. Its some sort of a reacquaintance since I first used it in the year 2012 where it was only newly released. Fast-forward to 2014 there&rsquo;s already a bunch of stuff that has changed and improved. Some of my previous knowledge were still of use but I also had to learn new stuff and new way of doing things. I&rsquo;ve learned about the IoC container, and how to make use of external classes the laravel way. I also learned about the authentication class which makes writing the login functionality for your app a breeze.</p>
-
-<h3>Mailing Services</h3>
-
-<p>Mandrill and Mailgun are mailing services that I&rsquo;ve used for sending out emails for my projects. Yes you can pretty much use the built-in mailing server on the server where your app is hosted. But the main advantage of using a mailing service over the built-in mailing server is authentication. With mailing services such as Mandrill or Mailgun you get the benefit of having your email come from a reputable server. This leads to a higher rate of the emails actually making it into your customers inbox and not the spam.</p>
-
-<h3>SPF and DKIM</h3>
-
-<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#97;&#119;&#101;&#x73;&#111;&#109;&#x65;&#x6e;&#101;&#115;&#115;&#x40;&#x63;&#111;&#111;&#x6c;&#x6e;&#x65;&#x73;&#x73;&#46;&#x63;&#x6f;&#x6d;">&#97;&#x77;&#101;&#x73;&#111;&#109;&#x65;&#110;&#101;&#x73;&#115;&#64;&#x63;&#x6f;&#x6f;&#x6c;&#x6e;&#101;&#115;&#115;&#46;&#99;&#x6f;&#x6d;</a> to work and actually make it to your customers inbox.</p>
-
-<h3>Amazon EC2</h3>
-
-<p>Short for Amazon Elastic Compute Cloud. Its basically a cloud computing platform. You can use it to host web applications and scaling is already taken care of. You can start with a fairly low performance and storage capacity server instance. And once you&rsquo;ve met a certain point where the current instance is no longer performing well. You can just upgrade your current instance and all your stuff would still be in there.</p>
-
-<h3>Stripe</h3>
-
-<p>Stripe is a company that provides a set of APIs for enabling businesses to accept and manage online payments. They have SDKs (Software Development Kit) available for different programming languages. Which is nice since no matter what programming language you&rsquo;re using to write your app you can use the SDK to easily talk with the Stripe API. Stripe uses credit card for payments. One time payment and subscription based payments are automatically handled for you.</p>
-
-<h3>Twilio</h3>
-
-<p>Twilio is a cloud communications company. They allow developers to provide SMS and Voice functionality to websites. I used twilio in my second project (Vmonial) with the company. Vmonial is an app that allows businesses to accept voice testimonials from their clients. I used the Twilio Voice API on the project. You can basically control the flow using XML files (TwiML) which uses tags like <code>&lt;Say&gt;</code>, <code>&lt;Record&gt;</code>, <code>&lt;Play&gt;</code>, <code>&lt;Gather&gt;</code> and <code>&lt;Response&gt;</code>.</p>
-
-<h3>WHM</h3>
-
-<p>WHM is sort of the big mama of cpanel. This is where you can manage cpanel instances, users, third party extensions, and lots of other stuff for managing a server.</p>
-
-<h3>Elastic Search</h3>
-
-<p>Elastic search is an open source, distributed and RESTful search engine. Its like Apache Solr which I&rsquo;ve written about a few times in this blog. Lots of people says really good things about Elastic Search that&rsquo;s why I gave it a try on my third project (Roof99) to handle the search. MySQL was not a choice since its a database and it would be terribly slow for searching. Elastic search on the other hand is a search index. Documents are stored in JSON format and querying can be done by using REST (Representational state transfer) calls.</p>
-
-<h3>Prediction IO</h3>
-
-<p>Prediction IO is an open source machine learning server. You can use it for creating personalized applications. With Prediction IO you can predict your users behavior, offer personalized content (E.g news, ads, jobs), help them discover things that they might like. All of this can be done by having the server silently record the users activity within your app such as viewing, liking, disliking, and rating something.</p>
-
-<h3>Phonegap / Cordova</h3>
-
-<p>Phonegap allows developers for creating mobile apps using web technologies (HTML, CSS, JavaScript). Installing stuff for compiling those HTML, CSS, and JavaScript files is really a pain. Sometimes you get an error that takes hours to solve. Thankfully there&rsquo;s the Phonegap build service by Adobe that allows you to upload your source files and then after a second or two you can readily download the app installers for devices that you support. This is pretty neat since all you have to do is to write HTML, CSS, and JavaScript code like you always do, upload it to Phonegap build and boom! you now have an installer for every mobile app that you support. A QR code is also generated every time you update the source code of your app. You can then just use your phone or tablet&rsquo;s QR code reader and it will directly download the installer provided you&rsquo;re connected to the internet. There&rsquo;s also hydration which allows you to easily update already installed apps. So if you upload a new version of your app on Phonegap build, and then you open up the app on the mobile device hydration will detect the updates and then it will ask you to update the app or not. So no more need to re-install the app every time a new version is uploaded. Lastly there&rsquo;s also debugging tools provided that allows you to debug the current instance of the app on your mobile device from the browser. This is all really sweet and awesome but we still need to think about performance, app permissions, and writing the code in such a way that it will be easily maintainable. There&rsquo;s also this mobile development mindset that you have to get into. What I&rsquo;m saying is that you shouldn&rsquo;t really write Phonegap apps the way you write web applications. Because the environment is different. In a browser environment clicking on the link will load up a new page but in an app what it will do is open up the browser and then navigate to that link. So basically most of the things that you need to perform in the server side will have to be done using AJAX requests. Updating the UI can be done by using templates and so on.</p>
-
-<p>That&rsquo;s it! for now. In the coming months I&rsquo;ll be updating this post and share some more of the things I&rsquo;ve learned on my current job.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1475,6 +1604,10 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/21/introduction-to-publicizr/">Introduction to Publicizr</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/07/newsletters-i-subscribe-to/">Newsletters I subscribe to</a>
       </li>
     
@@ -1488,10 +1621,6 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
     
       <li class="post">
         <a href="/blog/2014/08/15/getting-started-with-supervisor/">Getting Started with Supervisor</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/10/using-datatables-with-laravel/">Using Datatables with Laravel</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2014-09-07T14:26:27+08:00</updated>
+  <updated>2014-09-21T09:47:11+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,176 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Publicizr]]></title>
+    <link href="http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/"/>
+    <updated>2014-09-21T09:11:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr</id>
+    <content type="html"><![CDATA[<p>A couple of weeks ago I started building a project called <a href="https://github.com/anchetaWern/publicizr">Publicizr</a>. I created it for the sole purpose of easily publishing a link to my Facebook, Twitter and LinkedIn profile whenever I publish a new post on this blog.</p>
+
+<h3>Dependencies</h3>
+
+<p>This project depends on the following Ruby gems in order to work:</p>
+
+<ul>
+<li><a href="https://github.com/hexgnu/linkedin">linkedin</a> &ndash; used for connecting/publishing to Linkedin.</li>
+<li><a href="https://github.com/sferik/twitter">twitter</a> &ndash; used for connecting/publishing to Twitter.</li>
+<li><a href="https://github.com/arsduo/koala">koala</a> &ndash; used for connecting/publishing to Facebook.</li>
+<li><a href="https://github.com/mperham/em-resolv-replace">em-resolv-replace</a> &ndash; used for fixing the issue with koala not being able to publish to Facebook from the localhost.</li>
+</ul>
+
+
+<h3>How to Install</h3>
+
+<p>You can install Publicizr by requiring the following Ruby gems in the Gemfile used by your static blogging engine:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'linkedin', '~&gt; 1.0.0'
+</span><span class='line'>gem 'twitter', '~&gt; 5.11.0'
+</span><span class='line'>gem 'koala', '~&gt; 1.10.1'
+</span><span class='line'>gem 'em-resolv-replace', '~&gt; 1.1.3'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;ve added those, save the changes to the Gemfile then execute <code>bundle install</code> on your terminal.</p>
+
+<p>Once everything is installed, look for the <code>Rakefile</code> used in your static blogging engine. For Octopress/Jekyll its located in its root directory. Next add the following on the <code>Rakefile</code>. If the <code>Rakefile</code> is requiring other gems, just put these below those gems. If not then put it on the first line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require "twitter"
+</span><span class='line'>require "koala"
+</span><span class='line'>require "linkedin"
+</span><span class='line'>require "resolv-replace"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, put these on the last line of the <code>Rakefile</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "Publish post to facebook, twitter and linkedin"
+</span><span class='line'>task :publish, :content do |t, args|
+</span><span class='line'>
+</span><span class='line'>  if args.content
+</span><span class='line'>    post = args.content
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    #start post to twitter
+</span><span class='line'>    tweet = Twitter::REST::Client.new do |config|
+</span><span class='line'>      config.consumer_key        = "twitter-app-key"
+</span><span class='line'>      config.consumer_secret     = "twitter-app-secret"
+</span><span class='line'>      config.access_token        = "twitter-user-token"
+</span><span class='line'>      config.access_token_secret = "twitter-user-secret"
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    tweet.update(post)
+</span><span class='line'>    #end post to twitter
+</span><span class='line'>
+</span><span class='line'>    #start post to facebook
+</span><span class='line'>    @graph = Koala::Facebook::API.new("facebook-user-token")
+</span><span class='line'>    @graph.put_wall_post(post)
+</span><span class='line'>    #end post to facebook
+</span><span class='line'>
+</span><span class='line'>    #start post to linkedin
+</span><span class='line'>    linked_in = LinkedIn::Client.new('linkedin-app-key', 'linkedin-app-secret')
+</span><span class='line'>    linked_in.authorize_from_access('linkedin-user-token', 'linkedin-user-secret')
+</span><span class='line'>
+</span><span class='line'>    linked_in.add_share(:comment =&gt; post)
+</span><span class='line'>    #end post to linkedin
+</span><span class='line'>
+</span><span class='line'>    puts "Your post has been shared!"
+</span><span class='line'>
+</span><span class='line'>  else
+</span><span class='line'>    puts "Supply your post!"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Basically what it does is declaring a rake task that will publish whatever content you pass into it. If you don&rsquo;t need to publish to all 3 (Facebook, Twitter, LinkedIn), feel free to comment out the lines between the lines which says &lsquo;#start post to facebook&rsquo; and &lsquo;#end post to facebook&rsquo;. Just replace &lsquo;facebook&rsquo; with your social network of choice.</p>
+
+<p>At this point the project still requires you to create your own app on each of the social networks. You can do that by visiting the following links and then look for the page for creating a new app:</p>
+
+<ul>
+<li><a href="https://developers.facebook.com/">Facebook</a></li>
+<li><a href="https://dev.twitter.com/">Twitter</a></li>
+<li><a href="https://developer.linkedin.com/">LinkedIn</a></li>
+</ul>
+
+
+<p>Once that&rsquo;s done, you also need to create an app using your language of choice (PHP, Ruby, or Python) that will allow you to retrieve user tokens. If you&rsquo;re primarily a PHP developer you can use the following libraries to ease the work that you need to do:</p>
+
+<ul>
+<li><a href="https://github.com/thephpleague/oauth2-client">thephpleagues/oauth2-client</a> &ndash; supports facebook and linkedin.</li>
+<li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
+</ul>
+
+
+<h3>How to Use</h3>
+
+<p>You can use publicizr by executing the <code>publish</code> task then supplying the content of your post as an argument:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake publish["new blog post: newsletters I subscribe to http://wern-ancheta.com/blog/2014/09/07/newsletters-i-subscribe-to/"]</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Support</h3>
+
+<p>Any Ruby based static blogging engine is supported. You can check out this <a href="http://blog.iwantmyname.com/2014/05/the-updated-big-list-of-static-website-generators-for-your-site-blog-or-wiki.html">big list of static blogging engines</a> and look for the ones that are built using Ruby.</p>
+
+<h3>Future Plans</h3>
+
+<p>Publicizr is already useable but still requires a bunch of work in order to get setup and running. That&rsquo;s why I plan to add the following features in the future:</p>
+
+<ul>
+<li>automatically detect last post that was created and publish it automatically when the blog is deployed.</li>
+<li>website for retrieving user access tokens which you can then paste into the rake file. This removes the need for creating your own apps and retrieving your keys from it.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Newsletters I subscribe to]]></title>
@@ -24,43 +194,49 @@
 
 <p>Ruby Weekly is an email round-up of Ruby news and articles. This newsletter is mainly about Ruby but you can also find some interesting stuff here even if you&rsquo;re not a Ruby developer. Links to articles about command line tools, databases and version control are also included in every issue.</p>
 
-<p>Schedule: Every Friday
-<a href="http://rubyweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://rubyweekly.com/">Visit Site</a></p>
 
 <h3>JavaScript Weekly</h3>
 
 <p>JavaScript Weekly is an email round-up of interesting JavaScript news and articles. It also has a jobs section in which you can find jobs exclusively for JavaScript developers or engineers.</p>
 
-<p>Schedule: Every Friday
-<a href="http://javascriptweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://javascriptweekly.com/">Visit Site</a></p>
 
 <h3>Webtools Weekly</h3>
 
 <p>Web Tools Weekly is a front-end development and web design newsletter with a focus on tools. Each issue features a brief tip or tutorial, followed by a weekly round-up of various apps, scripts, plugins, and other resources to help front-end developers solve problems and be more productive.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://webtoolsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://webtoolsweekly.com/">Visit Site</a></p>
 
 <h3>Gamedev.js Weekly</h3>
 
 <p>Gamedev.js Weekly is a newsletter all about HTML5 game development. I&rsquo;m not really a game developer myself so reading articles from this newsletter is just for me to have an idea how games for the browser are being developed.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://gamedevjsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://gamedevjsweekly.com/">Visit Site</a></p>
 
 <h3>StackExchange Programmers Newsletter</h3>
 
 <p>A curated list of interesting programming questions from the programmers.stackexchange website.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://programmers.stackexchange.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://programmers.stackexchange.com/">Visit Site</a></p>
 
 <h3>DB Weekly</h3>
 
 <p>A weekly round-up of database technology news and articles covering new developments, SQL, NoSQL, document databases, graph databases, and more.</p>
 
-<p>Schedule: Every Friday
-<a href="http://dbweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://dbweekly.com/">Visit Site</a></p>
 
 <h3>Versioning</h3>
 
@@ -72,120 +248,137 @@
 
 <p>If you can&rsquo;t keep up with Hacker News, Hacker Newsletter is the way to go. Kale Davis curates only the most interesting stuff that you might find on Hacker News.</p>
 
-<p>Schedule: Every Friday
-<a href="http://www.hackernewsletter.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://www.hackernewsletter.com/">Visit Site</a></p>
 
 <h3>Responsive Design Weekly</h3>
 
 <p>A free, once–weekly round-up of responsive design articles, tools, tips, tutorials and inspirational links.</p>
 
-<p>Schedule: Every Friday
-<a href="http://responsivedesignweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://responsivedesignweekly.com/">Visit Site</a></p>
 
 <h3>Node Weekly</h3>
 
 <p>Node Weekly is a free, once–weekly e-mail round-up of Node.js news and articles. Its still from the same guy (Peter Cooper) who brought us the awesome JavaScript Weekly Newsletter. But this is primarily focused on Node.js.</p>
 
-<p>Schedule: Every Friday
-<a href="A%20free,%20once%E2%80%93weekly%20e-mail%20round-up%20of%20Node.js%20news%20and%20articles">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="A%20free,%20once%E2%80%93weekly%20e-mail%20round-up%20of%20Node.js%20news%20and%20articles">Visit Site</a></p>
 
 <h3>WPMail.me</h3>
 
 <p>WPMail.me is a free WordPress Newsletter, once a week, with a round-up of WordPress news and articles.</p>
 
-<p>Schedule: Every Friday
-<a href="http://wpmail.me/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://wpmail.me/">Visit Site</a></p>
 
 <h3>PyCoder&rsquo;s Weekly</h3>
 
 <p>A free weekly e-mail newsletter, on Fridays, for those interested in python development and various topics around python.</p>
 
-<p>Schedule: Every Saturday
-<a href="http://pycoders.com/">Visit Site</a></p>
+<p>Schedule: Every Saturday</p>
+
+<p><a href="http://pycoders.com/">Visit Site</a></p>
 
 <h3>Python Weekly</h3>
 
 <p>If PyCoder&rsquo;s Weekly isn&rsquo;t enough, Python Weekly has got you covered. Its a free weekly e-mail newsletter, for those interested in python development and various topics around python.</p>
 
-<p>Schedule: Every Friday
-<a href="http://www.pythonweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://www.pythonweekly.com/">Visit Site</a></p>
 
 <h3>PHP Weekly</h3>
 
 <p>As the name suggests, PHP Weekly is a newsletter featuring the best articles, tutorials, talks, news, jobs, and tools about PHP. Based on my experience so far, every issue is a fat one. And when I say fat it means that there&rsquo;s bunch of stuff in there for you to consume. You couldn&rsquo;t ask for more from this newsletter. Its the best thing there is if you want to keep yourself updated about PHP stuff.</p>
 
-<p>Schedule: Every Thursday
-<a href="http://www.phpweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Thursday</p>
+
+<p><a href="http://www.phpweekly.com/">Visit Site</a></p>
 
 <h3>Postgres Weekly</h3>
 
 <p>Postgres Weekly is a free, once–weekly e-mail round-up of PostgreSQL news and articles.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://postgresweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://postgresweekly.com/">Visit Site</a></p>
 
 <h3>Web Design Update</h3>
 
 <p>Web Design Update is a plain text email digest dedicated to disseminating news and information about web design and development with emphasis on elements of user experience, accessibility, web standards and more</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://lists.d.umn.edu/mailman/listinfo/webdev">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://lists.d.umn.edu/mailman/listinfo/webdev">Visit Site</a></p>
 
 <h3>ng-newsletter</h3>
 
 <p>Ng-newsletter is a weekly newsletter of the best AngularJS content on the web.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://www.ng-newsletter.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://www.ng-newsletter.com/">Visit Site</a></p>
 
 <h3>Ember Weekly</h3>
 
 <p>Ember Weekly is a newsletter dedicated to bring you the latest Ember.js news, tips and libraries.</p>
 
-<p>Schedule: Every Monday
-<a href="http://emberweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://emberweekly.com/">Visit Site</a></p>
 
 <h3>HTML5 Weekly</h3>
 
 <p>HTML5 Weekly is a newsletter that features HTML5 and Web Platform technology roundup, CSS 3, Canvas, WebSockets, WebGL, Native Client, and more. Basically all things HTML5 and related technologies.</p>
 
-<p>Schedule: Every Wednesday
-<a href="http://html5weekly.com/">Visit Site</a></p>
+<p>Schedule: Every Wednesday</p>
+
+<p><a href="http://html5weekly.com/">Visit Site</a></p>
 
 <h3>Perl Weekly</h3>
 
 <p>Perl Weekly features hand-picked news and articles about Perl.</p>
 
-<p>Schedule: Every Monday
-<a href="http://perlweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://perlweekly.com/">Visit Site</a></p>
 
 <h3>DevOps Weekly</h3>
 
 <p>Devops Weekly curates the best and latest articles all about DevOps. If you&rsquo;re not familiar with DevOps, its basically a short term for Development and Operations. Its mainly focused on IT operations, tooling and collaboration.</p>
 
-<p>Schedule: Every Monday
-<a href="http://www.devopsweekly.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://www.devopsweekly.com/">Visit Site</a></p>
 
 <h3>UX Newsletter</h3>
 
 <p>Another newsletter from Stackexchange which features the most interesting questions about User Experience in the past week.</p>
 
-<p>Schedule: Every Monday
-<a href="http://ux.stackexchange.com/">Visit Site</a></p>
+<p>Schedule: Every Monday</p>
+
+<p><a href="http://ux.stackexchange.com/">Visit Site</a></p>
 
 <h3>Web Developer Reading List</h3>
 
 <p>An all in one newsletter for web developers. It contains news on both front-end and back-end stuff.</p>
 
-<p>Schedule: Every Friday
-<a href="http://wdrl.info/">Visit Site</a></p>
+<p>Schedule: Every Friday</p>
+
+<p><a href="http://wdrl.info/">Visit Site</a></p>
 
 <h3>CSS Weekly</h3>
 
 <p>A weekly e-mail roundup of css articles, tutorials, experiments and tools curated by Zoran Jambor. There&rsquo;s not much in every issue but the quality makes up for it.</p>
 
-<p>Schedule: Every Tuesday
-<a href="http://css-weekly.com/">Visit Site</a></p>
+<p>Schedule: Every Tuesday</p>
+
+<p><a href="http://css-weekly.com/">Visit Site</a></p>
 ]]></content>
   </entry>
   
@@ -287,7 +480,7 @@ Its hosted by Chris Coyier and Dave Rupert. Each week they either interview some
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 22</li>
 <li><p><strong>Source:</strong> 0.0.0.0/0 &ndash; if you got a static IP assigned to your computer, its more secure if you set that IP for this field. Otherwise just select &lsquo;Anywhere&rsquo; which allows access to any IP.</p></li>
-<li><p><em>Type:</em> &ndash; HTTP &ndash; this allows you to access your instance from the browser.</p></li>
+<li><p><strong>Type:</strong> &ndash; HTTP &ndash; this allows you to access your instance from the browser.</p></li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 80</li>
 <li><strong>Source:</strong> 0.0.0.0/0 &ndash; this means anyone which has access to the internet can access your instance via the DNS provided by Amazon or the public IP assigned to your instance.</li>
@@ -297,11 +490,11 @@ Its hosted by Chris Coyier and Dave Rupert. Each week they either interview some
 <p>For outbound rules:</p>
 
 <ul>
-<li><em>Type:</em> &ndash; HTTP &ndash; this allows your instance to download stuff from the internet.</li>
+<li><strong>Type:</strong> &ndash; HTTP &ndash; this allows your instance to download stuff from the internet.</li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 80</li>
 <li><p><strong>Destination:</strong> 0.0.0.0/0 &ndash; this means that your instance can make the request to any server.</p></li>
-<li><p><em>Type:</em> MYSQL &ndash; this allows your instance to make a request to the MySQL server.</p></li>
+<li><p><strong>Type:</strong> MYSQL &ndash; this allows your instance to make a request to the MySQL server.</p></li>
 <li><strong>Protocol:</strong> TCP</li>
 <li><strong>Port:</strong> 3306</li>
 <li><strong>Destination:</strong> 0.0.0.0/0 &ndash; this allows your instance access to any MySQL server. You can also set this to the private IP of your instance. You can only specify a single IP so if you&rsquo;re planning to access other MySQL servers aside from the one installed on your ec2 instance then just select &lsquo;Anywhere&rsquo;.</li>
@@ -1062,6 +1255,10 @@ I&rsquo;ve waited but I didn&rsquo;t get a reply after a week so I thought they&
 
 <p>I&rsquo;ve worked with the Wordpress Theme Customization API on my first project on the company. I&rsquo;ve used it to give the users of the Wordpress theme that I&rsquo;ve created a simple way of customizing the look and feel of the theme. Things like customizing the color of links, header and background images can go a long way in making your Wordpress theme easily customizable to non-programmers.</p>
 
+<h3>Roots</h3>
+
+<p>Roots is a starter theme for Wordpress. Its useful when creating new Wordpress themes as you don&rsquo;t have to write boilerplate code from scratch. It also supports Grunt task runner which makes processing front-end code easier.</p>
+
 <h3>Zillow</h3>
 
 <p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.
@@ -1077,7 +1274,7 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
 
 <h3>SPF and DKIM</h3>
 
-<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#97;&#119;&#101;&#x73;&#111;&#109;&#x65;&#x6e;&#101;&#115;&#115;&#x40;&#x63;&#111;&#111;&#x6c;&#x6e;&#x65;&#x73;&#x73;&#46;&#x63;&#x6f;&#x6d;">&#97;&#x77;&#101;&#x73;&#111;&#109;&#x65;&#110;&#101;&#x73;&#115;&#64;&#x63;&#x6f;&#x6f;&#x6c;&#x6e;&#101;&#115;&#115;&#46;&#99;&#x6f;&#x6d;</a> to work and actually make it to your customers inbox.</p>
+<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#109;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#97;&#119;&#x65;&#x73;&#x6f;&#x6d;&#101;&#x6e;&#x65;&#115;&#x73;&#x40;&#x63;&#111;&#111;&#108;&#x6e;&#x65;&#x73;&#x73;&#46;&#99;&#111;&#109;">&#97;&#119;&#101;&#115;&#111;&#x6d;&#x65;&#110;&#101;&#115;&#115;&#x40;&#x63;&#111;&#x6f;&#x6c;&#110;&#101;&#115;&#115;&#46;&#99;&#111;&#x6d;</a> to work and actually make it to your customers inbox.</p>
 
 <h3>Amazon EC2</h3>
 
@@ -1106,6 +1303,27 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
 <h3>Phonegap / Cordova</h3>
 
 <p>Phonegap allows developers for creating mobile apps using web technologies (HTML, CSS, JavaScript). Installing stuff for compiling those HTML, CSS, and JavaScript files is really a pain. Sometimes you get an error that takes hours to solve. Thankfully there&rsquo;s the Phonegap build service by Adobe that allows you to upload your source files and then after a second or two you can readily download the app installers for devices that you support. This is pretty neat since all you have to do is to write HTML, CSS, and JavaScript code like you always do, upload it to Phonegap build and boom! you now have an installer for every mobile app that you support. A QR code is also generated every time you update the source code of your app. You can then just use your phone or tablet&rsquo;s QR code reader and it will directly download the installer provided you&rsquo;re connected to the internet. There&rsquo;s also hydration which allows you to easily update already installed apps. So if you upload a new version of your app on Phonegap build, and then you open up the app on the mobile device hydration will detect the updates and then it will ask you to update the app or not. So no more need to re-install the app every time a new version is uploaded. Lastly there&rsquo;s also debugging tools provided that allows you to debug the current instance of the app on your mobile device from the browser. This is all really sweet and awesome but we still need to think about performance, app permissions, and writing the code in such a way that it will be easily maintainable. There&rsquo;s also this mobile development mindset that you have to get into. What I&rsquo;m saying is that you shouldn&rsquo;t really write Phonegap apps the way you write web applications. Because the environment is different. In a browser environment clicking on the link will load up a new page but in an app what it will do is open up the browser and then navigate to that link. So basically most of the things that you need to perform in the server side will have to be done using AJAX requests. Updating the UI can be done by using templates and so on.</p>
+
+<h3>Node JS</h3>
+
+<p>I was also able to re-aquaint with Node JS which I&rsquo;ve already used before in some of my personal projects. What has changed is that I&rsquo;ve started to look for existing packages that might be helpful to the thing I&rsquo;m trying to accomplish. Because before I tried to implement everything from scratch. And the solution that I come up with is mostly suboptimal.</p>
+
+<h3>Fabric JS</h3>
+
+<p>Fabric JS is a JavaScript library that can be used for generating images. Pretty much like MS Paint, Photoshop or GIMP. You can do things like insert text, shapes into a canvas which you can then export into an image.</p>
+
+<h3>Social API&rsquo;s</h3>
+
+<p>I&rsquo;ve also learned how to interact with various Social API&rsquo;s, such as Facebook&rsquo;s Graph API, Twitter API, and LinkedIn Sharing API. It was hard at first especially Facebook&rsquo;s API because there&rsquo;s no quality documentation available. And most of the resources you will find on the web refers to the previous versions of the API which isn&rsquo;t really that useful.</p>
+
+<h3>Youtube and Vimeo API</h3>
+
+<p>There&rsquo;s also this project in which needs to interact with the Youtube and Vimeo API. I&rsquo;ve had a bit of a trouble using the Youtube API because the API key that I was using didn&rsquo;t seem to work. The solution I came up with is to just delete the existing API key and create a new one. Another gotcha is that the type of key should be browser instead of server even if the request is actually made on the server.
+As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Simple API is pretty simple and you don&rsquo;t need application keys in order to make a request to it. The Advanced API is a bit more complex, but it was made simple because there&rsquo;s already an existing PHP library that made making requests to the API easier.</p>
+
+<h3>Yahoo Finance API</h3>
+
+<p>Lastly there&rsquo;s the Yahoo Finance API which I used to get the most recent stocks information about various companies from NYSE and NASDAQ.</p>
 
 <p>That&rsquo;s it! for now. In the coming months I&rsquo;ll be updating this post and share some more of the things I&rsquo;ve learned on my current job.</p>
 ]]></content>
@@ -7157,160 +7375,6 @@ If you do it from the list page, you can simply select from the list of posts by
 <h3>Contribute</h3>
 
 <p>If you want to contribute to this project, or you noticed some issues, or you want to throw in some ideas for the next version please visit the <a href="https://github.com/anchetaWern/octo-wysiwyg">octo-wysiwyg github page</a> I&rsquo;d really appreciate i</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[A whirlwind Tour of Web Developer Tools: Text Editors]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors/"/>
-    <updated>2014-02-15T11:00:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/02/15/a-whirlwind-tour-of-web-developer-tools-text-editors</id>
-    <content type="html"><![CDATA[<p>This is part two of the series A Whirlwind Tour of Web Developer Tools. This time I&rsquo;ll be talking about text editors and related tools.</p>
-
-<p>Text editors are used by web developers to write code. Text editors are not the same thing as word processors because anything written on a text editor is saved as a plain text file and it normally uses a simple character set such as ASCII to represent different characters (letters, numbers, etc). On the other hand word processors saves formatted text which enables tables, symbols and other form of graphical information to be represented without having to use any form of markup like HTML.</p>
-
-<!--more-->
-
-
-<h4>Sublime Text</h4>
-
-<p>When you say text editor the first thing that comes to mind these days is <a href="http://www.sublimetext.com/">Sublime Text</a>. It&rsquo;s like the sexiest text editor these days. So this whole blog post is primarily going to be about Sublime Text and some of the plugins that I found useful.</p>
-
-<h5>Plugins</h5>
-
-<p>In order to install plugins for Sublime Text you first have to install <a href="https://sublime.wbond.net/">package control</a> which is a package manager for Sublime Text that allows you to easily install plugins. To install package manager copy the following code in the Sublime Text console which can be accessed by pressing <code>ctrl + back tick</code> on your keyboard. After that restart the editor to finish the installation:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that the code above is for Sublime Text 2, if you&rsquo;re using Sublime Text 3 then use the following code:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After restarting sublime text you can now press <code>ctrl + shift + p</code>, select &lsquo;install package&rsquo; and press <code>enter</code>, this will load all the available plugins from the plugin repository. From there you can just search for the plugin that you want to install.</p>
-
-<p>And now for the plugins:</p>
-
-<ul>
-<li><a href="https://github.com/benmatselby/sublime-phpcs">PHPCS</a> &ndash; a PHP code quality tool.</li>
-<li><a href="http://emmet.io/">Emmet</a> &ndash; previously known as Zen Coding. If that doesn&rsquo;t ring a bell then Emmet is basically a tool for improving productivity by implementing shortcuts for generating code that you would normally write out by hand. All you have to do is to write something like this:</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>html:5</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And right after pressing <code>tab</code> you get a whole bunch of code written out for you:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!doctype html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Document<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://github.com/titoBouzout/SideBarEnhancements">Sidebar Enhancements</a> &ndash; allows you to create a new file and it will immediately ask you the filename, duplicating or copying files and folders from the sidebar, and a bunch of other good stuff that the default sublime text sidebar doesn&rsquo;t allow you to do.</li>
-<li><a href="https://github.com/facelessuser/BracketHighlighter">Bracket Highlighter</a> &ndash; allows for easier visualization of where the ending bracket is.</li>
-<li><a href="https://github.com/kemayo/sublime-text-2-clipboard-history">Clipboard History</a> &ndash; keeps a history of clipboard items so you can just paste them in later.</li>
-<li><a href="https://github.com/spadgos/sublime-jsdocs">Docblockr</a> &ndash; pretty much like emmet but only for document blocks. Useful for writing comments.</li>
-<li><a href="https://github.com/wbond/sublime_alignment">Alignment</a> &ndash; allows for easy alignment of code. All you have to do is press <code>ctrl + alt + a</code> on your keyboard.</li>
-<li><a href="https://github.com/SublimeLinter/SublimeLinter-for-ST2">Sublime Linter</a> &ndash; inline linting for a bunch of languages (PHP, HTML, CSS, Ruby, etc). If you don&rsquo;t know what linting is, its basically a process of analyzing code to determine potential errors. In most cases its used by web developers to check their code quality against a specific coding standard. For example, when coding in JavaScript its not usually required to put semi-colons but if you&rsquo;re using Sublime linter it will remind you to put those semi-colons in if you forget it. If you have unused variables in your code the linter will also complain and it will tell you that variable <code>z</code> isn&rsquo;t actually used in your code.</li>
-<li><a href="https://github.com/sindresorhus/editorconfig-sublime">EditorConfig</a> &ndash; tool for implementing coding conventions. You can use this to specify whether to use tabs or spaces for specific file types (<code>.js</code>, <code>.css</code>) or whether to use double quotes or single quotes for the quote type. You can do all that by installing the editorconfig plugin for the text editor that you&rsquo;re using. Then create a <code>.editorconfig</code> file in the root of your project directory or any directory in your project if you want to use different rules for different directories. Here&rsquo;s a sample <code>.editorconfig</code> file:</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>root = true
-</span><span class='line'>
-</span><span class='line'>[*]
-</span><span class='line'>end_of_line = lf
-</span><span class='line'>insert_final_newline = false
-</span><span class='line'>charset = utf-8
-</span><span class='line'>trim_trailing_whitespace = true
-</span><span class='line'>quote_type = double
-</span><span class='line'>
-</span><span class='line'>[*.php]
-</span><span class='line'>indent_style = space
-</span><span class='line'>indent_size = 4
-</span><span class='line'>
-</span><span class='line'>[*.py]
-</span><span class='line'>indent_style = space
-</span><span class='line'>indent_size = 4
-</span><span class='line'>
-</span><span class='line'>[*.js]
-</span><span class='line'>indent_style = space
-</span><span class='line'>indent_size = 2
-</span><span class='line'>
-</span><span class='line'>[*.css]
-</span><span class='line'>indent_style = space
-</span><span class='line'>indent_size = 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see from the sample above you can specify a whole bunch of settings. You can also have different rules for different file types.</p>
-
-<h4>IDE</h4>
-
-<p>There&rsquo;s also this thing called the IDE or Integrated Development Environment which is basically text editors on steroids. They have huge install size since they allow you to do more than just writing code. IDE&rsquo;s packs a bunch of features which you would not normally find in a text editor such as compiling code. Some IDE&rsquo;s such as Visual Studio also allows you to build the GUI of applications by simply dragging and dropping GUI elements (text boxes, buttons, etc.) from a toolbox. Other features include code completion (intellisense), debugger, integrated services (allows viewing and manipulating the database right from the IDE).</p>
-
-<h3>Conclusion</h3>
-
-<p>Text editors and IDEs are the main weapons of every web developer. Without it they won&rsquo;t be able to produce any code. So its important to learn the ins and outs of the text-editor or IDE that you are using to maximize your productivity when using it. Be sure to check out the resources below for more Sublime Text awesomeness.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://www.hongkiat.com/blog/sublime-text-tips/">Sublime Text Tips and Tricks</a></li>
-<li><a href="https://tutsplus.com/course/improve-workflow-in-sublime-text-2/">Perfect Workflow in Sublime Text 2</a></li>
-<li><a href="https://sublime.wbond.net/browse/popular">Popular Sublime Text Plugins</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Comparison_of_text_editors">Compariosn of Text Editors</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments">Comparison of Integrated Development Environments</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
