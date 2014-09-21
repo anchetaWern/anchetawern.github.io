@@ -4,7 +4,7 @@
   <title><![CDATA[Category: projects | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/projects/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2014-09-21T09:47:11+08:00</updated>
+  <updated>2014-09-21T09:51:58+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -67,23 +67,23 @@ task :publish, :content do |t, args|</p>
 
 #start post to twitter
 tweet = Twitter::REST::Client.new do |config|
-  config.consumer_key        = "twitter-app-key"
-  config.consumer_secret     = "twitter-app-secret"
-  config.access_token        = "twitter-user-token"
-  config.access_token_secret = "twitter-user-secret"
+  config.consumer_key        = "{twitter-app-key}"
+  config.consumer_secret     = "{twitter-app-secret}"
+  config.access_token        = "{twitter-user-token}"
+  config.access_token_secret = "{twitter-user-secret}"
 end
 
 tweet.update(post)
 #end post to twitter
 
 #start post to facebook
-@graph = Koala::Facebook::API.new("facebook-user-token")
+@graph = Koala::Facebook::API.new("{facebook-user-token}")
 @graph.put_wall_post(post)
 #end post to facebook
 
 #start post to linkedin
-linked_in = LinkedIn::Client.new('linkedin-app-key', 'linkedin-app-secret')
-linked_in.authorize_from_access('linkedin-user-token', 'linkedin-user-secret')
+linked_in = LinkedIn::Client.new('{linkedin-app-key}', '{linkedin-app-secret}')
+linked_in.authorize_from_access('{linkedin-user-token}', '{linkedin-user-secret}')
 
 linked_in.add_share(:comment =&gt; post)
 #end post to linkedin
@@ -119,6 +119,8 @@ puts "Your post has been shared!"
 <li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
 </ul>
 
+
+<p>Once you&rsquo;ve acquired the applications keys and user tokens you can now replace the values which says something like <code>{twitter-app-key}</code>, <code>{twitter-app-secret}</code> on the <code>publish</code> task in your <code>Rakefile</code>. Basically anything that&rsquo;s wrapped in curly brackets, you need to replace those in order for the plugin to fully function.</p>
 
 <h3>How to Use</h3>
 

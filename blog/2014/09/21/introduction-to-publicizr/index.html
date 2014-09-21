@@ -190,23 +190,23 @@
 </span><span class='line'>
 </span><span class='line'>    #start post to twitter
 </span><span class='line'>    tweet = Twitter::REST::Client.new do |config|
-</span><span class='line'>      config.consumer_key        = "twitter-app-key"
-</span><span class='line'>      config.consumer_secret     = "twitter-app-secret"
-</span><span class='line'>      config.access_token        = "twitter-user-token"
-</span><span class='line'>      config.access_token_secret = "twitter-user-secret"
+</span><span class='line'>      config.consumer_key        = "{twitter-app-key}"
+</span><span class='line'>      config.consumer_secret     = "{twitter-app-secret}"
+</span><span class='line'>      config.access_token        = "{twitter-user-token}"
+</span><span class='line'>      config.access_token_secret = "{twitter-user-secret}"
 </span><span class='line'>    end
 </span><span class='line'>
 </span><span class='line'>    tweet.update(post)
 </span><span class='line'>    #end post to twitter
 </span><span class='line'>
 </span><span class='line'>    #start post to facebook
-</span><span class='line'>    @graph = Koala::Facebook::API.new("facebook-user-token")
+</span><span class='line'>    @graph = Koala::Facebook::API.new("{facebook-user-token}")
 </span><span class='line'>    @graph.put_wall_post(post)
 </span><span class='line'>    #end post to facebook
 </span><span class='line'>
 </span><span class='line'>    #start post to linkedin
-</span><span class='line'>    linked_in = LinkedIn::Client.new('linkedin-app-key', 'linkedin-app-secret')
-</span><span class='line'>    linked_in.authorize_from_access('linkedin-user-token', 'linkedin-user-secret')
+</span><span class='line'>    linked_in = LinkedIn::Client.new('{linkedin-app-key}', '{linkedin-app-secret}')
+</span><span class='line'>    linked_in.authorize_from_access('{linkedin-user-token}', '{linkedin-user-secret}')
 </span><span class='line'>
 </span><span class='line'>    linked_in.add_share(:comment =&gt; post)
 </span><span class='line'>    #end post to linkedin
@@ -239,6 +239,8 @@
 <li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
 </ul>
 
+
+<p>Once you&rsquo;ve acquired the applications keys and user tokens you can now replace the values which says something like <code>{twitter-app-key}</code>, <code>{twitter-app-secret}</code> on the <code>publish</code> task in your <code>Rakefile</code>. Basically anything that&rsquo;s wrapped in curly brackets, you need to replace those in order for the plugin to fully function.</p>
 
 <h3>How to Use</h3>
 
