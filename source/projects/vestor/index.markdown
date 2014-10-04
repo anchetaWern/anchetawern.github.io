@@ -30,6 +30,8 @@ Vestor is a real-time stock market simulation app. It allows you to buy and sell
 - JavaScript
 - PHP 
 - Laravel
+- Beanstalkd
+- Elasticsearch
 - Yahoo Finance API
 
 
