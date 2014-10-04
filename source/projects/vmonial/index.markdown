@@ -4,7 +4,7 @@ title: "Vmonial"
 comments: false
 sharing: true
 footer: true
-published: false
+published: true
 ---
 
 ###Vmonial
