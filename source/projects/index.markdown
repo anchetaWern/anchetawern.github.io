@@ -235,6 +235,28 @@ Birthday Freebies shouts is a web application used for automatically sending out
 ##Side Projects
 
 
+###Ahead
+
+Ahead allows you to schedule posts to your facebook, twitter and linkedin accounts.
+
+{% img right /images/pages/projects/ahead/small-new_post.png 'new post' %}
+
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- Facebook Graph API
+- Linkedin Share API
+- Twitter API
+
+[View More Details](/projects/ahead)
+
+## 
+
 ###Octo-WYSIWYG
 
 A Markdown to HTML UI for creating posts in Octopress.
