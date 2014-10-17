@@ -9,8 +9,8 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this blog post I&rsquo;ll walk you through setting up SSL on Apache.
-When talking about SSL the popular choice is OpenSSL, an open source toolkit &hellip;">
+  <meta name="description" content="In this blog post I&rsquo;ll be introducing the Contact plugin for Octopress.
+This plugin allows you to create contact forms with ease. Its using the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,83 @@ When talking about SSL the popular choice is OpenSSL, an open source toolkit &he
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/02/introduction-to-contact-plugin-for-octopress/">Introduction to Contact Plugin for Octopress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-02T21:01:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2014</time>
+        
+         | <a href="/blog/2014/08/02/introduction-to-contact-plugin-for-octopress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this blog post I&rsquo;ll be introducing the <a href="https://github.com/anchetaWern/jekyll-contact">Contact plugin for Octopress</a>.
+This plugin allows you to create contact forms with ease. Its using the <a href="http://pooleapp.com/">pooleapp.com</a> for saving the data for the forms that are submitted.</p>
+
+<h3>Create a Pooleapp account</h3>
+
+<p>First lets go through pooleapp. Poole is a free, hosted data store for static sites. It allows you to post data into it and then later on you can retrieve the data using a simple API.</p>
+
+<p>You don&rsquo;t have to register to start using pooleapp but its recommended so that you can keep track of the forms that you create. Another bonus feature is that when someones submits a data to your contact form, pooleapp will immediately notify you via email.</p>
+
+<p>Once you&rsquo;ve registered an account, you can now create a new form. Just give your form a unique name and click on the &lsquo;create form&rsquo; button. Once created, pooleapp will ask you for the email in which you want the notifications to be sent to.</p>
+
+<h3>Installing the plugin</h3>
+
+<p>Octopress doesn&rsquo;t really have a plugin system so we&rsquo;ll have to do things manually. First thing that you need to do is to add the <code>contact.rb</code> file into the <code>octopress/plugins</code> directory.</p>
+
+<p>So that we can show a success message once the visitor submits his data through the contact form, we also need to add the <code>contact.js</code> file inside the <code>source/javascripts</code> directory. Basically what it does is to check for the existence of the <code>form</code> query parameter. If it exists then it makes the success message visible.</p>
+
+<p>For the styling, add the <code>_contact.scss</code> file inside the <code>sass/partials</code> directory. Then in your <code>sass/_partials.scss</code> file, import the css for the contact form by adding the following on the last line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@import "partials/contact";</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly, under the <code>source/_includes/custom</code> directory, add a script tag that points out to the <code>contact.js</code> file on the last line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;script src="/javascripts/contact.js"&gt;&lt;/script&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Using the plugin</h3>
+
+<p>To use the plugin in any of your pages, simply use the <code>contact</code> liquid tag then supply your pooleapp API key as the first argument, and the redirect URL for when the form is submitted:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{% contact YOUR_POOLE_APP_API_KEY http://YOURSITE.COM/PAGE?form=ok#alert-box %}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Demo</h3>
+
+<p>You can try out the demo on the <a href="http://wern-ancheta.com/aboutme">about me page of this blog</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -473,7 +550,7 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
 
 <h3>SPF and DKIM</h3>
 
-<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;&#58;&#97;&#119;&#101;&#115;&#x6f;&#x6d;&#x65;&#110;&#x65;&#115;&#x73;&#64;&#99;&#111;&#111;&#108;&#x6e;&#x65;&#115;&#x73;&#x2e;&#x63;&#x6f;&#x6d;">&#97;&#119;&#x65;&#115;&#111;&#x6d;&#101;&#110;&#x65;&#115;&#x73;&#64;&#x63;&#111;&#111;&#x6c;&#110;&#x65;&#x73;&#115;&#x2e;&#99;&#111;&#109;</a> to work and actually make it to your customers inbox.</p>
+<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#109;&#x61;&#105;&#108;&#x74;&#111;&#58;&#97;&#119;&#101;&#115;&#x6f;&#109;&#101;&#x6e;&#x65;&#115;&#x73;&#x40;&#99;&#x6f;&#x6f;&#x6c;&#110;&#101;&#115;&#115;&#46;&#x63;&#x6f;&#x6d;">&#97;&#x77;&#x65;&#115;&#111;&#109;&#101;&#110;&#101;&#x73;&#115;&#64;&#x63;&#x6f;&#x6f;&#108;&#x6e;&#101;&#115;&#x73;&#x2e;&#x63;&#x6f;&#x6d;</a> to work and actually make it to your customers inbox.</p>
 
 <h3>Amazon EC2</h3>
 
@@ -749,6 +826,8 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
   
 
 
+
+  
 <time datetime="2014-03-12T11:45:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2014</time>
         
          | <a href="/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/#disqus_thread">Comments</a>
@@ -791,54 +870,6 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-08T14:45:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this part five of the series A Whirlwind Tour of Web Developer Tools I&rsquo;ll walk you through some of the tools that you can use in the command line.  But before we dive in to some of the tools lets first define what a command line is. According to <a href="http://en.wikipedia.org/wiki/Command-line_interface">Wikipedia</a>:</p>
-
-<blockquote><p>A command-line interface (CLI), also known as command-line user interface, console user interface, and character user interface (CUI), is a means of interacting with a computer program where the user (or client) issues commands to the program in the form of successive lines of text (command lines).</p></blockquote>
-
-
-<p>So the command line is basically an interface where you can type in a bunch of commands to interact with the computer.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -856,6 +887,10 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/10/18/on-sleep/">On Sleep</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/12/on-driving/">On Driving</a>
       </li>
     
@@ -869,10 +904,6 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
     
       <li class="post">
         <a href="/blog/2014/09/21/introduction-to-publicizr/">Introduction to Publicizr</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/07/newsletters-i-subscribe-to/">Newsletters I subscribe to</a>
       </li>
     
   </ul>
