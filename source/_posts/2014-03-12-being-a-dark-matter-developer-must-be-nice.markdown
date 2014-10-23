@@ -5,6 +5,7 @@ date: 2014-03-12 11:45
 comments: true
 categories: [dmd, thoughts]
 published: true
+updated: 2014-10-18
 ---
 
 It must be nice to be a dark matter developer. But before I go ahead and start going through why its nice to be a dark matter developer let's make sure that were all on the same boat. First what are dark matter developers?
@@ -51,3 +52,8 @@ Lastly they get their job done and they do it well. Sure they might still be usi
 ####Closing Thoughts
 
 Of course with anything there are downsides but I just wanted to focus on the positive side of being a Dark Matter Developer in this post. Cheers to all the Dark Matter Developer's out there! Even if you might not read this because you're always busy getting things done.
+
+###More on DMD's
+
+If you want to read more about Dark Matter Developers, Scott Hanselman wrote a pretty good post about it: [Dark Matter Developers: The Unseen 99%](http://www.hanselman.com/blog/DarkMatterDevelopersTheUnseen99.aspx).
+Another good one is Mat McLoughlin's: [Dark Matter Developer != Bad Developers](http://mat-mcloughlin.net/2013/11/26/dark-matter-developers-do-not-equal-bad-developers/#.VEGf_h_vYes).
