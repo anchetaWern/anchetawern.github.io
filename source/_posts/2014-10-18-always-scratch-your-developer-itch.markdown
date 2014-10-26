@@ -4,7 +4,7 @@ title: "Always scratch your developer itch"
 date: 2014-10-25 07:31
 comments: true
 categories: [thoughts]
-published: false
+published: true
 ---
 
 As developers, no matter how busy we are with our lives, its important for us to always scratch our developer itches every now and then. What I mean by itches are the things that you want to do as a developer. Be it working on a side-project that you've been wanting to do for months, playing with a new technology, library or a programming language. Or reading an in-depth article about a new programming technique. Or watching a video tutorial about a framework that you've been wanting to learn. Or watching recorded talks from developer conferences all over the world. Or writing an article about a cool technique you've discovered recently. And other things that you always have at the back of your mind but never really got to do because of lack of time.
