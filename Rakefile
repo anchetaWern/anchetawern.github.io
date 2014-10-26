@@ -2,6 +2,13 @@ require "rubygems"
 require "bundler/setup"
 require "stringex"
 
+#for publish task
+require "twitter"
+require "koala"
+require "linkedin"
+require "resolv-replace"
+require 'inifile'
+
 ## -- Rsync Deploy config -- ##
 # Be sure your public key is listed in your server's ~/.ssh/authorized_keys file
 ssh_user       = "user@domain.com"
@@ -26,6 +33,7 @@ themes_dir      = ".themes"   # directory for blog files
 new_post_ext    = "markdown"  # default new post file extension when using the new_post task
 new_page_ext    = "markdown"  # default new page file extension when using the new_page task
 server_port     = "4000"      # port for preview server eg. localhost:4000
+portfolio_dir   = "portfolio"
 
 
 desc "Initial setup for Octopress: copies the default theme into the path of Jekyll's generator. Rake install defaults to rake install[classic] to install a different theme run rake install[some_theme_name]"
@@ -225,6 +233,85 @@ end
 
 desc "Generate website and deploy"
 task :gen_deploy => [:integrate, :generate, :deploy] do
+end
+
+
+# usage rake new_project["awesome-project"]
+desc "Create a new project in #{portfolio_dir}/project-name"
+task :new_project, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    title = get_stdin("Enter the title of your project: ")
+  end
+  raise "### You haven't set anything up yet. First run `rake install` to set up an Octopress theme." unless File.directory?(source_dir)
+  mkdir_p "#{portfolio_dir}/#{title.to_url}"
+  mkdir_p "#{portfolio_dir}/#{title.to_url}/img"
+  filename = "#{portfolio_dir}/#{title.to_url}/index.markdown"
+  puts "Creating new project: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: project"
+    post.puts "title: \"#{title.gsub(/&/,'&amp;')}\""
+    post.puts "comments: false"
+    post.puts "sharing: true"
+    post.puts "footer: true"
+    post.puts "---"
+  end
+end
+
+
+desc "Publish post to facebook, twitter and linkedin"
+task :publish, :content do |t, args|
+
+  if args.content
+    post = args.content
+
+    file = IniFile.load('user.ini')
+    config = file['user']
+
+    if config['use_ahead'] == true
+
+      uri = URI.parse("http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com")
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = false
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      request = Net::HTTP::Post.new("/api/post")
+      request.set_form_data({'api_key' => config['api_key'], 'content' => post})
+
+      response = http.request(request)
+      puts response.body
+
+    else
+      #post to twitter
+      tweet = Twitter::REST::Client.new do |c|
+        c.consumer_key        = config['twitter_api']
+        c.consumer_secret     = config['twitter_secret']
+        c.access_token        = config['twitter_usertoken']
+        c.access_token_secret = config['twitter_usersecret']
+      end
+
+
+      tweet.update(post)
+
+      #post to facebook
+      @graph = Koala::Facebook::API.new(config['fb_usertoken'])
+      @graph.put_wall_post(post)
+
+      #post to linkedin
+      linked_in = LinkedIn::Client.new(config['linkedin_appkey'], config['linkedin_appsecret'])
+      linked_in.authorize_from_access(config['linkedin_usertoken'], config['linkedin_usersecret'])
+
+      linked_in.add_share(:comment => post)
+
+      puts "Your post has been shared!"
+    end
+
+  else
+    puts "Supply your post!"
+  end
+
+
 end
 
 desc "copy dot files for deployment"

@@ -14,6 +14,11 @@ group :development do
   gem 'rb-fsevent', '~> 0.9'
   gem 'stringex', '~> 1.4.0'
   gem 'liquid', '~> 2.3.0'
+  gem 'linkedin', '~> 1.0.0'
+  gem 'twitter', '~> 5.11.0'
+  gem 'koala', '~> 1.10.1'
+  gem 'em-resolv-replace', '~> 1.1.3'
+  gem 'inifile', '~> 3.0.0'
 end
 
 gem 'sinatra', '~> 1.4.2'
