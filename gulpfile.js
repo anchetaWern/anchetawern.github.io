@@ -9,7 +9,7 @@ gulp.task('clean', function(){
         .pipe(clean());
 });
 
-gulp.task('minify', function(){
+gulp.task('minify.project.images', function(){
     return gulp.src('portfolio/**/*.{jpg,png}')
         .pipe(imagemin({
             progressive: true
@@ -18,6 +18,14 @@ gulp.task('minify', function(){
             path.dirname = path.dirname.replace('/img', '');   
         }))
         .pipe(gulp.dest('source/images/pages/projects'));
+});
+
+gulp.task('minify.post.images', function(){
+    return gulp.src('post_images/**/*.{jpg,png}')
+        .pipe(imagemin({
+            progressive: true
+        }))
+        .pipe(gulp.dest('source/images/posts'));
 });
 
 gulp.task('resize', function(){
@@ -36,4 +44,5 @@ gulp.task('copy', function(){
 });
 
 
-gulp.task('default', ['clean', 'minify', 'resize', 'copy']);
+gulp.task('portfolio', ['clean', 'minify.project.images', 'resize', 'copy']);
+gulp.task('posts', ['minify.post.images']);
