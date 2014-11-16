@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2014-11-09T11:08:09+08:00</updated>
+  <updated>2014-11-16T17:50:26+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,325 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with RabbitMQ in PHP]]></title>
+    <link href="http://anchetawern.github.io/blog/2014/11/16/getting-started-with-rabbitmq-in-php/"/>
+    <updated>2014-11-16T15:11:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2014/11/16/getting-started-with-rabbitmq-in-php</id>
+    <content type="html"><![CDATA[<p><blockquote><p>This article was originally published at Binpress:<br/><a href="http://www.binpress.com/tutorial/getting-started-with-rabbitmq-in-php/164">http://www.binpress.com/tutorial/getting-started-with-rabbitmq-in-php/164</a></p></blockquote></p>
+
+<p>In this tutorial I&rsquo;m going to walk you through how you can use RabbitMQ in PHP. But first what is RabbitMQ? RabbitMQ is a message broker software. It acts as a middleman between a producer and a consumer. Producer being the data that we want to pass, and consumer being the entity that we want to pass it to. RabbitMQ uses a queue, you can think of it as a mailbox where you drop your letters. RabbitMQ then takes the letters and delivers it to its destination.</p>
+
+<h3>Installing RabbitMQ</h3>
+
+<p>In Ubuntu and other debian based operating system you can install RabbitMQ by executing the following commands from your terminal:</p>
+
+<p><code>
+echo "deb http://www.rabbitmq.com/debian/ testing main"  | sudo tee  /etc/apt/sources.list.d/rabbitmq.list &gt; /dev/null
+sudo wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+sudo apt-key add rabbitmq-signing-key-public.asc
+sudo apt-get update
+sudo apt-get install rabbitmq-server -y
+sudo service rabbitmq-server start
+sudo rabbitmq-plugins enable rabbitmq_management
+sudo service rabbitmq-server restart
+</code></p>
+
+<p>What the first command does is to append the rabbitmq source to the software sources list. Next we download the rabbitmq signing key using <code>wget</code>. Then add the key to Ubuntu. Next we call <code>apt-get update</code> to update the software sources list. Next we install the RabbitMQ server, start it then enable RabbitMQ management plugin. This provides an HTTP-based API management for monitoring your RabbitMQ server. Finally we restart the RabbitMQ server so that changes will take effect.
+The default username and password is <code>guest</code>. And the default port in which it runs is <code>5672</code>.</p>
+
+<p>If you&rsquo;re on another operating system, you can find how to install RabbitMQ for your specific operating system here: <a href="http://www.rabbitmq.com/download.html">Downloading and Installing RabbitMQ</a>.</p>
+
+<h3>Working with RabbitMQ</h3>
+
+<p>Once you&rsquo;re done installing RabbitMQ, we can now install the AMQP library for PHP. This implements the AMQP (Advanced Messaging Queue Protocol) protocol. As the name suggests it is a protocol used for messaging.
+Start by creating a new directory, this is where we will put all the files for testing RabbitMQ. Next create a composer.json file and add the following:</p>
+
+<p>```
+{
+  &ldquo;require&rdquo;: {</p>
+
+<pre><code>  "videlalvaro/php-amqplib": "2.2.*"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Next, open up your terminal and <code>cd</code> into the directory you created earlier then execute <code>composer install</code> to install the AMQP library.</p>
+
+<p>Before we move on, lets also install <a href="http://swiftmailer.org/">Swiftmailer</a>. You can do that by executing the following command from your terminal. This also adds an entry to Swiftmailer to your composer.json:</p>
+
+<p><code>
+composer require swiftmailer/swiftmailer @stable
+</code></p>
+
+<p>We will be using Swiftmailer for the sample app that were going to create. What we will do is create an app that will send emails for our users. Normally emails takes a few seconds before it is sent, adding an attachment to the email also adds to that time. In the real world we don&rsquo;t really want our users to wait. What we want to do is make them believe that we have already sent the email for them by outputting to the screen that their message has been sent.
+This is where RabbitMQ comes in. We will use it as some sort of a mailbox in which multiple users can just drop their messages in. RabbitMQ will then take care of sending the messages in the background.</p>
+
+<h4>Sending Messages</h4>
+
+<p>First lets create the form to be used for sending emails. This will accept the name and email address of the sender, the email address of the receiver and then the subject and message. Name the file <code>form.php</code>:</p>
+
+<p>```
+&lt;?php
+if(!empty($_GET[&lsquo;sent&rsquo;])){
+?></p>
+
+<div>
+    Your message was sent!
+</div>
+
+
+<p>&lt;?php
+}
+?>
+<form action="mailer.php" method="POST"></p>
+
+<pre><code>&lt;div&gt;
+    &lt;label for="from"&gt;From&lt;/label&gt;
+    &lt;input type="text" name="from" id="from"&gt;       
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="from_email"&gt;From Email&lt;/label&gt;
+    &lt;input type="text" name="from_email" id="from_email"&gt;       
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="to_email"&gt;To Email&lt;/label&gt;
+    &lt;input type="text" name="to_email" id="to_email"&gt;           
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="subject"&gt;Subject&lt;/label&gt;
+    &lt;input type="text" name="subject" id="subject"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="message"&gt;Message&lt;/label&gt;
+    &lt;textarea name="message" id="message" cols="30" rows="10"&gt;&lt;/textarea&gt;   
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p></form>
+```</p>
+
+<p>Next, create the file which will push the message into the queue. Name the file <code>sender.php</code>.
+Require the <code>autoload.php</code> file so that our dependencies will be automatically loaded by PHP. Then use the <code>AMQPConnection</code> and <code>AMQPMessage</code> from the AMQP library. <code>AMQPConnection</code> allows us to create a new connection to the RabbitMQ server and <code>AMQPMessage</code> allows us to create messages that we can push to the queue.</p>
+
+<p>```
+&lt;?php
+require_once <strong>DIR</strong> . &lsquo;/vendor/autoload.php&rsquo;;
+use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Message\AMQPMessage;</p>
+
+<p>$connection = new AMQPConnection(&lsquo;localhost&rsquo;, 5672, &lsquo;guest&rsquo;, &lsquo;guest&rsquo;);
+$channel = $connection->channel();</p>
+
+<p>$channel->queue_declare(&lsquo;email_queue&rsquo;, false, false, false, false);</p>
+
+<p>$data = json_encode($_POST);</p>
+
+<p>$msg = new AMQPMessage($data, array(&lsquo;delivery_mode&rsquo; => 2));
+$channel->basic_publish($msg, &lsquo;&rsquo;, &lsquo;email_queue&rsquo;);</p>
+
+<p>header(&lsquo;Location: form.php?sent=true&rsquo;);
+```</p>
+
+<p>Breaking it down, first we create a new connection by creating a new instance of the <code>AMQPConnection</code> class. This requires the following arguments:</p>
+
+<ul>
+<li><strong>host</strong> &ndash; the host in which the RabbitMQ server is running. In this case we&rsquo;ve installed RabbitMQ on the same computer we are running the script in. So it should be <code>localhost</code>. Note that in the real world we install RabbitMQ on a another server, different from the one were using to serve our websites. So instead of <code>localhost</code> we use the public ip address of that server.</li>
+<li><strong>port</strong> &ndash; the port in which the RabbitMQ server is running.</li>
+<li><strong>user</strong> &ndash; the username to use for logging in to the server. By default the username is set to <code>guest</code>.</li>
+<li><strong>password</strong> &ndash; the password of the user. By default the password is set to <code>guest</code>.</li>
+</ul>
+
+
+<p>Next we create a channel. We can do that by calling the <code>channel()</code> method from the connection that we have just declared.</p>
+
+<p><code>
+$channel = $connection-&gt;channel();
+</code></p>
+
+<p>Next we declare the queue to be used by calling the  <code>queue_declare</code> method.</p>
+
+<p><code>
+$channel-&gt;queue_declare('email_queue', false, false, false, false);
+</code></p>
+
+<p>The <code>queue_declare</code> method takes up the following arguments:</p>
+
+<ul>
+<li><strong>queue name</strong> &ndash; a name that you want to use for the queue, you can supply anything for this.</li>
+<li><strong>passive</strong> &ndash; a boolean value for specifying whether to check for an existing exchange.</li>
+<li><strong>durable</strong> &ndash; a boolean value for specifying whether the RabbitMQ holds on to a queue when the server crashes.</li>
+<li><strong>exclusive</strong> &ndash; a boolean value for specifying whether the queue is used by only one connection.</li>
+<li><strong>auto-delete</strong> &ndash; a boolean value for specifying whether the queue is deleted when the last subscriber unsubscribes.</li>
+</ul>
+
+
+<p>Next we convert the POST data that we receive from the form to a JSON string. We can only pass strings as a message so we&rsquo;ll have to convert this later on into an array on the receiver&rsquo;s end.</p>
+
+<p><code>
+$data = json_encode($_POST);
+</code></p>
+
+<p>Next we create a new message. This accepts 2 arguments: the data and an array of options. For the array of options we specify the <code>delivery_mode</code> to 2 which means that the message is persistent. This means that it isn&rsquo;t lost when the server crashes or an error occurs.</p>
+
+<p><code>
+$msg = new AMQPMessage($data, array('delivery_mode' =&gt; 2));
+</code></p>
+
+<p>Next we publish the message by calling the <code>basic_publish()</code> method on the channel. This accepts 3 arguments: the message, the exchange and the name of the queue. If you&rsquo;re wondering why we set the value of exchange to an empty string, that&rsquo;s because we don&rsquo;t really need it. The exchange is commonly used for pub-sub patterns. What were using here is just basic publish.</p>
+
+<p><code>
+$channel-&gt;basic_publish($msg, '', 'email_queue');
+</code></p>
+
+<p>Finally we just redirect the user to the form.</p>
+
+<p><code>
+header('Location: form.php?sent=true');
+</code></p>
+
+<h4>Receiving Messages</h4>
+
+<p>Now were ready to write the code that will receive the messages sent by users. Name the file <code>receiver.php</code>. Here&rsquo;s the full contents of the file:</p>
+
+<p>```
+&lt;?php
+require_once <strong>DIR</strong> . &lsquo;/vendor/autoload.php&rsquo;;
+use PhpAmqpLib\Connection\AMQPConnection;</p>
+
+<p>$connection = new AMQPConnection(&lsquo;localhost&rsquo;, 5672, &lsquo;guest&rsquo;, &lsquo;guest&rsquo;);
+$channel = $connection->channel();</p>
+
+<p>$channel->queue_declare(&lsquo;email_queue&rsquo;, false, false, false, false);</p>
+
+<p>echo &lsquo; * Waiting for messages. To exit press CTRL+C&rsquo;, &ldquo;\n&rdquo;;</p>
+
+<p>$callback = function($msg){</p>
+
+<pre><code>echo " * Message received", "\n";
+$data = json_decode($msg-&gt;body, true);
+
+$from = $data['from'];
+$from_email = $data['from_email'];
+$to_email = $data['to_email'];
+$subject = $data['subject'];
+$message = $data['message'];
+
+$transporter = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl')
+  -&gt;setUsername('YOUR_GMAIL_EMAIL')
+  -&gt;setPassword('YOUR_GMAIL_PASSWORD');
+
+$mailer = Swift_Mailer::newInstance($transporter);  
+
+$message = Swift_Message::newInstance($transporter)
+    -&gt;setSubject($subject)
+    -&gt;setFrom(array($from_email =&gt; $from))
+    -&gt;setTo(array($to_email))
+    -&gt;setBody($message);
+
+$mailer-&gt;send($message);
+
+echo " * Message was sent", "\n";
+$msg-&gt;delivery_info['channel']-&gt;basic_ack($msg-&gt;delivery_info['delivery_tag']);
+</code></pre>
+
+<p>};</p>
+
+<p>$channel->basic_qos(null, 1, null);
+$channel->basic_consume(&lsquo;email_queue&rsquo;, &lsquo;&rsquo;, false, false, false, false, $callback);</p>
+
+<p>while(count($channel->callbacks)) {</p>
+
+<pre><code>$channel-&gt;wait();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Breaking it down, the first 5 lines of code are basically the same as the one we have on the <code>sender.php</code> file. Then we just output a message saying how we can stop the file from running. We need to run this file from the terminal so to stop it we just hit <code>CTRL + C</code>.</p>
+
+<p>Next we declare a named function. This will be used for processing the message that we passed from the sender. The first thing it does is output that the message was received. Then we use <code>json_decode()</code> to convert the JSON string back to an array.</p>
+
+<p>```
+$callback = function($msg){</p>
+
+<pre><code>echo " * Message received", "\n";
+$data = json_decode($msg-&gt;body, true);
+</code></pre>
+
+<p>};
+```</p>
+
+<p>Next we extract the data and assign them to each of their own variables:</p>
+
+<p><code>
+$from = $data['from'];
+$from_email = $data['from_email'];
+$to_email = $data['to_email'];
+$subject = $data['subject'];
+$message = $data['message'];
+</code></p>
+
+<p>Next we declare a new transporter to be used by Swiftmailer. This allows us to use a gmail account for sending emails. Declaring a new instance accepts 3 arguments: the host, port and the encryption. Then we set the username and password.</p>
+
+<p>```
+$transporter = Swift_SmtpTransport::newInstance(&lsquo;smtp.gmail.com&rsquo;, 465, &lsquo;ssl&rsquo;)</p>
+
+<pre><code>  -&gt;setUsername('YOUR_GMAIL_EMAIL')
+  -&gt;setPassword('YOUR_GMAIL_PASSWORD');
+</code></pre>
+
+<p>```</p>
+
+<p>Next we declare a new mailer instance, and supplying the transporter as an argument.</p>
+
+<p><code>
+$mailer = Swift_Mailer::newInstance($transporter);  
+</code></p>
+
+<p>Next create a new message, this also takes up the transporter as its argument. We then set the subject, from field, to field, and body of the message.</p>
+
+<p>```
+$message = Swift_Message::newInstance($transporter)</p>
+
+<pre><code>    -&gt;setSubject($subject)
+    -&gt;setFrom(array($from_email =&gt; $from))
+    -&gt;setTo(array($to_email))
+    -&gt;setBody($message);
+</code></pre>
+
+<p>```</p>
+
+<p>Finally we send the message and output that the message was sent. The last line basically tells RabbitMQ that the sending of the message has indeed been successful.</p>
+
+<p>```
+$mailer->send($message);
+echo &ldquo; * Message was sent&rdquo;, &ldquo;\n&rdquo;;</p>
+
+<p>$msg->delivery_info[&lsquo;channel&rsquo;]&ndash;>basic_ack($msg->delivery_info[&lsquo;delivery_tag&rsquo;]);
+```</p>
+
+<h4>Running the program</h4>
+
+<p>You can now run the receiver by going to your terminal and executing the following command:</p>
+
+<p><code>
+php receiver.php
+</code></p>
+
+<p>Once its running, go to your browser and access the <code>sender.php</code> file. Enter the details of your message and click on send. You&rsquo;re instantly greeted by a &lsquo;Your message was sent!&rsquo; text but if you immediately check your email account its not there yet. If its not there then the queue is still processing it. Check the output displayed on the terminal window where you executed the receiver. You should see a &lsquo;Message was sent&rsquo; output if the email was already sent.</p>
+
+<h3>Conclusion</h3>
+
+<p>RabbitMQ is a nice way for implementing messaging applications such as the one we created in this tutorial. We have barely scratch the surface with this tutorial. I recommend you check out the <a href="http://www.rabbitmq.com/getstarted.html">getting started guides</a> and the <a href="http://www.rabbitmq.com/documentation.html">documentation</a> to learn more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using Datatables with Laravel]]></title>
@@ -1128,364 +1447,6 @@ $cache = new \Doctrine\Common\Cache\MemcacheCache();
 <li><a href="http://en.wikipedia.org/wiki/Database_caching">Database Caching</a></li>
 <li><a href="http://www.mysqlperformanceblog.com/2011/04/04/mysql-caching-methods-and-tips/">MySQL Caching Methods Tips and Tricks</a></li>
 <li><a href="http://www.taos.com/2013/04/10/understanding-mysql-query-cache/">Understanding MySQL Query Cache</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Paypal API]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/01/08/getting-started-with-paypal-api/"/>
-    <updated>2014-01-08T18:15:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/01/08/getting-started-with-paypal-api</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how you can get started with using the Paypal API. I&rsquo;ll walk you through the steps needed in order to get you started with using the Paypal API in your projects.</p>
-
-<!-- more -->
-
-
-<h3>Concepts to Remember</h3>
-
-<p>Here are some of the concepts that you have to remember when working with the Paypal API in any of your projects:</p>
-
-<ul>
-<li><strong>Sandbox</strong> &ndash; this is used for testing requests to the Paypal API. Sandbox Paypal accounts can be assigned with funds of up to 5000 USD and then you can use it for testing.</li>
-<li><strong>Live</strong> &ndash; the live Paypal website. You can switch your API calls to use the live endpoints upon deploying your project.</li>
-<li><strong>API Request</strong> &ndash; you can use either NVP (Name-Value Pair) or SOAP when making request to the API. We will use name-value pairs in this tutorial.</li>
-<li><strong>API Credentials</strong> &ndash; the credentials that you will use in order to make API calls.</li>
-<li><strong>API</strong> &ndash; short for Application Programming Interface. Paypal is composed of different APIs such as the adaptive accounts, adaptive payments, invoicing, merchant APIs and permissions. In this tutorial I&rsquo;m going to discuss about the merchant API.</li>
-<li><strong>Service Endpoint</strong> &ndash; this simply refers to the URL of the server that will handle a specific request. Note that the endpoints used for testing (sandbox) and production (live) are different. So you have to update the endpoints after you&rsquo;re done with the testing.</li>
-<li><strong>Call Payload</strong> &ndash; the minimum data required by paypal that you have to submit as part of the request to the API.</li>
-<li><strong>Request and Response Formats</strong> &ndash; the format in which your API request and the response that&rsquo;s going to be returned after a successful call.</li>
-<li><strong>HTTP Headers</strong> &ndash; the HTTP request header information that you have to specify in each API call.</li>
-</ul>
-
-
-<h3>Create a Paypal Account</h3>
-
-<p>First you have to create either a Paypal Personal Account or a Paypal Business Account on the Paypal website.
-After creating an account go to <a href="https://developer.paypal.com/">developer.paypal.com</a> and login using the account that you created.</p>
-
-<h3>Create a Sandbox Account</h3>
-
-<p>Once you&rsquo;re logged in to the paypal developer website, click on the applications tab then go to sandbox accounts. In this page you will see the default paypal account that you can use for testing. The default account contains information that you can use to authenticate your API calls. In most cases you would only need to take note of the username, password and the signature in order to authenticate API calls.</p>
-
-<p><img src="/images/posts/getting_started_with_paypal/default-test-account.png" alt="default account" /></p>
-
-<p>The default test account is a business account so if you need to test on a personal account you may need to create a new test account which you can do on the same page by clicking on the <code>Create Account</code> button.</p>
-
-<p><img src="/images/posts/getting_started_with_paypal/paypal-create-testacc.png" alt="create test account" /></p>
-
-<p>The default test account along with any test account that you create can be used to login in the <a href="https://www.sandbox.paypal.com">sandbox paypal website</a>. This is great as you can use this like a real paypal account to view your transactions, make payments, etc.</p>
-
-<h3>Getting Live API Credentials</h3>
-
-<p>Note that the API credentials that comes along with the default test account can&rsquo;t be used to make API calls with the live version of the API. For that you would need to login to <a href="http://paypal.com">paypal</a> then go to <strong>My Account</strong> &ndash;> <strong>Profile</strong> &ndash;> <strong>My Selling Tools</strong> then click on the <strong>update</strong> link beside the <strong>API Access</strong> section. After that click on the <strong>Request API Credentials</strong> link. Finally, select <strong>Request API signature</strong> and click <strong>Agree and Submit</strong>. This will generate the API Username, Password and Signature that you can use in your live API calls.</p>
-
-<h3>Paypal Class</h3>
-
-<p>Now were ready to build the class that we will be using later on to make requests to the Paypal API.
-First create a new class and call it <code>Paypal</code>. Then declare the following class variables:</p>
-
-<ul>
-<li><strong>request method</strong> &ndash; the request method to use. This can be either CURL or file_get_contents.</li>
-<li><strong>errors</strong> &ndash; stores the current errors that occured while making the requests.</li>
-<li><strong>credentials</strong> &ndash; stores the API credentials.</li>
-<li><strong>endpoint</strong> &ndash; the URL of the service end point to use.</li>
-<li><strong>version</strong> &ndash; the version of the API. Currently its 74.0</li>
-</ul>
-
-
-<p>```php
-&lt;?php
-class Paypal{</p>
-
-<p>  public $request_method;</p>
-
-<p>  public $_errors = array();</p>
-
-<p>  protected $<em>credentials;
-  protected $</em>endPoint = &lsquo;<a href="https://api-3t.sandbox.paypal.com/nvp">https://api-3t.sandbox.paypal.com/nvp</a>&rsquo;;
-  protected $_version = &lsquo;74.0&rsquo;;</p>
-
-<p>}
-?>
-```</p>
-
-<p>Next declare the constructor. This will take 3 required arguments and two optional arguments:</p>
-
-<ul>
-<li><strong>user</strong> &ndash; the API username that you got from paypal. Note that this should correspond with the endpoint that you use. If the endpoint is a sandbox endpoint then use the sandbox credentials otherwise use the live credentials.</li>
-<li><strong>pass</strong> &ndash; the API password</li>
-<li><strong>signature</strong> &ndash; the API signature</li>
-<li><strong>paypal server</strong> &ndash; this can either be set to sandbox or live. This is set to sandbox by default so its using the sandbox endpoint. Setting this to live will set the endpoint to the live endpoint.</li>
-<li><strong>request method</strong> &ndash; the request method to use, this can be either file_get_contents or curl. Its recommended to use curl since its more secure. The file_get_contents method is only there in case the server where you are deploying has no support for CURL.</li>
-</ul>
-
-
-<p>What the constructor does is to initialize the values for the class variables based on the arguments supplied when an object for the class is declared.</p>
-
-<p>```
-&lt;?php
-  public function __construct($user, $pass, $signature, $paypal_server = &lsquo;sandbox&rsquo;, $request_method = &lsquo;file_get_contents&rsquo;){</p>
-
-<pre><code>$this-&gt;_credentials = array(
-    'USER' =&gt; $user,
-    'PWD' =&gt; $pass,
-    'SIGNATURE' =&gt; $signature,
-);
-
-$this-&gt;request_method = $request_method;
-if($paypal_server == 'live'){
-  $this-&gt;_endPoint = 'https://api-3t.paypal.com/nvp';
-}
-</code></pre>
-
-<p>  }
-?>
-```</p>
-
-<p>Next create the request method. This will be the primary method that we will call from this class once we make the request to the API. This accepts two arguments:</p>
-
-<ul>
-<li><strong>method</strong> &ndash; the API method to use.</li>
-<li><strong>params</strong> &ndash; the parameters required by the method that we specified.</li>
-</ul>
-
-
-<p>What this method does is to build the name-value pair that will be used for the request. It also builds the required HTTP header based on the credentials supplied through the constructor earlier. Once its done building all the information required by a specific API method it makes the request depending on the request method.</p>
-
-<p>```
-&lt;?php
-  public function request($method, $params = array()){</p>
-
-<pre><code>$this-&gt;_errors = array();
-if(empty($method)){ 
-  $this-&gt;_errors = array('There is no API Method');
-  return false;
-}
-
-$requestParams = array(
-   'METHOD' =&gt; $method,
-   'VERSION' =&gt; $this-&gt;_version
-) + $this-&gt;_credentials;
-
-
-$request = http_build_query($requestParams + $params); //build a query string based on the array of request parameters
-
-if($this-&gt;request_method == 'curl'){
-
-    //build the HTTP header required by Paypal
-    $http_header = array(
-        'X-PAYPAL-SECURITY-USERID' =&gt; $this-&gt;_credentials['USER'],
-        'X-PAYPAL-SECURITY-PASSWORD' =&gt; $this-&gt;_credentials['PWD'],
-        'X-PAYPAL-SECURITY-SIGNATURE' =&gt; $this-&gt;_credentials['SIGNATURE'],
-        'X-PAYPAL-REQUEST-DATA-FORMAT' =&gt; 'JSON',
-        'X-PAYPAL-RESPONSE-DATA-FORMAT' =&gt; 'JSON'
-    );
-
-    //set options for CURL
-    $curlOptions = array (
-        CURLOPT_HTTPHEADER =&gt; $http_header,
-        CURLOPT_URL =&gt; $this-&gt;_endPoint,
-        CURLOPT_VERBOSE =&gt; 1,
-        CURLOPT_SSL_VERIFYPEER =&gt; true, 
-        CURLOPT_SSL_VERIFYHOST =&gt; 2,
-        CURLOPT_CAINFO =&gt; dirname(__FILE__) . '/cert/cacert.pem', //CA cert file
-        CURLOPT_RETURNTRANSFER =&gt; 1,
-        CURLOPT_POST =&gt; 1,
-        CURLOPT_POSTFIELDS =&gt; $request
-    );
-
-    $ch = curl_init();
-    curl_setopt_array($ch, $curlOptions);
-
-    $response = curl_exec($ch); //make the request
-
-    if(curl_errno($ch)){
-        $this-&gt;_errors = curl_error($ch);
-        curl_close($ch);
-        return false;
-    }else{
-        curl_close($ch);
-        $responseArray = array();
-        parse_str($response, $responseArray); //convert the response string to an array
-        return $responseArray;
-    }
-
-}else if($this-&gt;request_method == 'file_get_contents'){
-
-    //build the HTTP header required by Paypal
-    $context_options = array(
-        "http" =&gt; array(
-          "method" =&gt; "POST",
-          "header"  =&gt; "Content-type: application/x-www-form-urlencoded\r\n" .
-                "X-PAYPAL-SECURITY-USERID: " . $this-&gt;_credentials['USER'] . "\r\n" .
-                "X-PAYPAL-SECURITY-PASSWORD: " . $this-&gt;_credentials['PWD'] . "\r\n" .
-                "X-PAYPAL-SECURITY-SIGNATURE: " . $this-&gt;_credentials['SIGNATURE'] . "\r\n" .
-                "X-PAYPAL-REQUEST-DATA-FORMAT: JSON\r\n" .
-                "X-PAYPAL-RESPONSE-DATA-FORMAT: JSON\r\n",
-          "content" =&gt; $request
-        )
-    );
-
-    $context = stream_context_create($context_options); //create context for file_get_contents
-    $response = file_get_contents($this-&gt;_endPoint, false, $context); //make the request
-
-    $responseArray = array();
-    parse_str($response, $responseArray); //convert the response string to an array
-    return $responseArray;
-
-}
-</code></pre>
-
-<p>  }
-}
-?>
-```</p>
-
-<h3>API Methods</h3>
-
-<p>Before we dive into actually making an API request its important that we first understand the API methods that we will actually use. In this tutorial were only going to use 3 methods: SetExpressCheckout, GetExpressCheckoutDetails, and DoExpressCheckoutPayment. Were going to use these methods to create an application that accepts payments using Paypal.</p>
-
-<h4>SetExpressCheckout</h4>
-
-<p>The <code>SetExpressCheckout</code> method allows you to initiate an express checkout transaction. This is the easiest way to implement a payment operation in your application. What this does is to generate a unique token that can be appended into the paypal URL which is used for making payments. The URL to be used for sandbox and live are different so you have to make sure that the URL that you&rsquo;re using corresponds to the current API endpoint that you&rsquo;re using:</p>
-
-<ul>
-<li><strong>sandbox</strong> &ndash; <a href="https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
-<li><strong>live</strong> &ndash; <a href="https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN">https://www.paypal.com/webscr?cmd=_express-checkout&amp;token=UNIQUE_TOKEN</a></li>
-</ul>
-
-
-<p>The <code>SetExpressCheckout</code> method requires the following parameters:</p>
-
-<ul>
-<li><p><strong>METHOD</strong> &ndash; must be set to <code>SetExpressCheckout</code></p></li>
-<li><p><strong>RETURNURL</strong> &ndash; this is the URL where the buyer will be redirected after a successful payment</p></li>
-<li><strong>CANCELURL</strong> &ndash; this is the URL where the buyer will be redirected if he doesn&rsquo;t accept to make the payment</li>
-<li><strong>NOSHIPPING</strong> &ndash; you can use this to specify if shipping information is enabled or not. If the customer is paying for a specific service that doesn&rsquo;t require shipping then you can simply set the value to <code>1</code></li>
-<li><p><strong>ALLOWNOTE</strong> &ndash; you can use this to specify if notes are allowed. You can set this to <code>0</code> if you don&rsquo;t want buyers to send a note along with the payment information. Otherwise set it to <code>1</code></p></li>
-<li><p><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; the total cost of the product or service. If you have more than one item then the value for this parameter should be the total of those items. Note that any value that you supply for any parameter that requires an amount should be expressed in 2 decimal places. So if the item is worth 25 dollars then it should be written as <code>25.00</code>.</p></li>
-<li><strong>PAYMENTREQUEST_0_SHIPPINGAMT</strong> &ndash; the shipping cost. If the <code>NOSHIPPING</code> is set to <code>1</code> then there&rsquo;s no need to supply a value for this parameter</li>
-<li><p><strong>PAYMENTREQUEST_0_ITEMAMT</strong> &ndash; the cost of the product or service. Note that if you have more than one product you can simply set this to <code>PAYMENTREQUEST_1_ITEMAMT</code>, <code>PAYMENTREQUEST_2_ITEMAMT</code> and so on. Just be sure to get the total of the values that you supplied to those parameters</p></li>
-<li><p><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; the currency in which the <code>PAYMENTREQUEST_0_AMT</code> and <code>PAYMENTREQUEST_0_ITEMAMT</code> is expressed. Here&rsquo;s a <a href="https://developer.paypal.com/docs/classic/api/currency_codes/">list of currency codes</a> that you can use. If you don&rsquo;t specify a value for this parameter the default value of <code>USD</code> will be used.</p></li>
-<li><p><strong>L_PAYMENTREQUEST_0_NAME0</strong> &ndash; the name of the product or service</p></li>
-<li><strong>L_PAYMENTREQUEST_0_DESC0</strong> &ndash; the description of the product or service</li>
-<li><strong>L_PAYMENTREQUEST_0_AMT0</strong> &ndash; the cost of the product or service</li>
-<li><strong>L_PAYMENTREQUEST_0_QTY0</strong> &ndash; the quantity of the product or service</li>
-</ul>
-
-
-<p>After a successfull request it returns the following response:</p>
-
-<ul>
-<li><strong>TOKEN</strong> &ndash; the token that can be appended to the URL of the paypal website where the payment can be made.</li>
-</ul>
-
-
-<h4>GetExpressCheckoutDetails</h4>
-
-<p>The <code>GetExpressCheckoutDetails</code> method is used for getting additional information regarding a specific express checkout transaction. This is called after a payment has successfully been made through the paypal website. This happens when paypal successfully redirects to the <code>RETURNURL</code> that we specified in the <code>SetExpressCheckout</code> method.</p>
-
-<ul>
-<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. You can get the token by using <code>$_GET['token']</code>.</li>
-</ul>
-
-
-<p>After a successful request paypal returns a bunch of information regarding the payment. This includes information about the transaction itself and some payer information. Check out the <a href="https://developer.paypal.com/docs/classic/api/merchant/GetExpressCheckoutDetails_API_Operation_NVP/">official documentation</a> if you want to see a full list of the response objects returned from calling the <code>GetExpressCheckoutDetails</code> method.</p>
-
-<h4>DoExpressCheckoutPayment</h4>
-
-<p>The <code>DoExpressCheckoutPayment</code> method is used for completing the express checkout transaction. You might think that once the payment has been made its already completed but actually its not. The transaction isn&rsquo;t actually completed unless the payment is confirmed on both sides (paypal and your website).</p>
-
-<ul>
-<li><strong>TOKEN</strong> &ndash; the token that paypal has appended to the return URL. Yes this is the same as the token that you used for the <code>GetExpressCheckoutDetails</code> method.</li>
-<li><strong>PAYMENTREQUEST_n_PAYMENTACTION</strong> &ndash; specifies how you want to obtain the payment. There are 3 possible values for this: <code>Authorization</code>, <code>Order</code>, and <code>Sale</code>. In most cases the value used here is <code>Sale</code>.</li>
-<li><strong>PAYERID</strong> &ndash; the unique ID of the buyer. This information is also appended in the return URL, you can get it by using <code>$_GET['PayerID']</code></li>
-<li><strong>PAYMENTREQUEST_0_AMT</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_AMT</code> parameter on the <code>SetExpressCheckout</code> method.</li>
-<li><strong>PAYMENTREQUEST_0_CURRENCYCODE</strong> &ndash; this should be the same as the value you supplied in the <code>PAYMENTREQUEST_0_CURRENCYCODE</code> parameter on the <code>SetExpressCheckout</code> method.</li>
-</ul>
-
-
-<p>After a successful request the express checkout transaction is now completed.</p>
-
-<h3>Making API Requests</h3>
-
-<p>Now were ready to actually make requests to the API. First include the file where the Paypal class is located. Then create a new object for the Paypal class:</p>
-
-<p>```
-&lt;?php
-require &lsquo;Paypal.php&rsquo;;</p>
-
-<p>//get credentials from DB
-$credentials = $db->get(&ldquo;tbl_credentials&rdquo;, &ldquo;paypal&rdquo;);
-extract($credentials);</p>
-
-<p>$paypal = new Paypal($user, $pass, $signature, $paypal_server);</p>
-
-<p>if(empty($<em>GET[&lsquo;TOKEN&rsquo;]) &amp;&amp; empty($</em>GET[&lsquo;PayerID&rsquo;])){</p>
-
-<pre><code>$request_params = array(
-   'RETURNURL' =&gt; $success_url,
-   'CANCELURL' =&gt; $cancel_url,
-   'NOSHIPPING' =&gt; '1',
-   'ALLOWNOTE' =&gt; '1'
-);  
-
-$order_params = array(
-   'PAYMENTREQUEST_0_AMT' =&gt; $amount,
-   'PAYMENTREQUEST_0_ITEMAMT' =&gt; $amount,
-   'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
-);
-
-$item = array(
-   'L_PAYMENTREQUEST_0_NAME0' =&gt; 'Oldies Anime Collection',
-   'L_PAYMENTREQUEST_0_DESC0' =&gt; 'old anime',
-   'L_PAYMENTREQUEST_0_AMT0' =&gt; $amount,
-   'L_PAYMENTREQUEST_0_QTY0' =&gt; '1'
-);  
-
-//initiate express checkout transaction
-$response = $paypal-&gt;request('SetExpressCheckout', $request_params + $order_params + $item);
-
-if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
-    $token = $response['TOKEN'];
-    //redirect to paypal where the buyer will make his payment
-    header('Location: https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&amp;token=' . $token);
-}
-</code></pre>
-
-<p>}else{</p>
-
-<pre><code>//after a successful redirect, complete the express checkout transaction
-$request_params = array(
-    'TOKEN' =&gt; $_GET['token'],
-    'PAYMENTACTION' =&gt; 'Sale',
-    'PAYERID' =&gt; $_GET['PayerID'],
-    'PAYMENTREQUEST_0_AMT' =&gt; $amount, 
-    'PAYMENTREQUEST_0_CURRENCYCODE' =&gt; $currency
-);
-
-$response = $paypal-&gt;request('DoExpressCheckoutPayment', $request_params);
-
-if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
-    //commit the transaction in your database
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h3>Conclusion</h3>
-
-<p>In this tutorial you&rsquo;ve learned the basics of making API requests to the Paypal API. We have specifically used the Merchant API. But there are other Paypal APIs which we can use for different use cases.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://developer.paypal.com/docs/classic/api/gs_PayPalAPIs/">Paypal Classic API Getting Started Guide</a></li>
-<li><a href="https://developer.paypal.com/docs/classic/api/">Paypal Classic API Reference</a></li>
 </ul>
 
 ]]></content>
