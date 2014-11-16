@@ -25,7 +25,7 @@ Just search for Solr, download the installer and install it on your machine.
 After the installation is complete you can now access the Solr Manager where you can Start, Stop or Restart the server.
 If its not started yet click on the start button.
 
-![solr manager](/images/posts/getting_started_with_solr/solr_manager.PNG)
+![solr manager](/images/posts/getting_started_with_solr/solr_manager.png)
 
 
 ##Solr Admin
@@ -45,7 +45,7 @@ http://my.dev:8080/solr
 
 The Solr admin page currently looks like this. I'm running version 4.3.0. It might look a little bit different if you have installed a different version:
 
-![solr admin](/images/posts/getting_started_with_solr/solr_admin.PNG)
+![solr admin](/images/posts/getting_started_with_solr/solr_admin.png)
 
 There's not really much that you can do with the Solr admin page. 
 The only parts that you might want to look at is the Logging and Core Selector.
@@ -63,7 +63,7 @@ Throughout this tutorial we'll only be working with the `collection1` collection
 
 Once you have selected a collection you can see an overview of it by clicking on the overview tab:
 
-![collection overview](/images/posts/getting_started_with_solr/overview.PNG)
+![collection overview](/images/posts/getting_started_with_solr/overview.png)
 
 Information like the date the collection was last modified, number of documents, maximum number of documents, deleted documents can be seen from this page.
 
@@ -79,7 +79,7 @@ Note that when using the select query in Solr you don't usually specify the docu
 
 To use the query builder you simply need to specify what you're looking for.
 
-![query json](/images/posts/getting_started_with_solr/query_json.PNG)
+![query json](/images/posts/getting_started_with_solr/query_json.png)
 
 Here are some of the parameters that you can specify:
 

@@ -27,7 +27,7 @@ A little bit of knowledge on HTML, CSS and JavaScript is also helpful but not re
 Download Wordpress from [Wordpress.org](http://wordpress.org/download/) and extract its contents on the web accessible folder. It's usually the `public_html`, `www` or `htdocs` folder in your server. 
 Here's how the folder structure looks like:
 
-![wordpress folder structure](/images/posts/getting_started_with_wordpress_plugin_development/folder_structure.PNG)
+![wordpress folder structure](/images/posts/getting_started_with_wordpress_plugin_development/folder_structure.png)
 
 That's a lot of files and folders but there are only a few of those that we will have to touch:
 

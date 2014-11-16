@@ -197,7 +197,7 @@ The third option is by using the [Windows installer](http://getcomposer.org/Comp
 
 Once you're done installing Composer you can go ahead and search from the [packagist](https://packagist.org/) site to search for some packages. In the screenshot below we have the `eher/phpunit` package. You can see all the information regarding its requirements, suggestions and conflicts be sure to read it before trying to install anything.
 
-![package](/images/posts/windows_dev_environment/php_unit.PNG)
+![package](/images/posts/windows_dev_environment/php_unit.png)
 
 You can install packages by simply copying the string under the `dev-master` or the top-level section. In the example above we have `"eher/phpunit": "dev-master"`. Just wrap it in curly braces and put in the `require` property.
 
