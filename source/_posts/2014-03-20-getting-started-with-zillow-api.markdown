@@ -245,9 +245,7 @@ The `GetChart` method requires the following argument to be passed in:
 - `height` - the height of the image to return in pixels
 - `width` - the width of the image to return in pixels
 
-Here's a sample image that this method returns:
 
-![historical zestimate](/images/posts/2014-03-20-getting-started-with-zillow-api/historical-zestimate.gif)
 
 You can pretty much guess the `unit-type` that was used for this image. Yep that's right its in dollars. So the image above is basically showing that the value for the specific property went up from 96,000 dollars to 104,000 dollars over a period of about one year. You can actually specify this value by passing in the `chartDuration` argument. Then you can have values like `1year`, `2years` or `10years`. If you don't specify anything it defaults to '1year'.
 

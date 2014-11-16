@@ -313,12 +313,6 @@ echo $place_id;
 ?>
 ```
 
-###Demo
-
-Here's a little demo using `localStorage` as a data store for the places that are saved.
-
-{% jsfiddle gNah7 %}
-
 
 ###Conclusion
 
