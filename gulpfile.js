@@ -4,8 +4,13 @@ var rename = require("gulp-rename");
 var imagemin = require('gulp-imagemin');
 var clean = require('gulp-clean');
 
-gulp.task('clean', function(){
+gulp.task('clean.project', function(){
     return gulp.src('source/images/pages/projects', {read: false})
+        .pipe(clean());
+});
+
+gulp.task('clean.post', function(){
+    return gulp.src('source/images/posts', {read: false})
         .pipe(clean());
 });
 
@@ -44,5 +49,5 @@ gulp.task('copy', function(){
 });
 
 
-gulp.task('portfolio', ['clean', 'minify.project.images', 'resize', 'copy']);
-gulp.task('posts', ['minify.post.images']);
+gulp.task('portfolio', ['clean.project', 'minify.project.images', 'resize', 'copy']);
+gulp.task('posts', ['clean.post', 'minify.post.images']);
