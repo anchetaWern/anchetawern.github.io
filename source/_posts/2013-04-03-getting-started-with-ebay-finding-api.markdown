@@ -248,13 +248,6 @@ if(!empty($_POST['search'])){
 ```
 
 
-Here's the demo for this simple application implemented using JavaScript by using Handlebars for the template and jQuery's `$.ajax` method to request the data. Be sure to place your own app id that you got from e-bay in order to make this demo work.
-
-
-{% jsfiddle L6Nkj %}
-
-
-
 ###Conclusion
 
 That's it for this tutorial. Using the API is really easy since you don't need to construct signatures to be used in the request like other API's. Be sure to check out the resources below if you want to learn more about the e-bay finding API. 
@@ -265,5 +258,5 @@ That's it for this tutorial. Using the API is really easy since you don't need t
 - [Finding API How To](http://developer.ebay.com/DevZone/finding/HowTo/)
 - [Making an API Call](http://developer.ebay.com/DevZone/finding/Concepts/MakingACall.html)
 - [Call Reference](http://developer.ebay.com/DevZone/finding/CallRef/index.html)
-- [Sample Application Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/ebay_finding_api.7z)
+- [Sample Application Source Code](https://github.com/anchetaWern/tutorials/tree/master/ebay_finding_api)
 - [Sample Application Demo](http://tutorialdemos-wern.rhcloud.com/ebay_finding_api/ebay_finding_test.php)
