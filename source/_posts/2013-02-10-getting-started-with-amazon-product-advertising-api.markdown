@@ -694,14 +694,9 @@ We've barely scratched the surface with this tutorial but I hope I've been able 
 ##Resources
 
 - [Introduction to the Product Advertising API](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_Intro_AAWS.html)
-
 - [API Reference](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ApiReference.html)
-
 - [Browse Node IDs](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/BrowseNodeIDs.html)
-
 - [Accessing Amazon Product Advertising API](http://www.codediesel.com/php/accessing-amazon-product-advertising-api-in-php/)
-
 - [Response Groups](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_ResponseGroupsList.html))
-
-- [Sample Application Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_amazon_product_api.7z)
+- [Sample Application Source Code](https://github.com/anchetaWern/tutorials/tree/master/getting_started_with_amazon_product_api)
 
