@@ -9,8 +9,8 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this post I&rsquo;ll be sharing some of the things
-that I&rsquo;ve discovered while working with Octopress. Introduction As you all know Octopress &hellip;">
+  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through some of the templating libraries
+that I&rsquo;m currently using for my projects specifically the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,62 @@ that I&rsquo;ve discovered while working with Octopress. Introduction As you all
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/24/playing-with-templating-libraries/">Playing With Templating Libraries</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T21:49:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/24/playing-with-templating-libraries/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial I&rsquo;m going to walk you through some of the templating libraries
+that I&rsquo;m currently using for my projects specifically the following:</p>
+
+<ul>
+<li><a href="https://github.com/janl/mustache.js">Mustache</a></li>
+<li><a href="https://github.com/wycats/handlebars.js/">Handlebars</a></li>
+<li><a href="http://smarty.net/">Smarty</a></li>
+</ul>
+
+
+<p>Mustache is available for a bunch of languages but were going to use the JavaScript version for this tutorial.
+Handlebars is only available on JavaScript. And Smarty is for PHP.</p>
+
+<p>You can either use chrome dev tools, JS Fiddle (or any alternatives) or a local file for this tutorial.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/24/playing-with-templating-libraries/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -590,122 +646,6 @@ Were going to use PHP and MySQL for the backend.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/25/lessons-learned-from-putting-a-software-into-production-testing/">Lessons Learned From Putting a Software Into Production Testing</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-25T20:09:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/25/lessons-learned-from-putting-a-software-into-production-testing/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li>Write Code</li>
-<li>Test in the browser</li>
-<li>If it works, continue writing another code. If it doesn&rsquo;t, identify what&rsquo;s wrong with the code and debug it.</li>
-</ol>
-
-
-<p>Does these steps look familiar to you? Usually that&rsquo;s enough for small-sized software which only takes 1-2 months to develop. But the same is not true for medium-large sized software which takes 3-12 months to develop.</p>
-
-<p>I&rsquo;ve made a lot of mistakes when I developed a large size software and here are some of those:</p>
-
-<ul>
-<li>No server-side validation</li>
-<li>Repeated code everywhere</li>
-<li>Procedural code everywhere</li>
-<li>Not using MVC</li>
-<li>Non-defensive programming</li>
-<li>No code written for when things doesn&rsquo;t go as expected (error handlers)</li>
-<li>No code written that will handle concurrency</li>
-<li>No unit testing</li>
-</ul>
-
-
-<p>I&rsquo;ve made a lot of mistakes that I don&rsquo;t want others to repeat again that&rsquo;s why I&rsquo;m writing about it.</p>
-
-<h4>No server-side validation</h4>
-
-<p>Don&rsquo;t write validation code for just the server side or client side alone.
-There should be validations written for both the client side and the server side.
-This may sound absurd but that&rsquo;s just how things should be.
-We need to write client side validation code to automatically inform the user as soon as possible(onKeyUp, onBlur)
-if the inputted data is invalid or incorrect.
-But we also need to write server side validation to deal with malicious users who can simply disable JavaScript in their browsers to compromise the client side validation. This will also serve as a backup validation in case your client side validation fails you.</p>
-
-<h4>Repeated code everywhere</h4>
-
-<p>Don&rsquo;t just copy and paste code everywhere. Normally you would do this to save time but you&rsquo;re not actually saving time in the long-run. It will be a nightmare maintaining code that has the same code everywhere. This means that if there are some changes in the markup you will have to change the JavaScript code which depends on that markup.
-You can say that you won&rsquo;t ever need to make changes but it will always happen. No code is ever written on stone.</p>
-
-<h4>Procedural code everywhere</h4>
-
-<p>You would also want to avoid writing procedural code. You will most likely have to write object oriented code for medium-large sized software to avoid code repetition.
-The main idea behind object oriented programming is that you write classes which has member variables and methods that you can reuse later on.</p>
-
-<h4>Not Using MVC</h4>
-
-<p>MVC is basically a way to separate the business logic (computations, how you treat the data) from the presentation (things that the user sees). In other words its a way on how you organize your code so that its easier to find things later on. It usually takes longer to write code that follows the MVC pattern but the time that you will save in maintaining(understanding) code written in this pattern would be the biggest reason why you would want to use it.</p>
-
-<h4>Non-defensive Programming</h4>
-
-<p>You would also want to avoid the mentality that things can&rsquo;t go wrong. Because the truth is they always will(especially on production). Always be a negative thinker when programming. Think of ways in which your code can break.
-Think of user inputs that can break through your validation and test them against your code. Always ask the question &ldquo;what if?&rdquo;.</p>
-
-<ul>
-<li>What if I enter an sql query that drops the whole table from the database?</li>
-<li>What if the server suddenly burns and turns to ashes?</li>
-<li>What if the data wasn&rsquo;t backed up and the server is strucked by lightning?</li>
-<li>What if the system is used by 1 million users at the same time?</li>
-</ul>
-
-
-<p>Just don&rsquo;t go overboard when asking yourself these questions. Just think of what can possibly happen.</p>
-
-<h4>No code written for when things doesn&rsquo;t go as expected (error handlers)</h4>
-
-<p>Always write code that will handle errors no matter how smoothly you think the software will flow.
-It&rsquo;s like the Plan B for when Plan A fails.</p>
-
-<h4>No code written that will handle concurrency</h4>
-
-<p>Always try to see to it that the code that you are writing will be able to handle concurrency.
-What I mean by concurrency is that when 10 million users try to register an account on your app at once.
-What will happen to the server or the database? Be sure you know how many users will most likely use the software at once then test against it.</p>
-
-<h4>No unit testing</h4>
-
-<p>Lastly there&rsquo;s unit testing. If you&rsquo;re not aware of TDD you should start researching and apply it on your future projects. It&rsquo;s a good way to ensure that the code is really working. You will have to write twice or thrice as much code when applying TDD but the amount of time that you can save in ensuring that a piece of code still works after some modifications and updates would be the main reason why you would want to use TDD.</p>
-
-<p>Those are the things that I hope I knew when I created a large-sized software.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -723,6 +663,10 @@ What will happen to the server or the database? Be sure you know how many users 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/04/why-i-code/">Why I Code</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/29/year-end-review/">Year-End Review</a>
       </li>
     
@@ -736,10 +680,6 @@ What will happen to the server or the database? Be sure you know how many users 
     
       <li class="post">
         <a href="/blog/2014/11/08/christmas-wishlist-2014/">Christmas Wishlist 2014</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/25/always-scratch-your-developer-itch/">Always scratch your developer itch</a>
       </li>
     
   </ul>

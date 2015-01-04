@@ -9,8 +9,9 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Laravel is built with useful validation rules like required, numeric, unique data from a table in a database, etc.
-But there are some situations &hellip;">
+  <meta name="description" content="Write Code
+Test in the browser
+If it works, continue writing another code. If it doesn&rsquo;t, identify what&rsquo;s wrong with the code and debug &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +73,122 @@ But there are some situations &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/25/lessons-learned-from-putting-a-software-into-production-testing/">Lessons Learned From Putting a Software Into Production Testing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-25T20:09:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/25/lessons-learned-from-putting-a-software-into-production-testing/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ol>
+<li>Write Code</li>
+<li>Test in the browser</li>
+<li>If it works, continue writing another code. If it doesn&rsquo;t, identify what&rsquo;s wrong with the code and debug it.</li>
+</ol>
+
+
+<p>Does these steps look familiar to you? Usually that&rsquo;s enough for small-sized software which only takes 1-2 months to develop. But the same is not true for medium-large sized software which takes 3-12 months to develop.</p>
+
+<p>I&rsquo;ve made a lot of mistakes when I developed a large size software and here are some of those:</p>
+
+<ul>
+<li>No server-side validation</li>
+<li>Repeated code everywhere</li>
+<li>Procedural code everywhere</li>
+<li>Not using MVC</li>
+<li>Non-defensive programming</li>
+<li>No code written for when things doesn&rsquo;t go as expected (error handlers)</li>
+<li>No code written that will handle concurrency</li>
+<li>No unit testing</li>
+</ul>
+
+
+<p>I&rsquo;ve made a lot of mistakes that I don&rsquo;t want others to repeat again that&rsquo;s why I&rsquo;m writing about it.</p>
+
+<h4>No server-side validation</h4>
+
+<p>Don&rsquo;t write validation code for just the server side or client side alone.
+There should be validations written for both the client side and the server side.
+This may sound absurd but that&rsquo;s just how things should be.
+We need to write client side validation code to automatically inform the user as soon as possible(onKeyUp, onBlur)
+if the inputted data is invalid or incorrect.
+But we also need to write server side validation to deal with malicious users who can simply disable JavaScript in their browsers to compromise the client side validation. This will also serve as a backup validation in case your client side validation fails you.</p>
+
+<h4>Repeated code everywhere</h4>
+
+<p>Don&rsquo;t just copy and paste code everywhere. Normally you would do this to save time but you&rsquo;re not actually saving time in the long-run. It will be a nightmare maintaining code that has the same code everywhere. This means that if there are some changes in the markup you will have to change the JavaScript code which depends on that markup.
+You can say that you won&rsquo;t ever need to make changes but it will always happen. No code is ever written on stone.</p>
+
+<h4>Procedural code everywhere</h4>
+
+<p>You would also want to avoid writing procedural code. You will most likely have to write object oriented code for medium-large sized software to avoid code repetition.
+The main idea behind object oriented programming is that you write classes which has member variables and methods that you can reuse later on.</p>
+
+<h4>Not Using MVC</h4>
+
+<p>MVC is basically a way to separate the business logic (computations, how you treat the data) from the presentation (things that the user sees). In other words its a way on how you organize your code so that its easier to find things later on. It usually takes longer to write code that follows the MVC pattern but the time that you will save in maintaining(understanding) code written in this pattern would be the biggest reason why you would want to use it.</p>
+
+<h4>Non-defensive Programming</h4>
+
+<p>You would also want to avoid the mentality that things can&rsquo;t go wrong. Because the truth is they always will(especially on production). Always be a negative thinker when programming. Think of ways in which your code can break.
+Think of user inputs that can break through your validation and test them against your code. Always ask the question &ldquo;what if?&rdquo;.</p>
+
+<ul>
+<li>What if I enter an sql query that drops the whole table from the database?</li>
+<li>What if the server suddenly burns and turns to ashes?</li>
+<li>What if the data wasn&rsquo;t backed up and the server is strucked by lightning?</li>
+<li>What if the system is used by 1 million users at the same time?</li>
+</ul>
+
+
+<p>Just don&rsquo;t go overboard when asking yourself these questions. Just think of what can possibly happen.</p>
+
+<h4>No code written for when things doesn&rsquo;t go as expected (error handlers)</h4>
+
+<p>Always write code that will handle errors no matter how smoothly you think the software will flow.
+It&rsquo;s like the Plan B for when Plan A fails.</p>
+
+<h4>No code written that will handle concurrency</h4>
+
+<p>Always try to see to it that the code that you are writing will be able to handle concurrency.
+What I mean by concurrency is that when 10 million users try to register an account on your app at once.
+What will happen to the server or the database? Be sure you know how many users will most likely use the software at once then test against it.</p>
+
+<h4>No unit testing</h4>
+
+<p>Lastly there&rsquo;s unit testing. If you&rsquo;re not aware of TDD you should start researching and apply it on your future projects. It&rsquo;s a good way to ensure that the code is really working. You will have to write twice or thrice as much code when applying TDD but the amount of time that you can save in ensuring that a piece of code still works after some modifications and updates would be the main reason why you would want to use TDD.</p>
+
+<p>Those are the things that I hope I knew when I created a large-sized software.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -868,479 +985,6 @@ which I always use in my projects if there&rsquo;s a need to replace the default
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/24/playing-with-emmet/">Playing With Emmet</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-24T10:57:00+08:00" pubdate data-updated="true">Nov 24<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/11/24/playing-with-emmet/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The next generation ZenCoding has been released recently so I tried to play with it as soon as I had the time.
-Just to give a bit of a background ZenCoding is a plugin for most text-editors that is used for faster generation
-of html and css code. Emmet is like the next level of it, smarter and more powerful.</p>
-
-<p>You can install Emmet through the <a href="http://wbond.net/sublime_packages/package_control">Sublime Text 2 package manager</a>
-which isn&rsquo;t included in Sublime text by default at the time of writing of this blog post.</p>
-
-<p>I&rsquo;m on Windows so I had to press <code>ctrl+shift+p</code> on the keyboard to bring out the command pallete then search for <code>install</code> then press <code>enter</code>
-which loads the sublime text plugins. Once that&rsquo;s done go ahead and hit <code>ctrl+shift+p</code> again then press <code>enter</code>
-which then brings out the packages that are currently on package control. Search for <code>emmet</code> remember to uninstall <code>Zen Coding</code> before trying to use
-Emmet because it will most likely have some conflicts with emmet.
-To uninstall ZenCoding just go to the <code>Data\Packages</code> directory in sublime and look for the zencoding folder then delete it.</p>
-
-<p>Once that&rsquo;s done were ready to play with Emmet.</p>
-
-<p>If you&rsquo;re familiar with ZenCoding and CSS selectors there&rsquo;s pretty much Zero learning curve when using Emmet
-because the syntax is almost the same.</p>
-
-<h4>Syntax</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">dog</span> <span class="c1">//can expand to any element with the class of dog</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">#</span><span class="nx">cat</span> <span class="c1">//can expand to any element with the id of cat depending on context</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">p</span><span class="p">.</span><span class="nx">imaparagraph</span> <span class="c1">//expands to: &lt;p class=&quot;imaparagraph&quot;&gt;&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">p</span><span class="p">{</span><span class="nx">text</span> <span class="nx">inside</span> <span class="nx">paragraph</span><span class="p">}</span> <span class="c1">//expands to: &lt;p&gt;text inside paragraph&lt;/p&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Tag Names</h4>
-
-<p>I&rsquo;ve noticed that Emmet is smarter than ZenCoding (or maybe I just haven&rsquo;t noticed this while using ZenCoding)
-When expanding an abbreviation which doesn&rsquo;t specify the element to be used Emmet does some magic in
-determining which element should be used by checking out the elements inside the block where its written.
-For example if the sibling that came before it is a div then its also going to expand as a div:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  #imadiv //expands to: <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;imadiv&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But when the abbreviation is inside a <code>&lt;ul&gt;</code> element it simply uses the <code>&lt;li&gt;</code> tag:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>  <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;li&gt;&lt;/li&gt;</span>
-</span><span class='line'>  .what_am_i //expands to: <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;what_am_i&quot;</span><span class="nt">&gt;&lt;/li&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/ul&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The default element in which it expands to if it can&rsquo;t determine which element should be used is either <code>&lt;span&gt;</code> or <code>&lt;div&gt;</code></p>
-
-<h4>Abbreviations</h4>
-
-<p>Checkout the <code>snippets.json</code> file for the abbreviations and their corresponding values:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>&quot;abbreviations&quot;: {
-</span><span class='line'>  &quot;!&quot;: &quot;html:5&quot;,
-</span><span class='line'>  &quot;a&quot;: &quot;<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;a:link&quot;: &quot;<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">\&quot;http://|\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;a:mail&quot;: &quot;<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">\&quot;mailto:|\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;abbr&quot;: &quot;<span class="nt">&lt;abbr</span> <span class="na">title=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;acronym&quot;: &quot;<span class="nt">&lt;acronym</span> <span class="na">title=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;base&quot;: &quot;<span class="nt">&lt;base</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;bdo&quot;: &quot;<span class="nt">&lt;bdo</span> <span class="na">dir=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;bdo:r&quot;: &quot;<span class="nt">&lt;bdo</span> <span class="na">dir=</span><span class="s">\&quot;rtl\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;bdo:l&quot;: &quot;<span class="nt">&lt;bdo</span> <span class="na">dir=</span><span class="s">\&quot;ltr\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;link&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;stylesheet\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:css&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;stylesheet\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:style}.css\&quot;</span> <span class="na">media=</span><span class="s">\&quot;all\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:print&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;stylesheet\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:print}.css\&quot;</span> <span class="na">media=</span><span class="s">\&quot;print\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:favicon&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;shortcut</span> <span class="na">icon</span><span class="err">\&quot;</span> <span class="na">type=</span><span class="s">\&quot;image/x-icon\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:favicon.ico}\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:touch&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;apple-touch-icon\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:favicon.png}\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:rss&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;alternate\&quot;</span> <span class="na">type=</span><span class="s">\&quot;application/rss+xml\&quot;</span> <span class="na">title=</span><span class="s">\&quot;RSS\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:rss.xml}\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;link:atom&quot;: &quot;<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">\&quot;alternate\&quot;</span> <span class="na">type=</span><span class="s">\&quot;application/atom+xml\&quot;</span> <span class="na">title=</span><span class="s">\&quot;Atom\&quot;</span> <span class="na">href=</span><span class="s">\&quot;${1:atom.xml}\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;meta:utf&quot;: &quot;<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=UTF-8\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;meta:win&quot;: &quot;<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=windows-1251\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;meta:compat&quot;: &quot;<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;X-UA-Compatible\&quot;</span> <span class="na">content=</span><span class="s">\&quot;${1:IE=7}\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;style&quot;: &quot;<span class="nt">&lt;style&gt;</span><span class="err">&quot;,</span>
-</span><span class='line'>  &quot;script&quot;: &quot;<span class="nt">&lt;script&gt;</span><span class="err">&quot;,</span>
-</span><span class='line'>  &quot;script:src&quot;: &quot;<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span><span class="err">&quot;,</span>
-</span><span class='line'>  &quot;img&quot;: &quot;<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;iframe&quot;: &quot;<span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span> <span class="na">frameborder=</span><span class="s">\&quot;0\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;embed&quot;: &quot;<span class="nt">&lt;embed</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span> <span class="na">type=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;object&quot;: &quot;<span class="nt">&lt;object</span> <span class="na">data=</span><span class="s">\&quot;\&quot;</span> <span class="na">type=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;param&quot;: &quot;<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;map&quot;: &quot;<span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;area&quot;: &quot;<span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">\&quot;\&quot;</span> <span class="na">coords=</span><span class="s">\&quot;\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;area:d&quot;: &quot;<span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">\&quot;default\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;area:c&quot;: &quot;<span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">\&quot;circle\&quot;</span> <span class="na">coords=</span><span class="s">\&quot;\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;area:r&quot;: &quot;<span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">\&quot;rect\&quot;</span> <span class="na">coords=</span><span class="s">\&quot;\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;area:p&quot;: &quot;<span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">\&quot;poly\&quot;</span> <span class="na">coords=</span><span class="s">\&quot;\&quot;</span> <span class="na">href=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;form&quot;: &quot;<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;form:get&quot;: &quot;<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">\&quot;\&quot;</span> <span class="na">method=</span><span class="s">\&quot;get\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;form:post&quot;: &quot;<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">\&quot;\&quot;</span> <span class="na">method=</span><span class="s">\&quot;post\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;label&quot;: &quot;<span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;input&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:hidden&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;hidden\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:h&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;hidden\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:text&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;text\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:t&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;text\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:search&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;search\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:email&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;email\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:url&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;url\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:password&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;password\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:p&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;password\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:datetime&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;datetime\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:date&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;date\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:datetime-local&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;datetime-local\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:month&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;month\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:week&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;week\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:time&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;time\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:number&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;number\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:color&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;color\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:checkbox&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;checkbox\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:c&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;checkbox\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:radio&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;radio\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:r&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;radio\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:range&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;range\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:file&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;file\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:f&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;file\&quot;</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:submit&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;submit\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:s&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;submit\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:image&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;image\&quot;</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:i&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;image\&quot;</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span> <span class="na">alt=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:reset&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;reset\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:button&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;button\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;input:b&quot;: &quot;<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">\&quot;button\&quot;</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span> <span class="nt">/&gt;</span>&quot;,
-</span><span class='line'>  &quot;select&quot;: &quot;<span class="nt">&lt;select</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;&lt;/select&gt;</span>&quot;,
-</span><span class='line'>  &quot;option&quot;: &quot;<span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;&lt;/option&gt;</span>&quot;,
-</span><span class='line'>  &quot;textarea&quot;: &quot;<span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">\&quot;\&quot;</span> <span class="na">id=</span><span class="s">\&quot;\&quot;</span> <span class="na">cols=</span><span class="s">\&quot;${1:30}\&quot;</span> <span class="na">rows=</span><span class="s">\&quot;${2:10}\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;menu:context&quot;: &quot;<span class="nt">&lt;menu</span> <span class="na">type=</span><span class="s">\&quot;context\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;menu:c&quot;: &quot;<span class="nt">&lt;menu</span> <span class="na">type=</span><span class="s">\&quot;context\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;menu:toolbar&quot;: &quot;<span class="nt">&lt;menu</span> <span class="na">type=</span><span class="s">\&quot;toolbar\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;menu:t&quot;: &quot;<span class="nt">&lt;menu</span> <span class="na">type=</span><span class="s">\&quot;toolbar\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;video&quot;: &quot;<span class="nt">&lt;video</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;audio&quot;: &quot;<span class="nt">&lt;audio</span> <span class="na">src=</span><span class="s">\&quot;\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  &quot;html:xml&quot;: &quot;<span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">\&quot;http://www.w3.org/1999/xhtml\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>  
-</span><span class='line'>  &quot;bq&quot;: &quot;blockquote&quot;,
-</span><span class='line'>  &quot;acr&quot;: &quot;acronym&quot;,
-</span><span class='line'>  &quot;fig&quot;: &quot;figure&quot;,
-</span><span class='line'>  &quot;figc&quot;: &quot;figcaption&quot;,
-</span><span class='line'>  &quot;ifr&quot;: &quot;iframe&quot;,
-</span><span class='line'>  &quot;emb&quot;: &quot;embed&quot;,
-</span><span class='line'>  &quot;obj&quot;: &quot;object&quot;,
-</span><span class='line'>  &quot;src&quot;: &quot;source&quot;,
-</span><span class='line'>  &quot;cap&quot;: &quot;caption&quot;,
-</span><span class='line'>  &quot;colg&quot;: &quot;colgroup&quot;,
-</span><span class='line'>  &quot;fst&quot;: &quot;fieldset&quot;,
-</span><span class='line'>  &quot;btn&quot;: &quot;button&quot;,
-</span><span class='line'>  &quot;optg&quot;: &quot;optgroup&quot;,
-</span><span class='line'>  &quot;opt&quot;: &quot;option&quot;,
-</span><span class='line'>  &quot;tarea&quot;: &quot;textarea&quot;,
-</span><span class='line'>  &quot;leg&quot;: &quot;legend&quot;,
-</span><span class='line'>  &quot;sect&quot;: &quot;section&quot;,
-</span><span class='line'>  &quot;art&quot;: &quot;article&quot;,
-</span><span class='line'>  &quot;hdr&quot;: &quot;header&quot;,
-</span><span class='line'>  &quot;ftr&quot;: &quot;footer&quot;,
-</span><span class='line'>  &quot;adr&quot;: &quot;address&quot;,
-</span><span class='line'>  &quot;dlg&quot;: &quot;dialog&quot;,
-</span><span class='line'>  &quot;str&quot;: &quot;strong&quot;,
-</span><span class='line'>  &quot;prog&quot;: &quot;progress&quot;,
-</span><span class='line'>  &quot;fset&quot;: &quot;fieldset&quot;,
-</span><span class='line'>  &quot;datag&quot;: &quot;datagrid&quot;,
-</span><span class='line'>  &quot;datal&quot;: &quot;datalist&quot;,
-</span><span class='line'>  &quot;kg&quot;: &quot;keygen&quot;,
-</span><span class='line'>  &quot;out&quot;: &quot;output&quot;,
-</span><span class='line'>  &quot;det&quot;: &quot;details&quot;,
-</span><span class='line'>  &quot;cmd&quot;: &quot;command&quot;,
-</span><span class='line'>  
-</span><span class='line'>  &quot;ol+&quot;: &quot;ol&gt;li&quot;,
-</span><span class='line'>  &quot;ul+&quot;: &quot;ul&gt;li&quot;,
-</span><span class='line'>  &quot;dl+&quot;: &quot;dl&gt;dt+dd&quot;,
-</span><span class='line'>  &quot;map+&quot;: &quot;map&gt;area&quot;,
-</span><span class='line'>  &quot;table+&quot;: &quot;table&gt;tr&gt;td&quot;,
-</span><span class='line'>  &quot;colgroup+&quot;: &quot;colgroup&gt;col&quot;,
-</span><span class='line'>  &quot;colg+&quot;: &quot;colgroup&gt;col&quot;,
-</span><span class='line'>  &quot;tr+&quot;: &quot;tr&gt;td&quot;,
-</span><span class='line'>  &quot;select+&quot;: &quot;select&gt;option&quot;,
-</span><span class='line'>  &quot;optgroup+&quot;: &quot;optgroup&gt;option&quot;,
-</span><span class='line'>  &quot;optg+&quot;: &quot;optgroup&gt;option&quot;
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see its geared towards html5:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>! //expands to a basic html template with the html5 doctype (sweet!)
-</span><span class='line'>
-</span><span class='line'><span class="cp">&lt;!doctype html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Document<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And they&rsquo;ve already removed the <code>type</code> attribute for <code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> tags as well (double sweet!!)</p>
-
-<p>Specifying input types using colon (triple sweet!!!):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>input:text //expands to <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;&quot;</span> <span class="na">id=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And when you press tab it automatically goes inside the name and id for you to specify the values for those attributes (How cool is that?)</p>
-
-<p>I remember having done this in ZenCoding like:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>input[type=text]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That saves my fingers from typing 6 more characters for every form input.</p>
-
-<p>The good thing is that you can customize these abbreviations the way you want it.
-You can definitely save your fingers from typing some characters by specifying shorter abbreviations.
-But remember not to sacrifice readability and memorizability (does that word exists? sorry grammar natzis, please don&rsquo;t kill me).
-But its probably ok to have abbreviations like  <code>i:t</code> or <code>i:r</code> or <code>i:c</code> if you can remember what they mean after an hour.</p>
-
-<p>You can even add your own snippets (if you&rsquo;re not a fan of the default feature in sublime text for storing code snippets).
-Here are some of the default snippets that are available in Emmet (mostly doctypes and code for dealing with ie6).</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>&quot;snippets&quot;: {
-</span><span class='line'>          &quot;c&quot;: &quot;<span class="c">&lt;!-- |${child} --&gt;</span>&quot;,
-</span><span class='line'>          &quot;cc:ie6&quot;: &quot;<span class="c">&lt;!--[if lte IE 6]&gt;\n\t${child}|\n&lt;![endif]--&gt;</span>&quot;,
-</span><span class='line'>          &quot;cc:ie&quot;: &quot;<span class="c">&lt;!--[if IE]&gt;\n\t${child}|\n&lt;![endif]--&gt;</span>&quot;,
-</span><span class='line'>          &quot;cc:noie&quot;: &quot;<span class="c">&lt;!--[if !IE]&gt;&lt;!--&gt;</span>\n\t${child}|\n<span class="c">&lt;!--&lt;![endif]--&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:4t&quot;: &quot;<span class="cp">&lt;!DOCTYPE HTML PUBLIC \&quot;-//W3C//DTD HTML 4.01 Transitional//EN\&quot; \&quot;http://www.w3.org/TR/html4/loose.dtd\&quot;&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=${charset}\&quot;</span><span class="nt">&gt;</span>\n\t<span class="nt">&lt;title&gt;</span>${1:Document}<span class="nt">&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:4s&quot;: &quot;<span class="cp">&lt;!DOCTYPE HTML PUBLIC \&quot;-//W3C//DTD HTML 4.01//EN\&quot; \&quot;http://www.w3.org/TR/html4/strict.dtd\&quot;&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=${charset}\&quot;</span><span class="nt">&gt;</span>\n\t<span class="nt">&lt;title&gt;</span>${1:Document}<span class="nt">&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:xt&quot;: &quot;<span class="cp">&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Transitional//EN\&quot; \&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\&quot;&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">\&quot;http://www.w3.org/1999/xhtml\&quot;</span> <span class="na">xml:lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=${charset}\&quot;</span> <span class="nt">/&gt;</span>\n\t<span class="nt">&lt;title&gt;&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:xs&quot;: &quot;<span class="cp">&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.0 Strict//EN\&quot; \&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\&quot;&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">\&quot;http://www.w3.org/1999/xhtml\&quot;</span> <span class="na">xml:lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=${charset}\&quot;</span> <span class="nt">/&gt;</span>\n\t<span class="nt">&lt;title&gt;</span>${1:Document}<span class="nt">&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:xxs&quot;: &quot;<span class="cp">&lt;!DOCTYPE html PUBLIC \&quot;-//W3C//DTD XHTML 1.1//EN\&quot; \&quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\&quot;&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">\&quot;http://www.w3.org/1999/xhtml\&quot;</span> <span class="na">xml:lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">\&quot;Content-Type\&quot;</span> <span class="na">content=</span><span class="s">\&quot;text/html;charset=${charset}\&quot;</span> <span class="nt">/&gt;</span>\n\t<span class="nt">&lt;title&gt;</span>${1:Document}<span class="nt">&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;,
-</span><span class='line'>          &quot;html:5&quot;: &quot;<span class="cp">&lt;!doctype html&gt;</span>\n<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">\&quot;${lang}\&quot;</span><span class="nt">&gt;</span>\n<span class="nt">&lt;head&gt;</span>\n\t<span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">\&quot;${charset}\&quot;</span><span class="nt">&gt;</span>\n\t<span class="nt">&lt;title&gt;</span>${1:Document}<span class="nt">&lt;/title&gt;</span>\n<span class="nt">&lt;/head&gt;</span>\n<span class="nt">&lt;body&gt;</span>\n\t${child}${2}\n<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>&quot;
-</span><span class='line'>      }
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you&rsquo;re using Zurb&rsquo;s Foundation or Twitter Bootstrap and you plan to use it for your future projects.
-Maybe you can store snippets to make your life easier (css frameworks are notorious at using a lot of html to have a foundation for styling):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>&quot;d:6c&quot; : &quot;<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">\&quot;six</span> <span class="na">columns</span><span class="err">\&quot;</span><span class="nt">&gt;</span>&quot;,
-</span><span class='line'>&quot;d:10c3mc&quot; : &quot;<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">\&quot;ten</span> <span class="na">mobile-three</span> <span class="na">columns</span><span class="err">\&quot;</span><span class="nt">&gt;</span>&quot;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Other Fun Stuff</h4>
-
-<p>Of course there&rsquo;s a lot more stuff that you can do in Emmet (Lorem ipsum generators, vendor prefixes) but time is limited and those cool stuff are all
-in the documentation. There&rsquo;s also a text-editor in the site which you can play with Emmet as much as you want.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://docs.emmet.io/">Emmet</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1358,6 +1002,10 @@ in the documentation. There&rsquo;s also a text-editor in the site which you can
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/04/why-i-code/">Why I Code</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/29/year-end-review/">Year-End Review</a>
       </li>
     
@@ -1371,10 +1019,6 @@ in the documentation. There&rsquo;s also a text-editor in the site which you can
     
       <li class="post">
         <a href="/blog/2014/11/08/christmas-wishlist-2014/">Christmas Wishlist 2014</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/25/always-scratch-your-developer-itch/">Always scratch your developer itch</a>
       </li>
     
   </ul>
