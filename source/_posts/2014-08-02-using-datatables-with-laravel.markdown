@@ -147,4 +147,13 @@ Lastly, we can now display the datatable in our view. If you're using [Twitter B
 ```
 {% endraw %}
 
+And don't forget to include the datatables stylesheet and JavaScript file on your views. You can download datatables from [datatables.net](http://datatables.net/) or you can just use cdnjs:
+
+```html
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/css/jquery.dataTables.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+```
+
+And yes, datatables depends on jQuery so you also need to include that before including datatables.
+
 Yup! as simple as that! All we have to do is to call the `render()` method to render the actual datatabase. And then we also call the `script()` method to render the JavaScript file that would do the talking to the server every time the user interacts with the table. 
