@@ -219,7 +219,7 @@ Next is the project body. This is where you put all the task configuration for y
 </project>
 ```
 
-In ant the actual tag that you use has a special meaning so using the `project` tag tells ant that we are working with a project. The `project` tag takes 2 attributes:  `name` and `default`. `name is basically the name that you want to give to your project. `default` is where you tell ant the name of the default task. In this case we give it a name of `init`. This means that when you execute `ant` from your working directory it will look for the `init` task and it will execute it.
+In ant the actual tag that you use has a special meaning so using the `project` tag tells ant that we are working with a project. The `project` tag takes 2 attributes:  `name` and `default`. `name` is basically the name that you want to give to your project. `default` is where you tell ant the name of the default task. In this case we give it a name of `init`. This means that when you execute `ant` from your working directory it will look for the `init` task and it will execute it.
 
 ######Directory Configuration
 
