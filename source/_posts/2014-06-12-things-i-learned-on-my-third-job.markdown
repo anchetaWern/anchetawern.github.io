@@ -2,7 +2,7 @@
 layout: post
 title: "Things I learned on my third job"
 date: 2014-06-12 20:51
-update: 2014-07-12
+update: 2015-02-07
 comments: true
 categories: [job, learnings]
 published: true
@@ -101,6 +101,31 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
 
 ###Yahoo Finance API
 
-Lastly there's the Yahoo Finance API which I used to get the most recent stocks information about various companies from NYSE and NASDAQ.
+Yahoo Finance API is what I used to get the most recent stocks information about various companies from NYSE and NASDAQ. I used it on my [StockSwitch](http://wern-ancheta.com/projects/stockswitch) project.
 
-That's it! for now. In the coming months I'll be updating this post and share some more of the things I've learned on my current job.
+###Ionic
+
+[Ionic](http://ionicframework.com/) is a framework for developing hybrid mobile apps. This utilizes Phonegap's web view to render HTML and CSS and use JavaScript for interaction. Ionic comes with a pretty good looking UI, command line utilities and JavaScript APIs for various UI elements such as modals, tabs, pop-ups, scroll bars, and many others.
+
+###Angular
+
+[Angular](https://angularjs.org/) comes in tandem with Ionic so there wasn't really much of a choice but to learn Angular as well when I picked Ionic for the job. Angular is a JavaScript framework from Google. Which allows us to easily structure our JavaScript code and to extend HTML through the use of directives. 
+
+###Amazon S3
+
+Amazon S3 is the file storage service that I use for storing file uploads for the apps that I built. Files can be stored into what they call "buckets". These buckets are then assigned a unique URL which can be used to access the file. By default the files stored in each bucket are private. Which means only you the one who uploaded it can view it. If you want to make the file accessible to anyone then you have to make it public. I've also used it together with Amazon Cloudfront, Amazon's content delivery web service. CDN for short.
+
+###Amazon Cloudfront
+
+Amazon Cloudfront is Amazon's CDN. It can be used together with Amazon S3 to optimize the speed of delivery of the files which you have on an S3 bucket. One lesson I learned using Amazon Cloudfront is that its not supposed to be used when you're still developing the app which utilizes it. Because you often have to manually invalidate a file when you upload a new version of it on s3. 
+
+###Database Migrations
+
+Database migrations is what you use the first time you build your database. It is also what you use when you need to make changes to the database. Such as changing the data type of a specific column, renaming a column, or deleting it. Its a great way to keep track of the changes that you make on your database schema and share it with your team mates through version control. Its a good thing Laravel, my framework of choice when building web apps, already has database migration functionalities baked into it. All I have to do is create a new migration, write the code which will make the changes and also the corresponding code that will be executed when I rollback. After that I'll just execute `php artisan migrate` to commit the changes to the database. 
+
+###Google APIs
+
+There's a bunch of Google APIs available. If you can count the number of services that Google currently offers, that's almost the same number of APIs they've got. So far I only had the chance to work with their Google+ login API and Google Calendar API. I used their Calendar API in my Bookr project. And the login API with all the apps that needed social login integration.
+
+That's it! In the coming months I'll be updating this post and share some more of the things I've learned on my current job.
+
