@@ -33,9 +33,6 @@ A voice feedback platform that clients can use to capture voice feedback from th
 - Stripe API
 - Twilio API
 
-####URL
-
-[Vmonial](http://vmonial.com)
 
 
 ####Screenshots
