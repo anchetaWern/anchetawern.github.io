@@ -128,7 +128,7 @@ A Wordpress plugin that handles site subscriptions. It integrates with the Bitpa
 - Bitpay API
 
 
-[View More Details](/projects/wp-donations)
+[View More Details](/projects/wpdonations)
 
 ## 
 
@@ -212,6 +212,52 @@ StockSwitch is a real-time stock market simulation app.
 
 ## 
 
+###StockSwitch Mobile
+
+Mobile app for StockSwitch.
+
+{% img right /images/pages/projects/stockswitch-mobile/small-portfolio.png 'portfolio' %}
+
+####Technologies Used
+
+- Ionic
+- HTML
+- CSS 
+- JavaScript
+- Angular
+- PHP 
+- Laravel
+- MySQL
+- Yahoo Finance API
+- Elasticsearch
+
+[View More Details](/projects/stockswitch-mobile)
+
+## 
+
+###Lux
+
+Allows real-estate agents to advertise the properties that they are selling through the use of a website wherein the information, photos and videos for each property can be added. 
+
+{% img right /images/pages/projects/lux/about.png 'about' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- MySQL
+- Google Maps API
+- Tubular (jQuery Plugin)
+- Fancy Apps FancyBox (jQuery Plugin)
+- Mandrill (for email reports)
+
+[View More Details](/projects/lux)
+
+## 
+
 ###Birthday Freebies Shouts
 
 Birthday Freebies shouts is a web application used for automatically sending out birthday greetings to Facebook or Gmail Contacts.
@@ -234,6 +280,28 @@ Birthday Freebies shouts is a web application used for automatically sending out
 
 ##Side Projects
 
+
+###Antares
+
+A mobile app for reading developer news.
+
+{% img right /images/pages/projects/antares/small-general.png 'general' %}
+
+####Technologies Used
+
+- Ionic
+- HTML
+- CSS 
+- JavaScript
+- Angular
+- PHP 
+- Laravel
+- MySQL
+- Cron
+
+[View More Details](/projects/ahead)
+
+## 
 
 ###Ahead
 
