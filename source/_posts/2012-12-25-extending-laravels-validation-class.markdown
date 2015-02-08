@@ -223,5 +223,5 @@ The value will be the error message that you want to show up when there's an err
 
 ###Resources
 
-[Laravel Documentation](http://laravel.com/docs)
-[Sample Application Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/extending_laravels_validation_class.7z)
+- [Laravel Documentation](http://laravel.com/docs)
+- [Sample Application Source Code](https://github.com/anchetaWern/tutorials/tree/master/extending_laravels_validation_class/application)

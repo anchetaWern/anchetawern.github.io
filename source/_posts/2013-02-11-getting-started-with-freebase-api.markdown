@@ -331,4 +331,4 @@ foreach($result as $entity){
 - [Topic API](http://wiki.freebase.com/wiki/Topic_API)
 - [Search Cookbook](http://wiki.freebase.com/wiki/Search_Cookbook)
 - [URL Encoding Reference](http://www.w3schools.com/tags/ref_urlencode.asp)
-- [Sample Application Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/getting_started_with_freebase_api.7z)
+- [Sample Application Source Code](https://github.com/anchetaWern/tutorials/tree/master/getting_started_with_freebase_api)

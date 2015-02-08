@@ -668,12 +668,12 @@ Standard plugin information includes the plugin name, plugin url or the address 
 License: Apache2
 */
 ?>
-``` 
+```
 
 
 Once you've set that up you can already see your plugin from the list of installed plugins in the admin page:
 
-![installed plugins](/images/posts/getting_started_with_wordpress_plugin_development/zam_plugin.PNG)
+![installed plugins](/images/posts/getting_started_with_wordpress_plugin_development/zam_plugin.png)
 
 You can activate it by clicking on the `activate` link. But we won't do that for now since the plugin really does nothing at the moment.
 
@@ -700,13 +700,13 @@ It is also where we call all the hooks and actions.
 
 Next declare the variables that were going to use throughout the class:
  
- ```
+```
  <?php
 private $protocol;
 private $settings;
 private $twitter_id;
  ?>
- ```
+```
  
 The protocol stores the protocol used by the server. It can either be http or https.
 The settings stores the settings for the plugin.  
@@ -722,7 +722,8 @@ Going back to our constructor now we can initialize the data that the plugin wil
 		$this->twitter_id = (!empty($this->settings['zam_twitter_id'])) ? $this->settings['zam_twitter_id'] : '';
 	}
 ?> 
-``` 
+```
+
 
 {% blockquote %}
 Important:
@@ -1428,4 +1429,4 @@ That's it! You've learned how to create Wordpress plugins. You've also learned s
 - [Wordpress Plugin Development Best Practices](http://wp.tutsplus.com/tutorials/7-simple-rules-wordpress-plugin-development-best-practices/) 
 - [Two ways to develop Wordpress plugins](http://wp.tutsplus.com/tutorials/plugins/two-ways-to-develop-wordpress-plugins-object-oriented-progamming/)
 - [Core Contributor Handbook](http://make.wordpress.org/core/handbook/)
-- [Zam Plugin Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/zam.7z)
+- [Zam Plugin Source Code](https://github.com/anchetaWern/tutorials/tree/master/zam)

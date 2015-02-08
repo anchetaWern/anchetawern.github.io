@@ -692,6 +692,6 @@ Be sure to check out the resources below if you get stuck and you want to learn 
 - [Knockout.js Documentation](http://knockoutjs.com/documentation/introduction.html)
 - [Knockout.js Live Examples](http://knockoutjs.com/examples/)
 - [Knockout.js Learning Site](http://learn.knockoutjs.com/)
-- [Sample Application Source Code](https://dl.dropboxusercontent.com/u/126688107/tutorials/registration_system_using_knockoutjs.7z)
+- [Sample Application Source Code](https://github.com/anchetaWern/tutorials/tree/master/registration_system_using_knockoutjs)
 
 
