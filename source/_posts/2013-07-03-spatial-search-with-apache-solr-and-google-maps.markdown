@@ -358,7 +358,7 @@ echo $response; //output the json string
 
 The output will look like this:
 
-![asana](/images/posts/spatial_search_with_apache_solr_and_google_maps/output.PNG)
+![asana](/images/posts/spatial_search_with_apache_solr_and_google_maps/output.png)
 
 
 ##Conclusion
