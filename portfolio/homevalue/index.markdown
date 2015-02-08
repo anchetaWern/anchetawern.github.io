@@ -34,11 +34,6 @@ March 2014
 - Zillow API
 
 
-####URL
-
-[Homevalue](http://homevalueio.com)
-
-
 ####Screenshots
 
 {% portfolio homevalue %}
