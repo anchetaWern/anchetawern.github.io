@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-02-17T21:14:46+08:00</updated>
+  <updated>2015-02-22T13:32:09+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,311 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Twilio API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/02/22/getting-started-with-twilio-api/"/>
+    <updated>2015-02-22T07:42:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/02/22/getting-started-with-twilio-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud communications company. They offer APIs which developers can use to enable Text Messaging, Voice, VoIP on their apps.</p>
+
+<p>Now that we got the introduction out of the way. Let&rsquo;s get started.</p>
+
+<p>If you don&rsquo;t have an account with Twilio yet now is the time to create one. You can do so from this page: <a href="https://www.twilio.com/try-twilio">Try Twilio</a>. After signing up, Twilio will need to verify you&rsquo;re a human. You can either have them call you or send you a text message containing your verification code. You&rsquo;ll just have to select which country you&rsquo;re in and then your phone number. Twilio already adds the country code as the prefix so you will only have to add your actual phone number. After you have verified your phone number, Twilio assigns you your first phone number.</p>
+
+<p><img src="http://anchetawern.github.io/images/posts/twilio/phone_number.png" alt="twilio phone number" /></p>
+
+<p>After that, Twilio will have you take your phone number for a spin. You can either make a call, send an SMS, receive a call, or receive an SMS.</p>
+
+<p><img src="http://anchetawern.github.io/images/posts/twilio/test-drive.png" alt="twilio test drive" /></p>
+
+<p>Go ahead and try atleast one of those options so you have an idea how it works.</p>
+
+<h3>SMS API</h3>
+
+<p>Twilio&rsquo;s SMS API allows you to:</p>
+
+<ul>
+<li><p><strong>Send and receive SMS or MMS</strong> &ndash; when you signup with Twilio, you can purchase a phone number. You can then use this phone number to send text messages or multi-media messages to your users. At the same time, users can also send text messages to that phone number in order to interact with your application. How it works is that when a specific person sends a text message to the phone number that has been assigned to you by Twilio. Twilio makes an HTTP request to the URL you assigned to that phone number. The HTTP request contains the same data that the person sent. You can then use this data to have your app do what the user requested.</p></li>
+<li><p><strong>Track SMS Conversations</strong> &ndash; this allows you to track conversations between two phone numbers through the use of HTTP cookies. These HTTP cookies are use to keep a state. Just like when you login to a specific website. Cookies allows you to continue accessing the admin pages as long as you have that cookie around. After being active for some time, the cookie expires automatically. The same idea is used when tracking conversations with Twilio. Each phone number is assigned a cookie, and this cookie is sent along with the text message on every HTTP request made by Twilio.</p></li>
+</ul>
+
+
+<h4>SMS API Hello World</h4>
+
+<p>Now were ready to write some code. First create a <code>composer.json</code> file and add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "twilio/sdk": "dev-master"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This tells composer to require the twilio sdk for PHP. If you don&rsquo;t know what composer is. You can check out <a href="https://getcomposer.org/">getcomposer.org</a> to get started. Once you have saved the file, execute <code>composer install</code> from your terminal to install the twilio sdk.</p>
+
+<p>Next, create a new PHP file then add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span> <span class="c1">//include the twilio sdk</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$sid</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">;</span> <span class="c1">//your twilio account sid number</span>
+</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="s2">&quot;yyy&quot;</span><span class="p">;</span> <span class="c1">//your twilio account token</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$your_twilio_phonenumber</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the friendly name of your twilio phone number</span>
+</span><span class='line'><span class="nv">$phone_number_to_send_to</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the phone number to send the message</span>
+</span><span class='line'><span class="nv">$text_to_send</span> <span class="o">=</span> <span class="s1">&#39;Hello world! from twilio&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Services_Twilio</span><span class="p">(</span><span class="nv">$sid</span><span class="p">,</span> <span class="nv">$token</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//send message</span>
+</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">messages</span><span class="o">-&gt;</span><span class="na">sendMessage</span><span class="p">(</span>
+</span><span class='line'>  <span class="nv">$your_twilio_phonenumber</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$phone_number_to_send_to</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$text_to_send</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">sid</span><span class="p">;</span> <span class="c1">//the message id</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line includes the twilio sdk. This allows us to easily make requests to the Twilio API. Next we declare the sid and token. You can find this on your <a href="https://www.twilio.com/user/account/settings">account settings page</a> under the <strong>API Credentials</strong> section. You can either use the live or the test credentials. The only thing to note is that when using the live credentials, your account is charged by Twilio. But if your account is in trial mode, you can only use the live credentials. Twilio doesn&rsquo;t charge you when your account is in trial mode. But there are <a href="https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work">some restrictions</a>. Going back to the code. Next we declare the twilio phone number. If you don&rsquo;t know what your twilio phone number is, visit the <a href="https://www.twilio.com/user/account/phone-numbers/incoming">numbers</a> page. You&rsquo;ll want to use the friendly name for your number. Next is the phone number where you want to send your message. This can be any phone number from any country supported twilio. Note that only United States and Canada are enabled by default. So you&rsquo;ll have to <a href="https://www.twilio.com/user/account/settings/international/sms">enable sending a message to your country</a> if you don&rsquo;t live in any of those places. Just add a check mark to the country you want to send the message to. Next add the text that you want to send. Then create a new instance of the <code>Services_Twilio</code> class and supply the sid and token that we declared earlier. Finally, send the message using the <code>sendMessage</code> method. This takes up 3 arguments: your twilio phone number, the phone number to send to and the message. This method returns the following data:</p>
+
+<ul>
+<li><code>sid</code> &ndash; a uniqued id assigned to the message.</li>
+<li><code>date_created</code> &ndash; the date and time that the message was created.</li>
+<li><code>date_updated</code> &ndash; the most recent date and time that the message was updated</li>
+<li><code>date_sent</code> &ndash; normally this is empty when the request to send a message has just been made. Twilio messages doesn&rsquo;t seem to be sent immediately when the <code>sendMessage</code> method is called (it is queued). Therefore its only natural for this to be empty and only updated when the message is actually sent.</li>
+<li><code>to</code> &ndash; the phone number where the message is sent.</li>
+<li><code>from</code> &ndash; the twilio phone number that you used for sending the message.</li>
+<li><code>body</code> &ndash; the actual text message.</li>
+<li><code>status</code> &ndash; the status of the message, normally this has a value of &lsquo;queued&rsquo; right after getting the response from the <code>sendMessage</code> method. It is then updated to &lsquo;sent&rsquo; once the message is actually sent. For inbound messages, the value for this is &lsquo;received&rsquo;. If the message is currently being sent, this will have a value of &lsquo;sending&rsquo;. If the sending failed, it will have &lsquo;failed&rsquo; as the value.</li>
+<li><code>num_segments</code> &ndash; the number of segments the message has. Text messages are only limited to 160 characters so your message is divided into 160-character segments. Each segment are then sent separately.</li>
+<li><code>num_media</code> &ndash; the number of media items associated with your message.</li>
+<li><code>direction</code> &ndash; can have a value of <code>outbound-api</code>, <code>inbound</code>, <code>outbound-call</code>, and <code>outbound-reply</code>. These are basically like the name suggests, <code>outbound-api</code> are the messages you have sent from your app. <code>inbound</code> are the ones that are sent from an actual phone number to your twilio phone number. <code>outbound-call</code> are the messages initiated during a call. And <code>outbound-reply</code> are messages initiated in response to an incoming SMS.</li>
+<li><code>api_version</code> &ndash; the twilio api version used when the message was sent.</li>
+<li><code>price</code> &ndash; the amount billed for the message.</li>
+<li><code>price_unit</code> &ndash; the currency used for the price.</li>
+<li><code>error_code</code> &ndash; the error code returned. This will only have a value if the value for <code>status</code> is failed. If you are having an error returned to you, be sure to check out the <a href="https://www.twilio.com/docs/errors/reference">errors reference</a>.</li>
+<li><code>uri</code> &ndash; the uri of the resource used for sending the message.</li>
+<li><code>subresource_uris</code> &ndash; the sub-resources used in sending the message. For SMS, a possible sub-resource can be the media resource.</li>
+</ul>
+
+
+<h4>Dev Tools</h4>
+
+<p>Before we move on to writing some more code. I&rsquo;d like to do a quick introduction on the dev tools offered by Twilio. Twilio&rsquo;s dev tools includes the following:</p>
+
+<ul>
+<li><p><strong>App Monitor</strong> &ndash; allows you to monitor the requests being made to your app. These requests can be an outbound test/call to a specific phone number, or an inbound text/call to your twilio phone number. Basically, every interaction to your app are logged in the app monitor.</p></li>
+<li><p><strong>API Explorer</strong> &ndash; allows you to make and explore API requests. This includes the parameters needed for a specific resource and the response that it returns. The good part is that it also includes code samples in different programming languages. Which you can readily copy and paste in order to test in your application. One thing to note when making requests through the API explorer is that you get charged for specific resources. An example of such resource is the resource for sending messages.</p></li>
+<li><p><strong>Connect Apps</strong> &ndash; allows you to create a twilio app for the purpose of letting your clients connect to it. This allows you to perform specific actions on behalf of your client. If you&rsquo;ve ever used the Facebook API before, its pretty much the same idea. The only difference is that its your clients twilio account that is connected to your app. This is useful for clients who have their own clients. This allows you to send messages or make calls to the clients of your client on their behalf. This means all the charges are being made to your clients twilio account instead of yours if you choose to.</p></li>
+</ul>
+
+
+<h3>Searching and Buying Phone Numbers</h3>
+
+<p>If your app allows your users to have their own phone numbers. You can also use the twilio API to search for available phone numbers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$area_code</span> <span class="o">=</span> <span class="mi">201</span><span class="p">;</span> <span class="c1">//only for US and Canada</span>
+</span><span class='line'><span class="nv">$search_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;AreaCode&#39;</span> <span class="o">=&gt;</span> <span class="nv">$area_code</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//make a request to search for available phone numbers on a specific area</span>
+</span><span class='line'><span class="nv">$numbers</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span><span class="o">-&gt;</span><span class="na">getList</span><span class="p">(</span><span class="s1">&#39;US&#39;</span><span class="p">,</span> <span class="s1">&#39;Local&#39;</span><span class="p">,</span> <span class="nv">$search_params</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$nums</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$numbers</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span> <span class="k">as</span> <span class="nv">$n</span><span class="p">){</span>
+</span><span class='line'>    <span class="nv">$nums</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">json_encode</span><span class="p">(</span><span class="nv">$n</span><span class="o">-&gt;</span><span class="na">phone_number</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$nums</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can supply the following arguments for your search:</p>
+
+<ul>
+<li><code>AreaCode</code> &ndash; any valid area code in US or Canada.</li>
+<li><code>Contains</code> &ndash; a regular expression for matching the characters you want the phone numbers to have.</li>
+<li><code>SmsEnabled</code> &ndash; if sms capabilities are enabled. This can either be true or false.</li>
+<li><code>MmsEnabled</code> &ndash; if mms capabilities are enabled. This can either be true or false.</li>
+<li><code>VoiceEnabled</code> &ndash; if making and receiving calls is enabled. This can either be true or false.</li>
+<li><code>ExcludeAllAddressRequired</code> &ndash; if you want to exclude the phone numbers that require an address or not.</li>
+<li><code>ExcludeLocalAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a local address or not.</li>
+<li><code>ExcludeForeignAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a foreign address or not.</li>
+</ul>
+
+
+<p>Once your user has selected a number, you can then make a request to buy a phone number:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$phone_number</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;phone_number&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$number</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">incoming_phone_numbers</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;VoiceUrl&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yourwebsite.com/greet&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;PhoneNumber&#39;</span> <span class="o">=&gt;</span> <span class="nv">$phone_number</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The request requires two arguments: the <code>VoiceUrl</code>, which is the URL which you want Twilio to make a request to when this specific phone number is called by someone. We&rsquo;ll talk more about this on the TwiML section, which is Twilio&rsquo;s way for interacting with users in a call through a computer voice. The second argument is the <code>PhoneNumber</code>, which is the phone number selected by the user which came from the search results earlier. Note that making a request to purchase a phone number costs money.</p>
+
+<h3>TwiML</h3>
+
+<p>TwiML or the Twilio Markup Language isn&rsquo;t exactly a new markup language created by Twilio. Its basically just plain old XML which you can use to do all kinds of cool stuff when a user calls your twilio phone number. Here are a few examples of awesome stuff you can do with TwiML. Note that these are all performed during a call:</p>
+
+<ul>
+<li><strong>Play</strong> &ndash; allows you to play an audio file.</li>
+<li><strong>Say</strong> &ndash; allows you to convert text to speech.</li>
+<li><strong>Dial</strong> &ndash; dials another phone number that can then be added to the current call.</li>
+<li><strong>Record</strong> &ndash; record the voice of the caller.</li>
+<li><strong>Sms</strong> &ndash; send a text message.</li>
+<li><strong>Gather</strong> &ndash; allows you to gather the users input. Currently inputs are only limited to numbers.</li>
+</ul>
+
+
+<p>Now that you have an idea what you can do with TwiML, lets move on to some practical stuff. Let&rsquo;s build an app that allows the user to input a number and have a different sound played based on the number.</p>
+
+<p>Start by creating a <code>hello.xml</code> file, then add the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;Response&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Say&gt;</span>Hello! Please enter a number from 1 to 5<span class="nt">&lt;/Say&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Gather</span> <span class="na">numDigits=</span><span class="s">&quot;1&quot;</span> <span class="na">action=</span><span class="s">&quot;/choose.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Response&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is allows you to control the response that the user hears when they call your twilio phone number. The first line specifies the xml version and the encoding. The second line is the response wrapper. This allows us to specify the actual response that the user will hear. The first thing that the user will hear is the speech version of the text that we added inside the <code>Say</code> verb. In this case, were asking the user for a single digit number from 1 to 5. Next we use the <code>Gather</code> verb to gather the digit entered by the user. The <code>numDigits</code> attribute allows you to specify the number of digits. This has an added benefit of submitting the response immediately after the number of digits you specified matches the number of digits entered by the user. The digits entered by the user are submitted to the page you specify on the <code>action</code> attribute. In this case its the <code>choose.php</code> file in the same request URL you added to your twilio number. If you don&rsquo;t know how to change the request URL used by your number, then visit the <a href="https://www.twilio.com/user/account/phone-numbers">numbers page</a> and click the number you want to use. That will redirect you to the settings page of that number. From there look for the voice section and then change the request url then click save. This means that if your request url is &lsquo;<a href="http://mywebsite.com">http://mywebsite.com</a>&rsquo; and you specified &lsquo;/choose.php&rsquo; as the action, then you need to have the &lsquo;choose.php&rsquo; file in the root web directory of your website in order for the digits to be submitted properly.</p>
+
+<p>Add the following code to the <code>choose.php</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;content-type: text/xml&quot;</span><span class="p">);</span> <span class="c1">//specify content type to be xml</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$digits</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;Digits&#39;</span><span class="p">];</span> <span class="c1">//the digit inputted by the user in his/her phone</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the array of sounds that we will be playing back to the user</span>
+</span><span class='line'><span class="nv">$animals</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;bassethound.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cat.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cattle.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;chicken.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;sheep.wav&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="cp">&lt;?</span><span class="nx">xml</span> <span class="nx">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nx">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;Response&gt;</span>
+</span><span class='line'><span class="x">  &lt;Say&gt;Here is the sound you selected&lt;/Say&gt;</span>
+</span><span class='line'><span class="x">  &lt;Play&gt;http://mywebsite.com/sounds/</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$animals</span><span class="p">[</span><span class="nv">$digits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/Play&gt;</span>
+</span><span class='line'><span class="x">&lt;/Response&gt;</span>
+</span><span class='line'><span class="x">?&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line specifies the content type to be xml. The second line is where we get the digits enterred by the user. Next we declare an array containing the sounds that we want to play. I got these sounds from <a href="http://www.animal-sounds.org/animal-sounds-free-download.html">animal-sounds.org</a>. Next we just set the response starting with a speech saying &lsquo;Here is the sound you selected&rsquo;, then we just play it back using the <code>Play</code> verb.</p>
+
+<h3>Conclusion</h3>
+
+<p>Twilio&rsquo;s API allows you to add SMS and Voice superpowers to your apps at ease. Their documentation, quick start guides can get you up and running pretty quickly. Their code samples include some of the most popular programming languages for the web. Such as PHP, Ruby, Python, Java and .Net. If you need to add SMS and Voice capabilities to your app, there is no doubt that Twilio should be your first choice.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.twilio.com/docs/quickstart">Twilio &ndash; Quickstart Docs</a></li>
+<li><a href="https://www.twilio.com/docs/api">Twilio &ndash; API Docs</a></li>
+<li><a href="https://www.twilio.com/docs/libraries">Twilio &ndash; Helper Libraries</a></li>
+<li><a href="https://www.twilio.com/docs/howto">Twilio &ndash; How-tos</a></li>
+<li><a href="https://www.twilio.com/docs/errors/reference">Twilio &ndash; Errors Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Antares]]></title>
@@ -2233,226 +2538,6 @@ Open up a terminal, <code>cd</code> into the directory where you have your ssh k
 <h2>Conclusion</h2>
 
 <p>That&rsquo;s it! Supervisor is a neat little program that allows you to run programs persistently. Just be sure that errors are handled accordingly because supervisor wouldn&rsquo;t continue running your program if an error occurs while its running.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using Datatables with Laravel]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel/"/>
-    <updated>2014-08-10T16:48:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be walking you through how you can use datatables in Laravel. But first, let me give you a quick intro on what Datatabes is. <a href="http://datatables.net/">Datatables</a> is basically a jQuery plugin that allows you to add advanced interaction controls to your HTML tables. Things like search, pagination, sorting, and ordering. Datatables allows you to add those kinds of functionality into your tables with minimal code.</p>
-
-<p>In this tutorial were going to be using a Laravel package called <a href="https://github.com/Chumper/Datatable">Chumper</a>. Chumper allows us to easily create Datatables which uses the data returned from a model as its data source.</p>
-
-<p>First thing that you need to do is to add the following in your <code>composer.json</code> file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>"require": {
-</span><span class='line'>  "chumper/datatable": "2.*",
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you got other packages that you need for your project, just add it on the last part of the <code>require</code> item. Once you&rsquo;re done with that, execute <code>composer update</code> from your terminal to install Chumper.</p>
-
-<p>Once composer finishes installing Chumper, add the service provider for Chumper into the <code>providers</code> array in your <code>app.php</code> file inside the <code>app/config</code> directory of your Laravel installation:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>'Chumper\Datatable\DatatableServiceProvider',</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Still inside the <code>app.php</code> file, also add the following under the aliases array:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>'Datatable' =&gt; 'Chumper\Datatable\Facades\DatatableFacade',</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, you can now create the main configuration file by executing the following from the terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>php artisan config:publish chumper/datatable</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The main configuration file is stored under <code>app/config/packages/chumper/datatable/config.php</code> so go ahead and edit that if you want to change the default settings provided by Chumper. Things like the class or ID given to the tables generated can be configured from that file. This is particularly useful if you want to use classes or IDs to style the datatables in a specific way. Other than that the default settings can be used for most cases.</p>
-
-<p>Now that we have configured Chumper, we can now add a route that will return the page where the datatable is displayed in your <code>routes.php</code> file. In the example below, we have the a controller called <code>AdminController</code> and were using the data returned by the <code>users</code> method as a response whenever the <code>users</code> route is accessed via the <code>GET</code> method:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">Route</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="s1">&#39;AdminController@users&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we also need to add the route that will return the data into the client side. By default, Chumper uses the server for processing queries made through the datatable. This means that it only gets the actual data that is needed instead of getting all of the records in the database table that you specify. In the code below, were giving a name of <code>api.users</code> to the <code>api/users</code> route so that we can refer to it later in the controller. The <code>uses</code> keyword allows you to specify a controller action to the route. Its basically the same thing as what we did above but that&rsquo;s the way to do it if you&rsquo;re using named routes.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">Route</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;api/users&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;as&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;api.users&#39;</span><span class="p">,</span> <span class="s1">&#39;uses&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;AdminController@getUsersDataTable&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Under your controller, here&rsquo;s the method that returns the page where the datatable is displayed:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">users</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$table</span> <span class="o">=</span> <span class="nx">Datatable</span><span class="o">::</span><span class="na">table</span><span class="p">()</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Last Login&#39;</span><span class="p">,</span> <span class="s1">&#39;View&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUrl</span><span class="p">(</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;api.users&#39;</span><span class="p">))</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">noScript</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">layout</span><span class="o">-&gt;</span><span class="na">content</span> <span class="o">=</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;admin.users&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;table&#39;</span> <span class="o">=&gt;</span> <span class="nv">$table</span><span class="p">));</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The code above assumes that you&rsquo;re using <a href="http://laravel.com/docs/templates">Laravel layouts</a>. If you don&rsquo;t know how to use layouts in Laravel, be sure to check out the docs. Breaking the code down, the following code allows you create the datatable. You can add columns to it by using the <code>addColumn</code> method. This method takes up the names that you want to give to the header for each field in the table. The <code>setUrl</code> method allows you to set the route that the datatable will use for processing queries made through it. Earlier we created a route and named it <code>api.users</code> so in the <code>setUrl</code> method all we have to do is to use the <code>route</code> method and then supply the name of the route which is responsible for returning the data for processing the queries. Lastly, we call the <code>noScript()</code> method to specify that we don&rsquo;t want to add the JavaScript code in the response that will be returned.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$table</span> <span class="o">=</span> <span class="nx">Datatable</span><span class="o">::</span><span class="na">table</span><span class="p">()</span>
-</span><span class='line'>  <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Last Login&#39;</span><span class="p">,</span> <span class="s1">&#39;View&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="o">-&gt;</span><span class="na">setUrl</span><span class="p">(</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;api.users&#39;</span><span class="p">))</span>
-</span><span class='line'>  <span class="o">-&gt;</span><span class="na">noScript</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next is the method which processes the queries made through the datatable:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getUsersDataTable</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$query</span> <span class="o">=</span> <span class="nx">User</span><span class="o">::</span><span class="na">select</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">Datatable</span><span class="o">::</span><span class="na">collection</span><span class="p">(</span><span class="nv">$query</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$model</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;M j, Y h:i A&#39;</span><span class="p">,</span> <span class="nb">strtotime</span><span class="p">(</span><span class="nv">$model</span><span class="o">-&gt;</span><span class="na">last_login</span><span class="p">));</span>
-</span><span class='line'>        <span class="p">})</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$model</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;&lt;a href=&quot;/users/&#39;</span> <span class="o">.</span> <span class="nv">$model</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">.</span> <span class="s1">&#39;&quot;&gt;view&lt;/a&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">})</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">searchColumns</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_login&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">orderColumns</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_login&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">make</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, the code below allows you to specify the fields that you want to use for the response. These are the actual field names in your database table:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$query</span> <span class="o">=</span> <span class="nx">User</span><span class="o">::</span><span class="na">select</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, we return the actual data using the <code>collection</code> method in the <code>Datatable</code> class. Well, not actually the <code>Datatable</code> class, since its just the Facade that we used earlier in the <code>app.php</code> file. The <code>collection</code> method requires the result set returned by our query to the users table earlier so we just set that as the argument. After that, we can call the <code>addColumn</code> method to update the presentation of the data returned for that specific field. In the case of the <code>last_login</code> field, its stored in the database as a time stamp which looks like this: <code>2014-07-29 11:37:39</code>. We don&rsquo;t really want to present that to the user like that so we format it using the <code>date</code> method. The first argument is the format that you want. In this case we want something like this: <code>Jul 29, 2014 11:37 AM</code>. Looking at the <a href="http://php.net/manual/en/function.date.php">official docs</a>, we know that we can do that by specifying the following: <code>M j, Y h:i A</code>. The second argument is a unix timestamp. We can convert the raw data that came from the database into a unix timestamp by using the <code>strtotime</code> method, so we do just that. Next is the <code>id</code> field. We don&rsquo;t actually want to display the users id to the user, what we want is to display a link that would lead the user to the page where more details for the user can be viewed. Thus we return an HTML anchor tag which uses the id as one of the component for the actual link.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">return</span> <span class="nx">Datatable</span><span class="o">::</span><span class="na">collection</span><span class="p">(</span><span class="nv">$query</span><span class="p">)</span>
-</span><span class='line'>    <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$model</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;M j, Y h:i A&#39;</span><span class="p">,</span> <span class="nb">strtotime</span><span class="p">(</span><span class="nv">$model</span><span class="o">-&gt;</span><span class="na">last_login</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>    <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$model</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s1">&#39;&lt;a href=&quot;/users/&#39;</span> <span class="o">.</span> <span class="nv">$model</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">.</span> <span class="s1">&#39;&quot;&gt;view&lt;/a&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lastly, we can now display the datatable in our view. If you&rsquo;re using <a href="http://getbootstrap.com/">Twitter Bootstrap</a>, it should look similar to this one:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>@section(&#39;content&#39;)
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-12&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;h3&gt;</span>Users<span class="nt">&lt;/h3&gt;</span>
-</span><span class='line'>  {{ $table-&gt;render() }}
-</span><span class='line'>  {{ $table-&gt;script() }}
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>@stop
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And don&rsquo;t forget to include the datatables stylesheet and JavaScript file on your views. You can download datatables from <a href="http://datatables.net/">datatables.net</a> or you can just use cdnjs:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/css/jquery.dataTables.min.css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/js/jquery.dataTables.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And yes, datatables depends on jQuery so you also need to include that before including datatables.</p>
-
-<p>Yup! as simple as that! All we have to do is to call the <code>render()</code> method to render the actual datatabase. And then we also call the <code>script()</code> method to render the JavaScript file that would do the talking to the server every time the user interacts with the table.</p>
 ]]></content>
   </entry>
   

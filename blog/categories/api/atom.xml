@@ -4,7 +4,7 @@
   <title><![CDATA[Category: api | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/api/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-02-17T21:14:46+08:00</updated>
+  <updated>2015-02-22T13:32:09+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,253 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Twilio API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/02/22/getting-started-with-twilio-api/"/>
+    <updated>2015-02-22T07:42:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/02/22/getting-started-with-twilio-api</id>
+    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud communications company. They offer APIs which developers can use to enable Text Messaging, Voice, VoIP on their apps.</p>
+
+<p>Now that we got the introduction out of the way. Let&rsquo;s get started.</p>
+
+<p>If you don&rsquo;t have an account with Twilio yet now is the time to create one. You can do so from this page: <a href="https://www.twilio.com/try-twilio">Try Twilio</a>. After signing up, Twilio will need to verify you&rsquo;re a human. You can either have them call you or send you a text message containing your verification code. You&rsquo;ll just have to select which country you&rsquo;re in and then your phone number. Twilio already adds the country code as the prefix so you will only have to add your actual phone number. After you have verified your phone number, Twilio assigns you your first phone number.</p>
+
+<p><img src="/images/posts/twilio/phone_number.png" alt="twilio phone number" /></p>
+
+<p>After that, Twilio will have you take your phone number for a spin. You can either make a call, send an SMS, receive a call, or receive an SMS.</p>
+
+<p><img src="/images/posts/twilio/test-drive.png" alt="twilio test drive" /></p>
+
+<p>Go ahead and try atleast one of those options so you have an idea how it works.</p>
+
+<h3>SMS API</h3>
+
+<p>Twilio&rsquo;s SMS API allows you to:</p>
+
+<ul>
+<li><p><strong>Send and receive SMS or MMS</strong> &ndash; when you signup with Twilio, you can purchase a phone number. You can then use this phone number to send text messages or multi-media messages to your users. At the same time, users can also send text messages to that phone number in order to interact with your application. How it works is that when a specific person sends a text message to the phone number that has been assigned to you by Twilio. Twilio makes an HTTP request to the URL you assigned to that phone number. The HTTP request contains the same data that the person sent. You can then use this data to have your app do what the user requested.</p></li>
+<li><p><strong>Track SMS Conversations</strong> &ndash; this allows you to track conversations between two phone numbers through the use of HTTP cookies. These HTTP cookies are use to keep a state. Just like when you login to a specific website. Cookies allows you to continue accessing the admin pages as long as you have that cookie around. After being active for some time, the cookie expires automatically. The same idea is used when tracking conversations with Twilio. Each phone number is assigned a cookie, and this cookie is sent along with the text message on every HTTP request made by Twilio.</p></li>
+</ul>
+
+
+<h4>SMS API Hello World</h4>
+
+<p>Now were ready to write some code. First create a <code>composer.json</code> file and add the following:</p>
+
+<p>```
+{</p>
+
+<pre><code>"require": {
+    "twilio/sdk": "dev-master"
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This tells composer to require the twilio sdk for PHP. If you don&rsquo;t know what composer is. You can check out <a href="https://getcomposer.org/">getcomposer.org</a> to get started. Once you have saved the file, execute <code>composer install</code> from your terminal to install the twilio sdk.</p>
+
+<p>Next, create a new PHP file then add the following code:</p>
+
+<p>```php
+&lt;?php
+require &lsquo;vendor/autoload.php&rsquo;; //include the twilio sdk</p>
+
+<p>$sid = &ldquo;xxx&rdquo;; //your twilio account sid number
+$token = &ldquo;yyy&rdquo;; //your twilio account token</p>
+
+<p>$your_twilio_phonenumber = &lsquo;&rsquo;; //the friendly name of your twilio phone number
+$phone_number_to_send_to = &lsquo;&rsquo;; //the phone number to send the message
+$text_to_send = &lsquo;Hello world! from twilio&rsquo;;</p>
+
+<p>$client = new Services_Twilio($sid, $token);</p>
+
+<p>//send message
+$message = $client->account->messages->sendMessage(
+  $your_twilio_phonenumber,
+  $phone_number_to_send_to,
+  $text_to_send
+);</p>
+
+<p>echo $message->sid; //the message id
+?>
+```</p>
+
+<p>From the code above, the first line includes the twilio sdk. This allows us to easily make requests to the Twilio API. Next we declare the sid and token. You can find this on your <a href="https://www.twilio.com/user/account/settings">account settings page</a> under the <strong>API Credentials</strong> section. You can either use the live or the test credentials. The only thing to note is that when using the live credentials, your account is charged by Twilio. But if your account is in trial mode, you can only use the live credentials. Twilio doesn&rsquo;t charge you when your account is in trial mode. But there are <a href="https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work">some restrictions</a>. Going back to the code. Next we declare the twilio phone number. If you don&rsquo;t know what your twilio phone number is, visit the <a href="https://www.twilio.com/user/account/phone-numbers/incoming">numbers</a> page. You&rsquo;ll want to use the friendly name for your number. Next is the phone number where you want to send your message. This can be any phone number from any country supported twilio. Note that only United States and Canada are enabled by default. So you&rsquo;ll have to <a href="https://www.twilio.com/user/account/settings/international/sms">enable sending a message to your country</a> if you don&rsquo;t live in any of those places. Just add a check mark to the country you want to send the message to. Next add the text that you want to send. Then create a new instance of the <code>Services_Twilio</code> class and supply the sid and token that we declared earlier. Finally, send the message using the <code>sendMessage</code> method. This takes up 3 arguments: your twilio phone number, the phone number to send to and the message. This method returns the following data:</p>
+
+<ul>
+<li><code>sid</code> &ndash; a uniqued id assigned to the message.</li>
+<li><code>date_created</code> &ndash; the date and time that the message was created.</li>
+<li><code>date_updated</code> &ndash; the most recent date and time that the message was updated</li>
+<li><code>date_sent</code> &ndash; normally this is empty when the request to send a message has just been made. Twilio messages doesn&rsquo;t seem to be sent immediately when the <code>sendMessage</code> method is called (it is queued). Therefore its only natural for this to be empty and only updated when the message is actually sent.</li>
+<li><code>to</code> &ndash; the phone number where the message is sent.</li>
+<li><code>from</code> &ndash; the twilio phone number that you used for sending the message.</li>
+<li><code>body</code> &ndash; the actual text message.</li>
+<li><code>status</code> &ndash; the status of the message, normally this has a value of &lsquo;queued&rsquo; right after getting the response from the <code>sendMessage</code> method. It is then updated to &lsquo;sent&rsquo; once the message is actually sent. For inbound messages, the value for this is &lsquo;received&rsquo;. If the message is currently being sent, this will have a value of &lsquo;sending&rsquo;. If the sending failed, it will have &lsquo;failed&rsquo; as the value.</li>
+<li><code>num_segments</code> &ndash; the number of segments the message has. Text messages are only limited to 160 characters so your message is divided into 160-character segments. Each segment are then sent separately.</li>
+<li><code>num_media</code> &ndash; the number of media items associated with your message.</li>
+<li><code>direction</code> &ndash; can have a value of <code>outbound-api</code>, <code>inbound</code>, <code>outbound-call</code>, and <code>outbound-reply</code>. These are basically like the name suggests, <code>outbound-api</code> are the messages you have sent from your app. <code>inbound</code> are the ones that are sent from an actual phone number to your twilio phone number. <code>outbound-call</code> are the messages initiated during a call. And <code>outbound-reply</code> are messages initiated in response to an incoming SMS.</li>
+<li><code>api_version</code> &ndash; the twilio api version used when the message was sent.</li>
+<li><code>price</code> &ndash; the amount billed for the message.</li>
+<li><code>price_unit</code> &ndash; the currency used for the price.</li>
+<li><code>error_code</code> &ndash; the error code returned. This will only have a value if the value for <code>status</code> is failed. If you are having an error returned to you, be sure to check out the <a href="https://www.twilio.com/docs/errors/reference">errors reference</a>.</li>
+<li><code>uri</code> &ndash; the uri of the resource used for sending the message.</li>
+<li><code>subresource_uris</code> &ndash; the sub-resources used in sending the message. For SMS, a possible sub-resource can be the media resource.</li>
+</ul>
+
+
+<h4>Dev Tools</h4>
+
+<p>Before we move on to writing some more code. I&rsquo;d like to do a quick introduction on the dev tools offered by Twilio. Twilio&rsquo;s dev tools includes the following:</p>
+
+<ul>
+<li><p><strong>App Monitor</strong> &ndash; allows you to monitor the requests being made to your app. These requests can be an outbound test/call to a specific phone number, or an inbound text/call to your twilio phone number. Basically, every interaction to your app are logged in the app monitor.</p></li>
+<li><p><strong>API Explorer</strong> &ndash; allows you to make and explore API requests. This includes the parameters needed for a specific resource and the response that it returns. The good part is that it also includes code samples in different programming languages. Which you can readily copy and paste in order to test in your application. One thing to note when making requests through the API explorer is that you get charged for specific resources. An example of such resource is the resource for sending messages.</p></li>
+<li><p><strong>Connect Apps</strong> &ndash; allows you to create a twilio app for the purpose of letting your clients connect to it. This allows you to perform specific actions on behalf of your client. If you&rsquo;ve ever used the Facebook API before, its pretty much the same idea. The only difference is that its your clients twilio account that is connected to your app. This is useful for clients who have their own clients. This allows you to send messages or make calls to the clients of your client on their behalf. This means all the charges are being made to your clients twilio account instead of yours if you choose to.</p></li>
+</ul>
+
+
+<h3>Searching and Buying Phone Numbers</h3>
+
+<p>If your app allows your users to have their own phone numbers. You can also use the twilio API to search for available phone numbers:</p>
+
+<p>```php
+&lt;?php</p>
+
+<p>$area_code = 201; //only for US and Canada
+$search_params = array(</p>
+
+<pre><code>'AreaCode' =&gt; $area_code
+</code></pre>
+
+<p>);</p>
+
+<p>//make a request to search for available phone numbers on a specific area
+$numbers = $client->account->available_phone_numbers->getList(&lsquo;US&rsquo;, &lsquo;Local&rsquo;, $search_params);</p>
+
+<p>$nums = array();
+foreach($numbers->available_phone_numbers as $n){</p>
+
+<pre><code>$nums[] = json_decode(json_encode($n-&gt;phone_number), true);
+</code></pre>
+
+<p>}
+?></p>
+
+<pre>
+<?php print_r($nums); ?>
+</pre>
+
+
+<p>```</p>
+
+<p>You can supply the following arguments for your search:</p>
+
+<ul>
+<li><code>AreaCode</code> &ndash; any valid area code in US or Canada.</li>
+<li><code>Contains</code> &ndash; a regular expression for matching the characters you want the phone numbers to have.</li>
+<li><code>SmsEnabled</code> &ndash; if sms capabilities are enabled. This can either be true or false.</li>
+<li><code>MmsEnabled</code> &ndash; if mms capabilities are enabled. This can either be true or false.</li>
+<li><code>VoiceEnabled</code> &ndash; if making and receiving calls is enabled. This can either be true or false.</li>
+<li><code>ExcludeAllAddressRequired</code> &ndash; if you want to exclude the phone numbers that require an address or not.</li>
+<li><code>ExcludeLocalAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a local address or not.</li>
+<li><code>ExcludeForeignAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a foreign address or not.</li>
+</ul>
+
+
+<p>Once your user has selected a number, you can then make a request to buy a phone number:</p>
+
+<p>```php
+&lt;?php
+$phone_number = $_POST[&lsquo;phone_number&rsquo;];</p>
+
+<p>$number = $client->account->incoming_phone_numbers->create(array(</p>
+
+<pre><code>        'VoiceUrl' =&gt; 'http://yourwebsite.com/greet',
+        'PhoneNumber' =&gt; $phone_number
+</code></pre>
+
+<p>));
+?>
+```</p>
+
+<p>The request requires two arguments: the <code>VoiceUrl</code>, which is the URL which you want Twilio to make a request to when this specific phone number is called by someone. We&rsquo;ll talk more about this on the TwiML section, which is Twilio&rsquo;s way for interacting with users in a call through a computer voice. The second argument is the <code>PhoneNumber</code>, which is the phone number selected by the user which came from the search results earlier. Note that making a request to purchase a phone number costs money.</p>
+
+<h3>TwiML</h3>
+
+<p>TwiML or the Twilio Markup Language isn&rsquo;t exactly a new markup language created by Twilio. Its basically just plain old XML which you can use to do all kinds of cool stuff when a user calls your twilio phone number. Here are a few examples of awesome stuff you can do with TwiML. Note that these are all performed during a call:</p>
+
+<ul>
+<li><strong>Play</strong> &ndash; allows you to play an audio file.</li>
+<li><strong>Say</strong> &ndash; allows you to convert text to speech.</li>
+<li><strong>Dial</strong> &ndash; dials another phone number that can then be added to the current call.</li>
+<li><strong>Record</strong> &ndash; record the voice of the caller.</li>
+<li><strong>Sms</strong> &ndash; send a text message.</li>
+<li><strong>Gather</strong> &ndash; allows you to gather the users input. Currently inputs are only limited to numbers.</li>
+</ul>
+
+
+<p>Now that you have an idea what you can do with TwiML, lets move on to some practical stuff. Let&rsquo;s build an app that allows the user to input a number and have a different sound played based on the number.</p>
+
+<p>Start by creating a <code>hello.xml</code> file, then add the following:</p>
+
+<p><code>xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Response&gt;
+  &lt;Say&gt;Hello! Please enter a number from 1 to 5&lt;/Say&gt;
+  &lt;Gather numDigits="1" action="/choose.php" method="POST" /&gt;
+&lt;/Response&gt;
+</code></p>
+
+<p>What this does is allows you to control the response that the user hears when they call your twilio phone number. The first line specifies the xml version and the encoding. The second line is the response wrapper. This allows us to specify the actual response that the user will hear. The first thing that the user will hear is the speech version of the text that we added inside the <code>Say</code> verb. In this case, were asking the user for a single digit number from 1 to 5. Next we use the <code>Gather</code> verb to gather the digit entered by the user. The <code>numDigits</code> attribute allows you to specify the number of digits. This has an added benefit of submitting the response immediately after the number of digits you specified matches the number of digits entered by the user. The digits entered by the user are submitted to the page you specify on the <code>action</code> attribute. In this case its the <code>choose.php</code> file in the same request URL you added to your twilio number. If you don&rsquo;t know how to change the request URL used by your number, then visit the <a href="https://www.twilio.com/user/account/phone-numbers">numbers page</a> and click the number you want to use. That will redirect you to the settings page of that number. From there look for the voice section and then change the request url then click save. This means that if your request url is &lsquo;<a href="http://mywebsite.com">http://mywebsite.com</a>&rsquo; and you specified &lsquo;/choose.php&rsquo; as the action, then you need to have the &lsquo;choose.php&rsquo; file in the root web directory of your website in order for the digits to be submitted properly.</p>
+
+<p>Add the following code to the <code>choose.php</code> file:</p>
+
+<p>```php
+&lt;?php
+header(&ldquo;content-type: text/xml&rdquo;); //specify content type to be xml</p>
+
+<p>$digits = $_POST[&lsquo;Digits&rsquo;]; //the digit inputted by the user in his/her phone</p>
+
+<p>//the array of sounds that we will be playing back to the user
+$animals = array(</p>
+
+<pre><code>'bassethound.wav',
+'cat.wav',
+'cattle.wav',
+'chicken.wav',
+'sheep.wav'
+</code></pre>
+
+<p>);
+?>
+&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?>
+<Response>
+  <Say>Here is the sound you selected</Say>
+  <Play><a href="http://mywebsite.com/sounds/">http://mywebsite.com/sounds/</a>&lt;?php echo $animals[$digits &ndash; 1]; ?></Play>
+</Response>
+?>
+```</p>
+
+<p>From the code above, the first line specifies the content type to be xml. The second line is where we get the digits enterred by the user. Next we declare an array containing the sounds that we want to play. I got these sounds from <a href="http://www.animal-sounds.org/animal-sounds-free-download.html">animal-sounds.org</a>. Next we just set the response starting with a speech saying &lsquo;Here is the sound you selected&rsquo;, then we just play it back using the <code>Play</code> verb.</p>
+
+<h3>Conclusion</h3>
+
+<p>Twilio&rsquo;s API allows you to add SMS and Voice superpowers to your apps at ease. Their documentation, quick start guides can get you up and running pretty quickly. Their code samples include some of the most popular programming languages for the web. Such as PHP, Ruby, Python, Java and .Net. If you need to add SMS and Voice capabilities to your app, there is no doubt that Twilio should be your first choice.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.twilio.com/docs/quickstart">Twilio &ndash; Quickstart Docs</a></li>
+<li><a href="https://www.twilio.com/docs/api">Twilio &ndash; API Docs</a></li>
+<li><a href="https://www.twilio.com/docs/libraries">Twilio &ndash; Helper Libraries</a></li>
+<li><a href="https://www.twilio.com/docs/howto">Twilio &ndash; How-tos</a></li>
+<li><a href="https://www.twilio.com/docs/errors/reference">Twilio &ndash; Errors Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started With Zillow API]]></title>
@@ -1207,296 +1454,6 @@ if($orders->total_count > 0){</p>
 <ul>
 <li><a href="https://coinbase.com/api/doc/1.0.html">API Documentation</a></li>
 <li><a href="https://github.com/coinbase/coinbase-php">Coinbase-PHP</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Delicious API]]></title>
-    <link href="http://anchetawern.github.io/blog/2013/10/20/getting-started-with-delicious-api/"/>
-    <updated>2013-10-20T13:17:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2013/10/20/getting-started-with-delicious-api</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;ll be showing you how to get the links that you have bookmarked using Delicious using the Delicious API.</p>
-
-<p>The Delicious API unlike other Web API&rsquo;s that&rsquo;s using either OAuth, OAuth2 or their custom Authentication method is using <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic Access Authentication</a>. This means that performing API calls requires the username and the password of the user whose bookmarks you want to have access to.
-This means that there&rsquo;s no confidentiality with this Authentication method. Without you knowing, the application that&rsquo;s going to do the talking with the Delicious API can just save your username and password in a database and the developers can have access to the links that you&rsquo;ve bookmarked in your account whether public or private. So as a user its recommended that you only bookmark links that doesn&rsquo;t contain any confidential or classified information.</p>
-
-<h3>Delicious Class</h3>
-
-<p>First let&rsquo;s go ahead and create the class that we will be using to access the Delicious API. Let&rsquo;s name it <code>class.delicious.php</code>. Then declare the 4 private variables that we will be using throughout the class:</p>
-
-<p>```php
-&lt;?php
-class delicious{</p>
-
-<pre><code>private $curl;
-private $curl_options; //options that will be used for curl
-private $username; //delicious username
-private $password; //delicious password
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>The constructor will accept 2 arguments, the delicious username and password. We&rsquo;ll also initialize <code>curl</code> so we don&rsquo;t have to initialize it on every method call.</p>
-
-<p>```
-&lt;?php
-public function __construct($username, $password){</p>
-
-<pre><code>$this-&gt;username = $username;
-$this-&gt;password = $password;
-$this-&gt;curl = curl_init();
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Next, create the <code>set_options()</code> method. This method will simply set the curl options.</p>
-
-<p>```
-&lt;?php
-public function set_options(){</p>
-
-<pre><code>$this-&gt;curl_options = array(
-    CURLOPT_RETURNTRANSFER =&gt; 1, //return the response from the delicious API.
-    CURLOPT_SSL_VERIFYPEER =&gt; false, //disable verification of the peer's certificate 
-    CURLOPT_USERPWD =&gt; $this-&gt;username . ':' . $this-&gt;password //set the username and password to be used for authentication
-);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Next is the <code>execute()</code> method. This method is called from every method calls that are responsible for calling a specific method from the API. What it does is to assign the curl options to the curl object, executes it and then returns the response.</p>
-
-<p>```
-&lt;?php
-public function execute(){</p>
-
-<pre><code>curl_setopt_array($this-&gt;curl, $this-&gt;curl_options);
-
-$response = curl_exec($this-&gt;curl);
-if(!$response){
-    //terminate the execution of the script if there's no response
-    die('Error: "' . curl_error($this-&gt;curl) . '" - Code: ' . curl_errno($this-&gt;curl));
-}
-curl_close($this-&gt;curl); //close the connection              
-return $response;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Getting all Bookmarks</h4>
-
-<p>We can now create the methods for actually getting the bookmarks. The first method that we will create is the <code>get_all()</code> method. As the name suggests, the <code>get_all()</code> method simply gets everything that you have ever bookmarked on your delicious account. This might take some time to execute depending on the number of links that you have bookmarked.</p>
-
-<p>```
-&lt;?php
-public function get_all(){</p>
-
-<pre><code>$this-&gt;set_options();
-$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
-$response = $this-&gt;execute();
-$xml = simplexml_load_string($response); //converts the string response into an xml object      
-return $xml;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Before we proceed with the next method, I&rsquo;d like you to take a few minutes to observe what were doing here.
-Because the pattern that we&rsquo;ve used here will be used on other methods that we will be creating later.</p>
-
-<p>As you can see, were calling the <code>set_options()</code> method to set the arguments that will be needed for the request.</p>
-
-<p><code>
-&lt;?php
-$this-&gt;set_options();
-?&gt;
-</code></p>
-
-<p>Next, we set the main URL that were requesting from. In this cae were requesting the <code>https://api.del.icio.us/v1/posts/all</code> url. At the time of writing of this article, the main request url is <code>https://api.del.icio.us</code> The version of the API is <code>v1</code> and the method is <code>posts/all</code>. You can see the full list of API methods that you can call <a href="https://github.com/avos/delicious-api/blob/master/APIs.md">here</a>.</p>
-
-<p><code>
-&lt;?php
-$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/all';
-?&gt;
-</code></p>
-
-<p>Next, we execute the request. The <code>execute()</code> method returns the response from the API. The response is basically in string format so we have to process it further to really get into the details that we want.</p>
-
-<p><code>
-&lt;?php
-$response = $this-&gt;execute();
-?&gt;
-</code></p>
-
-<p>In order to do that we call the <code>simplexml_load_string()</code> method. It&rsquo;s a built-in PHP method which you can call to convert a string response into an XML object. You can read more about it <a href="http://php.net/manual/en/function.simplexml-load-string.php">here</a>.</p>
-
-<p><code>
-&lt;?php
-$xml = simplexml_load_string($response);
-?&gt;
-</code></p>
-
-<p>After converting the response to an XML object, we simply return it.</p>
-
-<p><code>
-&lt;?php
-return $xml;
-?&gt;
-</code></p>
-
-<h4>Getting Bookmarks by Tag</h4>
-
-<p>We can also get bookmarks by tag name. All we have to do is to specify the <code>tag</code> argument to the <code>posts/all</code> method and supply a url encoded value as the query.</p>
-
-<p>```
-&lt;?php
-public function get_by_tag($tag){</p>
-
-<pre><code>$this-&gt;set_options();
-$request_url = 'https://api.del.icio.us/v1/posts/all?tag=' . urlencode($tag);
-$this-&gt;curl_options[CURLOPT_URL] = $request_url;
-$response = $this-&gt;execute();
-$xml = simplexml_load_string($response);        
-return $xml;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Getting Bookmarks by Offset</h4>
-
-<p>We can also get by a certain limit and offset. All we have to do is supply a value for the <code>start</code> argument (offset), and the <code>results</code> argument (limit).</p>
-
-<p>```
-&lt;?php
-public function get_by_offset($start, $limit){</p>
-
-<pre><code>$this-&gt;set_options();
-$request_url  = 'https://api.del.icio.us/v1/posts/all?start=' . $start;
-$request_url .= '&amp;results=' . $limit;
-$this-&gt;curl_options[CURLOPT_URL] = $request_url;
-$response = $this-&gt;execute();        
-$xml = simplexml_load_string($response);        
-return $xml;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Getting Recently Bookmarked Links</h4>
-
-<p>Recently bookmarked links can also be fetched from the API. The method to be used is the <code>posts/recent</code> method.
-You can also supply an optional <code>tag</code> or <code>count</code> argument.</p>
-
-<p>`&ldquo;
-&lt;?php
-public function get_recent($tag = &rdquo;, $count = 1){</p>
-
-<pre><code>$this-&gt;set_options();
-$request_url  = 'https://api.del.icio.us/v1/posts/recent?';
-if(!empty($tag)){ //limit results by tag
-    $request_url .= 'tag=' . urlencode($tag);
-}
-
-if(!empty($count)){ //limit results by bookmark count
-    $request_url .= '&amp;count=' . $count;
-}
-$this-&gt;curl_options[CURLOPT_URL] = $request_url;
-$response = $this-&gt;execute();
-$xml = simplexml_load_string($response);        
-
-return $xml;
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Bookmarking Links</h4>
-
-<p>Bookmarking new links can also be done from the API. The method to be used is the <code>posts/add</code> method.
-The <code>url</code> argument is required and you can also set an optional <code>description</code> or <code>tags</code>. If there are more than one tags you can separate them using a comma (E.g php, web-development)</p>
-
-<p>`&ldquo;
-&lt;?php
-public function add($url, $description = &rdquo;, $tags = &lsquo;&rsquo;){</p>
-
-<pre><code>$this-&gt;set_options();
-$request_url  = 'https://api.del.icio.us/v1/posts/add?';
-$request_url .= 'url=' . urlencode($url);
-$request_url .= '&amp;description=' . urlencode($description);
-$request_url .= '&amp;tags=' . urlencode($tags);
-
-$this-&gt;curl_options[CURLOPT_URL] = $request_url;
-$this-&gt;execute();
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h4>Deleting Bookmarks</h4>
-
-<p>You can also delete links that were previously bookmarked. The request method is <code>posts/delete</code>.
-You have to pass in the <code>url</code> of the link that you wish to delete.</p>
-
-<p>```
-&lt;?php
-public function delete($url){</p>
-
-<pre><code>$this-&gt;set_options();
-$this-&gt;curl_options[CURLOPT_URL] = 'https://api.del.icio.us/v1/posts/delete?url=' . $url;
-$this-&gt;execute();
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>There are a bunch of other methods which you can use so be sure to check out the Delicious API documentation.</p>
-
-<h3>Using the Class</h3>
-
-<p>```
-&lt;?php
-&lt;?php
-require_once(&lsquo;class.delicious.php&rsquo;);</p>
-
-<p>$username = &lsquo;XYZ&rsquo;;
-$password = &lsquo;secret&rsquo;;</p>
-
-<p>$deli = new Delicious($username, $password);</p>
-
-<p>$links = $deli->get_by_tag(&lsquo;php&rsquo;);</p>
-
-<p>foreach($links->post as $row){
-?></p>
-
-<pre><code>&lt;li&gt;&lt;?php echo $row['href']; ?&gt;&lt;/li&gt;
-</code></pre>
-
-<p>&lt;?php <br/>
-}
-?>
-```</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://github.com/avos/delicious-api/blob/master/APIs.md">Delicious API</a></li>
-<li><a href="https://github.com/anchetaWern/delicious-php">Delicious-PHP</a> &ndash; a little PHP class that I created for interacting with the Delicious API</li>
 </ul>
 
 ]]></content>
