@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: laravel | Wern Ancheta]]></title>
+  <title><![CDATA[Category: laravel, | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/laravel/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-02-22T13:32:09+08:00</updated>
+  <updated>2015-03-01T16:42:41+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -14,176 +14,105 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Using Datatables with Laravel]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel/"/>
-    <updated>2014-08-10T16:48:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be walking you through how you can use datatables in Laravel. But first, let me give you a quick intro on what Datatabes is. <a href="http://datatables.net/">Datatables</a> is basically a jQuery plugin that allows you to add advanced interaction controls to your HTML tables. Things like search, pagination, sorting, and ordering. Datatables allows you to add those kinds of functionality into your tables with minimal code.</p>
+    <title type="html"><![CDATA[How to Implement Scroll in Laravel]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel/"/>
+    <updated>2015-03-01T14:39:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel</id>
+    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
 
-<p>In this tutorial were going to be using a Laravel package called <a href="https://github.com/Chumper/Datatable">Chumper</a>. Chumper allows us to easily create Datatables which uses the data returned from a model as its data source.</p>
+<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
 
-<p>First thing that you need to do is to add the following in your <code>composer.json</code> file:</p>
-
-<p>```
-&ldquo;require&rdquo;: {</p>
-
-<pre><code>"chumper/datatable": "2.*",
-</code></pre>
-
-<p>}
-```</p>
-
-<p>If you got other packages that you need for your project, just add it on the last part of the <code>require</code> item. Once you&rsquo;re done with that, execute <code>composer update</code> from your terminal to install Chumper.</p>
-
-<p>Once composer finishes installing Chumper, add the service provider for Chumper into the <code>providers</code> array in your <code>app.php</code> file inside the <code>app/config</code> directory of your Laravel installation:</p>
-
-<p><code>
-'Chumper\Datatable\DatatableServiceProvider',
-</code></p>
-
-<p>Still inside the <code>app.php</code> file, also add the following under the aliases array:</p>
-
-<p><code>
-'Datatable' =&gt; 'Chumper\Datatable\Facades\DatatableFacade',
-</code></p>
-
-<p>Once that&rsquo;s done, you can now create the main configuration file by executing the following from the terminal:</p>
-
-<p><code>
-php artisan config:publish chumper/datatable
-</code></p>
-
-<p>The main configuration file is stored under <code>app/config/packages/chumper/datatable/config.php</code> so go ahead and edit that if you want to change the default settings provided by Chumper. Things like the class or ID given to the tables generated can be configured from that file. This is particularly useful if you want to use classes or IDs to style the datatables in a specific way. Other than that the default settings can be used for most cases.</p>
-
-<p>Now that we have configured Chumper, we can now add a route that will return the page where the datatable is displayed in your <code>routes.php</code> file. In the example below, we have the a controller called <code>AdminController</code> and were using the data returned by the <code>users</code> method as a response whenever the <code>users</code> route is accessed via the <code>GET</code> method:</p>
-
-<p><code>php
+<p>```php
 &lt;?php
-Route::get('users', 'AdminController@users');
-?&gt;
-</code></p>
+public function getNewsPage(){</p>
 
-<p>Next we also need to add the route that will return the data into the client side. By default, Chumper uses the server for processing queries made through the datatable. This means that it only gets the actual data that is needed instead of getting all of the records in the database table that you specify. In the code below, were giving a name of <code>api.users</code> to the <code>api/users</code> route so that we can refer to it later in the controller. The <code>uses</code> keyword allows you to specify a controller action to the route. Its basically the same thing as what we did above but that&rsquo;s the way to do it if you&rsquo;re using named routes.</p>
-
-<p><code>
-&lt;?php
-Route::get('api/users', array('as' =&gt; 'api.users', 'uses' =&gt; 'AdminController@getUsersDataTable'));
-?&gt;
-</code></p>
-
-<p>Under your controller, here&rsquo;s the method that returns the page where the datatable is displayed:</p>
-
-<p>```
-&lt;?php
-public function users(){</p>
-
-<pre><code>$table = Datatable::table()
-    -&gt;addColumn('Name', 'Last Login', 'View')
-    -&gt;setUrl(route('api.users'))
-    -&gt;noScript();
-
-$this-&gt;layout-&gt;content = View::make('admin.users', array('table' =&gt; $table));
+<pre><code>$date = date('Y-m-d');
+$news = News::where('date', '=', $date)-&gt;paginate(10);
+$page_data = array(
+    'news' =&gt; $news
+);
+return View::make('news', $page_data);
 </code></pre>
 
 <p>}
 ?>
 ```</p>
 
-<p>The code above assumes that you&rsquo;re using <a href="http://laravel.com/docs/templates">Laravel layouts</a>. If you don&rsquo;t know how to use layouts in Laravel, be sure to check out the docs. Breaking the code down, the following code allows you create the datatable. You can add columns to it by using the <code>addColumn</code> method. This method takes up the names that you want to give to the header for each field in the table. The <code>setUrl</code> method allows you to set the route that the datatable will use for processing queries made through it. Earlier we created a route and named it <code>api.users</code> so in the <code>setUrl</code> method all we have to do is to use the <code>route</code> method and then supply the name of the route which is responsible for returning the data for processing the queries. Lastly, we call the <code>noScript()</code> method to specify that we don&rsquo;t want to add the JavaScript code in the response that will be returned.</p>
+<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
 
-<p>```
-&lt;?php
-$table = Datatable::table()</p>
+<p>```html</p>
 
-<pre><code>-&gt;addColumn('Name', 'Last Login', 'View')
--&gt;setUrl(route('api.users'))
--&gt;noScript();
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>Next is the method which processes the queries made through the datatable:</p>
-
-<p>```
-&lt;?php
-public function getUsersDataTable(){</p>
-
-<pre><code>$query = User::select('name', 'active', 'last_login', 'id')-&gt;get();
-
-return Datatable::collection($query)
-    -&gt;addColumn('last_login', function($model){
-        return date('M j, Y h:i A', strtotime($model-&gt;last_login));
-    })
-    -&gt;addColumn('id', function($model){
-        return '&lt;a href="http://anchetawern.github.io/users/' . $model-&gt;id . '"&gt;view&lt;/a&gt;';
-    })
-    -&gt;searchColumns('name', 'last_login')
-    -&gt;orderColumns('name', 'last_login')
-    -&gt;make();
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Breaking it down, the code below allows you to specify the fields that you want to use for the response. These are the actual field names in your database table:</p>
-
-<p><code>
-&lt;?php
-$query = User::select('name', 'last_login', 'id')-&gt;get();
-?&gt;
-</code></p>
-
-<p>Next, we return the actual data using the <code>collection</code> method in the <code>Datatable</code> class. Well, not actually the <code>Datatable</code> class, since its just the Facade that we used earlier in the <code>app.php</code> file. The <code>collection</code> method requires the result set returned by our query to the users table earlier so we just set that as the argument. After that, we can call the <code>addColumn</code> method to update the presentation of the data returned for that specific field. In the case of the <code>last_login</code> field, its stored in the database as a time stamp which looks like this: <code>2014-07-29 11:37:39</code>. We don&rsquo;t really want to present that to the user like that so we format it using the <code>date</code> method. The first argument is the format that you want. In this case we want something like this: <code>Jul 29, 2014 11:37 AM</code>. Looking at the <a href="http://php.net/manual/en/function.date.php">official docs</a>, we know that we can do that by specifying the following: <code>M j, Y h:i A</code>. The second argument is a unix timestamp. We can convert the raw data that came from the database into a unix timestamp by using the <code>strtotime</code> method, so we do just that. Next is the <code>id</code> field. We don&rsquo;t actually want to display the users id to the user, what we want is to display a link that would lead the user to the page where more details for the user can be viewed. Thus we return an HTML anchor tag which uses the id as one of the component for the actual link.</p>
-
-<p>```
-&lt;?php
-return Datatable::collection($query)</p>
-
-<pre><code>-&gt;addColumn('last_login', function($model){
-    return date('M j, Y h:i A', strtotime($model-&gt;last_login));
-})
--&gt;addColumn('id', function($model){
-    return '&lt;a href="http://anchetawern.github.io/users/' . $model-&gt;id . '"&gt;view&lt;/a&gt;';
-})
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>Lastly, we can now display the datatable in our view. If you&rsquo;re using <a href="http://getbootstrap.com/">Twitter Bootstrap</a>, it should look similar to this one:</p>
-
-<p>
-``` html
-@section(&lsquo;content&rsquo;)</p>
-
-<div class="row">
-  <div class="col-md-12">
-  <h3>Users</h3>
-  {{ $table->render() }}
-  {{ $table->script() }}
-  </div>
+<div id="news">
+    <ul id="items">             
+    @foreach($news as $item)
+        <li class="item">
+            <a href="" target="_blank"></a>
+        </li>
+    @endforeach
+    
+    </ul>
 </div>
-
-
-<p>@stop
-```
-</p>
-
-<p>And don&rsquo;t forget to include the datatables stylesheet and JavaScript file on your views. You can download datatables from <a href="http://datatables.net/">datatables.net</a> or you can just use cdnjs:</p>
-
-<p>```html
-<link rel="stylesheet" type="text/css" href="http://anchetawern.github.io//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/css/jquery.dataTables.min.css"></p>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
 
 
 <p>```</p>
 
-<p>And yes, datatables depends on jQuery so you also need to include that before including datatables.</p>
+<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
 
-<p>Yup! as simple as that! All we have to do is to call the <code>render()</code> method to render the actual datatabase. And then we also call the <code>script()</code> method to render the JavaScript file that would do the talking to the server every time the user interacts with the table.</p>
+<p>```html</p>
+
+<script src=""></script>
+
+
+<script src=""></script>
+
+
+<p></body>
+```</p>
+
+<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
+
+<p>```javascript
+(function(){</p>
+
+<pre><code>var loading_options = {
+    finishedMsg: "&lt;div class='end-msg'&gt;Congratulations! You've reached the end of the internet&lt;/div&gt;",
+    msgText: "&lt;div class='center'&gt;Loading news items...&lt;/div&gt;",
+    img: "/assets/img/ajax-loader.gif"
+};
+
+$('#items').infinitescroll({
+  loading : loading_options,
+  navSelector : "#news .pagination",
+  nextSelector : "#news .pagination li.active + li a",
+  itemSelector : "#items li.item"
+});
+</code></pre>
+
+<p>})();
+```</p>
+
+<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
+
+<ul>
+<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
+<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
+<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
+</ul>
+
+
+<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
+
+<ul>
+<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
+<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
+<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
+<li><code>itemSelector</code> &ndash; an individual item.</li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
 ]]></content>
   </entry>
   

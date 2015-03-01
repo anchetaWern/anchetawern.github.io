@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-02-22T13:32:09+08:00</updated>
+  <updated>2015-03-01T16:42:41+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,143 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to Implement Scroll in Laravel]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel/"/>
+    <updated>2015-03-01T14:39:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel</id>
+    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
+
+<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    @foreach($news as $item)
+</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    @endforeach
+</span><span class='line'>    
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">})();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
+
+<ul>
+<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
+<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
+<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
+</ul>
+
+
+<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
+
+<ul>
+<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
+<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
+<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
+<li><code>itemSelector</code> &ndash; an individual item.</li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Stripe API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/02/22/getting-started-with-stripe-api/"/>
+    <updated>2015-02-22T16:33:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/02/22/getting-started-with-stripe-api</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Twilio API]]></title>
@@ -2247,297 +2384,6 @@ Its hosted by Chris Coyier and Dave Rupert. Each week they either interview some
 <p>Another podcast which is no longer active but still pretty useful is the FaceOff Show. They have a total of 126 episodes before they stopped but the content is still available on their website to download or to listen to. The FaceOff Show is a holistic podcast, its basically all of the podcast mentioned above combined into one. In other words, its all thing development.</p>
 
 <p><a href="http://faceoffshow.com/">Visit Site</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Amazon EC2]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/24/getting-started-with-amazon-ec2/"/>
-    <updated>2014-08-24T19:00:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/24/getting-started-with-amazon-ec2</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to give you an introduction on how to setup an Amazon EC2 instance that uses the LAMP stack. This tutorial assumes that you already have an AWS account setup.</p>
-
-<h4>Setting up the instance</h4>
-
-<p>The first thing that you need to do is to login to your AWS account. Once logged in, click on the instances link found on the left side of the screen. Once in the instances page, click on the &lsquo;Launch Instance&rsquo; button. You will then be redirected to the page where you can select the operating system that will be used for the instance that you want to create:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/amazon_ec2/start.png" alt="choose AMI" /></p>
-
-<p>If you&rsquo;re using Ubuntu for your development, it would be much easier for you if you also select the Ubuntu Server, the 64-bit version if preferred. Just click on the &lsquo;select&rsquo; button beside the Ubuntu instance.</p>
-
-<p>Next, we need to select the instance type. For starters you may want to try the t2.micro instance as its eligible for the free tier, this means that you don&rsquo;t have to pay anything when you launch this type instance.</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/amazon_ec2/instance-type.png" alt="choose instance" /></p>
-
-<p>If you&rsquo;re looking into launching an instance which exactly fits your needs, check out <a href="http://www.ec2instances.info/">ec2instances.info</a>. Note that an instance that&rsquo;s not eligible for free tier would cost you per hour so be really careful with the instance that you select.</p>
-
-<p>Once you&rsquo;re done selecting the instance type, click on the &lsquo;Next: Configure Instance Details&rsquo;, that will redirect you to the page where you can configure details about your instance. Things like the Virtual Private Cloud, Subnet and Public IP. Usually you don&rsquo;t really have to touch these settings so just leave the default ones.</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/amazon_ec2/configure-instance.png" alt="configure instance" /></p>
-
-<p>Next click on the &lsquo;Next: Add Storage&rsquo; button. That will redirect you to the page where you can configure the size and volume type of the storage that will be used for your instance. Just input 30 for the size as free tiers are eligible for up to 30 GB. If you have selected something higher than the free tier, you can find information on how much storage size you can have at <a href="http://www.ec2instances.info/">ec2instances.info</a>. For the volume type, just use the general purpose SSD.</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/amazon_ec2/add-storage.png" alt="add storage" /></p>
-
-<p>Next click on the &lsquo;Next: Tag Instance&rsquo; button. That will redirect you to the page where you can assign a key-value pair to your instance. This allows you to tag your instance with those key-value pairs which enables you to categorize your AWS resources in different ways. We won&rsquo;t really be using tags in this tutorial so if you want to learn more about tagging your instance, check out the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html">official docs</a>.</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/amazon_ec2/tag-instance.png" alt="tag instance" /></p>
-
-<p>Next click on the &lsquo;Next: Configure Security Group&rsquo; button. That will redirect you to the page where you can configure the security group used by the instance. In simple terms, security groups allows you to set the ports used by your instance and which IP addresses are allowed access to those ports. You can assign different settings for inbound and outbound rules. Inbound rules are the settings used for requests made to your server by other computers.</p>
-
-<p>For inbound rules you would commonly have the following settings:</p>
-
-<ul>
-<li><strong>Type:</strong> SSH &ndash; this allows you to access your instance via SSH.</li>
-<li><strong>Protocol:</strong> TCP</li>
-<li><strong>Port:</strong> 22</li>
-<li><p><strong>Source:</strong> 0.0.0.0/0 &ndash; if you got a static IP assigned to your computer, its more secure if you set that IP for this field. Otherwise just select &lsquo;Anywhere&rsquo; which allows access to any IP.</p></li>
-<li><p><strong>Type:</strong> &ndash; HTTP &ndash; this allows you to access your instance from the browser.</p></li>
-<li><strong>Protocol:</strong> TCP</li>
-<li><strong>Port:</strong> 80</li>
-<li><strong>Source:</strong> 0.0.0.0/0 &ndash; this means anyone which has access to the internet can access your instance via the DNS provided by Amazon or the public IP assigned to your instance.</li>
-</ul>
-
-
-<p>For outbound rules:</p>
-
-<ul>
-<li><strong>Type:</strong> &ndash; HTTP &ndash; this allows your instance to download stuff from the internet.</li>
-<li><strong>Protocol:</strong> TCP</li>
-<li><strong>Port:</strong> 80</li>
-<li><p><strong>Destination:</strong> 0.0.0.0/0 &ndash; this means that your instance can make the request to any server.</p></li>
-<li><p><strong>Type:</strong> MYSQL &ndash; this allows your instance to make a request to the MySQL server.</p></li>
-<li><strong>Protocol:</strong> TCP</li>
-<li><strong>Port:</strong> 3306</li>
-<li><strong>Destination:</strong> 0.0.0.0/0 &ndash; this allows your instance access to any MySQL server. You can also set this to the private IP of your instance. You can only specify a single IP so if you&rsquo;re planning to access other MySQL servers aside from the one installed on your ec2 instance then just select &lsquo;Anywhere&rsquo;.</li>
-</ul>
-
-
-<p>That&rsquo;s pretty much it.</p>
-
-<p>You can learn more about security groups in this page: <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html">Amazon EC2 Security Groups</a></p>
-
-<p>Once you&rsquo;re done configuring the security group, click on &lsquo;Review and Launch&rsquo; button. You can now review the details of the instance, once you&rsquo;re done reviewing just click on the &lsquo;Launch&rsquo; button. Amazon will now prompt you to create an ssh key or use an existing key if you already have an existing one. You can use the ssh key to authenticate yourself when logging in to your instance via ssh. Keep the ssh key somewhere where you can easily find it. For me I prefer putting it in the <code>~/.ssh</code> directory.</p>
-
-<h4>Installing Software</h4>
-
-<p>Now that you have launch the instance you can now access it via ssh. To do that, login to your amazon account, click the &lsquo;services&rsquo; link on the upper left corner of the screen, hover on the &lsquo;All AWS Services&rsquo; link then click on &lsquo;EC2&rsquo;. That will redirect you to the ec2 dashboard page. Once you&rsquo;re there, click on the &lsquo;instances&rsquo; link. This will list out all the instances that you have created in the current region that you have selected. If nothing is listed on that page the instance that you have created might be on another region. To change the region you can click on the second link from the right. The one which looks like a place in the world. Select any of the places listed in there and your instance will be listed in any of those.
-Next click on the instance listed then copy the value for the &lsquo;Public DNS&rsquo;.
-Open up a terminal, <code>cd</code> into the directory where you have your ssh key then execute the following command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i amazon-aws.pem ubuntu@the-public-dns-of-your-instance</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking the command down, <code>-i</code> allows you to specify the ssh key file. In this case the file name is <code>amazon-aws.pem</code>. Next is the username of the user you want to use to login, in this case the username is <code>ubuntu</code>. That&rsquo;s the default username for Ubuntu ec2 instances. Next is <code>@</code> followed by the public dns of your instance. If you have already assigned a domain name to your instance you can also use that.</p>
-
-<p>Once you&rsquo;re logged in you can now start installing software. Ec2 instances doesn&rsquo;t come pre-installed with Apache, PHP and MySQL. So you would need to install it yourself. Here are some of the software that I usually install on an ec2 instance:</p>
-
-<p>Curl:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install curl
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install libcurl3 php5-curl</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Composer:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -sS https://getcomposer.org/installer | php
-</span><span class='line'>sudo mv composer.phar /usr/local/bin/composer</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Apache:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install apache2
-</span><span class='line'>sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>PHP:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install php5
-</span><span class='line'>sudo apt-get install libapache2-mod-php5</span></code></pre></td></tr></table></div></figure>
-
-
-<p>MySQL:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server
-</span><span class='line'>sudo apt-get install php5-mysql</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Configuring Apache</h4>
-
-<p>Once everything is installed you still have to configure Apache to use a different web directory. This is because the default one isn&rsquo;t really that friendly. As you have to <code>sudo</code> every time you need to save or update something from the directory. My preferred directory is one that is on the home directory. As you won&rsquo;t need any special privileges to do anything inside of it. To configure Apache to use a different directory, <code>cd</code> into the <code>/etc/apache2</code> directory then open up the <code>apache2.conf</code> file. You can open up the file using a text editor like <code>nano</code>, <code>vi</code> or <code>vim</code>. Once you&rsquo;re in that directory open up the file using the text editor of your choice:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano apache2.conf</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now look for the <code>Directory</code> directives and update it to use a value similar to the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;Directory /&gt;
-</span><span class='line'>        Options FollowSymLinks
-</span><span class='line'>        AllowOverride None
-</span><span class='line'>        Require all denied
-</span><span class='line'>&lt;/Directory&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;Directory /usr/share&gt;
-</span><span class='line'>        AllowOverride None
-</span><span class='line'>        Require all granted
-</span><span class='line'>&lt;/Directory&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;Directory /home/ubuntu/www&gt;
-</span><span class='line'>        Options Indexes FollowSymLinks
-</span><span class='line'>        AllowOverride All
-</span><span class='line'>        Require all granted
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the configuration file above were using <code>/home/ubuntu/www</code> as the web root directory. You can change this to any directory on your <code>home</code> folder. Just be sure that the directory exists.</p>
-
-<p>Still on the same directory, <code>cd</code> into the <code>sites-available</code> directory then open up the <code>000-default.conf</code> file. Look for the <code>DocumentRoot</code> directive and specify the path to your web root directory.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>DocumentRoot /home/ubuntu/www</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once everything is done, restart Apache using the following command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo service apache2 restart</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial you have learned how to set up an ec2 instance, install software needed to host a website. You can use the free tier to quickly test out an app idea and bring it online for everyone to test out.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Supervisor]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/15/getting-started-with-supervisor/"/>
-    <updated>2014-08-15T19:32:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/15/getting-started-with-supervisor</id>
-    <content type="html"><![CDATA[<p>Recently in my work I had this node.js script that I had to run persistently. Its basically a server that will generate images based on some JSON data that&rsquo;s passed from the client side. So I did some searching and found <a href="http://supervisord.org/">Supervisor</a>, a process control system. It allows you to run programs persistently.</p>
-
-<h3>Installation</h3>
-
-<p>You can install install Supervisor by executing the following command in your terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install supervisor</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Configuration</h3>
-
-<p>Once the installation is done, you can now create the config file. This is where you specify which script you want to run, the directory in where you want to run it, and a log file in which the output is redirected.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano /etc/supervisor/conf.d/image-creator.conf</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s what a config file looks like:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[program:imagecreator]
-</span><span class='line'>command=node image-creator.js
-</span><span class='line'>directory=/home/ubuntu/www
-</span><span class='line'>stdout_logfile=/home/ubuntu/logs/image-creator.log
-</span><span class='line'>redirect_stderr=true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. This is where we set the name of the program. Yes the <code>program:</code> is always there, only the thing that comes after it is updated. In this case the name of the program that I gave is <code>imagecreator</code>.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[program:imagecreator]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next is the command that you execute when you&rsquo;re running the program in the terminal. In this case were executing the script via the <code>node</code> command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>command=node image-creator.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next is the directory where the program is stored. This can also be the directory where you want to execute the program:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>directory=/home/ubuntu/www</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is where you specify the file where you want to redirect the output of the program:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>stdout_logfile=/home/ubuntu/logs/image-creator.log</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lastly, we specify whether to send back the <code>stderr</code> output to supervisord on its stdout file descriptor:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>redirect_stderr=true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s pretty much all we need for the configuration file. You can go ahead and save it. If you want to specify more settings, check out the <a href="http://supervisord.org/configuration.html">docs on configuration</a></p>
-
-<h3>Adding the Process</h3>
-
-<p>Now that we have a configuration file in place we can now tell supervisor to add it to the list of processes that it currently manages. You can do that by using <code>supervisorctl</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo supervisorctl</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Executing the command above will let you enter the supervisor program. Next execute the following commands in order:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>reread
-</span><span class='line'>add imagecreator
-</span><span class='line'>start imagecreator</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down:</p>
-
-<ul>
-<li><code>reread</code> tells supervisor to read the configuration files that are available.</li>
-<li><code>add</code> tells supervisor to add the program into the list of programs that it will manage.</li>
-<li><code>start</code> tells supervisor to run the program.</li>
-</ul>
-
-
-<h2>Conclusion</h2>
-
-<p>That&rsquo;s it! Supervisor is a neat little program that allows you to run programs persistently. Just be sure that errors are handled accordingly because supervisor wouldn&rsquo;t continue running your program if an error occurs while its running.</p>
 ]]></content>
   </entry>
   
