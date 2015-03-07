@@ -4,7 +4,7 @@
   <title><![CDATA[Category: projects | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/projects/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-03-02T18:22:39+08:00</updated>
+  <updated>2015-03-07T09:03:22+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Antares Web]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/07/introduction-to-antares-web/"/>
+    <updated>2015-03-07T07:27:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/07/introduction-to-antares-web</id>
+    <content type="html"><![CDATA[<p>Welcome to yet another promotional post on another side-project of mine. This time its the web version of Antares. If you don&rsquo;t know what Antares is, its basically a news app for Android. Its a news app targeted to developers to be exact. You can read all about it here: <a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a>.</p>
+
+<p>So yeah, Antares web is just a website were you can read all the news from popular sources such as Hacker News, Product Hunt, Medium, Designer News, Slashdot and many others. There are also news coming from popular curators such as echojs and developer newsletters. The news items are ordered from the latest to the least latest so you&rsquo;re assured that the ones on top are the latest one. Antares uses infinite scrolling. So if you missed yesterday&rsquo;s news, you can always scroll until you find something you&rsquo;re interested in reading.</p>
+
+<h3>Future Plans</h3>
+
+<ul>
+<li>More news sources.</li>
+<li>Viewing of news on a specific date.</li>
+<li>Top news. Something simple like logging the view count on each link based on the number of clicks it gets. And then ordering the results from the most number of views to the least.</li>
+<li>Mobile version. Currently it doesn&rsquo;t look that good on mobile. Especially on devices below 400px width.</li>
+<li>Social Sharing. Facebook, Twitter, LinkedIn sharing. And possibly Google plus. I&rsquo;ll just add it as a button below each news link, so that users can easily share. Integration with my <a href="/blog/2014/09/28/introduction-to-ahead/">Ahead project</a> seems to be a good idea as well. So users can easily schedule posts to their social accounts for later publishing.</li>
+<li>Bookmarking. I&rsquo;m looking at pocket integration. So each news link will have its own button for saving to pocket.</li>
+</ul>
+
+
+<p>That&rsquo;s all for now. If you want to know more about this project. You can always visit <a href="/projects/antares_web/">its project page</a>. If you&rsquo;re a developer, you can check out this project at <a href="https://github.com/anchetaWern/antares">Github</a>. Feel free to contribute.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Antares]]></title>
@@ -257,59 +282,6 @@ rake publish["new blog post: newsletters I subscribe to http://wern-ancheta.com/
 <li>website for retrieving user access tokens which you can then paste into the rake file. This removes the need for creating your own apps and retrieving your keys from it.</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Contact plugin for Octopress]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/02/introduction-to-contact-plugin-for-octopress/"/>
-    <updated>2014-08-02T21:01:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/02/introduction-to-contact-plugin-for-octopress</id>
-    <content type="html"><![CDATA[<p>In this blog post I&rsquo;ll be introducing the <a href="https://github.com/anchetaWern/jekyll-contact">Contact plugin for Octopress</a>.
-This plugin allows you to create contact forms with ease. Its using the <a href="http://pooleapp.com/">pooleapp.com</a> for saving the data for the forms that are submitted.</p>
-
-<h3>Create a Pooleapp account</h3>
-
-<p>First lets go through pooleapp. Poole is a free, hosted data store for static sites. It allows you to post data into it and then later on you can retrieve the data using a simple API.</p>
-
-<p>You don&rsquo;t have to register to start using pooleapp but its recommended so that you can keep track of the forms that you create. Another bonus feature is that when someones submits a data to your contact form, pooleapp will immediately notify you via email.</p>
-
-<p>Once you&rsquo;ve registered an account, you can now create a new form. Just give your form a unique name and click on the &lsquo;create form&rsquo; button. Once created, pooleapp will ask you for the email in which you want the notifications to be sent to.</p>
-
-<h3>Installing the plugin</h3>
-
-<p>Octopress doesn&rsquo;t really have a plugin system so we&rsquo;ll have to do things manually. First thing that you need to do is to add the <code>contact.rb</code> file into the <code>octopress/plugins</code> directory.</p>
-
-<p>So that we can show a success message once the visitor submits his data through the contact form, we also need to add the <code>contact.js</code> file inside the <code>source/javascripts</code> directory. Basically what it does is to check for the existence of the <code>form</code> query parameter. If it exists then it makes the success message visible.</p>
-
-<p>For the styling, add the <code>_contact.scss</code> file inside the <code>sass/partials</code> directory. Then in your <code>sass/_partials.scss</code> file, import the css for the contact form by adding the following on the last line:</p>
-
-<p><code>
-@import "partials/contact";
-</code></p>
-
-<p>Lastly, under the <code>source/_includes/custom</code> directory, add a script tag that points out to the <code>contact.js</code> file on the last line:</p>
-
-<p>```</p>
-
-<script src="/javascripts/contact.js"></script>
-
-
-<p>```</p>
-
-<h3>Using the plugin</h3>
-
-<p>To use the plugin in any of your pages, simply use the <code>contact</code> liquid tag then supply your pooleapp API key as the first argument, and the redirect URL for when the form is submitted:</p>
-
-<p>
-<code>
-{% contact YOUR_POOLE_APP_API_KEY http://YOURSITE.COM/PAGE?form=ok#alert-box %}
-</code>
-</p>
-
-<h3>Demo</h3>
-
-<p>You can try out the demo on the <a href="http://wern-ancheta.com/aboutme">about me page of this blog</a>.</p>
 ]]></content>
   </entry>
   
