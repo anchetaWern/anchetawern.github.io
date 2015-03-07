@@ -258,6 +258,34 @@ Allows real-estate agents to advertise the properties that they are selling thro
 
 ## 
 
+###Bookr
+
+Allows freelancers, business owners, consultants, and other professionals to easily create their booking website. 
+
+{% img right /images/pages/projects/bookr/small-booking_page.png 'booking page' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- MySQL
+- Google Calendar API
+- Paypal (for accepting payments)
+- Stripe API (for accepting processing payments)
+- Chosen (jQuery plugin)
+- Bootstrap Datetimepicker
+- Pikaday (Standalone Datepicker)
+- Beanstalkd (for queueing emails)
+- Mandrill (for email notifications)
+- Cron (for sending appointment reminders)
+
+[View More Details](/projects/bookr)
+
+## 
+
 ###Birthday Freebies Shouts
 
 Birthday Freebies shouts is a web application used for automatically sending out birthday greetings to Facebook or Gmail Contacts.
@@ -300,6 +328,27 @@ A mobile app for reading developer news.
 - Cron
 
 [View More Details](/projects/ahead)
+
+## 
+
+###Antares Web
+
+The web version of the Antares mobile app.
+
+{% img right /images/pages/projects/antares_web/small-antares.png 'antares' %}
+
+####Technologies Used
+
+- HTML
+- CSS 
+- JavaScript
+- PHP 
+- Laravel
+- MySQL
+- Cron
+- Simple HTML DOM (for scraping from news sources)
+
+[View More Details](/projects/antares_web)
 
 ## 
 
