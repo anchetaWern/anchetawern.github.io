@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: quick-tip | Wern Ancheta]]></title>
+  <title><![CDATA[Category: quick-tip, | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/quick-tip/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-03-08T08:53:18+08:00</updated>
+  <updated>2015-03-15T07:31:18+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -14,360 +14,28 @@
 
   
   <entry>
-    <title type="html"><![CDATA[How to Implement Infinite Scroll in Laravel]]></title>
-    <link href="http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel/"/>
-    <updated>2015-03-01T14:39:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2015/03/01/how-to-implement-scroll-in-laravel</id>
-    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
+    <title type="html"><![CDATA[How to Assign a Namecheap Domain Name on a DigitalOcean Droplet]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/"/>
+    <updated>2015-03-15T07:30:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet</id>
+    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to assign a domain name bought from namecheap into your digitalocean droplet.</p>
 
-<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
-
-<p>```php
-&lt;?php
-public function getNewsPage(){</p>
-
-<pre><code>$date = date('Y-m-d');
-$news = News::where('date', '=', $date)-&gt;paginate(10);
-$page_data = array(
-    'news' =&gt; $news
-);
-return View::make('news', $page_data);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
-
-<p>```html</p>
-
-<div id="news">
-    <ul id="items">             
-    @foreach($news as $item)
-        <li class="item">
-            <a href="" target="_blank"></a>
-        </li>
-    @endforeach
-    
-    </ul>
-</div>
-
-
-<p>```</p>
-
-<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
-
-<p>```html</p>
-
-<script src=""></script>
-
-
-<script src=""></script>
-
-
-<p></body>
-```</p>
-
-<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
-
-<p>```javascript
-(function(){</p>
-
-<pre><code>var loading_options = {
-    finishedMsg: "&lt;div class='end-msg'&gt;Congratulations! You've reached the end of the internet&lt;/div&gt;",
-    msgText: "&lt;div class='center'&gt;Loading news items...&lt;/div&gt;",
-    img: "/assets/img/ajax-loader.gif"
-};
-
-$('#items').infinitescroll({
-  loading : loading_options,
-  navSelector : "#news .pagination",
-  nextSelector : "#news .pagination li.active + li a",
-  itemSelector : "#items li.item"
-});
-</code></pre>
-
-<p>})();
-```</p>
-
-<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
+<p>First login to your namecheap account. Click on the <strong>manage domains</strong> menu that can be found under your username. Click on the domain name that you want to assign. On the menus on the left side, under the general section. Click on the <strong>Domain name server setup</strong> link. Once in that page, select the <strong>specify custom DNS servers</strong> option. And then enter the following:</p>
 
 <ul>
-<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
-<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
-<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
+<li>ns1.digitalocean.com</li>
+<li>ns2.digitalocean.com</li>
+<li>ns3.digitalocean.com</li>
 </ul>
 
 
-<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
+<p>Next login to your digitalocean account and navigate to the droplet that you want to use. From your droplets main page, click on the <strong>DNS</strong> link. Next click on the <strong>Add Domain</strong> button. This shows the form for adding a new domain. Set the value of the name to the domain name that you&rsquo;re trying to assign and the ip address to the ip address of your droplet or just select your droplet from the dropdown.</p>
 
-<ul>
-<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
-<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
-<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
-<li><code>itemSelector</code> &ndash; an individual item.</li>
-</ul>
+<p><img src="/images/posts/digitalocean_namecheap/digitalocean-dns.png" alt="dns settings" /></p>
 
+<p>Once you&rsquo;ve filled all that out, click on the <strong>create domain</strong> button.</p>
 
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Fixing the Forbidden Error in Apache]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache/"/>
-    <updated>2014-02-05T11:33:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/02/05/fixing-the-forbidden-error-in-apache</id>
-    <content type="html"><![CDATA[<p>Every time I reformat my machine I always seem to be stuck with the forbidden error in Apache when changing the default web directory. But that ends today since I&rsquo;m going to share the solution that works for me.</p>
-
-<!-- more -->
-
-
-<p>First you have to edit the <code>apache2.conf</code> file which is stored in the following directory:</p>
-
-<p><code>
-/etc/apache2
-</code></p>
-
-<p>Open up the file with elevated privileges by executing the following command:</p>
-
-<p><code>
-sudo gedit apache2.conf
-</code></p>
-
-<p>Then look for the default web directory which is in most cases is <code>/var/www</code>. When you look at the file it looks something like this:</p>
-
-<p>```
-<Directory /var/www></p>
-
-<pre><code>...
-...
-...
-</code></pre>
-
-<p></Directory>
-```</p>
-
-<p>Now change it to your preferred location. For me its in the <code>web_files</code> directory inside <code>/home/wern</code>. Also change the directives to follow symbolic links and use multiviews, also set the <code>AllowOverride</code> option to <code>All</code> so <code>.htaccess</code> files can override the default options. Then set the <code>Order</code> option to <code>allow,deny</code> so that the allow directives would be evaluated first before the deny directives. Lastly, set to <code>allow from all</code> option to allow access from all hosts:</p>
-
-<p>```
-<Directory /home/wern/web_files></p>
-
-<pre><code>Options FollowSymLinks MultiViews
-AllowOverride All
-Order allow,deny
-allow from all
-</code></pre>
-
-<p></Directory>
-```</p>
-
-<p>Next edit the the <code>000-default.conf</code> file inside the <code>etc/apache2/sites-available</code> directory and add the same directives that we added on the <code>apache2.conf</code> file:</p>
-
-<p>```
-DocumentRoot /home/wern/web_files
-<Directory /></p>
-
-<pre><code>Options FollowSymLinks
-AllowOverride None
-</code></pre>
-
-<p></Directory>
-<Directory /home/wern/web_files></p>
-
-<pre><code>Options FollowSymLinks
-AllowOverride All
-order allow,deny
-allow from all
-</code></pre>
-
-<p></Directory>
-```</p>
-
-<p>Next enable the Apache <code>userdir</code> module by executing the following command in the terminal:</p>
-
-<p><code>
-sudo  a2enmod userdir
-</code></p>
-
-<p>Make the necessary changes on the <code>/etc/apache2/mods-enabled/userdir.conf</code> file by changing the directory path to your desired web directory:</p>
-
-<p>```
-<IfModule mod_userdir.c></p>
-
-<pre><code>UserDir web_files
-UserDir disabled root
-
-&lt;Directory /home/wern/web_files&gt;
-    AllowOverride FileInfo AuthConfig Limit Indexes
-    Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
-    &lt;Limit GET POST OPTIONS&gt;
-        Require all granted
-    &lt;/Limit&gt;
-    &lt;LimitExcept GET POST OPTIONS&gt;
-        Require all denied
-    &lt;/LimitExcept&gt;
-&lt;/Directory&gt;
-</code></pre>
-
-<p></IfModule></p>
-
-<h1>vim: syntax=apache ts=4 sw=4 sts=4 sr noet</h1>
-
-<p>```</p>
-
-<p>Finally, open up the <code>/etc/apache2/mods-enabled/php5.conf</code> file and comment out the following lines by adding the pound sign (#) right before each line:</p>
-
-<p>```</p>
-
-<h1><IfModule mod_userdir.c></h1>
-
-<h1><Directory /home/*/public_html></h1>
-
-<h1>php_admin_value engine Off</h1>
-
-<h1></Directory></h1>
-
-<h1></IfModule></h1>
-
-<p>```</p>
-
-<p>To apply your changes to the current Apache instance simply restart the service:</p>
-
-<p><code>
-sudo service apache2 restart
-</code></p>
-
-<p>If this doesn&rsquo;t work make sure that your file permissions are ok, then restart Apache:</p>
-
-<p><code>
-sudo chmod -R 755 /home/wern/web_files
-</code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to perform cross-domain AJAX requests]]></title>
-    <link href="http://anchetawern.github.io/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests/"/>
-    <updated>2013-10-24T18:30:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2013/10/24/how-to-perform-cross-domain-ajax-requests</id>
-    <content type="html"><![CDATA[<p>In this article I&rsquo;m going to show you how you can perform cross-domain AJAX requests.</p>
-
-<!-- more -->
-
-
-<p>When making AJAX requests you would normally do something like this:</p>
-
-<p>```javascript
-$.get(&lsquo;<a href="http://xyz.com/get_data">http://xyz.com/get_data</a>&rsquo;, {&lsquo;data&rsquo; : &lsquo;abc&rsquo;}, function(response){</p>
-
-<pre><code>//do something with the response
-</code></pre>
-
-<p>});
-```</p>
-
-<p>But if you&rsquo;re making the request from a domain different than the current domain your script is being called then it wouldn&rsquo;t work.</p>
-
-<h4>JSONP</h4>
-
-<p>The first method if via JSONP. If you have control over the code that returns the response that you need, all you need to do is to convert the data that you&rsquo;re returning to JSON string and then wrap it up with a function call. Here&rsquo;s an example:</p>
-
-<p><code>php
-&lt;?php
-$data = array('fname' =&gt; 'haru', 'lname' =&gt; 'tora');
-echo "parse_results(" . json_encode($data) . ")";
-?&gt;
-</code> entry_title</p>
-
-<p>When calling the method from <code>abc.com</code> all you have to do is to use the <code>$.getJSON()</code> method and declare the same function that you used on <code>xyz.com</code>. In this case the name of the function is <code>parse_results()</code>:</p>
-
-<p>```javascript
-function parse_results(response){</p>
-
-<pre><code>//do something with the response
-</code></pre>
-
-<p>}</p>
-
-<p>$.getJSON(&lsquo;<a href="http://xyz.com/get_data">http://xyz.com/get_data</a>&rsquo;, {&lsquo;data&rsquo; : &lsquo;abc&rsquo;});
-```</p>
-
-<p>You can also use the more robust <code>$.ajax()</code> method if you want:</p>
-
-<p>```
-function parse_results(response){</p>
-
-<pre><code>//do something with the response
-</code></pre>
-
-<p>}</p>
-
-<p>$.ajax({</p>
-
-<pre><code>url : 'http://xyz.com/get_data',
-type : 'GET',
-dataType: 'jsonp',
-data : {
-    'data' : 'abc'
-}
-</code></pre>
-
-<p>});
-```</p>
-
-<h4>CSS HTTP Request</h4>
-
-<p>If the first method doesn&rsquo;t work for you. You can also use the <a href="https://github.com/nbio/csshttprequest">csshttprequest</a> library. What this library does is to convert the data that you&rsquo;re passing to another server to something similar to css. Css isn&rsquo;t subjected to the same domain origin policy so this works. The only downside is that you can only send <code>GET</code> requests:</p>
-
-<p>```
-CSSHttpRequest.get(</p>
-
-<pre><code>"http://somewhere/in/the/interwebs",
-function(response){ 
-    //do something with the response
-}
-</code></pre>
-
-<p>);
-```</p>
-
-<p>If you want to pass in arguments:</p>
-
-<p>```
-var title = $(&lsquo;#title&rsquo;).val();</p>
-
-<p>CSSHttpRequest.get(</p>
-
-<pre><code>"http://somewhere/in/the/interwebs?title=" + title,
-function(response){ 
-    //do something with the response
-}
-</code></pre>
-
-<p>);
-```</p>
-
-<h4>Enable Cross Origin Resource Sharing</h4>
-
-<p>Lastly if you have access to the server you are making the request to then you can just enable cross domain resource sharing or CORS. There&rsquo;s a whole <a href="http://enable-cors.org/index.html">website</a> dedicate to it. And instructions on how you can set it up on the <a href="http://enable-cors.org/server.html">server</a>. If you are using PHP its as simple as setting the following header information:</p>
-
-<p><code>php
-&lt;?php
-header("Access-Control-Allow-Origin: *");
-?&gt;
-</code></p>
-
-<p>Note that the code above tells the client (browser) that the resource returned is available to all. Which means that the request can be made from any server and the browser would happily utilize the returned data. If you do not want that then you can also specify a specific domain from which access is allowed:</p>
-
-<p><code>
-&lt;?php
-header("Access-Control-Allow-Origin: http://my-awesomesite.com");
-?&gt;
-</code></p>
+<p>That&rsquo;s it! Just wait for about 30 minutes to an hour for the settings to propagate. And once that&rsquo;s done, you can now access your droplet using the domain name that you assigned.</p>
 ]]></content>
   </entry>
   
