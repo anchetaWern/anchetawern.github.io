@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: deployment | Wern Ancheta]]></title>
+  <link href="http://anchetawern.github.io/blog/categories/deployment/atom.xml" rel="self"/>
+  <link href="http://anchetawern.github.io/"/>
+  <updated>2015-03-28T13:10:40+08:00</updated>
+  <id>http://anchetawern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automating Deployment to EC2 Instance with Git]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/28/automating-deployment-with-git/"/>
+    <updated>2015-03-28T17:10:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/28/automating-deployment-with-git</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how to automate the deployment of changes to your ec2 instance using git. Deployment is done by setting up a bare git repo somewhere in the home directory of the ec2 instance. A post-receive hook is then setup to automatically update the web root based on the changes. The post-receive hook is executed whenever a push is made to the bare git repo in the ec2 instance.</p>
+
+<h3>Setup SSH</h3>
+
+<p>First thing you need to do is to setup ssh access on your development machine (local computer). You can do that by navigating to the ssh directory:</p>
+
+<p><code>
+cd ~/.ssh
+</code></p>
+
+<p>Then open up the <code>config</code> file:</p>
+
+<p><code>
+sudo nano config
+</code></p>
+
+<p>Next add the Host (alias of the ec2 instance), Hostname, User and IdentityFile:</p>
+
+<p><code>
+Host websitebroker
+Hostname ec2-54-191-181-129.us-west-2.compute.amazonaws.com
+User ubuntu
+IdentityFile ~/.ssh/amazon-aws.pem
+</code></p>
+
+<p>Here&rsquo;s a breakdown:</p>
+
+<ul>
+<li><code>Host</code> &ndash; a unique name you want to give to the server. This is used for referring to the server later on.</li>
+<li><code>Hostname</code> &ndash; the ip address of domain name of the server.</li>
+<li><code>User</code> &ndash; the user used for logging in to the server. For ec2 Ubuntu instance, this is usually Ubuntu.</li>
+<li><code>IdentityFile</code> &ndash; the path to the amazon identity file you have downloaded when you created the ec2 instance.</li>
+</ul>
+
+
+<p>You can test if the ssh configuration works by logging in to the server using the <code>Host</code> you&rsquo;ve added.</p>
+
+<p><code>
+ssh websitebroker
+</code></p>
+
+<p>Executing the command above should log you in to the server if youre configuration is correct.</p>
+
+<h3>Setup Git</h3>
+
+<p>Once that&rsquo;s done, you can login to the server using ssh and setup git like you would usually set it up on your local computer.</p>
+
+<p>First you install git:</p>
+
+<p><code>
+sudo add-apt-repository ppa:pdoes/ppa
+sudo apt-get update
+sudo apt-get install git-core
+</code></p>
+
+<p>Once that&rsquo;s done, give identity to the server:</p>
+
+<p><code>
+git config --global user.name "websitebroker"
+git config --global user.email websitebroker@islickmedia.com
+</code></p>
+
+<p>Next, generate an ssh keypair:</p>
+
+<p><code>
+ssh-keygen -t rsa -C "websitebroker@islickmedia.com"
+ssh-add id_rsa
+</code></p>
+
+<p>If you&rsquo;re getting the following error when adding the private keyfile:</p>
+
+<p><code>
+Could not open a connection to your authentication agent
+</code></p>
+
+<p>You can try starting <code>ssh-agent</code> before executing <code>ssh-add</code>:</p>
+
+<p><code>
+eval `ssh-agent -s`
+</code></p>
+
+<p>If that doesn&rsquo;t work, you can try the <a href="http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent">following solutions</a>.</p>
+
+<p>Once that&rsquo;s done, you can now add the public key to bitbucket, github or any other git service you&rsquo;re currently using. To do that, navigate to your ssh directory then output the contents of the <code>id_rsa.pub</code> file. Copy the output and paste it into the git service you&rsquo;re using:</p>
+
+<p><code>
+cd ~/.ssh
+cat id_rsa.pub
+</code></p>
+
+<h3>Setup Deployment</h3>
+
+<p>Navigate to the home directory of the server:</p>
+
+<p><code>
+cd /home/ubuntu
+</code></p>
+
+<p>Create and navigate to the directory where were going to push our changes later on:</p>
+
+<p><code>
+mkdir website.git
+cd website.git
+</code></p>
+
+<p>Next, setup a bare git repo:</p>
+
+<p><code>
+git init --bare
+</code></p>
+
+<p>Next create a <code>post-receive</code> file under the <code>hooks</code> directory:</p>
+
+<p>```</p>
+
+<h1>!/bin/sh</h1>
+
+<p>#</p>
+
+<h1>An example hook script for the &ldquo;post-receive&rdquo; event.</h1>
+
+<p>#</p>
+
+<h1>The &ldquo;post-receive&rdquo; script is run after receive-pack has accepted a pack</h1>
+
+<h1>and the repository has been updated.  It is passed arguments in through</h1>
+
+<h1>stdin in the form</h1>
+
+<h1><oldrev> <newrev> <refname></h1>
+
+<h1>For example:</h1>
+
+<h1>aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b7$</h1>
+
+<p>#</p>
+
+<h1>see contrib/hooks/ for an sample, or uncomment the next line and</h1>
+
+<h1>rename the file to &ldquo;post-receive&rdquo;.</h1>
+
+<h1>. /usr/share/doc/git-core/contrib/hooks/post-receive-email</h1>
+
+<p>GIT_WORK_TREE=/home/ubuntu/www
+export GIT_WORK_TREE
+git checkout -f
+```</p>
+
+<p>The only thing you need to change here is the <code>GIT_WORK_TREE</code>, which is basically the path to where changes are being pushed when someone pushes into the bare git repo. Since we want changes to take effect on the public facing website, we setup the <code>GIT_WORK_TREE</code> to be the www directory. Which is the directory used by Apache to serve the website.</p>
+
+<p>Next, open up the <code>config</code> file of the bare git repo:</p>
+
+<p><code>
+cd /home/ubuntu/website.git
+sudo nano config
+</code></p>
+
+<p>Make sure it contains something similar to the following:</p>
+
+<p>```
+[core]</p>
+
+<pre><code>    repositoryformatversion = 0
+    filemode = true
+    bare = false
+    worktree = /home/ubuntu/www
+</code></pre>
+
+<p>[receive]</p>
+
+<pre><code>    denycurrentbranch = ignore
+</code></pre>
+
+<p>```</p>
+
+<p>Next, you need to make the <code>post-receive</code> file executable:</p>
+
+<p><code>
+chmod +x hooks/post-receive
+</code></p>
+
+<p>Now in your development machine. Navigate to your project directory then add a new <code>remote</code> and call it <code>deploy</code>. The path would be the ssh alias you&rsquo;ve given to the website earlier. In this case its <code>websitebroker</code>. Followed by a colon then the path to the bare git repo:</p>
+
+<p><code>
+git remote add deploy websitebroker:/home/ubuntu/website.git
+</code></p>
+
+<p>Next push the references using <code>git push</code>. You only have to do this for the first time.</p>
+
+<p><code>
+git push deploy +master:refs/heads/master
+</code></p>
+
+<p>Now everytime you push to your bitbucket or github remote repo. You can also push the changes to the server:</p>
+
+<p><code>
+git push deploy master
+</code></p>
+
+<p>If you want to do it in one command, you can edit the config file of your project (still on your development machine) and add the urls in there:</p>
+
+<p>```
+[remote &ldquo;all&rdquo;]</p>
+
+<pre><code>    url = https://github.com/YourGitAccount/ProjectDir.git
+    url = websitebroker:/home/ubuntu/website.git
+</code></pre>
+
+<p>```</p>
+
+<p>Now all you have to do is push using the <code>all</code> alias:</p>
+
+<p><code>
+git push all master
+</code></p>
+
+<p>Note that this deployment strategy doesn&rsquo;t update the dependencies. So you still need to login to the server and update your dependencies manually.</p>
+
+<h2>Conclusion</h2>
+
+<p>Automating deployment with Git is a nice way on saving up time manually pushing the changes to the server using ftp. With the deployment strategy we&rsquo;ve seen in this tutorial, you can easily push changes to your server by executing a single command in the terminal. It also gives you the advantage of being able to rollback the changes you&rsquo;ve made.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://chilipepperdesign.com/2013/01/07/deploying-code-with-git/">Deploying Code with Git</a></li>
+<li><a href="http://www.jeffhoefs.com/2012/09/setup-git-deploy-for-aws-ec2-ubuntu-instance/">Setup Git Deploy for AWS Ec2 Instance</a></li>
+<li><a href="http://deductiveblog.in/2013/05/19/deploy-to-amazon-ec2-using-git/">Deploy to Amazon EC2 using Git</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

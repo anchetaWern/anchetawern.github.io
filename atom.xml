@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-03-22T11:09:30+08:00</updated>
+  <updated>2015-03-28T13:10:40+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,256 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Automating Deployment to EC2 Instance with Git]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/03/28/automating-deployment-with-git/"/>
+    <updated>2015-03-28T17:10:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/03/28/automating-deployment-with-git</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how to automate the deployment of changes to your ec2 instance using git. Deployment is done by setting up a bare git repo somewhere in the home directory of the ec2 instance. A post-receive hook is then setup to automatically update the web root based on the changes. The post-receive hook is executed whenever a push is made to the bare git repo in the ec2 instance.</p>
+
+<h3>Setup SSH</h3>
+
+<p>First thing you need to do is to setup ssh access on your development machine (local computer). You can do that by navigating to the ssh directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.ssh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then open up the <code>config</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano config</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next add the Host (alias of the ec2 instance), Hostname, User and IdentityFile:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Host websitebroker
+</span><span class='line'>Hostname ec2-54-191-181-129.us-west-2.compute.amazonaws.com
+</span><span class='line'>User ubuntu
+</span><span class='line'>IdentityFile ~/.ssh/amazon-aws.pem</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a breakdown:</p>
+
+<ul>
+<li><code>Host</code> &ndash; a unique name you want to give to the server. This is used for referring to the server later on.</li>
+<li><code>Hostname</code> &ndash; the ip address of domain name of the server.</li>
+<li><code>User</code> &ndash; the user used for logging in to the server. For ec2 Ubuntu instance, this is usually Ubuntu.</li>
+<li><code>IdentityFile</code> &ndash; the path to the amazon identity file you have downloaded when you created the ec2 instance.</li>
+</ul>
+
+
+<p>You can test if the ssh configuration works by logging in to the server using the <code>Host</code> you&rsquo;ve added.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh websitebroker</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Executing the command above should log you in to the server if youre configuration is correct.</p>
+
+<h3>Setup Git</h3>
+
+<p>Once that&rsquo;s done, you can login to the server using ssh and setup git like you would usually set it up on your local computer.</p>
+
+<p>First you install git:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:pdoes/ppa
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install git-core</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, give identity to the server:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git config --global user.name "websitebroker"
+</span><span class='line'>git config --global user.email websitebroker@islickmedia.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, generate an ssh keypair:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh-keygen -t rsa -C "websitebroker@islickmedia.com"
+</span><span class='line'>ssh-add id_rsa</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re getting the following error when adding the private keyfile:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Could not open a connection to your authentication agent</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can try starting <code>ssh-agent</code> before executing <code>ssh-add</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>eval `ssh-agent -s`</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If that doesn&rsquo;t work, you can try the <a href="http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent">following solutions</a>.</p>
+
+<p>Once that&rsquo;s done, you can now add the public key to bitbucket, github or any other git service you&rsquo;re currently using. To do that, navigate to your ssh directory then output the contents of the <code>id_rsa.pub</code> file. Copy the output and paste it into the git service you&rsquo;re using:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.ssh
+</span><span class='line'>cat id_rsa.pub</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Setup Deployment</h3>
+
+<p>Navigate to the home directory of the server:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /home/ubuntu</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create and navigate to the directory where were going to push our changes later on:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir website.git
+</span><span class='line'>cd website.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, setup a bare git repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init --bare</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a <code>post-receive</code> file under the <code>hooks</code> directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/sh
+</span><span class='line'>#
+</span><span class='line'># An example hook script for the "post-receive" event.
+</span><span class='line'>#
+</span><span class='line'># The "post-receive" script is run after receive-pack has accepted a pack
+</span><span class='line'># and the repository has been updated.  It is passed arguments in through
+</span><span class='line'># stdin in the form
+</span><span class='line'>#  &lt;oldrev&gt; &lt;newrev&gt; &lt;refname&gt;
+</span><span class='line'># For example:
+</span><span class='line'>#  aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b7$
+</span><span class='line'>#
+</span><span class='line'># see contrib/hooks/ for an sample, or uncomment the next line and
+</span><span class='line'># rename the file to "post-receive".
+</span><span class='line'>
+</span><span class='line'>#. /usr/share/doc/git-core/contrib/hooks/post-receive-email
+</span><span class='line'>GIT_WORK_TREE=/home/ubuntu/www
+</span><span class='line'>export GIT_WORK_TREE
+</span><span class='line'>git checkout -f</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only thing you need to change here is the <code>GIT_WORK_TREE</code>, which is basically the path to where changes are being pushed when someone pushes into the bare git repo. Since we want changes to take effect on the public facing website, we setup the <code>GIT_WORK_TREE</code> to be the www directory. Which is the directory used by Apache to serve the website.</p>
+
+<p>Next, open up the <code>config</code> file of the bare git repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /home/ubuntu/website.git
+</span><span class='line'>sudo nano config</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make sure it contains something similar to the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[core]
+</span><span class='line'>        repositoryformatversion = 0
+</span><span class='line'>        filemode = true
+</span><span class='line'>        bare = false
+</span><span class='line'>        worktree = /home/ubuntu/www
+</span><span class='line'>[receive]
+</span><span class='line'>        denycurrentbranch = ignore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, you need to make the <code>post-receive</code> file executable:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>chmod +x hooks/post-receive</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now in your development machine. Navigate to your project directory then add a new <code>remote</code> and call it <code>deploy</code>. The path would be the ssh alias you&rsquo;ve given to the website earlier. In this case its <code>websitebroker</code>. Followed by a colon then the path to the bare git repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add deploy websitebroker:/home/ubuntu/website.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next push the references using <code>git push</code>. You only have to do this for the first time.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git push deploy +master:refs/heads/master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now everytime you push to your bitbucket or github remote repo. You can also push the changes to the server:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git push deploy master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to do it in one command, you can edit the config file of your project (still on your development machine) and add the urls in there:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[remote "all"]
+</span><span class='line'>        url = https://github.com/YourGitAccount/ProjectDir.git
+</span><span class='line'>        url = websitebroker:/home/ubuntu/website.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now all you have to do is push using the <code>all</code> alias:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git push all master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that this deployment strategy doesn&rsquo;t update the dependencies. So you still need to login to the server and update your dependencies manually.</p>
+
+<h2>Conclusion</h2>
+
+<p>Automating deployment with Git is a nice way on saving up time manually pushing the changes to the server using ftp. With the deployment strategy we&rsquo;ve seen in this tutorial, you can easily push changes to your server by executing a single command in the terminal. It also gives you the advantage of being able to rollback the changes you&rsquo;ve made.</p>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="http://chilipepperdesign.com/2013/01/07/deploying-code-with-git/">Deploying Code with Git</a></li>
+<li><a href="http://www.jeffhoefs.com/2012/09/setup-git-deploy-for-aws-ec2-ubuntu-instance/">Setup Git Deploy for AWS Ec2 Instance</a></li>
+<li><a href="http://deductiveblog.in/2013/05/19/deploy-to-amazon-ec2-using-git/">Deploy to Amazon EC2 using Git</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Stripe API]]></title>
@@ -2364,178 +2614,6 @@ I created this project to make it easier for me to setup a Laravel project faste
 <li><strong>Editing and deleting posts</strong> &ndash; currently you can no longer edit posts that has already been scheduled. I&rsquo;m planning to add an edit or delete feature in order for users to be able to make changes to their scheduled posts.</li>
 <li><strong>Immediate publishing</strong> &ndash; currently only scheduled posts are supported.</li>
 <li><strong>Add custom intervals to schedules</strong></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Publicizr]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr/"/>
-    <updated>2014-09-21T09:11:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/09/21/introduction-to-publicizr</id>
-    <content type="html"><![CDATA[<p>A couple of weeks ago I started building a project called <a href="https://github.com/anchetaWern/publicizr">Publicizr</a>. I created it for the sole purpose of easily publishing a link to my Facebook, Twitter and LinkedIn profile whenever I publish a new post on this blog.</p>
-
-<h3>Dependencies</h3>
-
-<p>This project depends on the following Ruby gems in order to work:</p>
-
-<ul>
-<li><a href="https://github.com/hexgnu/linkedin">linkedin</a> &ndash; used for connecting/publishing to Linkedin.</li>
-<li><a href="https://github.com/sferik/twitter">twitter</a> &ndash; used for connecting/publishing to Twitter.</li>
-<li><a href="https://github.com/arsduo/koala">koala</a> &ndash; used for connecting/publishing to Facebook.</li>
-<li><a href="https://github.com/mperham/em-resolv-replace">em-resolv-replace</a> &ndash; used for fixing the issue with koala not being able to publish to Facebook from the localhost.</li>
-</ul>
-
-
-<h3>How to Install</h3>
-
-<p>You can install Publicizr by requiring the following Ruby gems in the Gemfile used by your static blogging engine:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'linkedin', '~&gt; 1.0.0'
-</span><span class='line'>gem 'twitter', '~&gt; 5.11.0'
-</span><span class='line'>gem 'koala', '~&gt; 1.10.1'
-</span><span class='line'>gem 'em-resolv-replace', '~&gt; 1.1.3'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once you&rsquo;ve added those, save the changes to the Gemfile then execute <code>bundle install</code> on your terminal.</p>
-
-<p>Once everything is installed, look for the <code>Rakefile</code> used in your static blogging engine. For Octopress/Jekyll its located in its root directory. Next add the following on the <code>Rakefile</code>. If the <code>Rakefile</code> is requiring other gems, just put these below those gems. If not then put it on the first line of the <code>Rakefile</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require "twitter"
-</span><span class='line'>require "koala"
-</span><span class='line'>require "linkedin"
-</span><span class='line'>require "resolv-replace"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, put these on the last line of the <code>Rakefile</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>desc "Publish post to facebook, twitter and linkedin"
-</span><span class='line'>task :publish, :content do |t, args|
-</span><span class='line'>
-</span><span class='line'>  if args.content
-</span><span class='line'>    post = args.content
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    #start post to twitter
-</span><span class='line'>    tweet = Twitter::REST::Client.new do |config|
-</span><span class='line'>      config.consumer_key        = "{twitter-app-key}"
-</span><span class='line'>      config.consumer_secret     = "{twitter-app-secret}"
-</span><span class='line'>      config.access_token        = "{twitter-user-token}"
-</span><span class='line'>      config.access_token_secret = "{twitter-user-secret}"
-</span><span class='line'>    end
-</span><span class='line'>
-</span><span class='line'>    tweet.update(post)
-</span><span class='line'>    #end post to twitter
-</span><span class='line'>
-</span><span class='line'>    #start post to facebook
-</span><span class='line'>    @graph = Koala::Facebook::API.new("{facebook-user-token}")
-</span><span class='line'>    @graph.put_wall_post(post)
-</span><span class='line'>    #end post to facebook
-</span><span class='line'>
-</span><span class='line'>    #start post to linkedin
-</span><span class='line'>    linked_in = LinkedIn::Client.new('{linkedin-app-key}', '{linkedin-app-secret}')
-</span><span class='line'>    linked_in.authorize_from_access('{linkedin-user-token}', '{linkedin-user-secret}')
-</span><span class='line'>
-</span><span class='line'>    linked_in.add_share(:comment =&gt; post)
-</span><span class='line'>    #end post to linkedin
-</span><span class='line'>
-</span><span class='line'>    puts "Your post has been shared!"
-</span><span class='line'>
-</span><span class='line'>  else
-</span><span class='line'>    puts "Supply your post!"
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Basically what it does is declaring a rake task that will publish whatever content you pass into it. If you don&rsquo;t need to publish to all 3 (Facebook, Twitter, LinkedIn), feel free to comment out the lines between the lines which says &lsquo;#start post to facebook&rsquo; and &lsquo;#end post to facebook&rsquo;. Just replace &lsquo;facebook&rsquo; with your social network of choice.</p>
-
-<p>At this point the project still requires you to create your own app on each of the social networks. You can do that by visiting the following links and then look for the page for creating a new app:</p>
-
-<ul>
-<li><a href="https://developers.facebook.com/">Facebook</a></li>
-<li><a href="https://dev.twitter.com/">Twitter</a></li>
-<li><a href="https://developer.linkedin.com/">LinkedIn</a></li>
-</ul>
-
-
-<p>Once that&rsquo;s done, you also need to create an app using your language of choice (PHP, Ruby, or Python) that will allow you to retrieve user tokens. If you&rsquo;re primarily a PHP developer you can use the following libraries to ease the work that you need to do:</p>
-
-<ul>
-<li><a href="https://github.com/thephpleague/oauth2-client">thephpleagues/oauth2-client</a> &ndash; supports facebook and linkedin.</li>
-<li><a href="https://github.com/themattharris/tmhOAuth">thmOAuth</a> &ndash; supports twitter.</li>
-</ul>
-
-
-<p>Once you&rsquo;ve acquired the applications keys and user tokens you can now replace the values which says something like <code>{twitter-app-key}</code>, <code>{twitter-app-secret}</code> on the <code>publish</code> task in your <code>Rakefile</code>. Basically anything that&rsquo;s wrapped in curly brackets, you need to replace those in order for the plugin to fully function.</p>
-
-<h3>How to Use</h3>
-
-<p>You can use publicizr by executing the <code>publish</code> task then supplying the content of your post as an argument:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake publish["new blog post: newsletters I subscribe to http://wern-ancheta.com/blog/2014/09/07/newsletters-i-subscribe-to/"]</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Support</h3>
-
-<p>Any Ruby based static blogging engine is supported. You can check out this <a href="http://blog.iwantmyname.com/2014/05/the-updated-big-list-of-static-website-generators-for-your-site-blog-or-wiki.html">big list of static blogging engines</a> and look for the ones that are built using Ruby.</p>
-
-<h3>Future Plans</h3>
-
-<p>Publicizr is already useable but still requires a bunch of work in order to get setup and running. That&rsquo;s why I plan to add the following features in the future:</p>
-
-<ul>
-<li>automatically detect last post that was created and publish it automatically when the blog is deployed.</li>
-<li>website for retrieving user access tokens which you can then paste into the rake file. This removes the need for creating your own apps and retrieving your keys from it.</li>
 </ul>
 
 ]]></content>
