@@ -4,7 +4,7 @@
   <title><![CDATA[Category: api | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/api/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-03-28T13:10:40+08:00</updated>
+  <updated>2015-04-05T13:25:03+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,293 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with the Yahoo Finance API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/"/>
+    <updated>2015-04-05T13:24:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/04/05/getting-started-with-the-yahoo-finance-api</id>
+    <content type="html"><![CDATA[<p>The Yahoo Finance API provides a way for developers to get the latest information about the stock market. How the different stocks are doing. What&rsquo;s the current buying price for a single stock. How much is the difference of the current market value to that of yesterday&rsquo;s, etc.</p>
+
+<p>First thing that you need to do is to install the Guzzle library for PHP. This allows us to easily make http requests to the server. You can do that by adding the following on your <code>composer.json</code> file:</p>
+
+<p>```
+ {
+   &ldquo;require&rdquo;: {</p>
+
+<pre><code>  "guzzlehttp/guzzle": "~5.0"
+</code></pre>
+
+<p>   }
+}
+```</p>
+
+<p>Then execute <code>composer install</code> from your terminal.</p>
+
+<p>Next create a <code>test.php</code> file and put the following code:</p>
+
+<p><code>php
+&lt;?php
+require 'vendor/autoload.php';
+$client = new GuzzleHttp\Client();
+?&gt;
+</code></p>
+
+<p>This allows us to use guzzle from our file.</p>
+
+<p>Before we move on here are the specific data that you can get from the API:</p>
+
+<p><strong>Pricing</strong></p>
+
+<ul>
+<li><code>a</code> &ndash; ask</li>
+<li><code>b</code> &ndash; bid</li>
+<li><code>b2</code> &ndash; ask (realtime)</li>
+<li><code>b3</code> &ndash; bid (realtime)</li>
+<li><code>p</code> &ndash; previous close</li>
+<li><code>o</code> &ndash; open</li>
+</ul>
+
+
+<p><strong>Dividends</strong></p>
+
+<ul>
+<li><code>y</code> &ndash; dividend yield</li>
+<li><code>d</code> &ndash; dividend per share</li>
+<li><code>r1</code> &ndash; dividend pay date</li>
+<li><code>q</code> &ndash; ex-dividend date</li>
+</ul>
+
+
+<p><strong>Date</strong></p>
+
+<ul>
+<li><code>c1</code> &ndash; change</li>
+<li><code>c</code> &ndash; change &amp; percentage change</li>
+<li><code>c6</code> &ndash; change (realtime)</li>
+<li><code>k2</code> &ndash; change percent</li>
+<li><code>p2</code> &ndash; change in percent</li>
+<li><code>d1</code> &ndash; last trade date</li>
+<li><code>d2</code> &ndash; trade date</li>
+<li><code>t1</code> &ndash; last trade time</li>
+</ul>
+
+
+<p><strong>Averages</strong></p>
+
+<ul>
+<li><code>c8</code> &ndash; after hours change</li>
+<li><code>c3</code> &ndash; commission</li>
+<li><code>g</code> &ndash; day&rsquo;s low</li>
+<li><code>h</code> &ndash; day&rsquo;s high</li>
+<li><code>k1</code> &ndash; last trade (realtime) with time</li>
+<li><code>l</code> &ndash; last trade (with time)</li>
+<li><code>l1</code> &ndash; last trade (price only)</li>
+<li><code>t8</code> &ndash; 1 yr target price</li>
+<li><code>m5</code> &ndash; change from 200 day moving average</li>
+<li><code>m6</code> &ndash; percent change from 200 day moving average</li>
+<li><code>m7</code> &ndash; change from 50 day moving average</li>
+<li><code>m8</code> &ndash; percent change from 50 day moving average</li>
+<li><code>m3</code> &ndash; 50 day moving average</li>
+<li><code>m4</code> &ndash; 200 day moving average</li>
+</ul>
+
+
+<p><strong>Misc</strong></p>
+
+<ul>
+<li><code>w1</code> &ndash; day&rsquo;s value change</li>
+<li><code>w4</code> &ndash; day&rsquo;s value change (realtime)</li>
+<li><code>p1</code> &ndash; price paid</li>
+<li><code>m</code> &ndash; day&rsquo;s range</li>
+<li><code>m2</code> &ndash; day&rsquo;s range (realtime)</li>
+<li><code>g1</code> &ndash; holding gain percent</li>
+<li><code>g3</code> &ndash; annualized gain</li>
+<li><code>g4</code> &ndash; holdings gain</li>
+<li><code>g5</code> &ndash; holdings gain percent (realtime)</li>
+<li><code>g6</code> &ndash; holdings gain (realtime)</li>
+<li><code>t7</code> &ndash; ticker trend</li>
+<li><code>t6</code> &ndash; trade links</li>
+<li><code>i5</code> &ndash; order book (realtime)</li>
+<li><code>l2</code> &ndash; high limit</li>
+<li><code>l3</code> &ndash; low limit</li>
+<li><code>v1</code> &ndash; holdings value</li>
+<li><code>v7</code> &ndash; holdings value (realtime)</li>
+<li><code>s6</code> &ndash; revenue</li>
+</ul>
+
+
+<p><strong>52 Week Pricing</strong></p>
+
+<ul>
+<li><code>k</code> &ndash; 52 week high</li>
+<li><code>j</code> &ndash; 52 week low</li>
+<li><code>j5</code> &ndash; change from 52 week low</li>
+<li><code>k4</code> &ndash; change from 52 week high</li>
+<li><code>j6</code> &ndash; percent change from 52 week low</li>
+<li><code>k5</code> &ndash; percent change from 52 week high</li>
+<li><code>w</code> &ndash; 52 week range</li>
+</ul>
+
+
+<p><strong>Symbol Info</strong></p>
+
+<ul>
+<li><code>v</code> &ndash; more info</li>
+<li><code>j1</code> &ndash; market capitalization</li>
+<li><code>j3</code> &ndash; market cap (realtime)</li>
+<li><code>f6</code> &ndash; float shares</li>
+<li><code>n</code> &ndash; name</li>
+<li><code>n4</code> &ndash; notes</li>
+<li><code>s</code> &ndash; symbol</li>
+<li><code>s1</code> &ndash; shares owned</li>
+<li><code>x</code> &ndash; stock exchange</li>
+<li><code>j2</code> &ndash; shares outstanding</li>
+</ul>
+
+
+<p><strong>Volume</strong></p>
+
+<ul>
+<li><code>v</code> &ndash; volume</li>
+<li><code>a5</code> &ndash; ask size</li>
+<li><code>b6</code> &ndash; bid size</li>
+<li><code>k3</code> &ndash; last trade size</li>
+<li><code>a2</code> &ndash; average daily volume</li>
+</ul>
+
+
+<p><strong>Ratios</strong></p>
+
+<ul>
+<li><code>e</code> &ndash; earnings per share</li>
+<li><code>e7</code> &ndash; eps estimate current year</li>
+<li><code>e8</code> &ndash; eps estimate next year</li>
+<li><code>e9</code> &ndash; eps estimate next quarter</li>
+<li><code>b4</code> &ndash; book value</li>
+<li><code>j4</code> &ndash; EBITDA</li>
+<li><code>p5</code> &ndash; price / sales</li>
+<li><code>p6</code> &ndash; price / book</li>
+<li><code>r</code> &ndash; P/E ratio</li>
+<li><code>r2</code> &ndash; P/E ratio (realtime)</li>
+<li><code>r5</code> &ndash; PEG ratio</li>
+<li><code>r6</code> &ndash; price / eps estimate current year</li>
+<li><code>r7</code> &ndash; price /eps estimate next year</li>
+<li><code>s7</code> &ndash; short ratio</li>
+</ul>
+
+
+<p>Wew! Ok so that&rsquo;s a lot. I&rsquo;ll let you catch your breath for a second. Ready?</p>
+
+<p>Ok so now were ready to make a request to the API. You can either do that from here:</p>
+
+<p><code>
+http://download.finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}
+</code></p>
+
+<p>Or here:</p>
+
+<p><code>
+http://finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}
+</code></p>
+
+<p>Doesn&rsquo;t really matter which. Both returns the same thing. Here&rsquo;s an example which you can just copy and paste into your browser&rsquo;s address bar:</p>
+
+<p><code>
+http://finance.yahoo.com/d/quotes.csv?s=GOOGL&amp;f=abo
+</code></p>
+
+<p>Breaking it down. We make a request to this URL:</p>
+
+<p><code>
+http://finance.yahoo.com/d/quotes.csv
+</code></p>
+
+<p>And then we pass in some query parameters: <code>s</code> and <code>f</code>. <code>s</code> represents the symbol or symbols that you want to query. And <code>f</code> represents the data that you want. That&rsquo;s the big list that we just went through earlier. So if you want the API to return the ask, bid and open. We just need to pass in:</p>
+
+<p><code>
+f=abo
+</code></p>
+
+<p>In the example that we have. Were requesting this information for the <code>GOOGL</code> symbol. Which is basically Google. When this is requested in the browser, it downloads a <code>quotes.csv</code> file which contain something similar to the following:</p>
+
+<p><code>
+580.36,575.90,576.35
+</code></p>
+
+<p>Its a comma-separated list of all the values you requested. So 580.36 is the ask price, 575.90 is the bidding price, and 576.35 is the open price.</p>
+
+<p>If you want to query more than one symbol, you just separate each symbol with a comma. So for example you want to request the stock information about Google, Apple, Microsoft and Facebook:</p>
+
+<p><code>
+http://finance.yahoo.com/d/quotes.csv?s=GOOGL,AAPL,MSFT,FB&amp;f=abo
+</code></p>
+
+<p>Now let&rsquo;s proceed with actually making this all work with PHP. First we need to create a table that will store all the information that we need. In this case, we only need the symbol, ask, bid and open values:</p>
+
+<p>```sql
+CREATE TABLE symbols (</p>
+
+<pre><code>id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+symbol VARCHAR(30) NOT NULL,
+ask DOUBLE,
+bid DOUBLE,
+open DOUBLE
+</code></pre>
+
+<p>)
+```</p>
+
+<p>Next create an <code>indexer.php</code> file. What this file does is to query the yahoo finance api and then save the results to a csv file. Note that we can only query up to 200 symbols per request. So we&rsquo;ll have to work based on that on our code.</p>
+
+<p>The first thing that the code below does is to query the number of symbols currently in the database. And then we calculate how many times we need to loop in order to update all the symbols. We also need to declare the file path of the csv file in which will save all the results from the API. And initialize it by setting its value to an empty string. Then we declare the format <code>sabo</code>. Which means symbol, ask, bid and open. Next we create a for loop that will keep on executing until the value of <code>$x</code> reaches the total loop times that we got from dividing the total number of symbols by the API limit. Inside the loop we calculate the offset value by multiplying the current value of <code>$x</code> by the API limit. After that, we select the symbols that we need based on that. Then we loop through the results, specifically the symbol and then put them in an array. After looping through all the results, we convert the array into a comma separated list. This allows us to use this value for querying the API. Once we get the result back, we just save it to the csv file using <code>file_put_contents</code>.</p>
+
+<p>```php
+&lt;?php
+require &lsquo;vendor/autoload.php&rsquo;;
+$db = new Mysqli(HOST, USER, PASS, DB);
+$client = new GuzzleHttp\Client();</p>
+
+<p>$symbols_count_result = $db->query(&ldquo;SELECT COUNT(id) FROM symbols&rdquo;);
+$symbol_row = $symbols_count_result->fetch_row();
+$symbol_count = $symbol_row[0];</p>
+
+<p>$api_limit = 200;</p>
+
+<p>$loop_times = $symbol_count / $api_limit;
+$loop_times = floor($loop_times) + 1;</p>
+
+<p>$file = &lsquo;uploads/csv/stocks.csv&rsquo;;
+file_put_contents($file, &lsquo;&rsquo;);</p>
+
+<p>$format = &lsquo;sabo&rsquo;;</p>
+
+<p>for($x = 0; $x &lt; $loop_times; $x++){</p>
+
+<pre><code>$from = $x * $api_limit;
+$symbols_result = $db-&gt;query("SELECT * FROM symbols LIMIT '$api_limit' OFFSET '$from'");
+
+if($symbols_result-&gt;num_rows &gt; 0){
+
+    $symbols = array();
+    while($row = $symbols_result-&gt;fetch_object()){
+        symbols[] = $row-&gt;symbol;
+    } 
+
+    $symbols_str = implode(',', $symbols);
+    $stocks = $client-&gt;get("http://download.finance.yahoo.com/d/quotes.csv?s={$symbols_str}&amp;f={$format}");
+
+    file_put_contents($file, $stocks-&gt;getBody(), FILE_APPEND);
+}
+</code></pre>
+
+<p>}      <br/>
+?>
+```</p>
+
+<p>That&rsquo;s it! The Yahoo Finance API is a really nice way of getting financial information about specific companies.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Stripe API]]></title>
@@ -1179,374 +1466,6 @@ if(is_array($response) &amp;&amp; $response['ACK'] == 'Success'){
 <ul>
 <li><a href="https://developer.paypal.com/docs/classic/api/gs_PayPalAPIs/">Paypal Classic API Getting Started Guide</a></li>
 <li><a href="https://developer.paypal.com/docs/classic/api/">Paypal Classic API Reference</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Bitpay API]]></title>
-    <link href="http://anchetawern.github.io/blog/2013/12/01/getting-started-with-bitpay-api/"/>
-    <updated>2013-12-01T11:49:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2013/12/01/getting-started-with-bitpay-api</id>
-    <content type="html"><![CDATA[<p>Bitcoin is really trending these days with its value now over <a href="http://www.extremetech.com/extreme/171762-bitcoin-hits-1000-but-how-far-can-it-go">$1000 per coin</a>. I think its timely to explore some of the services which uses Bitcoin as a form of payment. Last time I also showed you how to <a href="http://anchetawern.github.io/blog/2013/11/03/gettting-started-with-coinbase-api/">get started with the Coinbase API</a> which is also another service which allows you to use Bitcoins as a means of payment for goods and services. This time we will be exploring Bitpay. But first lets determine what&rsquo;s the difference between the Coinbase and Bitpay. Here&rsquo;s a really good answer to <a href="http://bitcoin.stackexchange.com/questions/7544/what-are-the-differences-and-similarities-among-paymium-bitpay-coinbase-etc">this question</a>:</p>
-
-<p><blockquote><p>BitPay is a payment processor for E-Commerce as well as for bricks and mortar / point-of-sale. This allows a business to accept bitcoins for payment and the proceeds are delivered to the merchant as directed. This could be 100% fiat (e.g., all bitcoin sales get converted to USDs immediately, or a mix, .. like 30% USD, 70% BTCs, etc.) The currently can send payments to merchants in U.S., Mexico, Canada and several nations in Europe.</p></blockquote></p>
-
-<p><blockquote><p>Coinbase is an EWallet provider and provides a service for buying and selling bitcoins. They do not operate a market, but instead use the exchange rate from the leading exchange (Mt. Gox) for customer buying and selling. They charge just 1% to buy or sell, but they have low limits (i.e., buy a max of $100 USD per-day) for new customers still in the 30-day probationary period.</p></blockquote></p>
-
-<p>So what service you use basically depends on what you need.</p>
-
-<!-- more -->
-
-
-<h3>Signing Up</h3>
-
-<p>First you need to <a href="https://bitpay.com/start">sign up at Bitpay</a> in order to get an API key which you can use for interacting with their API. Bitpay is really strict when it comes to the registration so you really have to provide real information about your business so that you can actually confirm it when they need some confirmation.</p>
-
-<h3>Connecting to Bitpay API</h3>
-
-<p>The Bitpay API only requires basic HTTP authentication so the process of connecting to the API is really simple.
-All you have to do is to call the <code>base64_encode()</code> method on the API key that you acquire from Bitpay and then pass it as one of the HTTP header fields. Under the <code>Authorization</code> field use <code>Basic</code> followed by the base 64 encoded string representation of the API key. Here&rsquo;s how to do it using <code>file_get_contents()</code>:</p>
-
-<p>```php
-&lt;?php
-$user = base64_encode($api_key);</p>
-
-<p>$context_options = array(</p>
-
-<pre><code>"http" =&gt; array(
-    "method" =&gt; $method,
-    "header"  =&gt; "Content-type: application/json\r\n" . 
-        "Content-Length: $length\r\n" .
-        "Authorization: Basic $user\r\n"
-)
-</code></pre>
-
-<p>);</p>
-
-<p>$context = stream_context_create($context_options);</p>
-
-<p>//the $url here is the API resource that you&rsquo;re trying to request from
-$response = file_get_contents($url, false, $context);
-$response = json_decode($response, true);
-?>
-```</p>
-
-<h3>Creating an Invoice</h3>
-
-<p>You can create an Invoice via by using the following resource in the Bitpay API:</p>
-
-<p><code>
-https://bitpay.com/api/invoice
-</code></p>
-
-<p>Then passing in all the fields required by the resource:</p>
-
-<ul>
-<li><strong>price</strong> &ndash; the price of the service or good.</li>
-<li><strong>currency</strong> &ndash; any valid currency short name (USD, GBP, EUR, JPY). Here&rsquo;s a <a href="http://www.casi.org.uk/info/1051list/annexd.html">full list of valid currency short names</a>. This will be automatically converted to the corresponding value in Bitcoins (BTC) depending on the <a href="https://bitpay.com/bitcoin-exchange-rates">current Bitcoin exchange rates</a>.</li>
-</ul>
-
-
-<p>You can also pass in some optional fields:</p>
-
-<ul>
-<li><strong>posData</strong> &ndash; this is normally used for passing in some additional information regarding the service or good that a customer is trying to purchase</li>
-<li><p><strong>notificationURL</strong> &ndash; the URL that will be pinged by Bitpay everytime the transaction status changes. Note that a change from <code>new</code> to <code>expired</code> doesn&rsquo;t count as a transaction status change. Bitpay will only ping the URL when the transaction status changes from <code>new</code> to <code>paid</code>, <code>confirmed</code>, or<code>complete</code>.</p></li>
-<li><p><strong>transactionSpeed</strong> &ndash; this can be set to <code>high</code>, <code>medium</code> or <code>low</code>. High means that the invoice is considered to be confirmed after a payment has been received. Medium means it will be considered confirmed after 10 minutes. And low means it will be considered confirmed after an hour.</p></li>
-<li><p><strong>fullNotifications</strong> &ndash; this can be set to <code>true</code> or <code>false</code>. If you want Bitpay to notify via email or via the notification url that you have set every time the transaction status changes then use <code>true</code>. If you only want Bitpay to notify once the transaction status becomes confirmed then set to <code>false</code>.</p></li>
-<li><p><strong>notificationEmail</strong> &ndash; the email address that Bitpay will notify on every transaction status change.</p></li>
-<li><strong>redirectURL</strong> &ndash; the URL in which Bitpay will display in the receipt after a payment has been made.</li>
-</ul>
-
-
-<p>And here are some fields which you can use to supply information regarding the product or the customer:</p>
-
-<ul>
-<li><strong>orderID</strong></li>
-<li><strong>itemDesc</strong></li>
-<li><strong>itemCode</strong></li>
-<li><strong>physical</strong></li>
-<li><strong>buyerName</strong></li>
-<li><strong>buyerAddress1</strong></li>
-<li><strong>buyerAddress2</strong></li>
-<li><strong>buyerCity</strong></li>
-<li><strong>buyerState</strong></li>
-<li><strong>buyerZip</strong></li>
-<li><strong>buyerCountry</strong></li>
-<li><strong>buyerEmail</strong></li>
-<li><strong>buyerPhone</strong></li>
-</ul>
-
-
-<h3>Invoice Status</h3>
-
-<p>The invoice status is the status of the invoice at any given time. Here are some of the invoice states:</p>
-
-<ul>
-<li><strong>new</strong> &ndash; Initially the invoice status is <code>new</code>. This means that someone can still initiate a payment to the Bitcoin address that is associated with the invoice.</li>
-<li><strong>paid</strong> &ndash; when an invoice becomes fully paid its status changes to <code>paid</code></li>
-<li><strong>confirmed</strong> &ndash; an invoice is considered confirmed depending on the transaction speed that was set on the creation of invoice. If the transaction speed is set to low then it will be confirmed after an hour or 6 blocks in the Bitcoin network, if the transaction speed is set to medium then it will be confirmed after 1 block (10 minutes) in the Bitcoin network, if its set to high then it will be confirmed right after full payment has been made.</li>
-<li><strong>complete</strong> &ndash; this means that Bitpay has credited the merchant&rsquo;s account for the invoice.</li>
-<li><strong>expired</strong> &ndash; this means that no payment has been received after the 15 minute limit alloted by Bitpay.</li>
-<li><strong>invalid</strong> &ndash; this means that the invoice has been paid but has not been confirmed after an hour.</li>
-</ul>
-
-
-<p>Now were ready to actually make a request to the Bitpay API. You can start by downloading the official <a href="https://github.com/bitpay/php-client">PHP client</a> provided by Bitpay for interacting with the Bitpay API. There&rsquo;s also a <a href="https://github.com/bitpay/ruby-client">Ruby</a> and <a href="https://github.com/bitpay/nodejs-client">Node.js</a> client if you&rsquo;re developing for those.</p>
-
-<p>Once you&rsquo;ve downloaded it on your working directory open up the <code>bp_options.php</code> file and supply a value for the <code>apiKey</code>, <code>currency</code> or any of the optional fields that you would like to supply.</p>
-
-<p>Create a new PHP file which we will be using to call the methods from <code>bp_lib.php</code>. To create an invoice call the <code>bpCreateInvoice()</code> method. It needs 4 arguments. The first one is the order ID which we will just supply <code>null</code> since we really don&rsquo;t have a system for generating order IDs. The second is the amount or the cost of the product or service.
-The third is the optional post data in which we can provide additional information for the product or service in key-value pairs. The fourth is the additional options which is primarily used for supplying information regarding the product or the customer.</p>
-
-<p>```
-&lt;?php
-require &lsquo;bp_lib.php&rsquo;;</p>
-
-<p>$amount = 10;
-$post_data = array(</p>
-
-<pre><code>'name' =&gt; 'excalibur',
-'level' =&gt; '999'
-</code></pre>
-
-<p>);
-$addl_options = array(</p>
-
-<pre><code>'itemDesc' =&gt; 'Anime Figurine'
-</code></pre>
-
-<p>);</p>
-
-<p>$response = bpCreateInvoice(null, $amount, $post_data, $addl_options);                <br/>
-if(!empty($response)){</p>
-
-<pre><code>//do something
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Bitpay returns a response similar to the following:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[id] =&gt; xxx
-[url] =&gt; https://bitpay.com/invoice?id=xxx
-[posData] =&gt; {"posData":{"name":"excalibur","level":999},"hash":"xxxx-xx"}
-[status] =&gt; new
-[btcPrice] =&gt; 0.0009
-[price] =&gt; 1
-[currency] =&gt; USD
-[invoiceTime] =&gt; 1385885490958
-[expirationTime] =&gt; 1385886390958
-[currentTime] =&gt; 1385885491133
-</code></pre>
-
-<p>)
-```</p>
-
-<ul>
-<li><strong>id</strong> &ndash; the unique id of the invoice</li>
-<li><strong>url</strong> &ndash; the URL in which the invoice can be viewed</li>
-<li><strong>posData</strong> &ndash; the additional data that we provided earlier</li>
-<li><strong>status</strong> &ndash; the invoice status</li>
-<li><strong>btcPrice</strong> &ndash; the corresponding amount in Bitcoins of the amount supplied earlier</li>
-<li><strong>price</strong> &ndash; the amount that was supplied earlier when the invoice was created</li>
-<li><strong>currency</strong> &ndash; the currency of the price</li>
-<li><strong>invoiceTime</strong> &ndash; the time the invoice was created since January 1, 1970 midnight. This is in a UNIX timestamp format.</li>
-<li><strong>expirationTime</strong> &ndash; the time in which the invoice will expire. When the invoice expires payments can no longer be accepted.</li>
-<li><strong>currentTime</strong> &ndash; the current time in the Bitpay server. This is primarily used for determining the time remaining before the invoice expires.</li>
-</ul>
-
-
-<p>Accessing the invoice URL will give you a page similar to the following:</p>
-
-<p><img src="/images/posts/getting_started_with_bitpay/bitpay-donation.png" alt="invoice url" /></p>
-
-<p>Customers can then use a Bitcoin client such as <a href="http://bitcoin.org/en/download">Bitcoin Qt</a>, <a href="http://electrum.org/">Electrum</a>, <a href="https://multibit.org/">Multibit</a>, or <a href="https://bitcoinarmory.com/">Armory</a> to pay you the merchant.</p>
-
-<h3>Getting Invoice Status</h3>
-
-<p>You can also get the status of an invoice by calling the <code>bpGetInvoice()</code> method and supplying the invoice ID as the argument:</p>
-
-<p><code>php
-&lt;?php
-$invoice = bpGetInvoice('85AHEqCRaT2aZ3xAMpK8fQ');
-?&gt;
-</code></p>
-
-<p>The method will return something like this:</p>
-
-<p>```
-Array
-(</p>
-
-<pre><code>[id] =&gt; xxx
-[url] =&gt; https://bitpay.com/invoice?id=xxx
-[posData] =&gt; Array
-    (
-        [name] =&gt; excalibur
-        [age] =&gt; 27
-    )
-
-[status] =&gt; new
-[btcPrice] =&gt; 0.0009
-[price] =&gt; 1
-[currency] =&gt; USD
-[invoiceTime] =&gt; 1385885490958
-[expirationTime] =&gt; 1385886390958
-[currentTime] =&gt; 1385886420720
-</code></pre>
-
-<p>)
-```</p>
-
-<p>Its basically the same as the response that we get when creating an invoice.</p>
-
-<h3>Bitpay Class</h3>
-
-<p>Before I end this tutorial here&rsquo;s the modified version of the Bitpay client provided by Bitpay that works with servers without CURL support:</p>
-
-<p>```php
-&lt;?php
-class Bitpay{</p>
-
-<pre><code>private $options;
-
-public function __construct($options){
-    $this-&gt;options = $options;
-}
-
-public function bpLog($contents){
-    $file = dirname(__FILE__).'/bplog.txt';
-    file_put_contents($file, date('m-d H:i:s').": ", FILE_APPEND);
-
-    if (is_array($contents))
-        $contents = var_export($contents, true);    
-    else if (is_object($contents))
-        $contents = json_encode($contents);
-
-    file_put_contents($file, $contents."\n", FILE_APPEND);          
-}
-
-public function bpfilegetcontents($url, $apiKey, $post = false) {
-    global $bpOptions;  
-
-    $length = 0;
-    $method = "GET";
-    if($post){  
-        $length = strlen($post);
-        $method = "POST";
-    }
-
-    $uname = base64_encode($apiKey);
-
-    $context_options = array(
-        "http" =&gt; array(
-            "method" =&gt; $method,
-            "header"  =&gt; "Content-type: application/json\r\n" . 
-                "Content-Length: $length\r\n" .
-                "Authorization: Basic $uname\r\n"
-        )
-    );      
-
-    if($method == 'POST'){
-        $context_options["http"]["content"] = $post;
-    }
-
-    $context = stream_context_create($context_options);
-    $response = file_get_contents($url, false, $context);
-    $response = json_decode($response, true);
-
-    return $response;
-}
-
-public function bpCreateInvoice($orderId, $price, $posData, $options = array()) {   
-
-    $options = array_merge($this-&gt;options, $options);
-
-    $pos = array('posData' =&gt; $posData);
-    if ($this-&gt;options['verifyPos'])
-        $pos['hash'] = $this-&gt;bpHash(serialize($posData), $options['apiKey']);
-    $options['posData'] = json_encode($pos);
-
-    $options['orderID'] = $orderId;
-    $options['price'] = $price;
-
-    $postOptions = array('orderID', 'itemDesc', 'itemCode', 'notificationEmail', 'notificationURL', 'redirectURL', 
-        'posData', 'price', 'currency', 'physical', 'fullNotifications', 'transactionSpeed', 'buyerName', 
-        'buyerAddress1', 'buyerAddress2', 'buyerCity', 'buyerState', 'buyerZip', 'buyerEmail', 'buyerPhone');
-    foreach($postOptions as $o)
-        if (array_key_exists($o, $options))
-            $post[$o] = $options[$o];
-    $post = json_encode($post);
-
-    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/', $options['apiKey'], $post);
-
-    return $response;
-}
-
-
-public function bpVerifyNotification($apiKey = false) {
-
-    if (!$apiKey)
-        $apiKey = $this-&gt;options['apiKey'];     
-
-    $post = file_get_contents("php://input");
-    if (!$post)
-        return 'No post data';
-
-    $json = json_decode($post, true);
-
-    if (is_string($json))
-        return $json;
-
-    if (!array_key_exists('posData', $json)) 
-        return 'no posData';
-
-    $posData = json_decode($json['posData'], true);
-    if($this-&gt;options['verifyPos'] and $posData['hash'] != $this-&gt;bpHash(serialize($posData['posData']), $apiKey))
-        return 'authentication failed (bad hash)';
-    $json['posData'] = $posData['posData'];
-
-    return $json;
-}
-
-public function bpGetInvoice($invoiceId, $apiKey = false) {
-
-    if (!$apiKey)
-        $apiKey = $this-&gt;options['apiKey'];     
-
-    $response = $this-&gt;bpfilegetcontents('https://bitpay.com/api/invoice/'.$invoiceId, $apiKey);
-    if (is_string($response))
-        return $response; 
-    $response['posData'] = json_decode($response['posData'], true);
-    $response['posData'] = $response['posData']['posData'];
-
-    return $response;   
-}
-
-public function bpHash($data, $key) {
-    $hmac = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-    return strtr($hmac, array('+' =&gt; '-', '/' =&gt; '_', '=' =&gt; ''));
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="https://bitpay.com/downloads/bitpayApi.pdf">Bitpay API Documentation</a></li>
-<li><a href="https://github.com/bitpay/php-client">Bitpay PHP Client</a></li>
 </ul>
 
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-03-28T13:10:40+08:00</updated>
+  <updated>2015-04-05T13:25:03+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,345 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with the Yahoo Finance API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/"/>
+    <updated>2015-04-05T13:24:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/04/05/getting-started-with-the-yahoo-finance-api</id>
+    <content type="html"><![CDATA[<p>The Yahoo Finance API provides a way for developers to get the latest information about the stock market. How the different stocks are doing. What&rsquo;s the current buying price for a single stock. How much is the difference of the current market value to that of yesterday&rsquo;s, etc.</p>
+
+<p>First thing that you need to do is to install the Guzzle library for PHP. This allows us to easily make http requests to the server. You can do that by adding the following on your <code>composer.json</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> {
+</span><span class='line'>   "require": {
+</span><span class='line'>      "guzzlehttp/guzzle": "~5.0"
+</span><span class='line'>   }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then execute <code>composer install</code> from your terminal.</p>
+
+<p>Next create a <code>test.php</code> file and put the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This allows us to use guzzle from our file.</p>
+
+<p>Before we move on here are the specific data that you can get from the API:</p>
+
+<p><strong>Pricing</strong></p>
+
+<ul>
+<li><code>a</code> &ndash; ask</li>
+<li><code>b</code> &ndash; bid</li>
+<li><code>b2</code> &ndash; ask (realtime)</li>
+<li><code>b3</code> &ndash; bid (realtime)</li>
+<li><code>p</code> &ndash; previous close</li>
+<li><code>o</code> &ndash; open</li>
+</ul>
+
+
+<p><strong>Dividends</strong></p>
+
+<ul>
+<li><code>y</code> &ndash; dividend yield</li>
+<li><code>d</code> &ndash; dividend per share</li>
+<li><code>r1</code> &ndash; dividend pay date</li>
+<li><code>q</code> &ndash; ex-dividend date</li>
+</ul>
+
+
+<p><strong>Date</strong></p>
+
+<ul>
+<li><code>c1</code> &ndash; change</li>
+<li><code>c</code> &ndash; change &amp; percentage change</li>
+<li><code>c6</code> &ndash; change (realtime)</li>
+<li><code>k2</code> &ndash; change percent</li>
+<li><code>p2</code> &ndash; change in percent</li>
+<li><code>d1</code> &ndash; last trade date</li>
+<li><code>d2</code> &ndash; trade date</li>
+<li><code>t1</code> &ndash; last trade time</li>
+</ul>
+
+
+<p><strong>Averages</strong></p>
+
+<ul>
+<li><code>c8</code> &ndash; after hours change</li>
+<li><code>c3</code> &ndash; commission</li>
+<li><code>g</code> &ndash; day&rsquo;s low</li>
+<li><code>h</code> &ndash; day&rsquo;s high</li>
+<li><code>k1</code> &ndash; last trade (realtime) with time</li>
+<li><code>l</code> &ndash; last trade (with time)</li>
+<li><code>l1</code> &ndash; last trade (price only)</li>
+<li><code>t8</code> &ndash; 1 yr target price</li>
+<li><code>m5</code> &ndash; change from 200 day moving average</li>
+<li><code>m6</code> &ndash; percent change from 200 day moving average</li>
+<li><code>m7</code> &ndash; change from 50 day moving average</li>
+<li><code>m8</code> &ndash; percent change from 50 day moving average</li>
+<li><code>m3</code> &ndash; 50 day moving average</li>
+<li><code>m4</code> &ndash; 200 day moving average</li>
+</ul>
+
+
+<p><strong>Misc</strong></p>
+
+<ul>
+<li><code>w1</code> &ndash; day&rsquo;s value change</li>
+<li><code>w4</code> &ndash; day&rsquo;s value change (realtime)</li>
+<li><code>p1</code> &ndash; price paid</li>
+<li><code>m</code> &ndash; day&rsquo;s range</li>
+<li><code>m2</code> &ndash; day&rsquo;s range (realtime)</li>
+<li><code>g1</code> &ndash; holding gain percent</li>
+<li><code>g3</code> &ndash; annualized gain</li>
+<li><code>g4</code> &ndash; holdings gain</li>
+<li><code>g5</code> &ndash; holdings gain percent (realtime)</li>
+<li><code>g6</code> &ndash; holdings gain (realtime)</li>
+<li><code>t7</code> &ndash; ticker trend</li>
+<li><code>t6</code> &ndash; trade links</li>
+<li><code>i5</code> &ndash; order book (realtime)</li>
+<li><code>l2</code> &ndash; high limit</li>
+<li><code>l3</code> &ndash; low limit</li>
+<li><code>v1</code> &ndash; holdings value</li>
+<li><code>v7</code> &ndash; holdings value (realtime)</li>
+<li><code>s6</code> &ndash; revenue</li>
+</ul>
+
+
+<p><strong>52 Week Pricing</strong></p>
+
+<ul>
+<li><code>k</code> &ndash; 52 week high</li>
+<li><code>j</code> &ndash; 52 week low</li>
+<li><code>j5</code> &ndash; change from 52 week low</li>
+<li><code>k4</code> &ndash; change from 52 week high</li>
+<li><code>j6</code> &ndash; percent change from 52 week low</li>
+<li><code>k5</code> &ndash; percent change from 52 week high</li>
+<li><code>w</code> &ndash; 52 week range</li>
+</ul>
+
+
+<p><strong>Symbol Info</strong></p>
+
+<ul>
+<li><code>v</code> &ndash; more info</li>
+<li><code>j1</code> &ndash; market capitalization</li>
+<li><code>j3</code> &ndash; market cap (realtime)</li>
+<li><code>f6</code> &ndash; float shares</li>
+<li><code>n</code> &ndash; name</li>
+<li><code>n4</code> &ndash; notes</li>
+<li><code>s</code> &ndash; symbol</li>
+<li><code>s1</code> &ndash; shares owned</li>
+<li><code>x</code> &ndash; stock exchange</li>
+<li><code>j2</code> &ndash; shares outstanding</li>
+</ul>
+
+
+<p><strong>Volume</strong></p>
+
+<ul>
+<li><code>v</code> &ndash; volume</li>
+<li><code>a5</code> &ndash; ask size</li>
+<li><code>b6</code> &ndash; bid size</li>
+<li><code>k3</code> &ndash; last trade size</li>
+<li><code>a2</code> &ndash; average daily volume</li>
+</ul>
+
+
+<p><strong>Ratios</strong></p>
+
+<ul>
+<li><code>e</code> &ndash; earnings per share</li>
+<li><code>e7</code> &ndash; eps estimate current year</li>
+<li><code>e8</code> &ndash; eps estimate next year</li>
+<li><code>e9</code> &ndash; eps estimate next quarter</li>
+<li><code>b4</code> &ndash; book value</li>
+<li><code>j4</code> &ndash; EBITDA</li>
+<li><code>p5</code> &ndash; price / sales</li>
+<li><code>p6</code> &ndash; price / book</li>
+<li><code>r</code> &ndash; P/E ratio</li>
+<li><code>r2</code> &ndash; P/E ratio (realtime)</li>
+<li><code>r5</code> &ndash; PEG ratio</li>
+<li><code>r6</code> &ndash; price / eps estimate current year</li>
+<li><code>r7</code> &ndash; price /eps estimate next year</li>
+<li><code>s7</code> &ndash; short ratio</li>
+</ul>
+
+
+<p>Wew! Ok so that&rsquo;s a lot. I&rsquo;ll let you catch your breath for a second. Ready?</p>
+
+<p>Ok so now were ready to make a request to the API. You can either do that from here:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://download.finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or here:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Doesn&rsquo;t really matter which. Both returns the same thing. Here&rsquo;s an example which you can just copy and paste into your browser&rsquo;s address bar:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s=GOOGL&amp;f=abo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. We make a request to this URL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then we pass in some query parameters: <code>s</code> and <code>f</code>. <code>s</code> represents the symbol or symbols that you want to query. And <code>f</code> represents the data that you want. That&rsquo;s the big list that we just went through earlier. So if you want the API to return the ask, bid and open. We just need to pass in:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">f=abo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the example that we have. Were requesting this information for the <code>GOOGL</code> symbol. Which is basically Google. When this is requested in the browser, it downloads a <code>quotes.csv</code> file which contain something similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">580.36,575.90,576.35</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Its a comma-separated list of all the values you requested. So 580.36 is the ask price, 575.90 is the bidding price, and 576.35 is the open price.</p>
+
+<p>If you want to query more than one symbol, you just separate each symbol with a comma. So for example you want to request the stock information about Google, Apple, Microsoft and Facebook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s=GOOGL,AAPL,MSFT,FB&amp;f=abo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now let&rsquo;s proceed with actually making this all work with PHP. First we need to create a table that will store all the information that we need. In this case, we only need the symbol, ask, bid and open values:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">symbols</span> <span class="p">(</span>
+</span><span class='line'>    <span class="n">id</span> <span class="nb">INT</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="n">UNSIGNED</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">symbol</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">ask</span> <span class="n">DOUBLE</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">bid</span> <span class="n">DOUBLE</span><span class="p">,</span>
+</span><span class='line'>    <span class="k">open</span> <span class="n">DOUBLE</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create an <code>indexer.php</code> file. What this file does is to query the yahoo finance api and then save the results to a csv file. Note that we can only query up to 200 symbols per request. So we&rsquo;ll have to work based on that on our code.</p>
+
+<p>The first thing that the code below does is to query the number of symbols currently in the database. And then we calculate how many times we need to loop in order to update all the symbols. We also need to declare the file path of the csv file in which will save all the results from the API. And initialize it by setting its value to an empty string. Then we declare the format <code>sabo</code>. Which means symbol, ask, bid and open. Next we create a for loop that will keep on executing until the value of <code>$x</code> reaches the total loop times that we got from dividing the total number of symbols by the API limit. Inside the loop we calculate the offset value by multiplying the current value of <code>$x</code> by the API limit. After that, we select the symbols that we need based on that. Then we loop through the results, specifically the symbol and then put them in an array. After looping through all the results, we convert the array into a comma separated list. This allows us to use this value for querying the API. Once we get the result back, we just save it to the csv file using <code>file_put_contents</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nx">HOST</span><span class="p">,</span> <span class="nx">USER</span><span class="p">,</span> <span class="nx">PASS</span><span class="p">,</span> <span class="nx">DB</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$symbols_count_result</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(id) FROM symbols&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$symbol_row</span> <span class="o">=</span> <span class="nv">$symbols_count_result</span><span class="o">-&gt;</span><span class="na">fetch_row</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$symbol_count</span> <span class="o">=</span> <span class="nv">$symbol_row</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$api_limit</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$loop_times</span> <span class="o">=</span> <span class="nv">$symbol_count</span> <span class="o">/</span> <span class="nv">$api_limit</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$loop_times</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$loop_times</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$file</span> <span class="o">=</span> <span class="s1">&#39;uploads/csv/stocks.csv&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$format</span> <span class="o">=</span> <span class="s1">&#39;sabo&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="nv">$x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$x</span> <span class="o">&lt;</span> <span class="nv">$loop_times</span><span class="p">;</span> <span class="nv">$x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$from</span> <span class="o">=</span> <span class="nv">$x</span> <span class="o">*</span> <span class="nv">$api_limit</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$symbols_result</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM symbols LIMIT &#39;</span><span class="si">$api_limit</span><span class="s2">&#39; OFFSET &#39;</span><span class="si">$from</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$symbols_result</span><span class="o">-&gt;</span><span class="na">num_rows</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$symbols</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">while</span><span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$symbols_result</span><span class="o">-&gt;</span><span class="na">fetch_object</span><span class="p">()){</span>
+</span><span class='line'>            <span class="nx">symbols</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">symbol</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$symbols_str</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$symbols</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$stocks</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;http://download.finance.yahoo.com/d/quotes.csv?s=</span><span class="si">{</span><span class="nv">$symbols_str</span><span class="si">}</span><span class="s2">&amp;f=</span><span class="si">{</span><span class="nv">$format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nv">$stocks</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="nx">FILE_APPEND</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it! The Yahoo Finance API is a really nice way of getting financial information about specific companies.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Automating Deployment to EC2 Instance with Git]]></title>
@@ -2556,64 +2895,6 @@ I created this project to make it easier for me to setup a Laravel project faste
 <li><strong>database backup</strong> &ndash; every project must have an automated database backup functionality. I&rsquo;m thinking of using cron for running the backup script and then upload the backup to an Amazon s3 bucket.</li>
 <li><strong>generators</strong> &ndash; there are 2 projects doing this already, one is <a href="https://github.com/JeffreyWay/Laravel-4-Generators">Jeffrey Way&rsquo;s Laravel 4 Generators</a> and the other is <a href="https://github.com/wdollar/Laravel-4-Generators-Bootstrap-3">Wes Dollar&rsquo;s forked version</a>, both looks pretty good. I think I&rsquo;ll be able to get some ideas from these projects. Basically the plan here is to be able to use the terminal for generating boilerplate code which I can then build upon.</li>
 <li><strong>build tool integration</strong> &ndash; I want to be able to just hit one command and it will install and configure everything that I need to get the project started. Yeoman seems to be a very good fit for this.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Ahead]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/09/28/introduction-to-ahead/"/>
-    <updated>2014-09-28T09:20:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/09/28/introduction-to-ahead</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been in side-project frenzy these past few weeks. And this time I&rsquo;m writing again about another side-project that I&rsquo;ve been working on, its called <a href="https://github.com/anchetaWern/ahead">Ahead</a>. Ahead is an app that allows you to schedule posts to your facebook, twitter and linkedin accounts. Pretty much like Buffer. But Buffer has limits for free accounts, that&rsquo;s why I built this app so I can schedule posts without limits.</p>
-
-<h3>How to Use</h3>
-
-<p>You can use Ahead by going to its <a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/">demo website</a>. Create and account then login. Once logged in, go to the networks page and connect the accounts where you want to publish by clicking on the connect button:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/intro_to_ahead/networks.png" alt="networks" /></p>
-
-<p>Once your accounts has been connected, you can now start scheduling posts:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/intro_to_ahead/schedulenew_post.png" alt="schedule new post" /></p>
-
-<p>You can check the time in which your post will be published from the posts page. From the published column you can also see if your post has already been published or not:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/intro_to_ahead/posts.png" alt="posts" /></p>
-
-<p>If you don&rsquo;t want to select the networks in which you want to publish all the time, you can visit the settings page and then select the networks which you want to select by default:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/intro_to_ahead/settings.png" alt="settings" /></p>
-
-<p>If you don&rsquo;t want your posts to be published one hour after another you can also add custom schedules by visiting the schedules page:</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/intro_to_ahead/schedule.png" alt="new schedule" /></p>
-
-<p>Just select an interval that you want and it will be available as an option when you schedule a new post. Of course you can also select a default schedule from the settings page once you&rsquo;re done creating a schedule. Currently only the following intervals are supported:</p>
-
-<ul>
-<li>every 1 hour</li>
-<li>every 2 hours</li>
-<li>every 3 hours</li>
-<li>every 4 hours</li>
-<li>every 5 hours</li>
-<li>random time in the next 72 hours (3 days)</li>
-<li>random time in the next 168 hours (1 week)</li>
-</ul>
-
-
-<h3>Future Plans</h3>
-
-<p>Ahead is still in early stages of development. Its already quite functional but I&rsquo;m planning to add the following features in the future:</p>
-
-<ul>
-<li><strong>Publish posts without links</strong> &ndash; currently it can only publish posts with links in it. I originally envisioned this project for my personal use only and I don&rsquo;t really schedule posts without links in it.</li>
-<li><strong>Add social login</strong> &ndash; currently you can only start using the app by signing up with your email.</li>
-<li><strong>Email verification</strong> &ndash; currently you can use fake emails when signing up.</li>
-<li><strong>Editing and deleting posts</strong> &ndash; currently you can no longer edit posts that has already been scheduled. I&rsquo;m planning to add an edit or delete feature in order for users to be able to make changes to their scheduled posts.</li>
-<li><strong>Immediate publishing</strong> &ndash; currently only scheduled posts are supported.</li>
-<li><strong>Add custom intervals to schedules</strong></li>
 </ul>
 
 ]]></content>
