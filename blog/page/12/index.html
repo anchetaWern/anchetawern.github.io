@@ -9,7 +9,9 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Here are some of the things that I&rsquo;ve learned on AppendTo Developer Learning Center on their JavaScript 102 course: Block scope doesn&rsquo;t &hellip;">
+  <meta name="description" content="Functions are special type of objects which can be invoked.
+You can specify the context that will be used by an object using the apply method.
+The &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +73,259 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/19/what-i-learned-from-appendto-javascript-103/">What I Learned From AppendTo JavaScript 103</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2012-08-19T11:48:00+08:00" pubdate data-updated="true">Aug 19<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/08/19/what-i-learned-from-appendto-javascript-103/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>Functions are special type of objects which can be invoked.</li>
+<li>You can specify the context that will be used by an object using the <code>apply</code> method.</li>
+<li>The main difference between <code>call</code> and <code>apply</code> is that <code>call</code> can accept any number of parameters separated by comma
+while <code>apply</code> only accepts 2 parameters: first is the function context and the second is an array of parameters to be used by the function
+you are calling the <code>apply</code> from.</li>
+<li>You can use objects as parameter to functions. In the example below we define a function which iterates over an object using the <code>for in</code> loop.
+First let&rsquo;s define the object:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">name</span> <span class="o">:</span> <span class="s2">&quot;ash&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">bestfriend</span> <span class="o">:</span> <span class="s2">&quot;pikachu&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then define the function.
+This takes up a single object as its parameter and it simply iterates over its properties using the <code>for in</code> loop.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">funk_obj</span><span class="p">(</span><span class="nx">obj</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">x</span><span class="p">]);</span> <span class="c1">//print the current property + its value</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Invoking the function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">funk_obj</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">output:</span>
+</span><span class='line'><span class="cm">name : ash</span>
+</span><span class='line'><span class="cm">bestfriend : pikachu</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>You can use a function as parameter to functions(did I just confused you? sorry about that).
+First let&rsquo;s define the object(its basically the same object that we used a moment ago, coz I freaking love pokemon).</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">name</span> <span class="o">:</span> <span class="s2">&quot;ash&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">bestfriend</span> <span class="o">:</span> <span class="s2">&quot;pikachu&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And define the function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">funky</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">funk</span><span class="p">){</span>
+</span><span class='line'>   <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">){</span>
+</span><span class='line'>     <span class="nx">funk</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">x</span><span class="p">],</span> <span class="nx">x</span><span class="p">);</span> <span class="c1">//set the context to the current property iterated over, the second parameter is the index.</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Then we call it and specifying the object <code>obj</code> as the first parameter and an anonymous function as the second parameter. This
+function will be called inside the for in loop in the function definition earlier. The context used by the anonymous function
+is now the object <code>obj</code> the second parameter in the <code>funk.call</code> earlier is actually represented by the <code>index</code> parameter in our
+anonymous function(it&rsquo;s really confusing, better read up some more stuff about this if my explanation didn&rsquo;t make any sense).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">funky</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span><span class="nx">obj</span><span class="p">[</span><span class="nx">index</span><span class="p">]);</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>arguments</code> object can be used to access the value of an argument in a specific index. <code>arguments</code> contains
+all the arguments passed in from the invoker.
+You can access the arguments using the index, the first argument passed in when the function is invoked will be at index 0 and so on.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">args</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Invoking it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">args</span><span class="p">(</span><span class="s2">&quot;happy&quot;</span><span class="p">,</span> <span class="s2">&quot;birthday&quot;</span><span class="p">);</span> <span class="c1">//output: &quot;happy birthday&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>You can pass any number of parameters when executing a function. What I mean by that the number of arguments that you pass in
+when invoking a function doesn&rsquo;t necessarily have to match the number of parameters that you have specified when you defined your function.
+In the example below we didn&rsquo;t define the parameters that will be taken by the <code>args_taker()</code> function.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">args_taker</span><span class="p">(){</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">x</span> <span class="o">&lt;=</span> <span class="nx">len</span> <span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="nx">x</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>But once we invoke it we pass in 5 arguments:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">args_taker</span><span class="p">(</span><span class="s2">&quot;pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;squirtle&quot;</span><span class="p">,</span> <span class="s2">&quot;bulbasaur&quot;</span><span class="p">,</span> <span class="s2">&quot;blastoise&quot;</span><span class="p">,</span> <span class="s2">&quot;charizard&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">output:</span>
+</span><span class='line'><span class="cm"> pikachu</span>
+</span><span class='line'><span class="cm"> squirtle</span>
+</span><span class='line'><span class="cm"> bulbasaur</span>
+</span><span class='line'><span class="cm"> blastoise</span>
+</span><span class='line'><span class="cm"> charizard</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>You can declare a function inline as a parameter to a certain function. You&rsquo;ve already seen this earlier when we called the <code>funky()</code> function
+and passed in an anonymous function as its second parameter.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">funky</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span><span class="nx">obj</span><span class="p">[</span><span class="nx">index</span><span class="p">]);</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li>Default object is the <code>DOMWindow object</code> or <code>[object Window]</code>. Try typing <code>this</code> on chrome console if you don&rsquo;t believe me.</li>
+<li>A function called directly without an explicit owner object causes the value of <code>this</code> to be the default object. We can prove that by
+creating a function which prints the value of <code>this</code> into the console. The result will be the <code>Window object</code>.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">x</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">x</span><span class="p">();</span> <span class="c1">//output: Window object</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Only the owner object can determine the value of <code>this</code></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -941,7 +1196,7 @@ duplication is going to make me stop doing this. It&rsquo;s my own version of an
 <li><code>.</code> matches every character(symbols, numbers, whitespaces, letters)</li>
 <li><code>\.</code>  matches the dot symbol. You can pretty much apply this to every special character that is used in Regular Expressions such as <code>$, ^, +</code> for matching symbols.</li>
 <li><code>\b[\w-]+@[A-Za-z]+\.[a-z]{2,4}\b</code>  matches an email. An email composes of a username, the @ sign, then the domain name(gmail,ymail), the . sign, then a 2-4 character extension(edu, ph, com)</li>
-<li><code>\b[\w-]+@[A-Za-z]+\.[a-z]{2,4}+(\.[a-z]{2})?\b</code>  matches an email which has a country extension after the actual domain name extension(org, edu, com) like: <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#97;&#98;&#99;&#64;&#121;&#x61;&#104;&#x6f;&#111;&#x2e;&#x63;&#x6f;&#109;&#x2e;&#106;&#112;">&#97;&#x62;&#x63;&#x40;&#121;&#x61;&#104;&#x6f;&#111;&#46;&#x63;&#x6f;&#x6d;&#46;&#x6a;&#x70;</a> for people from Japan</li>
+<li><code>\b[\w-]+@[A-Za-z]+\.[a-z]{2,4}+(\.[a-z]{2})?\b</code>  matches an email which has a country extension after the actual domain name extension(org, edu, com) like: <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#97;&#98;&#99;&#64;&#x79;&#97;&#104;&#x6f;&#111;&#x2e;&#99;&#111;&#x6d;&#46;&#x6a;&#x70;">&#x61;&#98;&#99;&#x40;&#121;&#x61;&#x68;&#111;&#x6f;&#46;&#x63;&#111;&#109;&#x2e;&#106;&#x70;</a> for people from Japan</li>
 </ul>
 
 
@@ -1299,6 +1554,10 @@ then your localtunnel command will be <code>localtunnel 8020</code></p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
       </li>
     
@@ -1312,10 +1571,6 @@ then your localtunnel command will be <code>localtunnel 8020</code></p>
     
       <li class="post">
         <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/07/introduction-to-antares-web/">Introduction to Antares Web</a>
       </li>
     
   </ul>

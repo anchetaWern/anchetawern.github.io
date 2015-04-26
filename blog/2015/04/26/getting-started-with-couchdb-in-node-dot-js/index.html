@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with CouchDB in Node.js - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through how to get started with CouchDB in Node.js. But first here&rsquo;s some background on what &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetawern.github.io/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetawern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With CouchDB in Node.js</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-26T08:00:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;m going to walk you through how to get started with CouchDB in Node.js. But first here&rsquo;s some background on what CouchDB is. CouchDB is a NoSQL database from the Apache Foundation. Just like any other NoSQL database out there. It uses JSON to store data and it deals with separate documents instead of tables and fields.</p>
+
+<h3>Installing CouchDB</h3>
+
+<p>You can install CouchDB by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install couchdb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done you can test if its successfully installed by accessing <code>http://localhost:5984/</code> from your browser. You&rsquo;re good to go if it returns a response similar to the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"couchdb":"Welcome","uuid":"0eb12dd741b22a919c8701dd6dc14087","version":"1.5.0","vendor":{"version":"14.04","name":"Ubuntu"}}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Futon</h3>
+
+<p>If you&rsquo;re from the RDBMS land. You might be familiar with Phpmyadmin. In CouchDB Futon is the equivalent of Phpmyadmin. It allows you to manage your CouchDB databases with ease. In case you&rsquo;re wondering what Futon means, its basically a Japanese word. Futon is a traditional japanese bedding.</p>
+
+<p>Ok enough with the trivia. You can access Futon by going to <code>http://localhost:5984/_utils/</code>. It should show you something similar to the following:</p>
+
+<p><img src="/images/posts/couchdb/futon.png" alt="futon" /></p>
+
+<p>The first thing you need to do is to configure futon so that it has an admin user. Because by default, every user who has access to it have admin privileges. It can only be accessed from the local computer so this isn&rsquo;t really a security issue. Not unless a hacker gets to access the server. You can setup an admin by going into the configuration page. Just click &lsquo;Configuration&rsquo; under the tools menu to get there. Next click on the &lsquo;setup admin&rsquo; link found at the bottom right corner. This should open up a modal that asks you to enter the username and password that you can use for logging in as admin.</p>
+
+<p><img src="/images/posts/couchdb/futon-admin.png" alt="futon admin" /></p>
+
+<p>Just enter your desired username and password and then click &lsquo;create&rsquo; to create the admin. You can now login as an admin by clicking on the &lsquo;login&rsquo; link. Non-admin users will only now have read privileges once you have setup your first admin user.</p>
+
+<p>With Futon you can create a new database, add documents, update documents, delete documents and delete a database. Using Futon is pretty straightforward so I&rsquo;m just going to leave it to you to explore it.</p>
+
+<h3>Creating a Database</h3>
+
+<p>You can create a new database via Futon. From the Futon index page, click on the &lsquo;create database&rsquo; link to create a new database. This will create a new database where you can add new documents.</p>
+
+<h3>Adding New Documents</h3>
+
+<p>You can add new documents by making a curl request to port 5984 of your localhost. Here&rsquo;s an example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST http://127.0.0.1:5984/test_db/ -d '{"name": "Ash Ketchum", "age": 10, "type": "trainer"}' -H "Content-Type: application/json"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a breakdown of the options we have passed to curl:</p>
+
+<ul>
+<li><code>-X POST http://127.0.0.1:5984/test/</code> &ndash; the <code>-X</code> option is used to specify the type of request and the host. In this case the host is the URL in which CouchDB is running. And the type of request is <code>POST</code></li>
+<li><code>-d '{"name": "Ash Ketchum", "age": 10, "type": "trainer"}'</code> &ndash; <code>-d</code> is used for specifying the data that you want to submit. In this case were using a JSON string to represent the data. Note that there are no fields that are required by CouchDB. But its helpful to specify a <code>type</code> field so that we can easily query documents later on based on their type.</li>
+<li><code>-H "Content-Type: application/json"</code> &ndash; <code>-H</code> is used for specifying the header type.</li>
+</ul>
+
+
+<p>Executing the command above will return something similar to the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "ok":true,
+</span><span class='line'>    "id":"cc6b37f1e6b2215f2a5ccac38c000a43",
+</span><span class='line'>    "rev":"1-61280846062dcdb986c5a6c4aa9aaf03"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usually this is the status of the request (ok), the id assigned to the document (id), and the revision number (rev).</p>
+
+<h3>Retrieving Documents</h3>
+
+<p>You can retrieve all documents from a specific database by using a <code>GET</code> request:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X GET http://127.0.0.1:5984/test_db/_all_docs </span></code></pre></td></tr></table></div></figure>
+
+
+<p>This returns the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "total_rows":1,
+</span><span class='line'>    "offset":0,
+</span><span class='line'>    "rows":[
+</span><span class='line'>        {
+</span><span class='line'>            "id":"cc6b37f1e6b2215f2a5ccac38c000a43",
+</span><span class='line'>            "key":"cc6b37f1e6b2215f2a5ccac38c000a43",
+</span><span class='line'>            "value":{
+</span><span class='line'>                "rev":"1-61280846062dcdb986c5a6c4aa9aaf03"
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that this only returns the id, key and value of the document and not the actual contents of the documents. If you also need to return the contents, just add the <code>include_docs</code> as a query parameter and set its value to <code>true</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X GET http://127.0.0.1:5984/test_db/_all_docs?include_docs=true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to retrieve a specific document, use the document id:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X GET http://127.0.0.1:5984/test_db/cc6b37f1e6b2215f2a5ccac38c000a43</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to retrieve a specific revision, you can supply <code>rev</code> as a query parameter and then use the revision id as the value.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X GET http://127.0.0.1:5984/test/cc6b37f1e6b2215f2a5ccac38c000a43?rev=1-61280846062dcdb986c5a6c4aa9aaf03</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Updating Documents</h3>
+
+<p>You can update documents by using the document id and the revision id. All you have to do is make a <code>PUT</code> request to the database that you want to update and add the document id as a path. And then supply the updated data along with the revision that you want to update:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X PUT http://127.0.0.1:5984/test_db/cc6b37f1e6b2215f2a5ccac38c000a43 -d '{"_rev": "1-61280846062dcdb986c5a6c4aa9aaf03", "name": "Ash Ketchum", "age": 12, "type": "trainer"}' -H "Content-Type: application/json"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It should return something similar to the following if the update was successful:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "ok":true,
+</span><span class='line'>    "id":"cc6b37f1e6b2215f2a5ccac38c000a43",
+</span><span class='line'>    "rev":"2-0023f19d7d3097468a8eeec014018840"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Revisions is an important feature that comes with CouchDB. Its like a built-in version control for each document. You can always go back to a previous version of a specific document as long as you haven&rsquo;t deleted it.</p>
+
+<h3>Deleting Documents</h3>
+
+<p>You can delete a document by using the same path as updating documents or when you&rsquo;re retrieving them. The only difference is you need to use a <code>DELETE</code> request and supply the revision id as a query parameter:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X DELETE http://127.0.0.1:5984/test_db/cc6b37f1e6b2215f2a5ccac38c000a43?rev=2-0023f19d7d3097468a8eeec014018840</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This deletes the second revision of the document. If you check the document from Futon, you will no longer see it there. But you will still be able to get a specific revision which haven&rsquo;t been deleted if you supply the previous revision id in the request for getting a specific document:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X GET http://127.0.0.1:5984/test_db/cc6b37f1e6b2215f2a5ccac38c000a43?rev=1-61280846062dcdb986c5a6c4aa9aaf03</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Backup and Restore</h3>
+
+<p>Unlike Phpmyadmin, Futon doesn&rsquo;t come with backup and restore capabilities. Good thing we have this awesome guy who created a <a href="https://github.com/danielebailo/couchdb-dump">backup and restore utility</a> for CouchDB. Just download the couchdb-backup.sh file from the Github repo and place it somewhere in your computer.</p>
+
+<p>To backup a specific database, just use the <code>bash</code> command and supply the filename of the backup utility. You supply the <code>-b</code> option if you want to backup and <code>-r</code> if you want to restore. <code>-H</code> is the host, if you don&rsquo;t supply the port it uses 5984 by default. <code>-d</code> is the name of the database. <code>-f</code> is the filename of the backup file that will be created. <code>-u</code> is the admin username that you use for logging in to Futon. And <code>-p</code> is the password:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bash couchdb-backup.sh -b -H 127.0.0.1 -d test_db -f test_db.json -u your_username -p your_password</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To restore the backup, just supply the <code>-r</code> option instead of <code>-b</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bash couchdb-backup.sh -r -H 127.0.0.1 -d test_db -f test_db.json -u your_username -p your_password</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Views</h3>
+
+<p>Views are used to query the database for a specific data. If you&rsquo;re coming from the RDBMS land, you usually select specific data using the <code>SELECT</code> command. And then you use <code>WHERE</code> to get what you want. Once you&rsquo;re done, you call it a day. With CouchDB its different. Because it doesn&rsquo;t come with functions that allows you to select specific data easily. In CouchDB we need to use views. A view is basically just a JavaScript function that emits the documents that you need.</p>
+
+<p>Before we move on with working with views, you can add the following document to your CouchDB database if you want to follow along:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"new_edits":false,"docs":[
+</span><span class='line'>{"_id":"cc6b37f1e6b2215f2a5ccac38c000e58","_rev":"1-cbc1dd4e0dd53b3f9770bb8edc30ae33","name":"pikachu","type":"electric","trainer":"ash","gender":"m"},
+</span><span class='line'>{"_id":"cc6b37f1e6b2215f2a5ccac38c001e2c","_rev":"2-fbe6131ea1248b83301900a5954dec6d","name":"squirtle","type":"water","trainer":"ash","gender":"m"},
+</span><span class='line'>{"_id":"cc6b37f1e6b2215f2a5ccac38c0020d9","_rev":"1-8f98424393470486d60cf5fff00f33d3","name":"starmie","type":"water","trainer":"misty","gender":"f"},
+</span><span class='line'>{"_id":"cc6b37f1e6b2215f2a5ccac38c00215e","_rev":"1-aac04234d60216760bd9e3f89fa602e9","name":"geodude","type":"rock","trainer":"brock","gender":"m"},
+</span><span class='line'>{"_id":"cc6b37f1e6b2215f2a5ccac38c0030b4","_rev":"1-280586eb35fc3bde31f88ec9913f3dcb","name":"onix","type":"rock","trainer":"brock","gender":"m"}
+</span><span class='line'>]}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What you see above is a backup file which you can restore by using the backup and restore utility which I introduced earlier.</p>
+
+<h4>Creating a View</h4>
+
+<p>You can create a view by selecting your database from Futon. From there, look for the view dropdown box and then select &lsquo;temporary view&hellip;&rsquo;. This allows you to test and create a view. Enter the following in the view code box:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function(doc) {
+</span><span class='line'>   emit(doc.type, null);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Click on &lsquo;run&rsquo; to run it. This will list all of the documents in the database using the <code>type</code> field as its key. We have set the <code>value</code> to null because we don&rsquo;t need it. The <code>value</code> can be set to <code>doc</code> and then the value that&rsquo;s returned will be the actual contents of the document. You can do that but its not really good practice since it consumes a lot of memory. Once you see some output you can now click on &lsquo;save as&rsquo; and then supply the name of the design document and the view name. You can name those with any name you want but its good practice to give the design document a name which represents the type of document. In this case its &lsquo;pokemon&rsquo;. And the view name would be the key that you use. Some folks usually prefix it with <code>by_</code>. I also prefer it so I&rsquo;ll name the view &lsquo;by_type&rsquo;. Click on &lsquo;save&rsquo; once you&rsquo;re done giving the names.</p>
+
+<p>Here&rsquo;s how you can use the view:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl "http://127.0.0.1:5984/test_db/_design/pokemon/_view/by_type?key=%22water%22"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down, the first part of the URL is the host where CouchDB is running:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://127.0.0.1:5984</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the database:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>test_db</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then you specify the name of the design document by supplying <code>_design</code> followed by the name of the design document:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>_design/pokemon</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next you also need to specify the view:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>_view/by_type</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then lastly, your query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>key=%22water%22"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that you need to supply a URL encoded query. <code>%22</code> represents double-quotes so were wrapping the actual query with <code>%22</code> instead of double-quotes. Executing it would return the following. Basically the same as what you seen in Futon but this time its filtered according to the value you supplied as the <code>key</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "total_rows":5,
+</span><span class='line'>    "offset":3,
+</span><span class='line'>    "rows":[
+</span><span class='line'>        {
+</span><span class='line'>            "id":"cc6b37f1e6b2215f2a5ccac38c001e2c",
+</span><span class='line'>            "key":"water",
+</span><span class='line'>            "value":null
+</span><span class='line'>        },
+</span><span class='line'>        {
+</span><span class='line'>            "id":"cc6b37f1e6b2215f2a5ccac38c0020d9",
+</span><span class='line'>            "key":"water",
+</span><span class='line'>            "value":null
+</span><span class='line'>        }
+</span><span class='line'>    ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the idea of views is that you have to emit the value for the field that you want to perform your query on. In this case we have emitted the <code>type</code> field.</p>
+
+<h3>Working with Node.js</h3>
+
+<p>You can work with CouchDB using the <a href="https://github.com/dscape/nano">Nano</a> package. You can install it in your project by executing the following command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install nano --save</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use nano, create a new JavaScript file and name it <code>app.js</code>. Then you can connect to CouchDB by adding the following code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var nano = require('nano')('http://localhost:5984');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you already have a specific database to work with, you can connect to it by using the <code>db.use</code> method and then supply the name of the database as the argument:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var test_db = nano.db.use('test_db');</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Creating New Documents</h4>
+
+<p>You can create new documents by using the <code>insert</code> method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var data = { 
+</span><span class='line'>    name: 'pikachu', 
+</span><span class='line'>    skills: ['thunder bolt', 'iron tail', 'quick attack', 'mega punch'], 
+</span><span class='line'>    type: 'electric' 
+</span><span class='line'>};
+</span><span class='line'>
+</span><span class='line'>test_db.insert(data, 'unique_id', function(err, body){
+</span><span class='line'>  if(!err){
+</span><span class='line'>    //awesome
+</span><span class='line'>  }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>insert</code> method takes up the data that you want to save as its first argument, the id as its second argument and the third is the function that will be called once it gets a response. Note that the id is optional, so you can choose to supply a value or not. If you didn&rsquo;t supply a value for it then CouchDB will automatically generate a unique id for you.</p>
+
+<h4>Retrieving Documents</h4>
+
+<p>Views are still utilized when retrieving specific documents from CouchDB in Nano. The <code>view</code> method is used for specifying which view you want to use. This method takes the name of the design document as its first argument, the name of the view as its second and then the query parameters that you want to pass in as the third argument. The fourth argument is the function that you want to execute once a response has been received:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var type = 'water';
+</span><span class='line'>db.view('pokemon', 'by_type', {'key': type, 'include_docs': true}, function(err, body){
+</span><span class='line'>    
+</span><span class='line'>    if(!err){
+</span><span class='line'>        var rows = body.rows; //the rows returned
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>    }
+</span><span class='line'>);</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Updating Documents</h4>
+
+<p>Nano doesn&rsquo;t come with an update method by default. That is why we need to define a custom method that would do it for us. Declare the following near the top of your <code>app.js</code> file, right after your database connection code.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>test_db.update = function(obj, key, callback){
+</span><span class='line'> var db = this;
+</span><span class='line'> db.get(key, function (error, existing){ 
+</span><span class='line'>    if(!error) obj._rev = existing._rev;
+</span><span class='line'>    db.insert(obj, key, callback);
+</span><span class='line'> });
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then use the <code>update</code> method in your code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>db.update(doc, doc_id, function(err, res){
+</span><span class='line'>    if(!err){
+</span><span class='line'>        //document has been updated
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that you need the id of the document when performing an update. That&rsquo;s why you first need to create a view that would emit a unique field as the key and the document id as the value. In this case the unique field is the <code>name</code>. Each Pokemon has a unique name so this works:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function(doc) {
+</span><span class='line'>   emit(doc.name, doc._id);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just give this view a design name of &lsquo;pokemon&rsquo; and a name of &lsquo;by_name&rsquo;. And then you can use this view to update a Pokemon by name. All you have to do is call the <code>update</code> method once you have retrieved the id and the current document.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var name = 'pikachu';
+</span><span class='line'>db.view('pokemon', 'by_name', {'key': name, 'include_docs': true}, function(select_err, select_body){
+</span><span class='line'>    if(!select_err){
+</span><span class='line'>        var doc_id = select_body.rows[0].id;
+</span><span class='line'>        var doc = select_body.rows[0].doc;
+</span><span class='line'>        
+</span><span class='line'>        //do your updates here
+</span><span class='line'>        doc.age = 99; //you can add new fields or update existing ones
+</span><span class='line'>
+</span><span class='line'>        db.update(doc, doc_id, function(err, res){
+</span><span class='line'>            if(!err){
+</span><span class='line'>                //document has been updated
+</span><span class='line'>            }
+</span><span class='line'>
+</span><span class='line'>        });        
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Deleting Documents</h4>
+
+<p>If you no longer want a specific document and you need to delete it, you can use the <code>destroy</code> method. This takes up the id of the document as the first argument, the revision id of the revision that you want to delete as the second argument, and then the function that you want to execute once you get a response:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>test_db.destroy(doc_id, revision_id, function(err, body) {
+</span><span class='line'>    if(!err){
+</span><span class='line'>        //done deleting
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned about the basics of using CouchDB through Futon, Curl and Node.js. We have barely scratch the surface with this tutorial. Do check out the resources below if you want to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://wiki.apache.org/couchdb/HTTP_Document_API">CouchDB Wiki</a></li>
+<li><a href="http://guide.couchdb.org/">CouchDB Definitive Guide</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-26T08:00:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/couch-db/'>couch-db</a>, <a class='category' href='/blog/categories/node-dot-js/'>node.js</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetawern.github.io/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/" data-via="wern_ancheta" data-counturl="http://anchetawern.github.io/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/" title="Previous Post: Getting Started with the Yahoo Finance API">&laquo; Getting Started with the Yahoo Finance API</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/28/automating-deployment-with-git/">Automating Deployment to EC2 Instance with Git</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started with Stripe API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetawern.github.io/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/';
+        var disqus_url = 'http://anchetawern.github.io/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
