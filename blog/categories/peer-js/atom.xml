@@ -4,7 +4,7 @@
   <title><![CDATA[Category: peer-js | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/peer-js/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-03T10:25:12+08:00</updated>
+  <updated>2015-05-03T10:29:58+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -75,7 +75,7 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 <p>Now let&rsquo;s proceed with the JavaScript. First declare a method that will get the query parameters by name.</p>
 
-<p>```
+<p>```javascript
 function getParameterByName(name){</p>
 
 <pre><code>name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -103,7 +103,7 @@ http://mysite.com/call-app.html?from=jane&amp;to=john
 
 <p>Next we declare the method that will ask a permission to the user for the page to use the microphone. This method takes up 2 parameters, the <code>successCallback</code> and the <code>errorCallback</code>. The <code>successCallback</code> is called when the page has been granted permission to use the microphone. And the <code>errorCallback</code> is called when the user declined.</p>
 
-<p>```
+<p>```javascript
 function getAudio(successCallback, errorCallback){</p>
 
 <pre><code>navigator.getUserMedia({
@@ -117,7 +117,7 @@ function getAudio(successCallback, errorCallback){</p>
 
 <p>Next declare the method that will be called when a call is received from a peer. This method has the <code>call</code> object as its parameter. We use this <code>call</code> object to initiate an answer to the call. But first we need to ask permission to the user to use the microphone by calling the <code>getAudio</code> method. Once we get the permission, we can then answer the call by calling the <code>answer</code> method in the <code>call</code> object. This method takes up the <code>MediaStream</code> as its argument. If we didn&rsquo;t get the permission to use the microphone, we just log that an error occurred and then output the actual error. Finally, we listen to the <code>stream</code> event in the call and then we call the <code>onReceiveStream</code> method when the event happens. This <code>stream</code> event can be triggered in 2 ways. First is when a peer initiates a call to another peer. And the second is when the other peer actually answers the call.</p>
 
-<p>```
+<p>```javascript
 function onReceiveCall(call){</p>
 
 <pre><code>console.log('peer is calling...');
@@ -142,7 +142,7 @@ call.on('stream', onReceiveStream);
 
 <p>Next is the <code>onReceiveStream</code> method. This method is called when a media stream is received from the other peer. This is where we convert the media stream to a URL which we use as the source for the audio tag. The stream is basically an object which contains the current audio data. And we convert it to a URL by using the <code>window.URL.createObjectURL</code> method. Once all the meta data is loaded, we then play the audio.</p>
 
-<p>```
+<p>```javascript
 function onReceiveStream(stream){</p>
 
 <pre><code>var audio = document.querySelector('audio');
@@ -158,20 +158,20 @@ audio.onloadedmetadata = function(e){
 
 <p>Now that were done with all the method declarations, its time to actually call them. First we need to know where the request is coming from and who will it be sent to.</p>
 
-<p><code>
+<p><code>javascript
 var from = getParameterByName('from');
 var to = getParameterByName('to');
 </code></p>
 
 <p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections.</p>
 
-<p><code>
+<p><code>javascript
 var peer = new Peer(from, {key: 'Your PeerJS API Key'});
 </code></p>
 
 <p>Next is an optional code. We only use it to determine if the peer we created was actually created. Here we simply listen to the <code>open</code> event on the peer object. And once it happens, we just output the peer id.</p>
 
-<p>```
+<p>```javascript
 peer.on(&lsquo;open&rsquo;, function(id){</p>
 
 <pre><code>console.log('My peer ID is: ' + id);
@@ -182,13 +182,13 @@ peer.on(&lsquo;open&rsquo;, function(id){</p>
 
 <p>Next we listen to the <code>call</code> event. This is triggered when a peer tries to make call to the current user.</p>
 
-<p><code>
+<p><code>javascript
 peer.on('call', onReceiveCall);
 </code></p>
 
 <p>Finally, here&rsquo;s the code we use when we initiate the call ourselves:</p>
 
-<p>```
+<p>```javascript
 $(&lsquo;#start-call&rsquo;).click(function(){</p>
 
 <pre><code>console.log('starting call...');

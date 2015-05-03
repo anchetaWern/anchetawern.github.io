@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-03T10:25:12+08:00</updated>
+  <updated>2015-05-03T10:29:58+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -87,26 +87,26 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>function getParameterByName(name){
-</span><span class='line'>    name = name.replace(/[\[]/, &quot;\\[&quot;).replace(/[\]]/, &quot;\\]&quot;);
-</span><span class='line'>    var regex = new RegExp(&quot;[\\?<span class="err">&amp;</span>]&quot; + name + &quot;=([^<span class="err">&amp;</span>#]*)&quot;),
-</span><span class='line'>        results = regex.exec(location.search);
-</span><span class='line'>    return results === null ? &quot;&quot; : decodeURIComponent(results[1].replace(/\+/g, &quot; &quot;));
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\[]/</span><span class="p">,</span> <span class="s2">&quot;\\[&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\]]/</span><span class="p">,</span> <span class="s2">&quot;\\]&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">regex</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;[\\?&amp;]&quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;=([^&amp;#]*)&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">results</span> <span class="o">=</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">results</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\+/g</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>The way this app works is by using <code>from</code> and <code>to</code> as query parameters. Where <code>from</code> is the id that you want to give to the peer whose currently using the device and <code>to</code> is the id of the peer on the other side. So we use the method above to easily get those values. To emphasize further, here&rsquo;s how the URL that we will use to access the app will look like on our side (john):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>http://mysite.com/call-app.html?from=john<span class="err">&amp;</span>to=jane
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//mysite.com/call-app.html?from=john&amp;to=jane</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>And on the other side (jane), it would look like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>http://mysite.com/call-app.html?from=jane<span class="err">&amp;</span>to=john
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//mysite.com/call-app.html?from=jane&amp;to=john</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -120,12 +120,12 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>function getAudio(successCallback, errorCallback){
-</span><span class='line'>    navigator.getUserMedia({
-</span><span class='line'>        audio: true,
-</span><span class='line'>        video: false
-</span><span class='line'>    }, successCallback, errorCallback);
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getAudio</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">video</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>    <span class="p">},</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -149,24 +149,24 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>function onReceiveCall(call){
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveCall</span><span class="p">(</span><span class="nx">call</span><span class="p">){</span>
 </span><span class='line'>
-</span><span class='line'>    console.log(&#39;peer is calling...&#39;);
-</span><span class='line'>    console.log(call);
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;peer is calling...&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">call</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    getAudio(
-</span><span class='line'>        function(MediaStream){
-</span><span class='line'>            call.answer(MediaStream);
-</span><span class='line'>            console.log(&#39;answering call started...&#39;);
-</span><span class='line'>        },
-</span><span class='line'>        function(err){
-</span><span class='line'>            console.log(&#39;an error occured while getting the audio&#39;);
-</span><span class='line'>            console.log(err);
-</span><span class='line'>        }
-</span><span class='line'>    );
+</span><span class='line'>    <span class="nx">getAudio</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">answer</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;answering call started...&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the audio&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    call.on(&#39;stream&#39;, onReceiveStream);
-</span><span class='line'>}
+</span><span class='line'>    <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -180,14 +180,14 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>function onReceiveStream(stream){
-</span><span class='line'>    var audio = document.querySelector(&#39;audio&#39;);
-</span><span class='line'>    audio.src = window.URL.createObjectURL(stream);
-</span><span class='line'>    audio.onloadedmetadata = function(e){
-</span><span class='line'>        console.log(&#39;now playing the audio&#39;);
-</span><span class='line'>        audio.play();
-</span><span class='line'>    }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">audio</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;audio&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">audio</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">audio</span><span class="p">.</span><span class="nx">onloadedmetadata</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now playing the audio&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">audio</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -195,15 +195,15 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>var from = getParameterByName(&#39;from&#39;);
-</span><span class='line'>var to = getParameterByName(&#39;to&#39;);
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">from</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>var peer = new Peer(from, {key: &#39;Your PeerJS API Key&#39;});
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span><span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">});</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -212,16 +212,16 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>peer.on(&#39;open&#39;, function(id){
-</span><span class='line'>    console.log(&#39;My peer ID is: &#39; + id);
-</span><span class='line'>});
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;My peer ID is: &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Next we listen to the <code>call</code> event. This is triggered when a peer tries to make call to the current user.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>peer.on(&#39;call&#39;, onReceiveCall);
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;call&#39;</span><span class="p">,</span> <span class="nx">onReceiveCall</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -245,24 +245,24 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>$(&#39;#start-call&#39;).click(function(){
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#start-call&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
 </span><span class='line'>
-</span><span class='line'>    console.log(&#39;starting call...&#39;);
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;starting call...&#39;</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    getAudio(
-</span><span class='line'>        function(MediaStream){
+</span><span class='line'>    <span class="nx">getAudio</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
 </span><span class='line'>
-</span><span class='line'>            console.log(&#39;now calling &#39; + to);
-</span><span class='line'>            var call = peer.call(to, MediaStream);
-</span><span class='line'>            call.on(&#39;stream&#39;, onReceiveStream);
-</span><span class='line'>        },
-</span><span class='line'>        function(err){
-</span><span class='line'>            console.log(&#39;an error occured while getting the audio&#39;);
-</span><span class='line'>            console.log(err);
-</span><span class='line'>        }
-</span><span class='line'>    );
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now calling &#39;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">);</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">call</span> <span class="o">=</span> <span class="nx">peer</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">to</span><span class="p">,</span> <span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the audio&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>});
+</span><span class='line'><span class="p">});</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
