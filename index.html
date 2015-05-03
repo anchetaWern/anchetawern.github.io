@@ -9,7 +9,8 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through how to get started with CouchDB in Node.js. But first here&rsquo;s some background on what &hellip;">
+  <meta name="description" content="These past few days I&rsquo;ve been playing around with WebRTC. For the uninitiated, WebRTC basically means Web Real Time Communication.
+Things like &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +72,304 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls With PeerJS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-03T06:37:00+08:00" pubdate data-updated="true">May 3<span>rd</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>These past few days I&rsquo;ve been playing around with WebRTC. For the uninitiated, WebRTC basically means Web Real Time Communication.
+Things like chat, audio or video calling comes to mind when you say real time. And that is what really WebRTC is. It gives real time super powers for the web.
+In this tutorial I&rsquo;ll be showing you how to implement audio calls with PeerJS. PeerJS is a JavaScript library that allows us to easily implement peer to peer communications with WebRTC.</p>
+
+<h3>Things We Need</h3>
+
+<p>Before we start, go ahead and download the things we&rsquo;ll need for this tutorial:</p>
+
+<ul>
+<li><p><strong>jQuery</strong> &ndash; I know right! who still uses jQuery these days? Raise your left foot. Kidding aside, yes we still need jQuery. In this tutorial we&rsquo;ll only be using it to handle click events. So if you&rsquo;re confident with your Vanilla JavaScript-Fu then feel free to skip it.</p></li>
+<li><p><strong>PeerJS</strong> &ndash; In case you missed it earlier, were gonna need PeerJS so that we can easily implement WebRTC.</p></li>
+<li><p><strong>RecordRTC.js</strong> &ndash; This library mainly provides recording functionalities (e.g taking screenshots and webcam photos, recording audio and video) but it also doubles as a shim provider. We won&rsquo;t really use the recording functionalities in this tutorial so were only using it to be able to request the use of the microphone in the device.</p></li>
+</ul>
+
+
+<h3>Overview of the App</h3>
+
+<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app will use the PeerServer cloud which means we won&rsquo;t be needing to implement our own server. Which also means that we don&rsquo;t need to take care of things such as STUN, TURN and ICE to traverse the murky waters of getting to connect two peers together. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
+
+<h3>Building the App</h3>
+
+<p>Now that have a basic overview of how the app will work, its time to actually build it.</p>
+
+<p>First, link all the things that we&rsquo;ll need:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>test<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdn.peerjs.com/0.3/peer.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yes, you can also put those script tags right before the closing body tag if performance is your thing.</p>
+
+<p>Next is the HTML that the user will actually see:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;start-call&quot;</span><span class="nt">&gt;</span>start call<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;audio</span> <span class="na">controls</span><span class="nt">&gt;&lt;/audio&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yup! I didn&rsquo;t miss anything. That&rsquo;s all we need. A button to start the call to another peer and an HTML5 audio tag to output the audio on the other end.</p>
+
+<p>Now let&rsquo;s proceed with the JavaScript. First declare a method that will get the query parameters by name.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>function getParameterByName(name){
+</span><span class='line'>    name = name.replace(/[\[]/, &quot;\\[&quot;).replace(/[\]]/, &quot;\\]&quot;);
+</span><span class='line'>    var regex = new RegExp(&quot;[\\?<span class="err">&amp;</span>]&quot; + name + &quot;=([^<span class="err">&amp;</span>#]*)&quot;),
+</span><span class='line'>        results = regex.exec(location.search);
+</span><span class='line'>    return results === null ? &quot;&quot; : decodeURIComponent(results[1].replace(/\+/g, &quot; &quot;));
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The way this app works is by using <code>from</code> and <code>to</code> as query parameters. Where <code>from</code> is the id that you want to give to the peer whose currently using the device and <code>to</code> is the id of the peer on the other side. So we use the method above to easily get those values. To emphasize further, here&rsquo;s how the URL that we will use to access the app will look like on our side (john):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>http://mysite.com/call-app.html?from=john<span class="err">&amp;</span>to=jane
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And on the other side (jane), it would look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>http://mysite.com/call-app.html?from=jane<span class="err">&amp;</span>to=john
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;ve basically just interchanged the two peers so we know exactly where the request is coming from and where its going to.</p>
+
+<p>Next we declare the method that will ask a permission to the user for the page to use the microphone. This method takes up 2 parameters, the <code>successCallback</code> and the <code>errorCallback</code>. The <code>successCallback</code> is called when the page has been granted permission to use the microphone. And the <code>errorCallback</code> is called when the user declined.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>function getAudio(successCallback, errorCallback){
+</span><span class='line'>    navigator.getUserMedia({
+</span><span class='line'>        audio: true,
+</span><span class='line'>        video: false
+</span><span class='line'>    }, successCallback, errorCallback);
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next declare the method that will be called when a call is received from a peer. This method has the <code>call</code> object as its parameter. We use this <code>call</code> object to initiate an answer to the call. But first we need to ask permission to the user to use the microphone by calling the <code>getAudio</code> method. Once we get the permission, we can then answer the call by calling the <code>answer</code> method in the <code>call</code> object. This method takes up the <code>MediaStream</code> as its argument. If we didn&rsquo;t get the permission to use the microphone, we just log that an error occurred and then output the actual error. Finally, we listen to the <code>stream</code> event in the call and then we call the <code>onReceiveStream</code> method when the event happens. This <code>stream</code> event can be triggered in 2 ways. First is when a peer initiates a call to another peer. And the second is when the other peer actually answers the call.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>function onReceiveCall(call){
+</span><span class='line'>
+</span><span class='line'>    console.log(&#39;peer is calling...&#39;);
+</span><span class='line'>    console.log(call);
+</span><span class='line'>
+</span><span class='line'>    getAudio(
+</span><span class='line'>        function(MediaStream){
+</span><span class='line'>            call.answer(MediaStream);
+</span><span class='line'>            console.log(&#39;answering call started...&#39;);
+</span><span class='line'>        },
+</span><span class='line'>        function(err){
+</span><span class='line'>            console.log(&#39;an error occured while getting the audio&#39;);
+</span><span class='line'>            console.log(err);
+</span><span class='line'>        }
+</span><span class='line'>    );
+</span><span class='line'>
+</span><span class='line'>    call.on(&#39;stream&#39;, onReceiveStream);
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the <code>onReceiveStream</code> method. This method is called when a media stream is received from the other peer. This is where we convert the media stream to a URL which we use as the source for the audio tag. The stream is basically an object which contains the current audio data. And we convert it to a URL by using the <code>window.URL.createObjectURL</code> method. Once all the meta data is loaded, we then play the audio.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>function onReceiveStream(stream){
+</span><span class='line'>    var audio = document.querySelector(&#39;audio&#39;);
+</span><span class='line'>    audio.src = window.URL.createObjectURL(stream);
+</span><span class='line'>    audio.onloadedmetadata = function(e){
+</span><span class='line'>        console.log(&#39;now playing the audio&#39;);
+</span><span class='line'>        audio.play();
+</span><span class='line'>    }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that were done with all the method declarations, its time to actually call them. First we need to know where the request is coming from and who will it be sent to.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>var from = getParameterByName(&#39;from&#39;);
+</span><span class='line'>var to = getParameterByName(&#39;to&#39;);
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>var peer = new Peer(from, {key: &#39;Your PeerJS API Key&#39;});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is an optional code. We only use it to determine if the peer we created was actually created. Here we simply listen to the <code>open</code> event on the peer object. And once it happens, we just output the peer id.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>peer.on(&#39;open&#39;, function(id){
+</span><span class='line'>    console.log(&#39;My peer ID is: &#39; + id);
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we listen to the <code>call</code> event. This is triggered when a peer tries to make call to the current user.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>peer.on(&#39;call&#39;, onReceiveCall);
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, here&rsquo;s the code we use when we initiate the call ourselves:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>$(&#39;#start-call&#39;).click(function(){
+</span><span class='line'>
+</span><span class='line'>    console.log(&#39;starting call...&#39;);
+</span><span class='line'>
+</span><span class='line'>    getAudio(
+</span><span class='line'>        function(MediaStream){
+</span><span class='line'>
+</span><span class='line'>            console.log(&#39;now calling &#39; + to);
+</span><span class='line'>            var call = peer.call(to, MediaStream);
+</span><span class='line'>            call.on(&#39;stream&#39;, onReceiveStream);
+</span><span class='line'>        },
+</span><span class='line'>        function(err){
+</span><span class='line'>            console.log(&#39;an error occured while getting the audio&#39;);
+</span><span class='line'>            console.log(err);
+</span><span class='line'>        }
+</span><span class='line'>    );
+</span><span class='line'>
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is listen to the <code>click</code> event on the <code>start-call</code> button. It then calls the <code>getAudio</code> method to ask the user for permission to use the microphone. If the user allows then the call is made to the peer using the <code>call</code> method. This takes up the id of the peer on the other side and the <code>MediaStream</code>. Next, we just listen for the <code>stream</code> event and then call the <code>onReceiveStream</code> method if it happens. Note that this stream would be the audio stream from the peer on the other side and not the audio stream of the current user. Otherwise we would also hear our own voice. The same is true with the stream that were getting from the <code>onReceiveCall</code> method.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial we&rsquo;ve learned how to implement audio calls with WebRTC and PeerJS. Be sure to check out the resources below if you want to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://www.html5rocks.com/en/tutorials/webrtc/basics/">Getting Started with WebRTC</a></li>
+<li><a href="http://peerjs.com/docs/#start">PeerJS Documentation</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2278,126 +2577,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/08/todo-list-driven-development/">ToDo List Driven Development</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-08T16:37:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/02/08/todo-list-driven-development/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In my daily work as a developer I always have this file which I call <code>todo.txt</code>. It contains all the things that I plan to work on, currently working on, and those that I&rsquo;ve already done in the past. They are ordered from the most recent day that I&rsquo;ve worked on the project to the least recent. These todos are stored in their own folders, named after the name of the project. Here&rsquo;s the general format that I follow:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>FEB 7, 2015
-</span><span class='line'>
-</span><span class='line'>TODO
-</span><span class='line'>- list of things that I'll be doing
-</span><span class='line'>
-</span><span class='line'>DONE
-</span><span class='line'>- list of things that I've done
-</span><span class='line'>=========================
-</span><span class='line'>
-</span><span class='line'>FEB 6, 2015</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is the first file that I open when I start working. It gives me a quick overview on which things I&rsquo;ve already finished and which things are left undone.</p>
-
-<p>The items in the todo list often represents individual features that I have to work on. If the feature is too big (may take around 2-5 days to implement), I break it down into tiny bits to reduce the mental strain. Because holding one big feature in your short term memory is hard. I want to make my todo list as stupid as possible. So I can focus on writing the code and not needing to hold many details in my head. It would often look like a step by step procedure (algorithm) of sorts. Here&rsquo;s an example from the booking app that I&rsquo;m currently working on:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>TODO
-</span><span class='line'>- add code for scheduling new appointments
-</span><span class='line'> - use the combination of page url and service url as basis for selecting the needed data from the database.
-</span><span class='line'> - once all the necessary data is in place, use it to get the time settings from the database.
-</span><span class='line'> - use the time settings to generate an array that stores all the available times.
-</span><span class='line'> - get all the times which has already been used in an appointment
-</span><span class='line'> - get the settings on the maximum appointments that can be scheduled per day, the minimum scheduling notice, and the maximum number of days into the future can appointment be scheduled (to prevent scheduling something on year 2099 while its still 2015).
-</span><span class='line'> - loop through all the available times. While inside the loop exclude all the times which has already been used in an appointment, also exclude the times based on the settings above.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Of course it doesn&rsquo;t end there, but you get the idea. Make every item or in this case sub-item as stupid to implement as possible. If you think it would help to break each sub-item down some more, then do it.</p>
-
-<p>Aside from the features I need to implement, my <code>todo.txt</code> file is where I also put details on the current project that I&rsquo;m working on. As I&rsquo;m primarily using Amazon ec2 instances on my projects, the details that I put on top of the file are the ip address, the domain name assigned to the instance and then the user and password for the database. Yes it would be more secure if I put them on a password manager such as keypass or lastpass but I prefer fast access over it. I just want everything that I need for the job to be in one place.</p>
-
-<p>Lastly, when I&rsquo;m doing research for the project that I&rsquo;m currently working on. I also put in some relevant URLs which I could easily go back to later on once I implement a specific feature. When I find myself going back to access a specific page very often, I just copy the specific content that I need and paste it on the file. Here&rsquo;s a sample snippet, these are the set of commands that I use when building a phonegap app:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#build phonegap app
-</span><span class='line'>cordova build --release android
-</span><span class='line'>
-</span><span class='line'>#generate app key
-</span><span class='line'>keytool -genkey -v -keystore stockswitch.keystore -alias switch -keyalg RSA -keysize 2048 -validity 10000
-</span><span class='line'>
-</span><span class='line'>#sign the app with the key
-</span><span class='line'>jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore stockswitch.keystore CordovaApp-release-unsigned.apk switch
-</span><span class='line'>
-</span><span class='line'>#build a release version
-</span><span class='line'>zipalign -v 4 CordovaApp-release-unsigned.apk stockswitch.apk
-</span><span class='line'>
-</span><span class='line'>#output the certificate
-</span><span class='line'>keytool -exportcert -alias switch -keystore stockswitch.keystore | openssl sha1 -binary | openssl base64</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s it! Having a <code>todo.txt</code> file at my disposal is really helpful in my day to day life as a developer. It helps keep the mental load to the minimum by having all the details that I need all in one place.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2413,6 +2592,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls with PeerJS</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
       </li>
     
@@ -2426,10 +2609,6 @@
     
       <li class="post">
         <a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started with Stripe API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a>
       </li>
     
   </ul>
