@@ -4,7 +4,7 @@
   <title><![CDATA[Category: webRTC | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/webrtc/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-03T10:29:58+08:00</updated>
+  <updated>2015-05-05T07:29:51+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -35,7 +35,7 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 <h3>Overview of the App</h3>
 
-<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app will use the PeerServer cloud which means we won&rsquo;t be needing to implement our own server. Which also means that we don&rsquo;t need to take care of things such as STUN, TURN and ICE to traverse the murky waters of getting to connect two peers together. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
+<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app can use the PeerServer Cloud or you can implement your own PeerJS server. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
 
 <h3>Building the App</h3>
 
@@ -163,11 +163,64 @@ var from = getParameterByName('from');
 var to = getParameterByName('to');
 </code></p>
 
-<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections.</p>
+<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections. After that, we also need to set the ice server config. This ensures that we can get the peers to connect to each other without having to worry about external IP&rsquo;s assigned by routers, firewalls, proxies and other kinds of network security which can get in the way. You need to have at least one stun server and one turn server configuration added. You can get a list of freely available stun and turn servers <a href="https://gist.github.com/yetithefoot/7592580">here</a>.</p>
 
-<p><code>javascript
-var peer = new Peer(from, {key: 'Your PeerJS API Key'});
+<p>```javascript
+var peer = new Peer(</p>
+
+<pre><code>from, 
+{
+    key: 'Your PeerJS API Key',
+    config: {'iceServers': [
+        { url: 'stun:stun1.l.google.com:19302' },
+        { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
+    ]}
+}
+</code></pre>
+
+<p>);
+```</p>
+
+<p>If you want to use your own server and get through the 50 concurrent connections limit of the PeerServer cloud. You can install PeerJS Server on your existing Express app in node.</p>
+
+<p><code>
+npm install peer --save
 </code></p>
+
+<p>And then use it like so:</p>
+
+<p>```javascript
+var express = require(&lsquo;express&rsquo;);
+var express_peer_server = require(&lsquo;peer&rsquo;).ExpressPeerServer;
+var peer_options = {</p>
+
+<pre><code>debug: true 
+</code></pre>
+
+<p>};</p>
+
+<p>var app = express();</p>
+
+<p>var server = app.listen(3000);</p>
+
+<p>app.use(&lsquo;/peerjs&rsquo;, express_peer_server(server, peer_options));
+```</p>
+
+<p>And from the client side you can now use your shiny new PeerJS server:</p>
+
+<p>```javascript
+var peer = new Peer(from, {</p>
+
+<pre><code>    host: 'your-peerjs-server.com', port: 3000, path: '/peerjs',
+    config: {'iceServers': [
+        { url: 'stun:stun1.l.google.com:19302' },
+        { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
+    ]}
+}
+</code></pre>
+
+<p>);
+```</p>
 
 <p>Next is an optional code. We only use it to determine if the peer we created was actually created. Here we simply listen to the <code>open</code> event on the peer object. And once it happens, we just output the peer id.</p>
 

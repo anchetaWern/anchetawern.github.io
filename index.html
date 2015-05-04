@@ -120,7 +120,7 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 <h3>Overview of the App</h3>
 
-<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app will use the PeerServer cloud which means we won&rsquo;t be needing to implement our own server. Which also means that we don&rsquo;t need to take care of things such as STUN, TURN and ICE to traverse the murky waters of getting to connect two peers together. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
+<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app can use the PeerServer Cloud or you can implement your own PeerJS server. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
 
 <h3>Building the App</h3>
 
@@ -285,10 +285,83 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections.</p>
+<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections. After that, we also need to set the ice server config. This ensures that we can get the peers to connect to each other without having to worry about external IP&rsquo;s assigned by routers, firewalls, proxies and other kinds of network security which can get in the way. You need to have at least one stun server and one turn server configuration added. You can get a list of freely available stun and turn servers <a href="https://gist.github.com/yetithefoot/7592580">here</a>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span><span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">});</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span>
+</span><span class='line'>    <span class="nx">from</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">config</span><span class="o">:</span> <span class="p">{</span><span class="s1">&#39;iceServers&#39;</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;stun:stun1.l.google.com:19302&#39;</span> <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;turn:numb.viagenie.ca&#39;</span><span class="p">,</span> <span class="nx">credential</span><span class="o">:</span> <span class="s1">&#39;muazkh&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;webrtc@live.com&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">]}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to use your own server and get through the 50 concurrent connections limit of the PeerServer cloud. You can install PeerJS Server on your existing Express app in node.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">peer</span> <span class="o">--</span><span class="nx">save</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then use it like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">express_peer_server</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;peer&#39;</span><span class="p">).</span><span class="nx">ExpressPeerServer</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">peer_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">debug</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/peerjs&#39;</span><span class="p">,</span> <span class="nx">express_peer_server</span><span class="p">(</span><span class="nx">server</span><span class="p">,</span> <span class="nx">peer_options</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And from the client side you can now use your shiny new PeerJS server:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="s1">&#39;your-peerjs-server.com&#39;</span><span class="p">,</span> <span class="nx">port</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/peerjs&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">config</span><span class="o">:</span> <span class="p">{</span><span class="s1">&#39;iceServers&#39;</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;stun:stun1.l.google.com:19302&#39;</span> <span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;turn:numb.viagenie.ca&#39;</span><span class="p">,</span> <span class="nx">credential</span><span class="o">:</span> <span class="s1">&#39;muazkh&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;webrtc@live.com&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">]}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
