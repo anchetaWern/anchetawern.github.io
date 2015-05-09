@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-05T07:29:51+08:00</updated>
+  <updated>2015-05-09T20:09:36+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,1285 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Lumen]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/09/getting-started-with-lumen/"/>
+    <updated>2015-05-09T13:12:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/09/getting-started-with-lumen</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll walk you through Lumen, a lightweight framework from the same guys that made Laravel. Lumen is basically a lighter version of Laravel.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Lumen by using composer&rsquo;s <code>create-project</code> command. Simply execute the following command on your preferred install directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer create-project laravel/lumen --prefer-dist</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the installation is done, you can navigate to the <code>lumen</code> directory and execute the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php artisan serve --port=7771</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will serve the project on port 7771 of your localhost:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:7771/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the installation completed successfully, you will be greeted by the default screen.</p>
+
+<h3>Using Third Party Libraries</h3>
+
+<p>You can use third party libraries with Lumen by adding the package that you want to install in the <code>composer.json</code> file. Here&rsquo;s an example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"require": {
+</span><span class='line'>    "laravel/lumen-framework": "5.0.*",
+</span><span class='line'>    "vlucas/phpdotenv": "~1.0",
+</span><span class='line'>    "elasticsearch/elasticsearch": "~1.0",
+</span><span class='line'>    "guzzlehttp/guzzle": "~5.0"
+</span><span class='line'>},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the lumen-framework and phpdotenv is there by default since those are needed in order for Lumen to work. In the above file we have added elasticsearch and guzzlehttp as our dependencies.</p>
+
+<p>You can then make Lumen aware of these libraries by initializing them on the files where you want to use them:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$http_client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\GuzzleHttp\Client</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$es_client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Elasticsearch\Client</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuration</h3>
+
+<p>By default Lumen is pretty bare-bones. Which means that we need to do some configuration if we want to use some of the features that we usually have in Laravel. In Lumen you can enable most of those functionalities by editing the <code>bootstrap/app.php</code> file.</p>
+
+<h4>Enabling Sessions</h4>
+
+<p>You can enable sessions by removing the comment on the middleware which says <code>Illuminate\Session\Middleware\StartSession</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">middleware</span><span class="p">([</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\Cookie\Middleware\EncryptCookies&#39;,</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse&#39;,</span>
+</span><span class='line'>    <span class="s1">&#39;Illuminate\Session\Middleware\StartSession&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\View\Middleware\ShareErrorsFromSession&#39;,</span>
+</span><span class='line'>    <span class="c1">//&#39;Laravel\Lumen\Http\Middleware\VerifyCsrfToken&#39;,</span>
+</span><span class='line'><span class="p">]);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Enabling Eloquent</h3>
+
+<p>If you need to use Eloquent in your app, you can enable it by removing the comment on the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">withFacades</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">withEloquent</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Dot Env</h3>
+
+<p>Lumen uses a <code>.env</code> file to set the environment configuration for the project. This way you can have a different <code>.env</code> file on your local machine and on your server. And then you can set git to ignore this file so that it doesn&rsquo;t get pushed along to the server when you deploy your changes. Here&rsquo;s how the <code>.env</code> file looks by default:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">APP_ENV=local</span>
+</span><span class='line'><span class="x">APP_DEBUG=false</span>
+</span><span class='line'><span class="x">APP_KEY=SomeRandomKey!!!</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">APP_LOCALE=en</span>
+</span><span class='line'><span class="x">APP_FALLBACK_LOCALE=en</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">DB_CONNECTION=mysql</span>
+</span><span class='line'><span class="x">DB_HOST=localhost</span>
+</span><span class='line'><span class="x">DB_DATABASE=homestead</span>
+</span><span class='line'><span class="x">DB_USERNAME=homestead</span>
+</span><span class='line'><span class="x">DB_PASSWORD=secret</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">CACHE_DRIVER=memcached</span>
+</span><span class='line'><span class="x">SESSION_DRIVER=memcached</span>
+</span><span class='line'><span class="x">QUEUE_DRIVER=database</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the file above, you can set the name of the environment by setting the value for <code>APP_ENV</code>. The next one right after that is the <code>APP_DEBUG</code> configuration which is set to <code>false</code> by default. If you&rsquo;re developing you need to set this to <code>true</code> so you have an idea what&rsquo;s wrong when testing your app. Next is <code>APP_KEY</code> which is basically used as a salt for sessions. You can use a random string generator for this. <code>APP_LOCALE</code> and <code>APP_FALLBACK_LOCALE</code> are used for setting the language of your app. This is set to english by default. Next are the database configuration. Anything which starts with <code>DB_</code> is the database configuration. By default its expecting to connect to a <code>mysql</code> database. <code>DB_HOST</code> is the host in which the database is running. <code>DB_DATABASE</code> is the name of the database you want to connect to. <code>DB_USERNAME</code> is the username of the user you want to use for logging in. <code>DB_PASSWORD</code> is the password of the user. After the database configuration are the cache, session and queue driver configuration. The cache and session driver are using memcached by default so you&rsquo;ll have to install memcached if you&rsquo;re using caching and session functionalities. If memcached is not present in the system then it will just fallback to the default one which is the filesystem.</p>
+
+<p>Note that before you can use the <code>.env</code> file, you need to uncomment the following line in your <code>bootstrap/app.php</code> file. This way Lumen will load the <code>.env</code> file on the root of your project.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Dotenv::load(__DIR__.&#39;/../&#39;);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Directory Structure</h3>
+
+<p>Here&rsquo;s what the default directory structure looks like in Lumen. The one&rsquo;s with * are files:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">app</span>
+</span><span class='line'><span class="x">bootstrap</span>
+</span><span class='line'><span class="x">database</span>
+</span><span class='line'><span class="x">public</span>
+</span><span class='line'><span class="x">resources</span>
+</span><span class='line'><span class="x">storage</span>
+</span><span class='line'><span class="x">tests</span>
+</span><span class='line'><span class="x">vendor</span>
+</span><span class='line'><span class="x">*artisan</span>
+</span><span class='line'><span class="x">*server.php</span>
+</span><span class='line'><span class="x">*composer.json</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>app</code> directory is where you will usually work with. This is where the routes, controllers and middlewares are stored.</p>
+
+<p>The <code>bootstrap</code> directory only contains one file by default, the <code>app.php</code> file. As you have seen earlier, its where you can configure and add new functionality to Lumen.</p>
+
+<p>The <code>database</code> directory is where the database migrations and seeders are stored. You use migrations to easily jump from previous database version to another. Its like version control for your database. Seeds on the other hand are used to populate the database with dummy data so that you can easily test your app without having to enter the information through the app itself.</p>
+
+<p>The <code>public</code> directory is where your public assets are stored. Things like css, javascript and images are stored in this directory.</p>
+
+<p>The <code>resources</code> directory is where you store the views that you use for your app.</p>
+
+<p>The <code>storage</code> directory is where logs, sessions and cache files are stored.</p>
+
+<p>The <code>tests</code> directory is where you put your test files.</p>
+
+<p>The <code>vendor</code> directory is where the dependencies of your app is stored. This is where composer installs the packages that you specified in your <code>composer.json</code> file.</p>
+
+<p>The <code>artisan</code> file is the file that is used for command line tasks for your project. We have used it earlier when we served the project. The artisan file can also be used to create migrations, seeds and other tasks that you usually perform through the command line.</p>
+
+<p>The <code>server.php</code> file is used for serving the files without the use of a web server like Apache.</p>
+
+<h3>Routes</h3>
+
+<p>Routes are stored in the <code>app/Http/routes.php</code> file. Here&rsquo;s how you would declare a route in Lumen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nx">functionn</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to use a controller method to handle the response for a specific route then you can do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;App\Http\Controllers\HomeController@index&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then you would need to create a <code>HomeController</code> controller and then declare an <code>index</code> method. This will then be used to return a response.</p>
+
+<h3>Controllers</h3>
+
+<p>Controllers are stored in the <code>app/Http/Controllers</code> directory. Needless to say, the convention is one file per controller. Otherwise it would be really confusing. Here&rsquo;s the basic structure of a controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="k">namespace</span> <span class="nx">App\Http\Controllers</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Http\Request</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Laravel\Lumen\Routing\Controller</span> <span class="k">as</span> <span class="nx">BaseController</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="k">extends</span> <span class="nx">BaseController</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that we need to use <code>Illuminate\Http\Request</code> to be able to access the request parameters for each request. We also need to use <code>Laravel\Lumen\Routing\Controller</code>. This allows us to extend the functionality of the base controller class.</p>
+
+<h3>Views</h3>
+
+<p>Lumen still comes with blade templating, all you have to do is create your views under the <code>resources/views</code> directory and then use <code>.blade.php</code> as the file extension. Though unlike Laravel you return views this way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">index</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the example above were returning the <code>index</code> view that is stored in the root of the <code>resources/views</code> directory. If we want to return some data, then we can pass it by supplying the array or object that we want to pass:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$array</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;pokemon&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Pikachu&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="nv">$array</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can then be rendered in the view like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>test<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    Hi my name is , my Pokemon is 
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Database</h3>
+
+<p>When working with a database you first need to edit the database configuration values in your <code>.env</code> file.</p>
+
+<h4>Migrations</h4>
+
+<p>Once that&rsquo;s done you can try if your app can connect to your database by creating a database migration. You can do that by executing the following command in the root directory of your project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>php artisan migrate:install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above creates the migration table in your database. The migration table is used by Lumen to keep track of which database migrations are currently applied to your database. If that worked without problem and you see that a <code>migrations</code> table has been created in your database then you&rsquo;re good to go.</p>
+
+<p>Next you can create a new table by using the <code>make:migration</code> command. This takes up the action that you wish to do. In this case we want to create a new table so we use <code>--create</code> and then supply the name of the table as the value. The second argument will be the name that will be assigned to the migration class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>php artisan make:migration --create=users create_users_table
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above will create a file which looks like the following in the <code>database/migrations</code> directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Schema\Blueprint</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Migrations\Migration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CreateUsersTable</span> <span class="k">extends</span> <span class="nx">Migration</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Run the migrations.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">up</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">increments</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">timestamps</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Reverse the migrations.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">down</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">Schema</span><span class="o">::</span><span class="na">drop</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only thing that we need to edit here are the method calls inside the <code>up</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">increments</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">string</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">integer</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That is where we specify the fields that we need to add to the <code>users</code> table.</p>
+
+<p>Once you&rsquo;re happy with the file, save it and then run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php artisan migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create the table in your database and add a new row to the migrations table.</p>
+
+<h4>Seeds</h4>
+
+<p>You can create a new database seeder file inside the <code>database/seeds</code> directory. Here&rsquo;s the usual structure of a seeder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Seeder</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">UserTableSeeder</span> <span class="k">extends</span> <span class="nx">Seeder</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//seeding code       </span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside the <code>run</code> method is the actual seeding code. We can use your usual Laravel flavored database queries inside of it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Brock&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">15</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Misty&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">12</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, save the file and open up the <code>DatabaseSeeder.php</code> file. This is where you specify which seeders you want to execute whenever you execute the <code>php artisan db:seed</code> command. In this case we want to add the <code>UserTableSeeder</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$this-&gt;call(&#39;UserTableSeeder&#39;);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before we execute the <code>php artisan db:seed</code> command we will first need to reload the autoloaded files by executing the <code>composer dump-autoload</code> command. We need to do this every time we add a new seeder so that Lumen will take care of loading the seeder.</p>
+
+<h4>Getting Data</h4>
+
+<p>From your routes file you can now try fetching the users that we&rsquo;ve added:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/db-testing&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$users</span> <span class="o">=</span> <span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$users</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With Lumen you can use the <a href="http://laravel.com/docs/5.0/queries">query builder</a>, <a href="http://laravel.com/docs/database#running-queries">basic queries</a> and even <a href="http://laravel.com/docs/eloquent">Eloquent</a>. So if you already know how to work with those then you&rsquo;re good to go.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial I&rsquo;ve walked you through Lumen and how you can install, configure and work with the different functionalities that it can offer.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a Nearby Places Search App with Google Places API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api/"/>
+    <updated>2015-05-06T07:52:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial were going to build an app that would allow users to search for a specific place and then find nearby places based on a specific category. Such as restaurants, churches, and schools. We will implement the app with Google Maps, Google Places and PHP.</p>
+
+<h3>Getting API Credentials</h3>
+
+<p>First you need to get API Credentials from your Google Console and then enable the Google Maps and Google Places API. If you don&rsquo;t know how to do that, feel free to ask Google. I believe this topic has already been written before. Here are the APIs that you need to enable:</p>
+
+<ul>
+<li>Google Maps JavaScript API</li>
+<li>Google Places API Web Service</li>
+</ul>
+
+
+<h3>Building the App</h3>
+
+<p>Now were ready to build the app. First lets work on the back-end side of things.</p>
+
+<h4>Getting Results from the Places API</h4>
+
+<p>To make our life easier, were going to use a library for making the request to the Google Places API. Add the following in your <code>composer.json</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "joshtronic/php-googleplaces": "dev-master"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done, execute <code>composer install</code> on your terminal to install the library. Now we can use the library like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$google_places</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">joshtronic\GooglePlaces</span><span class="p">(</span><span class="s1">&#39;YOUR_GOOGLE_API_KEY&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$lat</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="nv">$lng</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$place_types</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;place_types&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">location</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$lat</span><span class="p">,</span> <span class="nv">$lng</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">radius</span> <span class="o">=</span> <span class="mi">8046</span><span class="p">;</span> <span class="c1">//hard-coded radius</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">types</span> <span class="o">=</span> <span class="nv">$place_types</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$nearby_places</span> <span class="o">=</span> <span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">nearbySearch</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. First we include the autoload file so we can access the library from our file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we created a new instance of the <code>GooglePlaces</code> class. You need supply the API Key that you got earlier from your Google Console:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$google_places</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">joshtronic\GooglePlaces</span><span class="p">(</span><span class="s1">&#39;YOUR_GOOGLE_API_KEY&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we get the data that we will be supplying later on in the client-side and assign them to their own variables:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$lat</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="nv">$lng</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$place_types</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;place_types&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly, we make the actual request to the Google Places API. This library works a little bit different from your usual one. In the sense that we pass in the parameters needed by the actual search method using the object that we got from declaring a new instance of the <code>GooglePlaces</code> class. The first thing that we need to pass is the <code>location</code>, this takes up an array containing the coordinates (latitude and longitude) of the place that we are using as a reference point. This is basically the place where we are at, the place where we want to find nearby places on. Next you need to supply the <code>radius</code>. This is how many meters from your reference point you want your search to be limited. In this case we supplied a hard-coded value of 8046 meters, which is about 8 kilometers. If you want the user to have more control over this value, you can try adding a slider that the user can use to change the radius. And the last one is the <code>types</code>, this is an array of the types of places you want to see in the results. An example of this is restaurants (yeah I&rsquo;m hungry so I mentioned this twice now), parks, shopping center, etc. Once you&rsquo;ve supplied those, you can now call the <code>nearbySearch</code> method. This will make the request to the API and return the data that we need. We just have to turn it into a JSON string so it can be parsed and read later on from the client-side.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">location</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$lat</span><span class="p">,</span> <span class="nv">$lng</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">radius</span> <span class="o">=</span> <span class="mi">8046</span><span class="p">;</span> <span class="c1">//hard-coded radius</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">types</span> <span class="o">=</span> <span class="nv">$place_types</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$nearby_places</span> <span class="o">=</span> <span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">nearbySearch</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$nearby_places</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Creating the Map</h4>
+
+<p>Next we move on to the client-side. Create a new <code>index.html</code> file and put the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>gmap<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;search&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-canvas&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;place-types&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bar&quot;</span><span class="nt">&gt;</span> bar
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bus_station&quot;</span><span class="nt">&gt;</span> bus station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;hospital&quot;</span><span class="nt">&gt;</span> hospital
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;health&quot;</span><span class="nt">&gt;</span> health
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;police&quot;</span><span class="nt">&gt;</span> police
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;post_office&quot;</span><span class="nt">&gt;</span> post office
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;store&quot;</span><span class="nt">&gt;</span> store
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;library&quot;</span><span class="nt">&gt;</span> library
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;fire_station&quot;</span><span class="nt">&gt;</span> fire station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;gas_station&quot;</span><span class="nt">&gt;</span> gas station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;convenience_store&quot;</span><span class="nt">&gt;</span> convenience store
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;school&quot;</span><span class="nt">&gt;</span> school
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;find-places&quot;</span><span class="nt">&gt;</span>Find Places<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;map.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. We include the stylesheet in the page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we include jQuery and the Google Maps JavaScript library. Be sure to update the code so it uses your Google API Key:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the map container where we have <code>map-canvas</code> that will serve as the element where the map will be created. And the search box where the user will search for the place that will be used as a reference point:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;search&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-canvas&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then the type of places that we can find. Note that this isn&rsquo;t everything we can find in Google Places API. I just picked some of the places that I think are essential. For a more complete list you can check <a href="https://developers.google.com/places/supported_types">this page</a>. Here we added the <code>data-type</code> attribute which represents the place type. And then after the list we have the &lsquo;Find Places&rsquo; button which basically just triggers the search:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;place-types&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bar&quot;</span><span class="nt">&gt;</span> bar
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bus_station&quot;</span><span class="nt">&gt;</span> bus station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;hospital&quot;</span><span class="nt">&gt;</span> hospital
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;health&quot;</span><span class="nt">&gt;</span> health
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;police&quot;</span><span class="nt">&gt;</span> police
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;post_office&quot;</span><span class="nt">&gt;</span> post office
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;store&quot;</span><span class="nt">&gt;</span> store
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;library&quot;</span><span class="nt">&gt;</span> library
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;fire_station&quot;</span><span class="nt">&gt;</span> fire station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;gas_station&quot;</span><span class="nt">&gt;</span> gas station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;convenience_store&quot;</span><span class="nt">&gt;</span> convenience store
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;school&quot;</span><span class="nt">&gt;</span> school
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;find-places&quot;</span><span class="nt">&gt;</span>Find Places<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then lastly we include the <code>map.js</code> file which will make this all work:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;map.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the <code>style.css</code> file and put the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nf">#map-container</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#map-canvas</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">500px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">1000px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#place-types</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#place-types</span> <span class="nt">ul</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">list-style</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we move on to the <code>map.js</code> file. First declare the default coordinate of the place that the map will display:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="mf">18.35827827454</span><span class="p">;</span> <span class="c1">//default latitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="mf">121.63744354248</span><span class="p">;</span> <span class="c1">//default longitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">home_coordinates</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">);</span> <span class="c1">//set default coordinates</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, assign it to the map:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">map_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">center</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">),</span> <span class="c1">//set map center</span>
+</span><span class='line'>  <span class="nx">zoom</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="c1">//set zoom level to 17</span>
+</span><span class='line'>  <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span> <span class="c1">//set map type to road map</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we set the search box as an auto-complete element. This will allow the user to see suggestions of matching locations as he types in the search box. We also need to bind it to the map so the auto-complete bounds are driven by the current viewport of the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;search&#39;</span><span class="p">);</span> <span class="c1">//get element to use as input for autocomplete</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">autocomplete</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">places</span><span class="p">.</span><span class="nx">Autocomplete</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span> <span class="c1">//set it as the input for autocomplete</span>
+</span><span class='line'><span class="nx">autocomplete</span><span class="p">.</span><span class="nx">bindTo</span><span class="p">(</span><span class="s1">&#39;bounds&#39;</span><span class="p">,</span> <span class="nx">map</span><span class="p">);</span> <span class="c1">//bind auto-complete object to the map</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we listen for the <code>place_changed</code> event that is triggered from the search box. If this event happens then we get the place information using the <code>getPlace</code> method available on the auto-complete object. This allows us to check if the place being searched is within the current map viewport. If it is then we just call the <code>fitBounds</code> method on the map object and pass in the <code>geometry.viewport</code> attribute from the <code>place</code> object. This sets the map center to the coordinates of the location. If its not within the current viewport then we call the <code>setCenter</code> method in the map object and pass in the <code>geometry.location</code> attribute in the <code>place</code> object. We also call the <code>setZoom</code> method in the map to ensure we still got the same zoom level. Lastly we set the position of the <code>home_marker</code> to the <code>geometry.location</code> in the <code>place</code> object.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//executed when a place is selected from the search field</span>
+</span><span class='line'><span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">autocomplete</span><span class="p">,</span> <span class="s1">&#39;place_changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get information about the selected place in the autocomplete text field</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">place</span> <span class="o">=</span> <span class="nx">autocomplete</span><span class="p">.</span><span class="nx">getPlace</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">){</span> <span class="c1">//for places within the default view port (continents, countries)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">fitBounds</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">);</span> <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">//for places that are not on the default view port (cities, streets)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setCenter</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span>  <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span> <span class="c1">//set a custom zoom level of 17</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">home_marker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span> <span class="c1">//set the map to be used by the  marker</span>
+</span><span class='line'>    <span class="nx">home_marker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span> <span class="c1">//plot marker into the coordinates of the location</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we declare an array that will store the markers for the places that will be searched. Don&rsquo;t confuse this with the place used as the reference point, the <code>home_marker</code> is used for this. The places I&rsquo;m referring to are the place types such as grocery, church, etc. For convenience I&rsquo;ll be referring to those markers as place type markers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">markers_array</span> <span class="o">=</span> <span class="p">[];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the method that would remove the place type markers from the map. We would need to call this every time the user clicks on the &lsquo;Find Places&rsquo; button so that the previous search results will be removed from the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">removeMarkers</span><span class="p">(){</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">markers_array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">markers_array</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">setMap</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we have the method that listens for the click event on the &lsquo;Find Places&rsquo; button. The first thing it does is to get the coordinates of the <code>home_marker</code>. This represents the coordinates of the reference point. After that, we declare an empty array, this is where we will store the place types selected by the user. We do that by looping through all the place types selected by the user and then we push the value for their <code>data-type</code> attribute in the array. Next we call the <code>removeMarkers</code> method to remove the place types markers that are currently plotted on the map. Next we make a <code>POST</code> request to the server and then passing in the coordinates of the reference point and the place types array. Once we get a response, we call the <code>JSON.parse</code> method so we can extract the results from the response. From there we loop through all the results and get the coordinates for each and then we plot the marker into the map. After that we assign an infowindow to each of the markers to that when its clicked it shows the name of the place.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#find-places&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">home_marker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lat</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">home_marker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lng</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">place_types</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//loop through all the place types that has been checked and push it to the place_types array</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#place-types input:checked&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">place_types</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">removeMarkers</span><span class="p">();</span> <span class="c1">//remove the current place type markers from the map</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//make a request to the server for the matching places</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;places.php&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;lat&#39;</span><span class="o">:</span> <span class="nx">lat</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lng&#39;</span><span class="o">:</span> <span class="nx">lng</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;place_types&#39;</span><span class="o">:</span> <span class="nx">place_types</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">response_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">response_data</span><span class="p">.</span><span class="nx">results</span><span class="p">){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">response_data</span><span class="p">.</span><span class="nx">results</span><span class="p">;</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">result_count</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">result_count</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//get coordinates of the place</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;lat&#39;</span><span class="p">];</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//create a new infowindow</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">infowindow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">InfoWindow</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//plot the marker into the map</span>
+</span><span class='line'>          <span class="nx">marker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span>
+</span><span class='line'>            <span class="nx">position</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">),</span>
+</span><span class='line'>            <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">icon</span><span class="o">:</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;icon&#39;</span><span class="p">]</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nx">markers_array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">marker</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//assign an infowindow to the marker so that when its clicked it shows the name of the place</span>
+</span><span class='line'>          <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="nx">x</span><span class="p">){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>              <span class="nx">infowindow</span><span class="p">.</span><span class="nx">setContent</span><span class="p">(</span><span class="s2">&quot;&lt;div class=&#39;no-scroll&#39;&gt;&lt;strong&gt;&quot;</span> <span class="o">+</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/strong&gt;&lt;br&gt;&quot;</span> <span class="o">+</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;vicinity&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">infowindow</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="nx">marker</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>          <span class="p">})(</span><span class="nx">marker</span><span class="p">,</span> <span class="nx">x</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a screenshot of the final output:</p>
+
+<p><img src="http://anchetawern.github.io/images/posts/google_places/google-places.png" alt="google places" /></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with the Google Place API in PHP. We have also create a simple app that would allow users to search specific types of places that is near the location used as a reference point. If you want to learn more, be sure to check out the resources below.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.google.com/places/webservice/intro">Google Places API</a></li>
+<li><a href="https://developers.google.com/places/supported_types">Place Types</a></li>
+<li><a href="https://developers.google.com/maps/documentation/javascript/examples/places-searchbox">Places Search box</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Google Calendar API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/06/getting-started-with-google-calendar-api/"/>
+    <updated>2015-05-06T07:48:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/06/getting-started-with-google-calendar-api</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Mandrill with PHP]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/06/using-mandrill-with-php/"/>
+    <updated>2015-05-06T07:47:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/06/using-mandrill-with-php</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with the Wordpress Theme Customization API]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api/"/>
+    <updated>2015-05-06T07:46:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Roots Wordpress Starter Theme]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/06/getting-started-with-roots-wordpress-starter-theme/"/>
+    <updated>2015-05-06T07:46:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/06/getting-started-with-roots-wordpress-starter-theme</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Implementing Audio Calls with PeerJS]]></title>
@@ -2494,1095 +3773,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <p>Over time I got better at coding. I started to feel confident about my coding skills. I started believing that I could actually do this for a job. As I started to know more about programming and gain more experience. I realized just how much I still don&rsquo;t know. That&rsquo;s the time when I started my very first blog which I would write about some of the things that I&rsquo;ve learned in my coding adventures. At first I was writing about some VB.Net CRUD things. Because that was what they were teaching at school. I also wrote about some Java stuff when it was taught. Then came Web Development. HTML, CSS, JavaScript, PHP and MySQL. And I taught to myself. Dude! this is pretty sweet! I could write a program and have it used by many people as long as they&rsquo;re connected to the internet. That&rsquo;s when we were introduced to w3schools and htmlgoodies. These websites quickly became my best friend. They were my number one source of web stuff for a long time. But then came w3fools. Which made me realize that w3schools actually sucks. I started using MDN as my primary reference for web stuff as w3fools recommended.</p>
 
 <p>Fast-forward to the present. I am now calling myself a web developer. Specifically a full-stack developer. Responsible for almost everything that&rsquo;s needed to release a whole website out in the open. I&rsquo;m a web developer for about 2 years now. Mainly doing some remote work. And sometimes freelancing on the side. And that leads us to the original question. Why I code? That&rsquo;s mainly because it gives you the ability to reach thousands of people and make their lives easier through the use of the app that you&rsquo;ve written. Its the joy of creating something out of nothing. The challenges that you encounter as you try to build your app. That rewarding feeling that you get when you finally implemented that feature which made your brain explode. Or that feeling that you got when you finally solved that bug that&rsquo;s been haunting you for 10 hours. Its also about the excitement that you feel whenever there&rsquo;s a shiny new toy that comes out. The shiny new toy can be any library, framework or programming language that was released recently. Finally, I code because I want to leave something to the world that will prove my existence. That I have onced lived and created this useful website or app that has been useful to many people. I&rsquo;m still far from that realization though. Like I said earlier, my side projects mainly solve a specific problem that I&rsquo;m having. And the projects that I&rsquo;m getting from the company I&rsquo;m currently working for are targeted only for a specific group of people and country. At most there will only be hundreds of people who will be able to use it.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Year-End Review]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/12/29/year-end-review/"/>
-    <updated>2014-12-29T17:44:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/12/29/year-end-review</id>
-    <content type="html"><![CDATA[<p>This has been a very good and productive year. Lots of articles written, podcasts listened to, articles and books read, company and client projects, side-projects, travels, video games played, anime series and movies, video tutorials and talks watched. In this blog post I&rsquo;ll try to recollect some of those.</p>
-
-<h3>Articles Written</h3>
-
-<p>I&rsquo;m not going to list out every article I&rsquo;ve written on this blog for this year. We have the <a href="http://wern-ancheta.com/blog/archives/">archives</a> for that. So here are the articles that I consider the best from 2014. These are based from the number of responses I got from both the commenting system and social media:</p>
-
-<ul>
-<li><a href="http://wern-ancheta.com/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/">A Whirlwind Tour of Web Developer Tools: Virtualization</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">A Whirlwind Tour of Web Developer Tools: Build Tools</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/07/13/how-i-work-with-clients/">How I work with Clients</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/08/10/using-datatables-with-laravel/">Using Datatables with Laravel</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/10/25/always-scratch-your-developer-itch/">Always scratch your developer itch</a></li>
-</ul>
-
-
-<p>I have also started writing for Sitepoint&rsquo;s PHP Channel this year. Here are some of the articles I&rsquo;ve written:</p>
-
-<ul>
-<li><a href="http://www.sitepoint.com/database-versioning-dbv/">Database Versioning with DBV</a></li>
-<li><a href="http://www.sitepoint.com/automate-php-phake-introduction/">Automate PHP with Phake</a></li>
-<li><a href="http://www.sitepoint.com/create-movie-recommendation-app-prediction-io-setup/">Create a Movie Recommendation app with Prediction.IO</a></li>
-<li><a href="http://www.sitepoint.com/getting-started-medoo-examples-use/">Getting Started with Medoo</a></li>
-</ul>
-
-
-<p>If you want to check out some of my other articles on Sitepoint, please visit <a href="http://www.sitepoint.com/author/wancheta/">my author page</a>.</p>
-
-<h3>Podcasts Listened To</h3>
-
-<h3>Articles Read</h3>
-
-<p>There&rsquo;s a gazillion of them. To give you an idea how much I articles I&rsquo;ve read this year, here&rsquo;s a screenshot of session buddy, a chrome extension that I&rsquo;m using for saving sets of tabs.</p>
-
-<p><img src="http://anchetawern.github.io/images/posts/2014_yearend_review/sessions.png" alt="sessions" /></p>
-
-<h3>Books Read</h3>
-
-<p>Ok I was kidding when I said I read lots of books this year. Actually I finished one. That is <a href="http://www.amazon.com/Thinking-Fast-Slow-Daniel-Kahneman/dp/0374533555">Thinking Fast and Slow by Daniel Kahneman</a>. I tend to read 2 to 3 books at a time, so I&rsquo;m halfway through <a href="http://www.amazon.com/This-Will-Make-You-Smarter/dp/0062109391">This Will Make You Smarter: New Scientific Concepts to Improve Your Thinking by John Brockman</a>. And recently I&rsquo;ve started reading <a href="http://www.amazon.com/Optimism-Bias-Irrationally-Positive-Brain/dp/0307473511">Optimism Bias by Tali Sharot</a>.</p>
-
-<h3>Company and Client Projects</h3>
-
-<p>I&rsquo;m really thankful for having a great boss who always gives me some nice and cool projects to work on. This year I worked on a total of 7 company projects. 1 of those was from the previous company that I worked for. I joined my current company in late March this year so there&rsquo;s that 1 leftover project. Here are some of the company projects that I&rsquo;m most proud of:</p>
-
-<ul>
-<li><a href="http://wern-ancheta.com/projects/wpdonations">WP-Donations</a></li>
-<li><a href="http://wern-ancheta.com/projects/vmonial">Vmonial</a></li>
-<li><a href="http://wern-ancheta.com/projects/blink">Blink</a></li>
-<li><a href="http://wern-ancheta.com/projects/stockswitch">StockSwitch</a></li>
-<li><a href="http://wern-ancheta.com/projects/stockswitch-mobile">StockSwitch Mobile</a></li>
-</ul>
-
-
-<p>As for the client project, I don&rsquo;t actively look for them and even if I get one, I usually reject it because of lack of experience on the technologies to be used and overall lack of interest. There&rsquo;s only one project that got through the tight screening, and that is the <a href="http://wern-ancheta.com/projects/esa/">ebay store automator</a>.</p>
-
-<h3>Side-projects</h3>
-
-<p>There&rsquo;s an abundance of side-projects this year. I usually do these projects to automate some of the tasks that I usually do by hand, or to get my hands dirty on a specific technology I&rsquo;ve never worked with before. Here are some of those:</p>
-
-<ul>
-<li><a href="https://github.com/anchetaWern/octo-views">octo-views</a></li>
-<li><a href="https://github.com/anchetaWern/octo-iframe">octo-iframe</a></li>
-<li><a href="https://github.com/anchetaWern/laravel-bootstrap-starter">laravel bootstrap starter</a></li>
-<li><a href="https://github.com/anchetaWern/octo-wysiwyg">octo-wysiwyg</a></li>
-<li><a href="https://github.com/anchetaWern/jekyll-contact">jekyll-contact</a></li>
-<li><a href="https://github.com/anchetaWern/ahead">Ahead</a></li>
-<li><a href="https://play.google.com/store/apps/details?id=com.wern.antares">Antares</a></li>
-</ul>
-
-
-<h3>Travels</h3>
-
-<p>I recently got a car so I naturally got exposed more exposure to the outside world as an excuse for getting some driving experience. Here are some of the places I&rsquo;ve been to this year. I&rsquo;ve mostly visited towns inside the same province where I live:</p>
-
-<ul>
-<li>Botanical Garden, San Fernando City, La Union</li>
-<li>Intake Dam, Sudipen, La Union</li>
-<li>Bahay na Bato, Luna, La Union</li>
-<li>Occalong Falls, Luna, La Union</li>
-<li>Callao Caves, Penablanca, Cagayan</li>
-<li>Aparri, Cagayan</li>
-<li>Basilica Minore of Our Lady of Piat, Piat, Cagayan</li>
-<li>Baluarte, Vigan City, Ilocos Sur</li>
-<li>Pindangan Ruins, San Fernando City, La Union</li>
-<li>Pugo Adventure, Pugo, La Union</li>
-<li>Basilica Minore of Our Lady of Charity, Agoo, La Union</li>
-<li>Namacpacan Church, Luna, La Union</li>
-<li>Balay Anito Falls, Santol, La Union</li>
-</ul>
-
-
-<h3>Video Games</h3>
-
-<p>Not really a lot. I just played a bunch of Pokemon on my Nintendo DS Lite. These days I barely even touch it since I&rsquo;ve already finished all the Pokemon games available for DS. That&rsquo;s why I&rsquo;m planning on selling it to buy the 3DS which apparently have some pretty badass Pokemon Games in Full 3D.</p>
-
-<h3>Anime Series</h3>
-
-<p>I&rsquo;m a big anime fan, and I&rsquo;m probably watching more than what I should be watching. At most around 40 anime series per year. But here are the only ones that I can recommend:</p>
-
-<ul>
-<li>Parasyte</li>
-<li>Hamatora</li>
-<li>Haikyu</li>
-<li>Amagi Brilliant Park</li>
-<li>Hunter x Hunter (2011 Remake)</li>
-<li>Free!</li>
-<li>Noragami</li>
-<li>Terra Formars</li>
-<li>Nanatsu no Taizai</li>
-<li>Yowamushi Pedal</li>
-<li>Tokyo Ghoul</li>
-<li>Shingeki no Bahamut</li>
-<li>Garo: The Animation</li>
-<li>Terror in Resonance</li>
-<li>Captain Earth</li>
-<li>Log Horizon</li>
-<li>Sword Art Online (Season 2)</li>
-<li>Chunibyo</li>
-<li>Chaika &ndash; The Coffin Princess</li>
-<li>World Trigger</li>
-<li>Barakamon</li>
-<li>Brynhildr in the Darkness</li>
-<li>Kagerou Project</li>
-<li>Psycho Pass (Season 2)</li>
-<li>Aldnoah.Zero</li>
-<li>Akatsuki no Yona</li>
-<li>Akame Ga Kill</li>
-</ul>
-
-
-<h3>Movies</h3>
-
-<p>Lots of good movies this year but here&rsquo;s the best:</p>
-
-<ul>
-<li>Dawn of the Planet of the Apes</li>
-<li>Captain America: Winter Soldier</li>
-<li>X-men: Days of Future Past</li>
-<li>Lucy</li>
-<li>Divergent</li>
-<li>Cloverfield</li>
-</ul>
-
-
-<h3>Talks</h3>
-
-<p>I don&rsquo;t really go to conferences so I only watched talks from all over the world via Youtube. I&rsquo;ve watched a lot of them this year but I&rsquo;ll only pick this one talk:</p>
-
-<ul>
-<li><a href="https://www.youtube.com/watch?v=ctwEcZC_mmI">Our Web Development Workflow is Completely Broken</a>.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Brain Dump 0]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/11/22/brain-dump-0/"/>
-    <updated>2014-11-22T19:39:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/11/22/brain-dump-0</id>
-    <content type="html"><![CDATA[<p>Welcome to the first issue of brain dump. Brain dump is my attempt on putting the things that are always at the back of my mind into writing. Everything has its limits, and that includes the brain. Brain dump is my way of freeing up some space in my brain in hopes that I can use it on something else.</p>
-
-<h3>Things I want to learn</h3>
-
-<ul>
-<li>Meteor.js</li>
-<li>Design Patterns in PHP and JavaScript</li>
-<li>Behavior Driven Development in PHP: Codeception</li>
-<li>JavaScript Unit Testing</li>
-<li>PostgreSQL</li>
-<li>Ember.js</li>
-<li>Python</li>
-<li>Django</li>
-<li>Ruby</li>
-<li>Ruby on Rails</li>
-<li>SEO</li>
-<li>Web Semantics</li>
-<li>How to program Arduino or Raspberry Pi</li>
-<li>ARIA</li>
-<li>Canvas</li>
-<li>SVG</li>
-<li>Agile Development</li>
-<li>Unit Testing</li>
-<li>Regression Testing</li>
-</ul>
-
-
-<h3>Books I want to read</h3>
-
-<ul>
-<li>How to Win Friends and Influence People</li>
-<li>Strangers to Ourselves</li>
-<li>The Willpower Instinct: How Self-Control Works</li>
-<li>You Are Not So Smart</li>
-<li>Sway: The Irresistible Pull of Irrational Behavior</li>
-<li>Mindfulness</li>
-<li>The Optimism Bias</li>
-<li>The Social Animal</li>
-<li>The Honest Truth About Dishonesty: How We Lie to Everyone</li>
-<li>Yes! (50 Scientifically Proven Ways to be Persuasive)</li>
-<li>The Design of Everyday Things</li>
-<li>The Paradox of Choice: Why More is Less</li>
-<li>The Compass of Pleasure</li>
-<li>The Lucifer Effect: Understanding How Good People Turn Evil</li>
-<li>The Pragmatic Programmer</li>
-<li>Clean Code</li>
-<li>Predictably Irrational</li>
-<li>Social Engineer: The Art of Human Hacking</li>
-<li>Made to Stick: Why Some Ideas Survive and Others Die</li>
-<li>Head First Design Patterns</li>
-<li>Refactoring &ndash; Improving the design of existing code</li>
-<li>The Passionate Programmer</li>
-<li>Ship it!</li>
-<li>What Makes Your Brain Happy (and Why You Should Do the Opposite)</li>
-<li>Don&rsquo;t Make Me Think</li>
-<li>Incognito: The Secret Lives of the Brain</li>
-<li>The Power of Habit (Why We Do What We Do)</li>
-<li>The Productive Programmer</li>
-<li>The Art of Choosing</li>
-<li>Mistakes Were Made (But Not By Me)</li>
-<li>Priceless</li>
-<li>Switch: How to Change Things When Change is Hard</li>
-<li>Writing Solid Code</li>
-<li>Practices of an Agile Developer</li>
-<li>Stumbling on Happiness</li>
-<li>Man&rsquo;s Search for Meaning</li>
-</ul>
-
-
-<h3>Video Courses I want to watch</h3>
-
-<ul>
-<li>Codeschool &ndash; JavaScript Best Practices</li>
-<li>Codeschool &ndash; Mastering Github</li>
-<li>Codeschool &ndash; Design Fundamentals</li>
-<li>Udemy &ndash; Life&rsquo;s Little Secrets</li>
-<li>Udemy &ndash; Improve Your Mental Well Being</li>
-<li>Udemy &ndash; Freelance Jumpstart</li>
-<li>Udemy &ndash; Sauce of Great Writing</li>
-<li>Udemy &ndash; Become a Super learner</li>
-<li>Tutsplus &ndash; Automated Testing with PHP</li>
-<li>Tutsplus &ndash; Artisan Commands and You</li>
-<li>Tutsplus- Custom Interactive Maps with Google Maps API</li>
-<li>Tutsplus &ndash; Canvas Essentials</li>
-<li>Tutsplus &ndash; SVG for Web Design</li>
-<li>Tutsplus &ndash; Django Unchained</li>
-<li>Tutsplus &ndash; SVG Uncovered</li>
-<li>Lynda &ndash; Web Semantics</li>
-</ul>
-
-
-<h3>Projects I want to build</h3>
-
-<ul>
-<li>Wordpress Donations Plugin &ndash; can accept bitcoins, paypal, stripe</li>
-<li>Newsletter Subscription for Octopress &ndash; using Mailchimp API</li>
-<li>Gilium &ndash; similar to hacker news reader; mobile app for aggregating and suggesting content</li>
-<li>Dropshipster &ndash; a web application for easy dropshipping</li>
-<li>Vacationr &ndash; vacation planner app + social network</li>
-</ul>
-
-
-<h3>Things I want to write</h3>
-
-<ul>
-<li>My web development workflow</li>
-<li>My mobile development workflow</li>
-<li>Getting Started Guides
-
-<ul>
-<li>Yahoo Finance API</li>
-<li>Ionic</li>
-<li>Shopify Theme Development</li>
-<li>Twilio</li>
-<li>Youtube API</li>
-<li>Vimeo API</li>
-<li>Facebook API</li>
-<li>Twitter API</li>
-<li>Linkedin API</li>
-<li>Stripe API</li>
-</ul>
-</li>
-<li>A Whirlwind Tour of Web Developer Tools
-
-<ul>
-<li>Linting</li>
-<li>Testing</li>
-<li>Pre-processors</li>
-<li>Coding Standards</li>
-<li>Boilerplates and Front-end frameworks</li>
-<li>Templating</li>
-<li>Deployment</li>
-<li>Miscellaneous &ndash; tools not mentioned in any of the above, but still useful</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>Articles I want to read</h3>
-
-<p>There&rsquo;s bazzilion of them. It would take forever to write it here.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with RabbitMQ in PHP]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/11/16/getting-started-with-rabbitmq-in-php/"/>
-    <updated>2014-11-16T15:11:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/11/16/getting-started-with-rabbitmq-in-php</id>
-    <content type="html"><![CDATA[<blockquote><p>This article was originally published at Binpress:<br/>http://www.binpress.com/tutorial/getting-started-with-rabbitmq-in-php/164</p></blockquote>
-
-
-<p>In this tutorial I&rsquo;m going to walk you through how you can use RabbitMQ in PHP. But first what is RabbitMQ? RabbitMQ is a message broker software. It acts as a middleman between a producer and a consumer. Producer being the data that we want to pass, and consumer being the entity that we want to pass it to. RabbitMQ uses a queue, you can think of it as a mailbox where you drop your letters. RabbitMQ then takes the letters and delivers it to its destination.</p>
-
-<h3>Installing RabbitMQ</h3>
-
-<p>In Ubuntu and other debian based operating system you can install RabbitMQ by executing the following commands from your terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>echo "deb http://www.rabbitmq.com/debian/ testing main"  | sudo tee  /etc/apt/sources.list.d/rabbitmq.list &gt; /dev/null
-</span><span class='line'>sudo wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-key add rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install rabbitmq-server -y
-</span><span class='line'>sudo service rabbitmq-server start
-</span><span class='line'>sudo rabbitmq-plugins enable rabbitmq_management
-</span><span class='line'>sudo service rabbitmq-server restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What the first command does is to append the rabbitmq source to the software sources list. Next we download the rabbitmq signing key using <code>wget</code>. Then add the key to Ubuntu. Next we call <code>apt-get update</code> to update the software sources list. Next we install the RabbitMQ server, start it then enable RabbitMQ management plugin. This provides an HTTP-based API management for monitoring your RabbitMQ server. Finally we restart the RabbitMQ server so that changes will take effect.
-The default username and password is <code>guest</code>. And the default port in which it runs is <code>5672</code>.</p>
-
-<p>If you&rsquo;re on another operating system, you can find how to install RabbitMQ for your specific operating system here: <a href="http://www.rabbitmq.com/download.html">Downloading and Installing RabbitMQ</a>.</p>
-
-<h3>Working with RabbitMQ</h3>
-
-<p>Once you&rsquo;re done installing RabbitMQ, we can now install the AMQP library for PHP. This implements the AMQP (Advanced Messaging Queue Protocol) protocol. As the name suggests it is a protocol used for messaging.
-Start by creating a new directory, this is where we will put all the files for testing RabbitMQ. Next create a composer.json file and add the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "require": {
-</span><span class='line'>      "videlalvaro/php-amqplib": "2.2.*"
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, open up your terminal and <code>cd</code> into the directory you created earlier then execute <code>composer install</code> to install the AMQP library.</p>
-
-<p>Before we move on, lets also install <a href="http://swiftmailer.org/">Swiftmailer</a>. You can do that by executing the following command from your terminal. This also adds an entry to Swiftmailer to your composer.json:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer require swiftmailer/swiftmailer @stable</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We will be using Swiftmailer for the sample app that were going to create. What we will do is create an app that will send emails for our users. Normally emails takes a few seconds before it is sent, adding an attachment to the email also adds to that time. In the real world we don&rsquo;t really want our users to wait. What we want to do is make them believe that we have already sent the email for them by outputting to the screen that their message has been sent.
-This is where RabbitMQ comes in. We will use it as some sort of a mailbox in which multiple users can just drop their messages in. RabbitMQ will then take care of sending the messages in the background.</p>
-
-<h4>Sending Messages</h4>
-
-<p>First lets create the form to be used for sending emails. This will accept the name and email address of the sender, the email address of the receiver and then the subject and message. Name the file <code>form.php</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">if(!empty($_GET[&#39;sent&#39;])){</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    Your message was sent!
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">}</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;mailer.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>From<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from&quot;</span> <span class="na">id=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>From Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from_email&quot;</span> <span class="na">id=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>To Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;to_email&quot;</span> <span class="na">id=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>Subject<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;subject&quot;</span> <span class="na">id=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;</span>Message<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span> <span class="na">id=</span><span class="s">&quot;message&quot;</span> <span class="na">cols=</span><span class="s">&quot;30&quot;</span> <span class="na">rows=</span><span class="s">&quot;10&quot;</span><span class="nt">&gt;&lt;/textarea&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Send<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the file which will push the message into the queue. Name the file <code>sender.php</code>.
-Require the <code>autoload.php</code> file so that our dependencies will be automatically loaded by PHP. Then use the <code>AMQPConnection</code> and <code>AMQPMessage</code> from the AMQP library. <code>AMQPConnection</code> allows us to create a new connection to the RabbitMQ server and <code>AMQPMessage</code> allows us to create messages that we can push to the queue.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Message\AMQPMessage</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, first we create a new connection by creating a new instance of the <code>AMQPConnection</code> class. This requires the following arguments:</p>
-
-<ul>
-<li><strong>host</strong> &ndash; the host in which the RabbitMQ server is running. In this case we&rsquo;ve installed RabbitMQ on the same computer we are running the script in. So it should be <code>localhost</code>. Note that in the real world we install RabbitMQ on a another server, different from the one were using to serve our websites. So instead of <code>localhost</code> we use the public ip address of that server.</li>
-<li><strong>port</strong> &ndash; the port in which the RabbitMQ server is running.</li>
-<li><strong>user</strong> &ndash; the username to use for logging in to the server. By default the username is set to <code>guest</code>.</li>
-<li><strong>password</strong> &ndash; the password of the user. By default the password is set to <code>guest</code>.</li>
-</ul>
-
-
-<p>Next we create a channel. We can do that by calling the <code>channel()</code> method from the connection that we have just declared.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare the queue to be used by calling the  <code>queue_declare</code> method.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>queue_declare</code> method takes up the following arguments:</p>
-
-<ul>
-<li><strong>queue name</strong> &ndash; a name that you want to use for the queue, you can supply anything for this.</li>
-<li><strong>passive</strong> &ndash; a boolean value for specifying whether to check for an existing exchange.</li>
-<li><strong>durable</strong> &ndash; a boolean value for specifying whether the RabbitMQ holds on to a queue when the server crashes.</li>
-<li><strong>exclusive</strong> &ndash; a boolean value for specifying whether the queue is used by only one connection.</li>
-<li><strong>auto-delete</strong> &ndash; a boolean value for specifying whether the queue is deleted when the last subscriber unsubscribes.</li>
-</ul>
-
-
-<p>Next we convert the POST data that we receive from the form to a JSON string. We can only pass strings as a message so we&rsquo;ll have to convert this later on into an array on the receiver&rsquo;s end.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we create a new message. This accepts 2 arguments: the data and an array of options. For the array of options we specify the <code>delivery_mode</code> to 2 which means that the message is persistent. This means that it isn&rsquo;t lost when the server crashes or an error occurs.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we publish the message by calling the <code>basic_publish()</code> method on the channel. This accepts 3 arguments: the message, the exchange and the name of the queue. If you&rsquo;re wondering why we set the value of exchange to an empty string, that&rsquo;s because we don&rsquo;t really need it. The exchange is commonly used for pub-sub patterns. What were using here is just basic publish.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we just redirect the user to the form.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Receiving Messages</h4>
-
-<p>Now were ready to write the code that will receive the messages sent by users. Name the file <code>receiver.php</code>. Here&rsquo;s the full contents of the file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39; * Waiting for messages. To exit press CTRL+C&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_qos</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_consume</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$callback</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">callbacks</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">wait</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, the first 5 lines of code are basically the same as the one we have on the <code>sender.php</code> file. Then we just output a message saying how we can stop the file from running. We need to run this file from the terminal so to stop it we just hit <code>CTRL + C</code>.</p>
-
-<p>Next we declare a named function. This will be used for processing the message that we passed from the sender. The first thing it does is output that the message was received. Then we use <code>json_decode()</code> to convert the JSON string back to an array.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we extract the data and assign them to each of their own variables:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new transporter to be used by Swiftmailer. This allows us to use a gmail account for sending emails. Declaring a new instance accepts 3 arguments: the host, port and the encryption. Then we set the username and password.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new mailer instance, and supplying the transporter as an argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create a new message, this also takes up the transporter as its argument. We then set the subject, from field, to field, and body of the message.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we send the message and output that the message was sent. The last line basically tells RabbitMQ that the sending of the message has indeed been successful.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Running the program</h4>
-
-<p>You can now run the receiver by going to your terminal and executing the following command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php receiver.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once its running, go to your browser and access the <code>sender.php</code> file. Enter the details of your message and click on send. You&rsquo;re instantly greeted by a &lsquo;Your message was sent!&rsquo; text but if you immediately check your email account its not there yet. If its not there then the queue is still processing it. Check the output displayed on the terminal window where you executed the receiver. You should see a &lsquo;Message was sent&rsquo; output if the email was already sent.</p>
-
-<h3>Conclusion</h3>
-
-<p>RabbitMQ is a nice way for implementing messaging applications such as the one we created in this tutorial. We have barely scratch the surface with this tutorial. I recommend you check out the <a href="http://www.rabbitmq.com/getstarted.html">getting started guides</a> and the <a href="http://www.rabbitmq.com/documentation.html">documentation</a> to learn more.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Christmas Wishlist 2014]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/11/08/christmas-wishlist-2014/"/>
-    <updated>2014-11-08T10:39:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/11/08/christmas-wishlist-2014</id>
-    <content type="html"><![CDATA[<h3>13-inch MacBook Pro with Retina display</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/macbookpro.jpg" alt="macbook pro" /></p>
-
-<p>I have always wanted a Macbook Pro since birth. But due to its priciness I never got myself to buy one.</p>
-
-<p>I&rsquo;d like to stick with the following hardware:</p>
-
-<ul>
-<li><strong>Processor</strong>: 3.0GHz Dual-core Intel Core i7</li>
-<li><strong>Memory</strong>: 8GB 1600MHz DDR3L SDRAM</li>
-<li><strong>Storage</strong>: 512GB PCIe-based Flash Storage</li>
-</ul>
-
-
-<h3>Google Nexus 5</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/google_nexus5.jpg" alt="Google Nexus 5" /></p>
-
-<p>Not really a Google fanboy, I&rsquo;m just more curious about a smartphone made by Google rather than an Apple&rsquo;s iPhone or Samsung&rsquo;s Galaxy.</p>
-
-<h3>PS Vita</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/ps_vita.jpg" alt="sony ps vita" /></p>
-
-<p>I&rsquo;ve always been a fan of game consoles from Sony and their games are really good. Here are just some of the titles that I&rsquo;ve enjoyed playing on their PSP game console:</p>
-
-<ul>
-<li>Patapon &ndash; that&rsquo;s Patapon 1, 2 and 3</li>
-<li>God Eater</li>
-<li>Final Fantasy VII: Crisis Core</li>
-<li>Harvest Moon &ndash; boy &amp; girl, innocent life and hero of the leaf valley</li>
-<li>Ratchet and Clank</li>
-<li>Naruto Ultimate Ninja Heroes &ndash; that&rsquo;s 1, 2 and 3</li>
-<li>GTA: Vice City</li>
-<li>Ratchet and Clank</li>
-<li>Secret Agent Clank</li>
-<li>Valhalla Knights</li>
-</ul>
-
-
-<h3>Nintendo 3ds</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/3ds.jpg" alt="Nintendo 3ds" /></p>
-
-<p>To be honest I only really want this game console because of Pokemon. Nintendo 3ds have revolutionize the Pokemon gameplay in this console. There&rsquo;s a bunch of new stuff, and the best thing is that its 3D. So the Pokemon games created for this console won&rsquo;t really look like the Pokemon games created for Nintendo DS or Gameboy.</p>
-
-<h3>Fitbit Flex</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/fitbit.jpg" alt="Fitbit" /></p>
-
-<p>Fitbit is an all-in-one tracker for the body. With it you can do the following:</p>
-
-<ul>
-<li>track steps, distance and calories burned</li>
-<li>monitor how long and well you sleep</li>
-<li>silent wake alarm</li>
-<li>logs food consumption, weight changes</li>
-</ul>
-
-
-<h3>Bose QuietComfort 25</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/bose.jpg" alt="Bose Noise Cancelling Headphones" /></p>
-
-<p>I&rsquo;ve always wanted a noise cancelling headphones that I can use while working. Based on my research Bose is the best thing out there.</p>
-
-<h3>Olympus ME-52W Noise Canceling Microphone</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/olympus_mic.jpg" alt="olympus microphone" /></p>
-
-<p>Screencasting has always been on my TODO list. As a developer I wanted to create a Youtube Channel where I record screencasts of things I&rsquo;ve learned. The only thing that&rsquo;s stopping me is the not-so-quality sound recorder that comes with my laptop.</p>
-
-<h3>Seagate Backup Plus 5TB Desktop External Hard Drive</h3>
-
-<p><img src="http://anchetawern.github.io/images/posts/christmas_wishlist_2014/seagate.jpg" alt="seagate external hard drive" /></p>
-
-<p>Last thing on this list is this 5TB External Hard Drive from Seagate. I download a lot of stuff from the internet to prepare for events where there is no internet and I have nothing to do on my computer.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Always scratch your developer itch]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/10/25/always-scratch-your-developer-itch/"/>
-    <updated>2014-10-25T07:31:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/10/25/always-scratch-your-developer-itch</id>
-    <content type="html"><![CDATA[<p>As developers, no matter how busy we are with our lives, its important for us to always scratch our developer itches every now and then. What I mean by itches are the things that you want to do as a developer. Be it working on a side-project that you&rsquo;ve been wanting to do for months, playing with a new technology, library or a programming language. Or reading an in-depth article about a new programming technique. Or watching a video tutorial about a framework that you&rsquo;ve been wanting to learn. Or watching recorded talks from developer conferences all over the world. Or writing an article about a cool technique you&rsquo;ve discovered recently. And other things that you always have at the back of your mind but never really got to do because of lack of time.</p>
-
-<p>Lack of time is always the reason we give to ourselves. But time is not really the problem. We can always make time for something if we really love to do it. Yes we also have lives to live. But we also need to give priority to the things that matter to us as a developer. As a developers, we have the responsibility for continuous learning. To improve our craft for the better. And this is what it means to scratch your developer itch. If you have it, you&rsquo;ll always find time to scratch it no matter how busy you may be.</p>
-
-<p>On the contrary, we also have lives to live. Nothing is more important than our families and our lives as actual people. So giving time to that is our priority as a human being. After all life is not all about work. Life is about living it in the best way possible. And that is through spending quality time with our loved one&rsquo;s.</p>
-
-<p>In conclusion, its really all about balance. If you can&rsquo;t find time every weekend to scratch your own developer itch, then maybe do it once or twice a month. Maybe 4-8 hours twice a month doing a side project is a good start. You can also go to work early and read up on blogs before and after the alloted time for work. Listen to podcasts while commuting. Most podcasts provide download links to each episode which you can save into your mp3 player of smartphone. Watching a 5-minute video tutorial just before going to bed. Every bit of time counts. It doesn&rsquo;t matter how little or how much, what&rsquo;s important is to give time to scratch our developer itches whenever we can. If you do, you&rsquo;ll be a happier developer. Its like the feeling you get when you were finally able to get what you&rsquo;ve been wanting to buy for a long time.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[On Sleep]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/10/18/on-sleep/"/>
-    <updated>2014-10-18T20:26:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/10/18/on-sleep</id>
-    <content type="html"><![CDATA[<p>As developers we tend to not give much priority to sleep. Most of the time its due to a lot of responsibilities: work, family, and side-projects. And oftentimes we even bring in our todo list in our mind when we go to bed.
-As a developer myself, I tend to get less sleep than what&rsquo;s required. Sometimes not enough to fully function and be productive during the day. In this blog post I&rsquo;m going to share some of the things I&rsquo;ve learned about sleep.</p>
-
-<h3>Stages of Sleep</h3>
-
-<p>There are actually stages to sleep, its not just being awake or asleep. It is important that we understand this concept because its the core of what sleep is all about.</p>
-
-<ol>
-<li><strong>Stage 1</strong> &ndash; also called light sleep. This is where we drift in and out of sleep.</li>
-<li><strong>Stage 2</strong> &ndash; heart rate slows down and body temperature starts decreasing in preparation for deep sleep.</li>
-<li><strong>Stage 3</strong> &ndash; breathing becomes slower, blood pressure begins to drop, muscles becomes relaxed, cell growth and restoration occurs.</li>
-<li><strong>Stage 4</strong> &ndash; slow brain waves are produced.</li>
-<li><strong>REM</strong> &ndash; Rapid Eye Movement sleep. This is where dreams usually occur. The body becomes immobile. Energy is provided to the brain and body.</li>
-</ol>
-
-
-<h3>Factors Affecting Sleep</h3>
-
-<p>There are 5 factors which affects sleep:</p>
-
-<ul>
-<li>Light</li>
-<li>Consistency</li>
-<li>Activeness</li>
-<li>Environment</li>
-<li>Consumption</li>
-</ul>
-
-
-<h4>Light</h4>
-
-<p>Light affects the production of melatonin, a sleep hormone. Ample exposure to light during the day, and minimal exposure during the night 1-2 hours before sleep is recommended. The best light source is sunlight in the morning around 6-8 AM. For rainy days you can use light boxes. The main idea is that exposure to light helps produce serotonin, a neurotransmitter which affects sleep.</p>
-
-<p>Earlier I&rsquo;ve said that light exposure should be minimized during the night. But we haven&rsquo;t really defined what light is. Light is not just the fluorescent light, its also the light which is emmitted by electronic devices such as laptops, tablets and smartphones. And if its not already obvious, the light which comes from a television is also light. As a developer I want to maximize the amount of time I spend doing something productive. And that almost always means staring at the computer screen until I actually go to bed. This is not good for sleep as it decreases melatonin production. A good alternative is to install <a href="https://justgetflux.com/">flux</a>. What it does is adjust the color temperature to adapt to the time of the day. This effectively reduces the bluelight which is bad for sleep. If you&rsquo;re using a tablet or smartphone at night, simply look for similar apps. <a href="https://play.google.com/store/apps/details?id=jp.ne.hardyinfinity.bluelightfilter.free&amp;hl=en">Blue light filter</a> is a good one for android phones.</p>
-
-<h4>Consistency</h4>
-
-<p>Our bodies love consistency. The idea is that you should always sleep and wake at the same time. Our bodies have something like an internal clock. And if you&rsquo;re consistent with your sleep schedule, you almost always wake up or feel sleepy at the same time of the day. You wouldn&rsquo;t even need an alarm clock to wake you up if you&rsquo;re consistent.</p>
-
-<h4>Activeness</h4>
-
-<p>Regular exercise is important. As developers, were basically one of the people with the most sedentary job. Our brains and fingers are the only part of the body that is moving. So to get good sleep we must make it a habit to have exercise of around 20-30 minutes a day.
-Quality sleep is all about temperature oscillation. The idea is that the higher the temperature our body reaches during the day, the lower it gets during the night. And the lower the temperature means more deep sleep.
-Take note that exercise a few hours before sleep is bad as it makes you active. Personally I prefer exercising in the morning as it completely removes the possibility of exercising too near before bed time. And it hits 2 birds with one stone, as I also get some morning sunlight while exercising.
-Jogging, cycling and running are good types of exercise.</p>
-
-<h4>Environment</h4>
-
-<p>The environment also affects sleep. The temperature should neither be too hot or too cold. Around 18-23 degree celsius is a good baseline. Turning on the AC is also good. It effectively lowers the room temperature and also blocks out outside noises because of its white noise. Its a no-brainer that to get quality sleep you must always sleep somewhere where you&rsquo;re comfortable.
-Sleeping position affects the quality of sleep as well, the general rule is to always sleep in a position in which you are comfortable. But its always a good idea to avoid sleeping on your stomach, as it reduces the amount of oxygen that goes to your lungs.</p>
-
-<h4>Consumption</h4>
-
-<p>What we eat affects our sleep as well. Here are some foods which is good and bad for sleep.</p>
-
-<h5>Foods to consume</h5>
-
-<ul>
-<li>Cherries</li>
-<li>Milk</li>
-<li>Jasmine Rice</li>
-<li>Banana</li>
-<li>Sweet Potato</li>
-<li>Turkey</li>
-<li>Valerian Tea</li>
-<li>Walnuts</li>
-<li>Almonds</li>
-<li>Cheese and Crackers</li>
-<li>Lettuce</li>
-<li>Tuna</li>
-<li>Garlic</li>
-<li>Chamomile Tea</li>
-<li>Honey</li>
-<li>Shrimp</li>
-</ul>
-
-
-<p>Basically anything else which can help produce melatonin. Or foods which has sedative properties or natural muscle relaxant.</p>
-
-<h5>Foods to avoid</h5>
-
-<ul>
-<li>Alcohol</li>
-<li>Fat</li>
-<li>Dark Chocolate</li>
-<li>Coffee</li>
-<li>Soda</li>
-<li>Spices</li>
-<li>Chicken</li>
-<li>Celery</li>
-<li>Ice Cream</li>
-</ul>
-
-
-<p>Avoid anything that is high on fat content or caffeine. Its best if you can avoid caffeine entirely as it stays on your body for long periods of time once consumed. Also avoid diuretics, a subtance which promotes the production of urine.</p>
-
-<p>The general consumption rule is don&rsquo;t eat too close to bed time. Eating around 2-4 hours before sleep is a good idea. 2 hours for light meals, 4 hours for heavy meals (dinner buffet).
-Another important thing is to stay hydrated, 8-10 glasses (8 ounces) of water is recommended. You can definitely consume more if you&rsquo;re an athletic type or you sweat a lot. Always remember to not drink too much near bed time to avoid waking up to go to the bathroom. As a rule, avoid drinking too much water 1-2 hours before sleep. You can consume in small amounts (half a glass) if you want.</p>
-
-<h5>Sleep Supplements</h5>
-
-<p>Sleep supplements helps you fall asleep easier. Here are some sleep supplements which you can try if you&rsquo;re having trouble falling asleep:</p>
-
-<ul>
-<li>Valerian</li>
-<li>Melatonin</li>
-<li>Magnesium</li>
-<li>Theanine</li>
-<li>5-HTP</li>
-<li>Antihistamines</li>
-<li>Anti-depressants</li>
-</ul>
-
-
-<p>You can look for these supplements on Amazon or Google. Just be sure to consult your doctor before taking any of these supplements. Because some might negatively affect an existing condition that you already have.</p>
-
-<p>As a general rule, sleep supplements should be avoided and should only be taken when you really can&rsquo;t sleep. They are just short-term fix, and they can leave chemicals in your body which can take around a week to fully expel. These chemicals might make you feel sleepy during the day which is not good for productivity.</p>
-
-<h3>Napping</h3>
-
-<p>You can nap around 20-30 minutes to gain a boost of productivity and avoid feeling tired or sleepy during the day. The best time to nap is around 1pm after lunch.</p>
-
-<h3>Sleep Tracking</h3>
-
-<p>If you want to have an idea how much sleep do you get per night. You can buy a sleep tracking device. Currently there are two brands which dominates this market: Jawbone and Fitbit. Just search for those on Amazon and pick one that feels right for you.
-These devices gives you a detailed look on how much sleep you get. That includes all stages of sleep that I&rsquo;ve mentioned earlier. Its basically a wearable device (wristband) which you can then connect to an app in your smartphone.</p>
-
-<h3>Sleep Disorders</h3>
-
-<p>There are lots of sleep disorder out there but I&rsquo;m only going to walk through these two: Insomnia and Sleep State Misperception.</p>
-
-<h4>Insomnia</h4>
-
-<p>Insomnia is a sleep disorder characterized by difficulty or inability to fall asleep. It can be either primary or secondary insomnia.</p>
-
-<ul>
-<li><strong>Primary insomnia</strong> &ndash; means that your insomnia isn&rsquo;t caused by any existing medical condition.</li>
-<li><strong>Secondary insomnia</strong> &ndash; means that your insomnia is a result of an existing medical condition such as asthma.</li>
-</ul>
-
-
-<p>If you believe you have an insomnia, its better to consult it to a doctor. A psychiatrist can help in most cases. Because oftentimes what&rsquo;s causing you to not be able to sleep is only in the mind.
-If a psychiatrist cannot help you, then look for a sleep specialist.</p>
-
-<h4>Sleep State Misperception</h4>
-
-<p>Sleep State Misperception is the inability to perceive sleep from wakefulness. People with this condition may report having only slept for a few hours but in fact they have slept more than that.</p>
-
-<h3>Tips and tricks on falling asleep faster</h3>
-
-<p>Finally here are some tips and tricks on how to fall asleep faster:</p>
-
-<ul>
-<li>Exercise in morning. Brisk walking, jogging or running will do. If you have a bicycle you can also use that.</li>
-<li>Take a warm bath before going to bed.</li>
-<li>Read a boring book.</li>
-<li>Use a todo list, don&rsquo;t try to hold things in your brain too much. As a developer, I always have things I want to do. Be it playing around a new technology, a library or a programming language. Or watching video tutorials and recorded talks from conferences all over the world. Or finally start a side-project I&rsquo;ve been wanting to do for months. Or read an article about what&rsquo;s new in the world of web development. Or write an article for my blog. The list is endless. The idea of a todo list is to put as much things outside of your brain as possible. This way you don&rsquo;t have to think about it or maintain it on your brain like a file that&rsquo;s saved in a filesystem in your computer.</li>
-<li>Get into a journaling habit. A bullet list of all the things you&rsquo;ve accomplished that day will make you feel at ease and awesome about yourself.</li>
-<li>Picture yourself as dead tired.</li>
-<li>Relax your mind. Imagine a beautiful and relaxing scenery such as the beach or mountain top. Basically anything that you find peaceful.</li>
-<li>Use air-conditioning to lower the room temperature. A cool environment will make you fall asleep faster.</li>
-<li>Turn off all the lights. If you can go pitch black or near pitch black do it.</li>
-<li>Hypnotize yourself. Imagine a pendulum swinging in front of your eyes back and forth.</li>
-<li>Listen to relaxing music. Look for soft piano pieces by mozart and put it into your phone or mp3 player.</li>
-<li>Get out of bed if you really can&rsquo;t sleep. If you still can&rsquo;t sleep 30 minutes after going to bed then its best to get out and do something that would occupy your mind. Like watching TV or reading a book. Just go back to bed once you feel sleepy again.</li>
-<li>Change position. Put your pillow to where your feet is currently pointing.</li>
-<li>Take some deep breaths. Inhale then count up to four then expel it around 8 counts. Then repeat again until you feel relaxed.</li>
-<li>Listen to a sleep hypnosis podcast.</li>
-<li>Replay all the things you did in the morning in your head.</li>
-<li>Stretch like a cat, curl your toes, or rub your belly. All of this somehow triggers us to yawn, which signals our bodies that hey its now time to fall asleep.</li>
-<li>Don&rsquo;t watch the clock when you can&rsquo;t sleep. This will only make it worse as it makes you more anxious and pressured to fall asleep faster. Forcing yourself to sleep is no good. Just remember that it will to you eventually.</li>
-</ul>
-
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://sleepfoundation.org/how-sleep-works/what-happens-when-you-sleep">What happens when you sleep</a></li>
-<li><a href="http://www.webmd.com/sleep-disorders/features/sleep-position-and-sleep-quality">The link between sleep position and sleep quality</a></li>
-<li><a href="http://www.rd.com/slideshows/foods-that-help-you-sleep/">Foods that help you sleep</a></li>
-<li><a href="http://www.thebetterhealthstore.com/Newsletter/030510_Top-5-Sleep-Supplements_08.html">Sleep Supplements</a></li>
-<li><a href="https://www.bulletproofexec.com/sleep-hacking-part-3-falling-asleep-fast-with-biochemistry/">Sleep Hacking</a></li>
-<li><a href="http://www.webmd.com/sleep-disorders/guide/insomnia-symptoms-and-causes">Insomnia</a></li>
-</ul>
-
 ]]></content>
   </entry>
   

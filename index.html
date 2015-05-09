@@ -9,8 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="These past few days I&rsquo;ve been playing around with WebRTC. For the uninitiated, WebRTC basically means Web Real Time Communication.
-Things like &hellip;">
+  <meta name="description" content="In this tutorial I&rsquo;ll walk you through Lumen, a lightweight framework from the same guys that made Laravel. Lumen is basically a lighter &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,1459 @@ Things like &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/09/getting-started-with-lumen/">Getting Started With Lumen</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-09T13:12:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/09/getting-started-with-lumen/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial I&rsquo;ll walk you through Lumen, a lightweight framework from the same guys that made Laravel. Lumen is basically a lighter version of Laravel.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Lumen by using composer&rsquo;s <code>create-project</code> command. Simply execute the following command on your preferred install directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer create-project laravel/lumen --prefer-dist</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the installation is done, you can navigate to the <code>lumen</code> directory and execute the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php artisan serve --port=7771</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will serve the project on port 7771 of your localhost:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:7771/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the installation completed successfully, you will be greeted by the default screen.</p>
+
+<h3>Using Third Party Libraries</h3>
+
+<p>You can use third party libraries with Lumen by adding the package that you want to install in the <code>composer.json</code> file. Here&rsquo;s an example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"require": {
+</span><span class='line'>    "laravel/lumen-framework": "5.0.*",
+</span><span class='line'>    "vlucas/phpdotenv": "~1.0",
+</span><span class='line'>    "elasticsearch/elasticsearch": "~1.0",
+</span><span class='line'>    "guzzlehttp/guzzle": "~5.0"
+</span><span class='line'>},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that the lumen-framework and phpdotenv is there by default since those are needed in order for Lumen to work. In the above file we have added elasticsearch and guzzlehttp as our dependencies.</p>
+
+<p>You can then make Lumen aware of these libraries by initializing them on the files where you want to use them:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$http_client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\GuzzleHttp\Client</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$es_client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Elasticsearch\Client</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuration</h3>
+
+<p>By default Lumen is pretty bare-bones. Which means that we need to do some configuration if we want to use some of the features that we usually have in Laravel. In Lumen you can enable most of those functionalities by editing the <code>bootstrap/app.php</code> file.</p>
+
+<h4>Enabling Sessions</h4>
+
+<p>You can enable sessions by removing the comment on the middleware which says <code>Illuminate\Session\Middleware\StartSession</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">middleware</span><span class="p">([</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\Cookie\Middleware\EncryptCookies&#39;,</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse&#39;,</span>
+</span><span class='line'>    <span class="s1">&#39;Illuminate\Session\Middleware\StartSession&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="c1">//&#39;Illuminate\View\Middleware\ShareErrorsFromSession&#39;,</span>
+</span><span class='line'>    <span class="c1">//&#39;Laravel\Lumen\Http\Middleware\VerifyCsrfToken&#39;,</span>
+</span><span class='line'><span class="p">]);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Enabling Eloquent</h3>
+
+<p>If you need to use Eloquent in your app, you can enable it by removing the comment on the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">withFacades</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">withEloquent</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Dot Env</h3>
+
+<p>Lumen uses a <code>.env</code> file to set the environment configuration for the project. This way you can have a different <code>.env</code> file on your local machine and on your server. And then you can set git to ignore this file so that it doesn&rsquo;t get pushed along to the server when you deploy your changes. Here&rsquo;s how the <code>.env</code> file looks by default:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">APP_ENV=local</span>
+</span><span class='line'><span class="x">APP_DEBUG=false</span>
+</span><span class='line'><span class="x">APP_KEY=SomeRandomKey!!!</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">APP_LOCALE=en</span>
+</span><span class='line'><span class="x">APP_FALLBACK_LOCALE=en</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">DB_CONNECTION=mysql</span>
+</span><span class='line'><span class="x">DB_HOST=localhost</span>
+</span><span class='line'><span class="x">DB_DATABASE=homestead</span>
+</span><span class='line'><span class="x">DB_USERNAME=homestead</span>
+</span><span class='line'><span class="x">DB_PASSWORD=secret</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">CACHE_DRIVER=memcached</span>
+</span><span class='line'><span class="x">SESSION_DRIVER=memcached</span>
+</span><span class='line'><span class="x">QUEUE_DRIVER=database</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see from the file above, you can set the name of the environment by setting the value for <code>APP_ENV</code>. The next one right after that is the <code>APP_DEBUG</code> configuration which is set to <code>false</code> by default. If you&rsquo;re developing you need to set this to <code>true</code> so you have an idea what&rsquo;s wrong when testing your app. Next is <code>APP_KEY</code> which is basically used as a salt for sessions. You can use a random string generator for this. <code>APP_LOCALE</code> and <code>APP_FALLBACK_LOCALE</code> are used for setting the language of your app. This is set to english by default. Next are the database configuration. Anything which starts with <code>DB_</code> is the database configuration. By default its expecting to connect to a <code>mysql</code> database. <code>DB_HOST</code> is the host in which the database is running. <code>DB_DATABASE</code> is the name of the database you want to connect to. <code>DB_USERNAME</code> is the username of the user you want to use for logging in. <code>DB_PASSWORD</code> is the password of the user. After the database configuration are the cache, session and queue driver configuration. The cache and session driver are using memcached by default so you&rsquo;ll have to install memcached if you&rsquo;re using caching and session functionalities. If memcached is not present in the system then it will just fallback to the default one which is the filesystem.</p>
+
+<p>Note that before you can use the <code>.env</code> file, you need to uncomment the following line in your <code>bootstrap/app.php</code> file. This way Lumen will load the <code>.env</code> file on the root of your project.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Dotenv::load(__DIR__.&#39;/../&#39;);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Directory Structure</h3>
+
+<p>Here&rsquo;s what the default directory structure looks like in Lumen. The one&rsquo;s with * are files:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">app</span>
+</span><span class='line'><span class="x">bootstrap</span>
+</span><span class='line'><span class="x">database</span>
+</span><span class='line'><span class="x">public</span>
+</span><span class='line'><span class="x">resources</span>
+</span><span class='line'><span class="x">storage</span>
+</span><span class='line'><span class="x">tests</span>
+</span><span class='line'><span class="x">vendor</span>
+</span><span class='line'><span class="x">*artisan</span>
+</span><span class='line'><span class="x">*server.php</span>
+</span><span class='line'><span class="x">*composer.json</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>app</code> directory is where you will usually work with. This is where the routes, controllers and middlewares are stored.</p>
+
+<p>The <code>bootstrap</code> directory only contains one file by default, the <code>app.php</code> file. As you have seen earlier, its where you can configure and add new functionality to Lumen.</p>
+
+<p>The <code>database</code> directory is where the database migrations and seeders are stored. You use migrations to easily jump from previous database version to another. Its like version control for your database. Seeds on the other hand are used to populate the database with dummy data so that you can easily test your app without having to enter the information through the app itself.</p>
+
+<p>The <code>public</code> directory is where your public assets are stored. Things like css, javascript and images are stored in this directory.</p>
+
+<p>The <code>resources</code> directory is where you store the views that you use for your app.</p>
+
+<p>The <code>storage</code> directory is where logs, sessions and cache files are stored.</p>
+
+<p>The <code>tests</code> directory is where you put your test files.</p>
+
+<p>The <code>vendor</code> directory is where the dependencies of your app is stored. This is where composer installs the packages that you specified in your <code>composer.json</code> file.</p>
+
+<p>The <code>artisan</code> file is the file that is used for command line tasks for your project. We have used it earlier when we served the project. The artisan file can also be used to create migrations, seeds and other tasks that you usually perform through the command line.</p>
+
+<p>The <code>server.php</code> file is used for serving the files without the use of a web server like Apache.</p>
+
+<h3>Routes</h3>
+
+<p>Routes are stored in the <code>app/Http/routes.php</code> file. Here&rsquo;s how you would declare a route in Lumen:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nx">functionn</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to use a controller method to handle the response for a specific route then you can do something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;App\Http\Controllers\HomeController@index&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then you would need to create a <code>HomeController</code> controller and then declare an <code>index</code> method. This will then be used to return a response.</p>
+
+<h3>Controllers</h3>
+
+<p>Controllers are stored in the <code>app/Http/Controllers</code> directory. Needless to say, the convention is one file per controller. Otherwise it would be really confusing. Here&rsquo;s the basic structure of a controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="k">namespace</span> <span class="nx">App\Http\Controllers</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Http\Request</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Laravel\Lumen\Routing\Controller</span> <span class="k">as</span> <span class="nx">BaseController</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="k">extends</span> <span class="nx">BaseController</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that we need to use <code>Illuminate\Http\Request</code> to be able to access the request parameters for each request. We also need to use <code>Laravel\Lumen\Routing\Controller</code>. This allows us to extend the functionality of the base controller class.</p>
+
+<h3>Views</h3>
+
+<p>Lumen still comes with blade templating, all you have to do is create your views under the <code>resources/views</code> directory and then use <code>.blade.php</code> as the file extension. Though unlike Laravel you return views this way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">index</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the example above were returning the <code>index</code> view that is stored in the root of the <code>resources/views</code> directory. If we want to return some data, then we can pass it by supplying the array or object that we want to pass:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$array</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;pokemon&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Pikachu&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="nv">$array</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can then be rendered in the view like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>test<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    Hi my name is , my Pokemon is 
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Database</h3>
+
+<p>When working with a database you first need to edit the database configuration values in your <code>.env</code> file.</p>
+
+<h4>Migrations</h4>
+
+<p>Once that&rsquo;s done you can try if your app can connect to your database by creating a database migration. You can do that by executing the following command in the root directory of your project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>php artisan migrate:install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above creates the migration table in your database. The migration table is used by Lumen to keep track of which database migrations are currently applied to your database. If that worked without problem and you see that a <code>migrations</code> table has been created in your database then you&rsquo;re good to go.</p>
+
+<p>Next you can create a new table by using the <code>make:migration</code> command. This takes up the action that you wish to do. In this case we want to create a new table so we use <code>--create</code> and then supply the name of the table as the value. The second argument will be the name that will be assigned to the migration class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>php artisan make:migration --create=users create_users_table
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above will create a file which looks like the following in the <code>database/migrations</code> directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Schema\Blueprint</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Migrations\Migration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CreateUsersTable</span> <span class="k">extends</span> <span class="nx">Migration</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Run the migrations.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">up</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">increments</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">timestamps</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Reverse the migrations.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">down</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">Schema</span><span class="o">::</span><span class="na">drop</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only thing that we need to edit here are the method calls inside the <code>up</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">increments</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">string</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">integer</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That is where we specify the fields that we need to add to the <code>users</code> table.</p>
+
+<p>Once you&rsquo;re happy with the file, save it and then run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php artisan migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create the table in your database and add a new row to the migrations table.</p>
+
+<h4>Seeds</h4>
+
+<p>You can create a new database seeder file inside the <code>database/seeds</code> directory. Here&rsquo;s the usual structure of a seeder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Illuminate\Database\Seeder</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">UserTableSeeder</span> <span class="k">extends</span> <span class="nx">Seeder</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//seeding code       </span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside the <code>run</code> method is the actual seeding code. We can use your usual Laravel flavored database queries inside of it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Brock&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">15</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Misty&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">12</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, save the file and open up the <code>DatabaseSeeder.php</code> file. This is where you specify which seeders you want to execute whenever you execute the <code>php artisan db:seed</code> command. In this case we want to add the <code>UserTableSeeder</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$this-&gt;call(&#39;UserTableSeeder&#39;);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before we execute the <code>php artisan db:seed</code> command we will first need to reload the autoloaded files by executing the <code>composer dump-autoload</code> command. We need to do this every time we add a new seeder so that Lumen will take care of loading the seeder.</p>
+
+<h4>Getting Data</h4>
+
+<p>From your routes file you can now try fetching the users that we&rsquo;ve added:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/db-testing&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$users</span> <span class="o">=</span> <span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$users</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With Lumen you can use the <a href="http://laravel.com/docs/5.0/queries">query builder</a>, <a href="http://laravel.com/docs/database#running-queries">basic queries</a> and even <a href="http://laravel.com/docs/eloquent">Eloquent</a>. So if you already know how to work with those then you&rsquo;re good to go.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial I&rsquo;ve walked you through Lumen and how you can install, configure and work with the different functionalities that it can offer.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api/">Building a Nearby Places Search App With Google Places API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-06T07:52:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial were going to build an app that would allow users to search for a specific place and then find nearby places based on a specific category. Such as restaurants, churches, and schools. We will implement the app with Google Maps, Google Places and PHP.</p>
+
+<h3>Getting API Credentials</h3>
+
+<p>First you need to get API Credentials from your Google Console and then enable the Google Maps and Google Places API. If you don&rsquo;t know how to do that, feel free to ask Google. I believe this topic has already been written before. Here are the APIs that you need to enable:</p>
+
+<ul>
+<li>Google Maps JavaScript API</li>
+<li>Google Places API Web Service</li>
+</ul>
+
+
+<h3>Building the App</h3>
+
+<p>Now were ready to build the app. First lets work on the back-end side of things.</p>
+
+<h4>Getting Results from the Places API</h4>
+
+<p>To make our life easier, were going to use a library for making the request to the Google Places API. Add the following in your <code>composer.json</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "joshtronic/php-googleplaces": "dev-master"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done, execute <code>composer install</code> on your terminal to install the library. Now we can use the library like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$google_places</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">joshtronic\GooglePlaces</span><span class="p">(</span><span class="s1">&#39;YOUR_GOOGLE_API_KEY&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$lat</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="nv">$lng</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$place_types</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;place_types&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">location</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$lat</span><span class="p">,</span> <span class="nv">$lng</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">radius</span> <span class="o">=</span> <span class="mi">8046</span><span class="p">;</span> <span class="c1">//hard-coded radius</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">types</span> <span class="o">=</span> <span class="nv">$place_types</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$nearby_places</span> <span class="o">=</span> <span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">nearbySearch</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. First we include the autoload file so we can access the library from our file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we created a new instance of the <code>GooglePlaces</code> class. You need supply the API Key that you got earlier from your Google Console:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$google_places</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">joshtronic\GooglePlaces</span><span class="p">(</span><span class="s1">&#39;YOUR_GOOGLE_API_KEY&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we get the data that we will be supplying later on in the client-side and assign them to their own variables:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$lat</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="nv">$lng</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$place_types</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;place_types&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly, we make the actual request to the Google Places API. This library works a little bit different from your usual one. In the sense that we pass in the parameters needed by the actual search method using the object that we got from declaring a new instance of the <code>GooglePlaces</code> class. The first thing that we need to pass is the <code>location</code>, this takes up an array containing the coordinates (latitude and longitude) of the place that we are using as a reference point. This is basically the place where we are at, the place where we want to find nearby places on. Next you need to supply the <code>radius</code>. This is how many meters from your reference point you want your search to be limited. In this case we supplied a hard-coded value of 8046 meters, which is about 8 kilometers. If you want the user to have more control over this value, you can try adding a slider that the user can use to change the radius. And the last one is the <code>types</code>, this is an array of the types of places you want to see in the results. An example of this is restaurants (yeah I&rsquo;m hungry so I mentioned this twice now), parks, shopping center, etc. Once you&rsquo;ve supplied those, you can now call the <code>nearbySearch</code> method. This will make the request to the API and return the data that we need. We just have to turn it into a JSON string so it can be parsed and read later on from the client-side.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">location</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$lat</span><span class="p">,</span> <span class="nv">$lng</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">radius</span> <span class="o">=</span> <span class="mi">8046</span><span class="p">;</span> <span class="c1">//hard-coded radius</span>
+</span><span class='line'><span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">types</span> <span class="o">=</span> <span class="nv">$place_types</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$nearby_places</span> <span class="o">=</span> <span class="nv">$google_places</span><span class="o">-&gt;</span><span class="na">nearbySearch</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$nearby_places</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Creating the Map</h4>
+
+<p>Next we move on to the client-side. Create a new <code>index.html</code> file and put the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>gmap<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;search&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-canvas&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;place-types&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bar&quot;</span><span class="nt">&gt;</span> bar
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bus_station&quot;</span><span class="nt">&gt;</span> bus station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;hospital&quot;</span><span class="nt">&gt;</span> hospital
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;health&quot;</span><span class="nt">&gt;</span> health
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;police&quot;</span><span class="nt">&gt;</span> police
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;post_office&quot;</span><span class="nt">&gt;</span> post office
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;store&quot;</span><span class="nt">&gt;</span> store
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;library&quot;</span><span class="nt">&gt;</span> library
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;fire_station&quot;</span><span class="nt">&gt;</span> fire station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;gas_station&quot;</span><span class="nt">&gt;</span> gas station
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;convenience_store&quot;</span><span class="nt">&gt;</span> convenience store
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;school&quot;</span><span class="nt">&gt;</span> school
+</span><span class='line'>      <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;find-places&quot;</span><span class="nt">&gt;</span>Find Places<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;map.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. We include the stylesheet in the page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we include jQuery and the Google Maps JavaScript library. Be sure to update the code so it uses your Google API Key:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&amp;sensor=false&amp;libraries=places&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the map container where we have <code>map-canvas</code> that will serve as the element where the map will be created. And the search box where the user will search for the place that will be used as a reference point:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;search&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map-canvas&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then the type of places that we can find. Note that this isn&rsquo;t everything we can find in Google Places API. I just picked some of the places that I think are essential. For a more complete list you can check <a href="https://developers.google.com/places/supported_types">this page</a>. Here we added the <code>data-type</code> attribute which represents the place type. And then after the list we have the &lsquo;Find Places&rsquo; button which basically just triggers the search:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;place-types&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bar&quot;</span><span class="nt">&gt;</span> bar
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;bus_station&quot;</span><span class="nt">&gt;</span> bus station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;hospital&quot;</span><span class="nt">&gt;</span> hospital
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;health&quot;</span><span class="nt">&gt;</span> health
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;police&quot;</span><span class="nt">&gt;</span> police
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;post_office&quot;</span><span class="nt">&gt;</span> post office
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;store&quot;</span><span class="nt">&gt;</span> store
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;library&quot;</span><span class="nt">&gt;</span> library
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;fire_station&quot;</span><span class="nt">&gt;</span> fire station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;gas_station&quot;</span><span class="nt">&gt;</span> gas station
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;convenience_store&quot;</span><span class="nt">&gt;</span> convenience store
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">data-type=</span><span class="s">&quot;school&quot;</span><span class="nt">&gt;</span> school
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;find-places&quot;</span><span class="nt">&gt;</span>Find Places<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then lastly we include the <code>map.js</code> file which will make this all work:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;map.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the <code>style.css</code> file and put the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nf">#map-container</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#map-canvas</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">500px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">1000px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#place-types</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#place-types</span> <span class="nt">ul</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">list-style</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we move on to the <code>map.js</code> file. First declare the default coordinate of the place that the map will display:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="mf">18.35827827454</span><span class="p">;</span> <span class="c1">//default latitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="mf">121.63744354248</span><span class="p">;</span> <span class="c1">//default longitude</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">home_coordinates</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">);</span> <span class="c1">//set default coordinates</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, assign it to the map:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">map_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">center</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">),</span> <span class="c1">//set map center</span>
+</span><span class='line'>  <span class="nx">zoom</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="c1">//set zoom level to 17</span>
+</span><span class='line'>  <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span> <span class="c1">//set map type to road map</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we set the search box as an auto-complete element. This will allow the user to see suggestions of matching locations as he types in the search box. We also need to bind it to the map so the auto-complete bounds are driven by the current viewport of the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;search&#39;</span><span class="p">);</span> <span class="c1">//get element to use as input for autocomplete</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">autocomplete</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">places</span><span class="p">.</span><span class="nx">Autocomplete</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span> <span class="c1">//set it as the input for autocomplete</span>
+</span><span class='line'><span class="nx">autocomplete</span><span class="p">.</span><span class="nx">bindTo</span><span class="p">(</span><span class="s1">&#39;bounds&#39;</span><span class="p">,</span> <span class="nx">map</span><span class="p">);</span> <span class="c1">//bind auto-complete object to the map</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we listen for the <code>place_changed</code> event that is triggered from the search box. If this event happens then we get the place information using the <code>getPlace</code> method available on the auto-complete object. This allows us to check if the place being searched is within the current map viewport. If it is then we just call the <code>fitBounds</code> method on the map object and pass in the <code>geometry.viewport</code> attribute from the <code>place</code> object. This sets the map center to the coordinates of the location. If its not within the current viewport then we call the <code>setCenter</code> method in the map object and pass in the <code>geometry.location</code> attribute in the <code>place</code> object. We also call the <code>setZoom</code> method in the map to ensure we still got the same zoom level. Lastly we set the position of the <code>home_marker</code> to the <code>geometry.location</code> in the <code>place</code> object.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//executed when a place is selected from the search field</span>
+</span><span class='line'><span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">autocomplete</span><span class="p">,</span> <span class="s1">&#39;place_changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get information about the selected place in the autocomplete text field</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">place</span> <span class="o">=</span> <span class="nx">autocomplete</span><span class="p">.</span><span class="nx">getPlace</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">){</span> <span class="c1">//for places within the default view port (continents, countries)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">fitBounds</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">);</span> <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">//for places that are not on the default view port (cities, streets)</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setCenter</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span>  <span class="c1">//set map center to the coordinates of the location</span>
+</span><span class='line'>      <span class="nx">map</span><span class="p">.</span><span class="nx">setZoom</span><span class="p">(</span><span class="mi">17</span><span class="p">);</span> <span class="c1">//set a custom zoom level of 17</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">home_marker</span><span class="p">.</span><span class="nx">setMap</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span> <span class="c1">//set the map to be used by the  marker</span>
+</span><span class='line'>    <span class="nx">home_marker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">place</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span> <span class="c1">//plot marker into the coordinates of the location</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we declare an array that will store the markers for the places that will be searched. Don&rsquo;t confuse this with the place used as the reference point, the <code>home_marker</code> is used for this. The places I&rsquo;m referring to are the place types such as grocery, church, etc. For convenience I&rsquo;ll be referring to those markers as place type markers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">markers_array</span> <span class="o">=</span> <span class="p">[];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create the method that would remove the place type markers from the map. We would need to call this every time the user clicks on the &lsquo;Find Places&rsquo; button so that the previous search results will be removed from the map.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">removeMarkers</span><span class="p">(){</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">markers_array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">markers_array</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">setMap</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we have the method that listens for the click event on the &lsquo;Find Places&rsquo; button. The first thing it does is to get the coordinates of the <code>home_marker</code>. This represents the coordinates of the reference point. After that, we declare an empty array, this is where we will store the place types selected by the user. We do that by looping through all the place types selected by the user and then we push the value for their <code>data-type</code> attribute in the array. Next we call the <code>removeMarkers</code> method to remove the place types markers that are currently plotted on the map. Next we make a <code>POST</code> request to the server and then passing in the coordinates of the reference point and the place types array. Once we get a response, we call the <code>JSON.parse</code> method so we can extract the results from the response. From there we loop through all the results and get the coordinates for each and then we plot the marker into the map. After that we assign an infowindow to each of the markers to that when its clicked it shows the name of the place.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#find-places&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">home_marker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lat</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">home_marker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">().</span><span class="nx">lng</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">place_types</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//loop through all the place types that has been checked and push it to the place_types array</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#place-types input:checked&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">place_types</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">removeMarkers</span><span class="p">();</span> <span class="c1">//remove the current place type markers from the map</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//make a request to the server for the matching places</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;places.php&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;lat&#39;</span><span class="o">:</span> <span class="nx">lat</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;lng&#39;</span><span class="o">:</span> <span class="nx">lng</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;place_types&#39;</span><span class="o">:</span> <span class="nx">place_types</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">response_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">response_data</span><span class="p">.</span><span class="nx">results</span><span class="p">){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">response_data</span><span class="p">.</span><span class="nx">results</span><span class="p">;</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">result_count</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">result_count</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//get coordinates of the place</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;lat&#39;</span><span class="p">];</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;geometry&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;lng&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//create a new infowindow</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">infowindow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">InfoWindow</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//plot the marker into the map</span>
+</span><span class='line'>          <span class="nx">marker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span>
+</span><span class='line'>            <span class="nx">position</span><span class="o">:</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">),</span>
+</span><span class='line'>            <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">icon</span><span class="o">:</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;icon&#39;</span><span class="p">]</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nx">markers_array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">marker</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">//assign an infowindow to the marker so that when its clicked it shows the name of the place</span>
+</span><span class='line'>          <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="nx">x</span><span class="p">){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>              <span class="nx">infowindow</span><span class="p">.</span><span class="nx">setContent</span><span class="p">(</span><span class="s2">&quot;&lt;div class=&#39;no-scroll&#39;&gt;&lt;strong&gt;&quot;</span> <span class="o">+</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/strong&gt;&lt;br&gt;&quot;</span> <span class="o">+</span> <span class="nx">results</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="s1">&#39;vicinity&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">infowindow</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="nx">marker</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>          <span class="p">})(</span><span class="nx">marker</span><span class="p">,</span> <span class="nx">x</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a screenshot of the final output:</p>
+
+<p><img src="/images/posts/google_places/google-places.png" alt="google places" /></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with the Google Place API in PHP. We have also create a simple app that would allow users to search specific types of places that is near the location used as a reference point. If you want to learn more, be sure to check out the resources below.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.google.com/places/webservice/intro">Google Places API</a></li>
+<li><a href="https://developers.google.com/places/supported_types">Place Types</a></li>
+<li><a href="https://developers.google.com/maps/documentation/javascript/examples/places-searchbox">Places Search box</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/getting-started-with-google-calendar-api/">Getting Started With Google Calendar API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-06T07:48:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/06/getting-started-with-google-calendar-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/using-mandrill-with-php/">Using Mandrill With PHP</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-06T07:47:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/06/using-mandrill-with-php/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api/">Getting Started With the Wordpress Theme Customization API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-06T07:46:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/getting-started-with-roots-wordpress-starter-theme/">Getting Started With Roots Wordpress Starter Theme</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-06T07:46:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/06/getting-started-with-roots-wordpress-starter-theme/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1602,1054 +3054,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started With Stripe API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-22T11:08:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/22/getting-started-with-stripe-api/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial I&rsquo;ll walk you through the Stripe&rsquo;s API. Let&rsquo;s start by defining what Stripe is. From the Stripe website itself:</p>
-
-<blockquote><p>Stripe is a developer-friendly way to accept payments online and in mobile apps.<br/>We process billions of dollars a year for thousands of companies of all sizes.</p></blockquote>
-
-
-<p></p>
-
-<p>Now we know that Stripe is a payment processor, similar to Paypal.</p>
-
-<p>With Stripe, you can accept payments in three ways:</p>
-
-<ul>
-<li>Embedded Form</li>
-<li>Custom Form</li>
-<li>Mobile App Integration</li>
-</ul>
-
-
-<p>In this tutorial I&rsquo;ll only be walking you through the first two: embedded form and custom form.</p>
-
-<h3>Embedded Form</h3>
-
-<p>If you do not want to bother with creating your own checkout forms, an embedded form is the way to go. An embedded form is basically Stripe&rsquo;s checkout widget. All you have to do is include their script on your website, specifically inside a form element. And the front-end side is already handled for you.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script</span>
-</span><span class='line'><span class="nt">    </span><span class="na">src=</span><span class="s">&quot;https://checkout.stripe.com/checkout.js&quot;</span> <span class="na">class=</span><span class="s">&quot;stripe-button&quot;</span>
-</span><span class='line'>    <span class="na">data-key=</span><span class="s">&quot;pk_test_xxxxxxxxxxxxxxxxxxx&quot;</span>
-</span><span class='line'>    <span class="na">data-amount=</span><span class="s">&quot;1000&quot;</span>
-</span><span class='line'>    <span class="na">data-name=</span><span class="s">&quot;Web Development&quot;</span>
-</span><span class='line'>    <span class="na">data-description=</span><span class="s">&quot;Develop a website&quot;</span>
-</span><span class='line'>    <span class="na">data-image=</span><span class="s">&quot;http://mywebsite.com/img/logo.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. For the script to work, you need to supply a value to the following attributes:</p>
-
-<ul>
-<li><code>src</code> &ndash; Stripe&rsquo;s checkout script. This should be <code>https://checkout.stripe.com/checkout.js</code></li>
-<li><code>data-key</code> &ndash; your stripe publishable key. You can find it by clicking on your username, then select &lsquo;account settings&rsquo;, then click on the &lsquo;api keys&rsquo; tab. From there you can use either your test publishable key or your live publishable key. The test key is used for testing. This allows you to supply a fake credit card number and pay for a fake product or service. After successful payment, you can see your fake client from the <a href="https://dashboard.stripe.com/customers">customers</a> page on your Stripe dashboard. Don&rsquo;t forget to switch to <a href="https://dashboard.stripe.com/test/customers">test</a>.</li>
-<li><code>data-amount</code> &ndash; the amount you want to charge in cents. Just multiply what you want to charge by 100. So for example you want to charge $10, you need to supply 1000 instead.</li>
-<li><code>data-name</code> &ndash; the name of your product or service.</li>
-<li><code>data-description</code> &ndash; the description of your product or service.</li>
-<li><code>data-image</code> &ndash; your logo. This should be an absolute url.</li>
-</ul>
-
-
-<p>Next we need to install Stripe&rsquo;s library via <a href="https://getcomposer.org/">composer</a>. Add the following code on your <code>composer.json</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>{
-</span><span class='line'>  &quot;require&quot;: {
-</span><span class='line'>    &quot;stripe/stripe-php&quot;: &quot;2.*&quot;
-</span><span class='line'>  }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, execute <code>composer install</code> from your terminal. This will fetch the library from the repository.</p>
-
-<p>Next create the <code>checkout.php</code> file and add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeEmail&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, first we included the <code>vendor/autoload.php</code> file so that we can use the Stripe library on our script. Next we initialize the library by setting the Stripe secret key. Next we get the data supplied by Stripe for us from the front-end. The <code>stripeToken</code> is the unique token generated by Stripe, this represents the transaction that the client made on the front-end. That is, paying $10 for our service. Next is the <code>stripeEmail</code>, this is basically just the email supplied by the client. Next we wrap the stripe charge call in a try catch statement. This allows us to capture any error returned by the API and show it to the client. Calling the stripe charge method requires 4 arguments:</p>
-
-<ul>
-<li><code>amount</code> &ndash; the amount that you want to charge in cents.</li>
-<li><code>currency</code> &ndash; the currency code representing the currency that we want to use.</li>
-<li><code>source</code> &ndash; the token that stripe generated on the front-end.</li>
-<li><code>description</code> &ndash; a text that we want to assign to the charge. This is usually the clients email. But you can add more details such as the name of the service if you&rsquo;re offering more than one product or service.</li>
-</ul>
-
-
-<p>If the API call is successful, this method returns a whole bunch of data. Such as the amount paid, and the description. In most cases you&rsquo;ll basically only want the id of the transaction. You can get this by accessing the <code>id</code> property:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$charge_id = $charge-&gt;id;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then save this on your database as a reference. But of course you can always see this on <a href="https://dashboard.stripe.com/test/payments">your payments page</a>.</p>
-
-<h3>Custom Forms</h3>
-
-<p>If you need to ask additional information from your clients. Or you just want to use your own form. You can use custom forms. This allows you to write your own markup, supply your own fields and style them the way you want it with css. Here&rsquo;s an example of how a custom checkout form might look like:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="na">id=</span><span class="s">&quot;payment-form&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;errors&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;email&quot;</span> <span class="na">id=</span><span class="s">&quot;email&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Name<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;name&quot;</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>Card Number<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;20&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;number&quot;</span> <span class="na">id=</span><span class="s">&quot;card-number&quot;</span> <span class="na">name=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>Security Code<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;4&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;cvc&quot;</span> <span class="na">id=</span><span class="s">&quot;cvc&quot;</span> <span class="na">name=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label&gt;</span>Expiration (MM/YYYY)<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-month&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-month&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;span&gt;</span> / <span class="nt">&lt;/span&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-year&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-year&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Pay<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This form works with the Stripe checkout script by adding the <code>data-stripe</code> attribute to the following fields. Just supply the value on the right-hand side as the value for the <code>data-stripe</code> attribute depending on the field:</p>
-
-<ul>
-<li>card number &ndash; <code>card-number</code></li>
-<li>security code or cvc &ndash; <code>cvc</code></li>
-<li>card expiration month &ndash; <code>exp-month</code></li>
-<li>card expiration year &ndash; <code>exp-year</code></li>
-</ul>
-
-
-<p>Next we need to include the stripe checkout script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;https://js.stripe.com/v2/&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then set the publishable key. This allows stripe to identify which stripe account the request came from:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script&gt;</span>
-</span><span class='line'><span class="nx">Stripe</span><span class="p">.</span><span class="nx">setPublishableKey</span><span class="p">(</span><span class="s1">&#39;pk_test_xxxxxxxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we need to define the method that will process the response that we get from Stripe when the client submits the payment form. This takes up 2 parameters: status and response. The status is the <a href="https://stripe.com/docs/api#errors">status code</a>. The response contains the actual Stripe response. This is an object containing information about the transaction. One of those is the <code>id</code> which is basically the token that we need to pass in to the back-end. All we have to do is to append it to the payment form so it gets submitted with the rest of the fields. If there is an error with the request, an error property becomes available in the response object. This contains the error message, we just show it to the user by supplying it as a value to the <code>errors</code> div. After that, we enable the submit button so the client can fix the errors and submit the form again:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">processStripeResponse</span><span class="p">(</span><span class="nx">status</span><span class="p">,</span> <span class="nx">response</span><span class="p">){</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">){</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;.errors&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input type=&quot;hidden&quot; name=&quot;stripeToken&quot; /&gt;&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">token</span><span class="p">));</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we define the event handler for when the payment form is submitted. This calls the <code>createToken</code> method which requires the payment form and the response handler as its arguments. Don&rsquo;t forget to return <code>false</code> so the form doesn&rsquo;t get submitted. The response handler will be the one which will trigger the submit if the response doesn&rsquo;t have any errors:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">Stripe</span><span class="p">.</span><span class="nx">card</span><span class="p">.</span><span class="nx">createToken</span><span class="p">(</span><span class="nx">form</span><span class="p">,</span> <span class="nx">processStripeResponse</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the back-end we can just use the previous code and use the custom fields that we added. Note that the <code>stripeToken</code> field stays the same. We don&rsquo;t need to pass the card number, security code and expiration date:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! You&rsquo;ve learned how to interact with the Stripe API in order to easily process payments.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://stripe.com/docs">Stripe Docs</a></li>
-<li><a href="https://stripe.com/docs/api?lang=php">Stripe API</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-15T07:30:00+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to assign a domain name bought from namecheap into your digitalocean droplet.</p>
-
-<p>First login to your namecheap account. Click on the <strong>manage domains</strong> menu that can be found under your username. Click on the domain name that you want to assign. On the menus on the left side, under the general section. Click on the <strong>Domain name server setup</strong> link. Once in that page, select the <strong>specify custom DNS servers</strong> option. And then enter the following:</p>
-
-<ul>
-<li>ns1.digitalocean.com</li>
-<li>ns2.digitalocean.com</li>
-<li>ns3.digitalocean.com</li>
-</ul>
-
-
-<p>Next login to your digitalocean account and navigate to the droplet that you want to use. From your droplets main page, click on the <strong>DNS</strong> link. Next click on the <strong>Add Domain</strong> button. This shows the form for adding a new domain. Set the value of the name to the domain name that you&rsquo;re trying to assign and the ip address to the ip address of your droplet or just select your droplet from the dropdown.</p>
-
-<p><img src="/images/posts/digitalocean_namecheap/digitalocean-dns.png" alt="dns settings" /></p>
-
-<p>Once you&rsquo;ve filled all that out, click on the <strong>create domain</strong> button.</p>
-
-<p>That&rsquo;s it! Just wait for about 30 minutes to an hour for the settings to propagate. And once that&rsquo;s done, you can now access your droplet using the domain name that you assigned.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/07/introduction-to-antares-web/">Introduction to Antares Web</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-07T07:27:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/07/introduction-to-antares-web/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Welcome to yet another promotional post on another side-project of mine. This time its the web version of Antares. If you don&rsquo;t know what Antares is, its basically a news app for Android. Its a news app targeted to developers to be exact. You can read all about it here: <a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a>.</p>
-
-<p>So yeah, Antares web is just a website were you can read all the news from popular sources such as Hacker News, Product Hunt, Medium, Designer News, Slashdot and many others. There are also news coming from popular curators such as echojs and developer newsletters. The news items are ordered from the latest to the least latest so you&rsquo;re assured that the ones on top are the latest one. Antares uses infinite scrolling. So if you missed yesterday&rsquo;s news, you can always scroll until you find something you&rsquo;re interested in reading.</p>
-
-<h3>Future Plans</h3>
-
-<ul>
-<li>More news sources.</li>
-<li>Viewing of news on a specific date.</li>
-<li>Top news. Something simple like logging the view count on each link based on the number of clicks it gets. And then ordering the results from the most number of views to the least.</li>
-<li>Mobile version. Currently it doesn&rsquo;t look that good on mobile. Especially on devices below 400px width.</li>
-<li>Social Sharing. Facebook, Twitter, LinkedIn sharing. And possibly Google plus. I&rsquo;ll just add it as a button below each news link, so that users can easily share. Integration with my <a href="/blog/2014/09/28/introduction-to-ahead/">Ahead project</a> seems to be a good idea as well. So users can easily schedule posts to their social accounts for later publishing.</li>
-<li>Bookmarking. I&rsquo;m looking at pocket integration. So each news link will have its own button for saving to pocket.</li>
-</ul>
-
-
-<p>That&rsquo;s all for now. If you want to know more about this project. You can always visit <a href="/projects/antares_web/">its project page</a>. If you&rsquo;re a developer, you can check out this project at <a href="https://github.com/anchetaWern/antares">Github</a>. Feel free to contribute.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/">How to Implement Infinite Scroll in Laravel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-01T14:39:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
-
-<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
-</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    @foreach($news as $item)
-</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>    @endforeach
-</span><span class='line'>    
-</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">})();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
-
-<ul>
-<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
-<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
-<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
-</ul>
-
-
-<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
-
-<ul>
-<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
-<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
-<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
-<li><code>itemSelector</code> &ndash; an individual item.</li>
-</ul>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/22/getting-started-with-twilio-api/">Getting Started With Twilio API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-22T07:42:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2015</time>
-        
-         | <a href="/blog/2015/02/22/getting-started-with-twilio-api/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud communications company. They offer APIs which developers can use to enable Text Messaging, Voice, VoIP on their apps.</p>
-
-<p>Now that we got the introduction out of the way. Let&rsquo;s get started.</p>
-
-<p>If you don&rsquo;t have an account with Twilio yet now is the time to create one. You can do so from this page: <a href="https://www.twilio.com/try-twilio">Try Twilio</a>. After signing up, Twilio will need to verify you&rsquo;re a human. You can either have them call you or send you a text message containing your verification code. You&rsquo;ll just have to select which country you&rsquo;re in and then your phone number. Twilio already adds the country code as the prefix so you will only have to add your actual phone number. After you have verified your phone number, Twilio assigns you your first phone number.</p>
-
-<p><img src="/images/posts/twilio/phone_number.png" alt="twilio phone number" /></p>
-
-<p>After that, Twilio will have you take your phone number for a spin. You can either make a call, send an SMS, receive a call, or receive an SMS.</p>
-
-<p><img src="/images/posts/twilio/test-drive.png" alt="twilio test drive" /></p>
-
-<p>Go ahead and try atleast one of those options so you have an idea how it works.</p>
-
-<h3>SMS API</h3>
-
-<p>Twilio&rsquo;s SMS API allows you to:</p>
-
-<ul>
-<li><p><strong>Send and receive SMS or MMS</strong> &ndash; when you signup with Twilio, you can purchase a phone number. You can then use this phone number to send text messages or multi-media messages to your users. At the same time, users can also send text messages to that phone number in order to interact with your application. How it works is that when a specific person sends a text message to the phone number that has been assigned to you by Twilio. Twilio makes an HTTP request to the URL you assigned to that phone number. The HTTP request contains the same data that the person sent. You can then use this data to have your app do what the user requested.</p></li>
-<li><p><strong>Track SMS Conversations</strong> &ndash; this allows you to track conversations between two phone numbers through the use of HTTP cookies. These HTTP cookies are use to keep a state. Just like when you login to a specific website. Cookies allows you to continue accessing the admin pages as long as you have that cookie around. After being active for some time, the cookie expires automatically. The same idea is used when tracking conversations with Twilio. Each phone number is assigned a cookie, and this cookie is sent along with the text message on every HTTP request made by Twilio.</p></li>
-</ul>
-
-
-<h4>SMS API Hello World</h4>
-
-<p>Now were ready to write some code. First create a <code>composer.json</code> file and add the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>    "require": {
-</span><span class='line'>        "twilio/sdk": "dev-master"
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This tells composer to require the twilio sdk for PHP. If you don&rsquo;t know what composer is. You can check out <a href="https://getcomposer.org/">getcomposer.org</a> to get started. Once you have saved the file, execute <code>composer install</code> from your terminal to install the twilio sdk.</p>
-
-<p>Next, create a new PHP file then add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span> <span class="c1">//include the twilio sdk</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$sid</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">;</span> <span class="c1">//your twilio account sid number</span>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="s2">&quot;yyy&quot;</span><span class="p">;</span> <span class="c1">//your twilio account token</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$your_twilio_phonenumber</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the friendly name of your twilio phone number</span>
-</span><span class='line'><span class="nv">$phone_number_to_send_to</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the phone number to send the message</span>
-</span><span class='line'><span class="nv">$text_to_send</span> <span class="o">=</span> <span class="s1">&#39;Hello world! from twilio&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Services_Twilio</span><span class="p">(</span><span class="nv">$sid</span><span class="p">,</span> <span class="nv">$token</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//send message</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">messages</span><span class="o">-&gt;</span><span class="na">sendMessage</span><span class="p">(</span>
-</span><span class='line'>  <span class="nv">$your_twilio_phonenumber</span><span class="p">,</span>
-</span><span class='line'>  <span class="nv">$phone_number_to_send_to</span><span class="p">,</span>
-</span><span class='line'>  <span class="nv">$text_to_send</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">sid</span><span class="p">;</span> <span class="c1">//the message id</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From the code above, the first line includes the twilio sdk. This allows us to easily make requests to the Twilio API. Next we declare the sid and token. You can find this on your <a href="https://www.twilio.com/user/account/settings">account settings page</a> under the <strong>API Credentials</strong> section. You can either use the live or the test credentials. The only thing to note is that when using the live credentials, your account is charged by Twilio. But if your account is in trial mode, you can only use the live credentials. Twilio doesn&rsquo;t charge you when your account is in trial mode. But there are <a href="https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work">some restrictions</a>. Going back to the code. Next we declare the twilio phone number. If you don&rsquo;t know what your twilio phone number is, visit the <a href="https://www.twilio.com/user/account/phone-numbers/incoming">numbers</a> page. You&rsquo;ll want to use the friendly name for your number. Next is the phone number where you want to send your message. This can be any phone number from any country supported twilio. Note that only United States and Canada are enabled by default. So you&rsquo;ll have to <a href="https://www.twilio.com/user/account/settings/international/sms">enable sending a message to your country</a> if you don&rsquo;t live in any of those places. Just add a check mark to the country you want to send the message to. Next add the text that you want to send. Then create a new instance of the <code>Services_Twilio</code> class and supply the sid and token that we declared earlier. Finally, send the message using the <code>sendMessage</code> method. This takes up 3 arguments: your twilio phone number, the phone number to send to and the message. This method returns the following data:</p>
-
-<ul>
-<li><code>sid</code> &ndash; a uniqued id assigned to the message.</li>
-<li><code>date_created</code> &ndash; the date and time that the message was created.</li>
-<li><code>date_updated</code> &ndash; the most recent date and time that the message was updated</li>
-<li><code>date_sent</code> &ndash; normally this is empty when the request to send a message has just been made. Twilio messages doesn&rsquo;t seem to be sent immediately when the <code>sendMessage</code> method is called (it is queued). Therefore its only natural for this to be empty and only updated when the message is actually sent.</li>
-<li><code>to</code> &ndash; the phone number where the message is sent.</li>
-<li><code>from</code> &ndash; the twilio phone number that you used for sending the message.</li>
-<li><code>body</code> &ndash; the actual text message.</li>
-<li><code>status</code> &ndash; the status of the message, normally this has a value of &lsquo;queued&rsquo; right after getting the response from the <code>sendMessage</code> method. It is then updated to &lsquo;sent&rsquo; once the message is actually sent. For inbound messages, the value for this is &lsquo;received&rsquo;. If the message is currently being sent, this will have a value of &lsquo;sending&rsquo;. If the sending failed, it will have &lsquo;failed&rsquo; as the value.</li>
-<li><code>num_segments</code> &ndash; the number of segments the message has. Text messages are only limited to 160 characters so your message is divided into 160-character segments. Each segment are then sent separately.</li>
-<li><code>num_media</code> &ndash; the number of media items associated with your message.</li>
-<li><code>direction</code> &ndash; can have a value of <code>outbound-api</code>, <code>inbound</code>, <code>outbound-call</code>, and <code>outbound-reply</code>. These are basically like the name suggests, <code>outbound-api</code> are the messages you have sent from your app. <code>inbound</code> are the ones that are sent from an actual phone number to your twilio phone number. <code>outbound-call</code> are the messages initiated during a call. And <code>outbound-reply</code> are messages initiated in response to an incoming SMS.</li>
-<li><code>api_version</code> &ndash; the twilio api version used when the message was sent.</li>
-<li><code>price</code> &ndash; the amount billed for the message.</li>
-<li><code>price_unit</code> &ndash; the currency used for the price.</li>
-<li><code>error_code</code> &ndash; the error code returned. This will only have a value if the value for <code>status</code> is failed. If you are having an error returned to you, be sure to check out the <a href="https://www.twilio.com/docs/errors/reference">errors reference</a>.</li>
-<li><code>uri</code> &ndash; the uri of the resource used for sending the message.</li>
-<li><code>subresource_uris</code> &ndash; the sub-resources used in sending the message. For SMS, a possible sub-resource can be the media resource.</li>
-</ul>
-
-
-<h4>Dev Tools</h4>
-
-<p>Before we move on to writing some more code. I&rsquo;d like to do a quick introduction on the dev tools offered by Twilio. Twilio&rsquo;s dev tools includes the following:</p>
-
-<ul>
-<li><p><strong>App Monitor</strong> &ndash; allows you to monitor the requests being made to your app. These requests can be an outbound test/call to a specific phone number, or an inbound text/call to your twilio phone number. Basically, every interaction to your app are logged in the app monitor.</p></li>
-<li><p><strong>API Explorer</strong> &ndash; allows you to make and explore API requests. This includes the parameters needed for a specific resource and the response that it returns. The good part is that it also includes code samples in different programming languages. Which you can readily copy and paste in order to test in your application. One thing to note when making requests through the API explorer is that you get charged for specific resources. An example of such resource is the resource for sending messages.</p></li>
-<li><p><strong>Connect Apps</strong> &ndash; allows you to create a twilio app for the purpose of letting your clients connect to it. This allows you to perform specific actions on behalf of your client. If you&rsquo;ve ever used the Facebook API before, its pretty much the same idea. The only difference is that its your clients twilio account that is connected to your app. This is useful for clients who have their own clients. This allows you to send messages or make calls to the clients of your client on their behalf. This means all the charges are being made to your clients twilio account instead of yours if you choose to.</p></li>
-</ul>
-
-
-<h3>Searching and Buying Phone Numbers</h3>
-
-<p>If your app allows your users to have their own phone numbers. You can also use the twilio API to search for available phone numbers:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$area_code</span> <span class="o">=</span> <span class="mi">201</span><span class="p">;</span> <span class="c1">//only for US and Canada</span>
-</span><span class='line'><span class="nv">$search_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;AreaCode&#39;</span> <span class="o">=&gt;</span> <span class="nv">$area_code</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//make a request to search for available phone numbers on a specific area</span>
-</span><span class='line'><span class="nv">$numbers</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span><span class="o">-&gt;</span><span class="na">getList</span><span class="p">(</span><span class="s1">&#39;US&#39;</span><span class="p">,</span> <span class="s1">&#39;Local&#39;</span><span class="p">,</span> <span class="nv">$search_params</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$nums</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$numbers</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span> <span class="k">as</span> <span class="nv">$n</span><span class="p">){</span>
-</span><span class='line'>    <span class="nv">$nums</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">json_encode</span><span class="p">(</span><span class="nv">$n</span><span class="o">-&gt;</span><span class="na">phone_number</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;pre&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$nums</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;/pre&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can supply the following arguments for your search:</p>
-
-<ul>
-<li><code>AreaCode</code> &ndash; any valid area code in US or Canada.</li>
-<li><code>Contains</code> &ndash; a regular expression for matching the characters you want the phone numbers to have.</li>
-<li><code>SmsEnabled</code> &ndash; if sms capabilities are enabled. This can either be true or false.</li>
-<li><code>MmsEnabled</code> &ndash; if mms capabilities are enabled. This can either be true or false.</li>
-<li><code>VoiceEnabled</code> &ndash; if making and receiving calls is enabled. This can either be true or false.</li>
-<li><code>ExcludeAllAddressRequired</code> &ndash; if you want to exclude the phone numbers that require an address or not.</li>
-<li><code>ExcludeLocalAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a local address or not.</li>
-<li><code>ExcludeForeignAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a foreign address or not.</li>
-</ul>
-
-
-<p>Once your user has selected a number, you can then make a request to buy a phone number:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$phone_number</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;phone_number&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$number</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">incoming_phone_numbers</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>            <span class="s1">&#39;VoiceUrl&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yourwebsite.com/greet&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s1">&#39;PhoneNumber&#39;</span> <span class="o">=&gt;</span> <span class="nv">$phone_number</span>
-</span><span class='line'><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The request requires two arguments: the <code>VoiceUrl</code>, which is the URL which you want Twilio to make a request to when this specific phone number is called by someone. We&rsquo;ll talk more about this on the TwiML section, which is Twilio&rsquo;s way for interacting with users in a call through a computer voice. The second argument is the <code>PhoneNumber</code>, which is the phone number selected by the user which came from the search results earlier. Note that making a request to purchase a phone number costs money.</p>
-
-<h3>TwiML</h3>
-
-<p>TwiML or the Twilio Markup Language isn&rsquo;t exactly a new markup language created by Twilio. Its basically just plain old XML which you can use to do all kinds of cool stuff when a user calls your twilio phone number. Here are a few examples of awesome stuff you can do with TwiML. Note that these are all performed during a call:</p>
-
-<ul>
-<li><strong>Play</strong> &ndash; allows you to play an audio file.</li>
-<li><strong>Say</strong> &ndash; allows you to convert text to speech.</li>
-<li><strong>Dial</strong> &ndash; dials another phone number that can then be added to the current call.</li>
-<li><strong>Record</strong> &ndash; record the voice of the caller.</li>
-<li><strong>Sms</strong> &ndash; send a text message.</li>
-<li><strong>Gather</strong> &ndash; allows you to gather the users input. Currently inputs are only limited to numbers.</li>
-</ul>
-
-
-<p>Now that you have an idea what you can do with TwiML, lets move on to some practical stuff. Let&rsquo;s build an app that allows the user to input a number and have a different sound played based on the number.</p>
-
-<p>Start by creating a <code>hello.xml</code> file, then add the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;Response&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;Say&gt;</span>Hello! Please enter a number from 1 to 5<span class="nt">&lt;/Say&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;Gather</span> <span class="na">numDigits=</span><span class="s">&quot;1&quot;</span> <span class="na">action=</span><span class="s">&quot;/choose.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'><span class="nt">&lt;/Response&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What this does is allows you to control the response that the user hears when they call your twilio phone number. The first line specifies the xml version and the encoding. The second line is the response wrapper. This allows us to specify the actual response that the user will hear. The first thing that the user will hear is the speech version of the text that we added inside the <code>Say</code> verb. In this case, were asking the user for a single digit number from 1 to 5. Next we use the <code>Gather</code> verb to gather the digit entered by the user. The <code>numDigits</code> attribute allows you to specify the number of digits. This has an added benefit of submitting the response immediately after the number of digits you specified matches the number of digits entered by the user. The digits entered by the user are submitted to the page you specify on the <code>action</code> attribute. In this case its the <code>choose.php</code> file in the same request URL you added to your twilio number. If you don&rsquo;t know how to change the request URL used by your number, then visit the <a href="https://www.twilio.com/user/account/phone-numbers">numbers page</a> and click the number you want to use. That will redirect you to the settings page of that number. From there look for the voice section and then change the request url then click save. This means that if your request url is &lsquo;<a href="http://mywebsite.com">http://mywebsite.com</a>&rsquo; and you specified &lsquo;/choose.php&rsquo; as the action, then you need to have the &lsquo;choose.php&rsquo; file in the root web directory of your website in order for the digits to be submitted properly.</p>
-
-<p>Add the following code to the <code>choose.php</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;content-type: text/xml&quot;</span><span class="p">);</span> <span class="c1">//specify content type to be xml</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$digits</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;Digits&#39;</span><span class="p">];</span> <span class="c1">//the digit inputted by the user in his/her phone</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//the array of sounds that we will be playing back to the user</span>
-</span><span class='line'><span class="nv">$animals</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;bassethound.wav&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;cat.wav&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;cattle.wav&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;chicken.wav&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;sheep.wav&#39;</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="cp">&lt;?</span><span class="nx">xml</span> <span class="nx">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nx">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;Response&gt;</span>
-</span><span class='line'><span class="x">  &lt;Say&gt;Here is the sound you selected&lt;/Say&gt;</span>
-</span><span class='line'><span class="x">  &lt;Play&gt;http://mywebsite.com/sounds/</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$animals</span><span class="p">[</span><span class="nv">$digits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/Play&gt;</span>
-</span><span class='line'><span class="x">&lt;/Response&gt;</span>
-</span><span class='line'><span class="x">?&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From the code above, the first line specifies the content type to be xml. The second line is where we get the digits enterred by the user. Next we declare an array containing the sounds that we want to play. I got these sounds from <a href="http://www.animal-sounds.org/animal-sounds-free-download.html">animal-sounds.org</a>. Next we just set the response starting with a speech saying &lsquo;Here is the sound you selected&rsquo;, then we just play it back using the <code>Play</code> verb.</p>
-
-<h3>Conclusion</h3>
-
-<p>Twilio&rsquo;s API allows you to add SMS and Voice superpowers to your apps at ease. Their documentation, quick start guides can get you up and running pretty quickly. Their code samples include some of the most popular programming languages for the web. Such as PHP, Ruby, Python, Java and .Net. If you need to add SMS and Voice capabilities to your app, there is no doubt that Twilio should be your first choice.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://www.twilio.com/docs/quickstart">Twilio &ndash; Quickstart Docs</a></li>
-<li><a href="https://www.twilio.com/docs/api">Twilio &ndash; API Docs</a></li>
-<li><a href="https://www.twilio.com/docs/libraries">Twilio &ndash; Helper Libraries</a></li>
-<li><a href="https://www.twilio.com/docs/howto">Twilio &ndash; How-tos</a></li>
-<li><a href="https://www.twilio.com/docs/errors/reference">Twilio &ndash; Errors Reference</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-15T17:05:00+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/02/15/introduction-to-antares/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As a developer there&rsquo;s no question as to why we need to <a href="http://programmers.stackexchange.com/questions/161099/why-do-developers-need-to-keep-up-to-date-with-technologies-and-methodologies">keep ourselves updated</a>. And that is why reading blogs is really important. There&rsquo;s no shortage of the most important people to follow on twitter, newsletters, podcasts and screencasts that helps us to keep up to date. But as the years pass the amount of resources that we use to keep ourselves updated tends to grow. This results in a browser window that looks like this:</p>
-
-<p><img src="/images/posts/antares/tabs.png" alt="too many tabs" /></p>
-
-<p>Just the act of opening the interesting links in new tabs can take up to 30 minutes or more (I know, I&rsquo;ve been there). All because of the sheer amount of resources that were trying to maintain. I&rsquo;ve been doing that for years, and as my collection of resources grew larger, it only became harder and harder to read all of those things that are seemingly important. That is when I had the idea of creating an app which would still allow me to keep up to date, but will save me the time in opening all those links in a new tab. That is what Antares is all about. Its essentially a news app for developers. It collects content from interesting places such as Hacker News, Github, Designer News, Medium, Readability Top Reads, Slashdot, EchoJS, SidebarIO, and Product Hunt. It also collects all the content linked from popular developer newsletters such as JavaScriptWeekly, HTML5Weekly, PHPWeekly, CSSWeekly, Web Design Weekly and many others. Its basically an all in one tool for keeping up to date. As for me, it also have the effect of just letting go. Because having all those newsletters sent in my email has this mental effect that its something I need to open no matter what. The kind of feeling that its your responsibility to read through all those articles being pointed out in the newsletter. The feeling that you&rsquo;d miss out on something really important if you don&rsquo;t. Antares isn&rsquo;t like that. You can just install it and let it sit there. And you only really open it if you have some free time. The news just keeps on flowing in there but it doesn&rsquo;t make you feel that you&rsquo;ll miss out on one half of your life as a developer if you don&rsquo;t.</p>
-
-<p>For the technical side of things, I used <a href="http://ionicframework.com/">Ionic framework</a> to build the app. Under the hood it uses HTML, CSS and JavaScript. Ionic is tied with Angular.js so there&rsquo;s really not much choice about what JavaScript framework to use. For the back-end I used Laravel to scrape the necessary data from all the relevant resources. It is then stored in a MySQL database. The data (mainly a title and a URL) is then requested via AJAX from the mobile app. Ionic then handles the presentation. To give you an idea, here&rsquo;s a couple of screenshot of how the app looks like:</p>
-
-<p><img src="/images/posts/antares/hn.jpg" alt="hacker news" /></p>
-
-<p><img src="/images/posts/antares/news.jpg" alt="article" /></p>
-
-<p>As a developer who loves working on the back-end, I didn&rsquo;t really bother customizing the look and feel of the app.</p>
-
-<p>This blog post is getting rather long for an introduction. Here&rsquo;s the <a href="https://play.google.com/store/apps/details?id=com.wern.antares">link to the app on Google Play Store</a>. If you got a Windows Phone, I also have the <code>.xap</code> file which you can use to install Antares. Antares doesn&rsquo;t have a version for apple devices. Mainly because it costs around $99 per year to be included in their developer program. As someone who doesn&rsquo;t really plan to make any money out of this. I think its unwise to pay for that amount. I&rsquo;m already paying $10 per month for the server costs and I paid $25 to put the app in the Google Play Store so I guess that&rsquo;s enough expenses on my part.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2665,23 +3069,23 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls with PeerJS</a>
+        <a href="/blog/2015/05/09/getting-started-with-lumen/">Getting Started with Lumen</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
+        <a href="/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api/">Building a Nearby Places Search App with Google Places API</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
+        <a href="/blog/2015/05/06/getting-started-with-google-calendar-api/">Getting Started with Google Calendar API</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/28/automating-deployment-with-git/">Automating Deployment to EC2 Instance with Git</a>
+        <a href="/blog/2015/05/06/using-mandrill-with-php/">Using Mandrill with PHP</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started with Stripe API</a>
+        <a href="/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api/">Getting Started with the Wordpress Theme Customization API</a>
       </li>
     
   </ul>

@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In my daily work as a developer I always have this file which I call todo.txt. It contains all the things that I plan to work on, currently working &hellip;">
+  <meta name="description" content="In this tutorial I&rsquo;ll walk you through the Stripe&rsquo;s API. Let&rsquo;s start by defining what Stripe is. From the Stripe website itself: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,1054 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started With Stripe API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T11:08:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/22/getting-started-with-stripe-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial I&rsquo;ll walk you through the Stripe&rsquo;s API. Let&rsquo;s start by defining what Stripe is. From the Stripe website itself:</p>
+
+<blockquote><p>Stripe is a developer-friendly way to accept payments online and in mobile apps.<br/>We process billions of dollars a year for thousands of companies of all sizes.</p></blockquote>
+
+
+<p></p>
+
+<p>Now we know that Stripe is a payment processor, similar to Paypal.</p>
+
+<p>With Stripe, you can accept payments in three ways:</p>
+
+<ul>
+<li>Embedded Form</li>
+<li>Custom Form</li>
+<li>Mobile App Integration</li>
+</ul>
+
+
+<p>In this tutorial I&rsquo;ll only be walking you through the first two: embedded form and custom form.</p>
+
+<h3>Embedded Form</h3>
+
+<p>If you do not want to bother with creating your own checkout forms, an embedded form is the way to go. An embedded form is basically Stripe&rsquo;s checkout widget. All you have to do is include their script on your website, specifically inside a form element. And the front-end side is already handled for you.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script</span>
+</span><span class='line'><span class="nt">    </span><span class="na">src=</span><span class="s">&quot;https://checkout.stripe.com/checkout.js&quot;</span> <span class="na">class=</span><span class="s">&quot;stripe-button&quot;</span>
+</span><span class='line'>    <span class="na">data-key=</span><span class="s">&quot;pk_test_xxxxxxxxxxxxxxxxxxx&quot;</span>
+</span><span class='line'>    <span class="na">data-amount=</span><span class="s">&quot;1000&quot;</span>
+</span><span class='line'>    <span class="na">data-name=</span><span class="s">&quot;Web Development&quot;</span>
+</span><span class='line'>    <span class="na">data-description=</span><span class="s">&quot;Develop a website&quot;</span>
+</span><span class='line'>    <span class="na">data-image=</span><span class="s">&quot;http://mywebsite.com/img/logo.png&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. For the script to work, you need to supply a value to the following attributes:</p>
+
+<ul>
+<li><code>src</code> &ndash; Stripe&rsquo;s checkout script. This should be <code>https://checkout.stripe.com/checkout.js</code></li>
+<li><code>data-key</code> &ndash; your stripe publishable key. You can find it by clicking on your username, then select &lsquo;account settings&rsquo;, then click on the &lsquo;api keys&rsquo; tab. From there you can use either your test publishable key or your live publishable key. The test key is used for testing. This allows you to supply a fake credit card number and pay for a fake product or service. After successful payment, you can see your fake client from the <a href="https://dashboard.stripe.com/customers">customers</a> page on your Stripe dashboard. Don&rsquo;t forget to switch to <a href="https://dashboard.stripe.com/test/customers">test</a>.</li>
+<li><code>data-amount</code> &ndash; the amount you want to charge in cents. Just multiply what you want to charge by 100. So for example you want to charge $10, you need to supply 1000 instead.</li>
+<li><code>data-name</code> &ndash; the name of your product or service.</li>
+<li><code>data-description</code> &ndash; the description of your product or service.</li>
+<li><code>data-image</code> &ndash; your logo. This should be an absolute url.</li>
+</ul>
+
+
+<p>Next we need to install Stripe&rsquo;s library via <a href="https://getcomposer.org/">composer</a>. Add the following code on your <code>composer.json</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{
+</span><span class='line'>  &quot;require&quot;: {
+</span><span class='line'>    &quot;stripe/stripe-php&quot;: &quot;2.*&quot;
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, execute <code>composer install</code> from your terminal. This will fetch the library from the repository.</p>
+
+<p>Next create the <code>checkout.php</code> file and add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeEmail&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down, first we included the <code>vendor/autoload.php</code> file so that we can use the Stripe library on our script. Next we initialize the library by setting the Stripe secret key. Next we get the data supplied by Stripe for us from the front-end. The <code>stripeToken</code> is the unique token generated by Stripe, this represents the transaction that the client made on the front-end. That is, paying $10 for our service. Next is the <code>stripeEmail</code>, this is basically just the email supplied by the client. Next we wrap the stripe charge call in a try catch statement. This allows us to capture any error returned by the API and show it to the client. Calling the stripe charge method requires 4 arguments:</p>
+
+<ul>
+<li><code>amount</code> &ndash; the amount that you want to charge in cents.</li>
+<li><code>currency</code> &ndash; the currency code representing the currency that we want to use.</li>
+<li><code>source</code> &ndash; the token that stripe generated on the front-end.</li>
+<li><code>description</code> &ndash; a text that we want to assign to the charge. This is usually the clients email. But you can add more details such as the name of the service if you&rsquo;re offering more than one product or service.</li>
+</ul>
+
+
+<p>If the API call is successful, this method returns a whole bunch of data. Such as the amount paid, and the description. In most cases you&rsquo;ll basically only want the id of the transaction. You can get this by accessing the <code>id</code> property:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$charge_id = $charge-&gt;id;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then save this on your database as a reference. But of course you can always see this on <a href="https://dashboard.stripe.com/test/payments">your payments page</a>.</p>
+
+<h3>Custom Forms</h3>
+
+<p>If you need to ask additional information from your clients. Or you just want to use your own form. You can use custom forms. This allows you to write your own markup, supply your own fields and style them the way you want it with css. Here&rsquo;s an example of how a custom checkout form might look like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="na">id=</span><span class="s">&quot;payment-form&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;errors&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>Email<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;email&quot;</span> <span class="na">id=</span><span class="s">&quot;email&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Name<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;name&quot;</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>Card Number<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;20&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;number&quot;</span> <span class="na">id=</span><span class="s">&quot;card-number&quot;</span> <span class="na">name=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>Security Code<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;4&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;cvc&quot;</span> <span class="na">id=</span><span class="s">&quot;cvc&quot;</span> <span class="na">name=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;label&gt;</span>Expiration (MM/YYYY)<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-month&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-month&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;span&gt;</span> / <span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-year&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-year&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Pay<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This form works with the Stripe checkout script by adding the <code>data-stripe</code> attribute to the following fields. Just supply the value on the right-hand side as the value for the <code>data-stripe</code> attribute depending on the field:</p>
+
+<ul>
+<li>card number &ndash; <code>card-number</code></li>
+<li>security code or cvc &ndash; <code>cvc</code></li>
+<li>card expiration month &ndash; <code>exp-month</code></li>
+<li>card expiration year &ndash; <code>exp-year</code></li>
+</ul>
+
+
+<p>Next we need to include the stripe checkout script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;https://js.stripe.com/v2/&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then set the publishable key. This allows stripe to identify which stripe account the request came from:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script&gt;</span>
+</span><span class='line'><span class="nx">Stripe</span><span class="p">.</span><span class="nx">setPublishableKey</span><span class="p">(</span><span class="s1">&#39;pk_test_xxxxxxxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we need to define the method that will process the response that we get from Stripe when the client submits the payment form. This takes up 2 parameters: status and response. The status is the <a href="https://stripe.com/docs/api#errors">status code</a>. The response contains the actual Stripe response. This is an object containing information about the transaction. One of those is the <code>id</code> which is basically the token that we need to pass in to the back-end. All we have to do is to append it to the payment form so it gets submitted with the rest of the fields. If there is an error with the request, an error property becomes available in the response object. This contains the error message, we just show it to the user by supplying it as a value to the <code>errors</code> div. After that, we enable the submit button so the client can fix the errors and submit the form again:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">processStripeResponse</span><span class="p">(</span><span class="nx">status</span><span class="p">,</span> <span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;.errors&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input type=&quot;hidden&quot; name=&quot;stripeToken&quot; /&gt;&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">token</span><span class="p">));</span>
+</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we define the event handler for when the payment form is submitted. This calls the <code>createToken</code> method which requires the payment form and the response handler as its arguments. Don&rsquo;t forget to return <code>false</code> so the form doesn&rsquo;t get submitted. The response handler will be the one which will trigger the submit if the response doesn&rsquo;t have any errors:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">Stripe</span><span class="p">.</span><span class="nx">card</span><span class="p">.</span><span class="nx">createToken</span><span class="p">(</span><span class="nx">form</span><span class="p">,</span> <span class="nx">processStripeResponse</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On the back-end we can just use the previous code and use the custom fields that we added. Note that the <code>stripeToken</code> field stays the same. We don&rsquo;t need to pass the card number, security code and expiration date:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! You&rsquo;ve learned how to interact with the Stripe API in order to easily process payments.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://stripe.com/docs">Stripe Docs</a></li>
+<li><a href="https://stripe.com/docs/api?lang=php">Stripe API</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-15T07:30:00+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to assign a domain name bought from namecheap into your digitalocean droplet.</p>
+
+<p>First login to your namecheap account. Click on the <strong>manage domains</strong> menu that can be found under your username. Click on the domain name that you want to assign. On the menus on the left side, under the general section. Click on the <strong>Domain name server setup</strong> link. Once in that page, select the <strong>specify custom DNS servers</strong> option. And then enter the following:</p>
+
+<ul>
+<li>ns1.digitalocean.com</li>
+<li>ns2.digitalocean.com</li>
+<li>ns3.digitalocean.com</li>
+</ul>
+
+
+<p>Next login to your digitalocean account and navigate to the droplet that you want to use. From your droplets main page, click on the <strong>DNS</strong> link. Next click on the <strong>Add Domain</strong> button. This shows the form for adding a new domain. Set the value of the name to the domain name that you&rsquo;re trying to assign and the ip address to the ip address of your droplet or just select your droplet from the dropdown.</p>
+
+<p><img src="/images/posts/digitalocean_namecheap/digitalocean-dns.png" alt="dns settings" /></p>
+
+<p>Once you&rsquo;ve filled all that out, click on the <strong>create domain</strong> button.</p>
+
+<p>That&rsquo;s it! Just wait for about 30 minutes to an hour for the settings to propagate. And once that&rsquo;s done, you can now access your droplet using the domain name that you assigned.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/07/introduction-to-antares-web/">Introduction to Antares Web</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-07T07:27:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/07/introduction-to-antares-web/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Welcome to yet another promotional post on another side-project of mine. This time its the web version of Antares. If you don&rsquo;t know what Antares is, its basically a news app for Android. Its a news app targeted to developers to be exact. You can read all about it here: <a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a>.</p>
+
+<p>So yeah, Antares web is just a website were you can read all the news from popular sources such as Hacker News, Product Hunt, Medium, Designer News, Slashdot and many others. There are also news coming from popular curators such as echojs and developer newsletters. The news items are ordered from the latest to the least latest so you&rsquo;re assured that the ones on top are the latest one. Antares uses infinite scrolling. So if you missed yesterday&rsquo;s news, you can always scroll until you find something you&rsquo;re interested in reading.</p>
+
+<h3>Future Plans</h3>
+
+<ul>
+<li>More news sources.</li>
+<li>Viewing of news on a specific date.</li>
+<li>Top news. Something simple like logging the view count on each link based on the number of clicks it gets. And then ordering the results from the most number of views to the least.</li>
+<li>Mobile version. Currently it doesn&rsquo;t look that good on mobile. Especially on devices below 400px width.</li>
+<li>Social Sharing. Facebook, Twitter, LinkedIn sharing. And possibly Google plus. I&rsquo;ll just add it as a button below each news link, so that users can easily share. Integration with my <a href="/blog/2014/09/28/introduction-to-ahead/">Ahead project</a> seems to be a good idea as well. So users can easily schedule posts to their social accounts for later publishing.</li>
+<li>Bookmarking. I&rsquo;m looking at pocket integration. So each news link will have its own button for saving to pocket.</li>
+</ul>
+
+
+<p>That&rsquo;s all for now. If you want to know more about this project. You can always visit <a href="/projects/antares_web/">its project page</a>. If you&rsquo;re a developer, you can check out this project at <a href="https://github.com/anchetaWern/antares">Github</a>. Feel free to contribute.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/">How to Implement Infinite Scroll in Laravel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-01T14:39:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
+
+<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    @foreach($news as $item)
+</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    @endforeach
+</span><span class='line'>    
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">})();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
+
+<ul>
+<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
+<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
+<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
+</ul>
+
+
+<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
+
+<ul>
+<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
+<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
+<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
+<li><code>itemSelector</code> &ndash; an individual item.</li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/22/getting-started-with-twilio-api/">Getting Started With Twilio API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-22T07:42:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2015</time>
+        
+         | <a href="/blog/2015/02/22/getting-started-with-twilio-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud communications company. They offer APIs which developers can use to enable Text Messaging, Voice, VoIP on their apps.</p>
+
+<p>Now that we got the introduction out of the way. Let&rsquo;s get started.</p>
+
+<p>If you don&rsquo;t have an account with Twilio yet now is the time to create one. You can do so from this page: <a href="https://www.twilio.com/try-twilio">Try Twilio</a>. After signing up, Twilio will need to verify you&rsquo;re a human. You can either have them call you or send you a text message containing your verification code. You&rsquo;ll just have to select which country you&rsquo;re in and then your phone number. Twilio already adds the country code as the prefix so you will only have to add your actual phone number. After you have verified your phone number, Twilio assigns you your first phone number.</p>
+
+<p><img src="/images/posts/twilio/phone_number.png" alt="twilio phone number" /></p>
+
+<p>After that, Twilio will have you take your phone number for a spin. You can either make a call, send an SMS, receive a call, or receive an SMS.</p>
+
+<p><img src="/images/posts/twilio/test-drive.png" alt="twilio test drive" /></p>
+
+<p>Go ahead and try atleast one of those options so you have an idea how it works.</p>
+
+<h3>SMS API</h3>
+
+<p>Twilio&rsquo;s SMS API allows you to:</p>
+
+<ul>
+<li><p><strong>Send and receive SMS or MMS</strong> &ndash; when you signup with Twilio, you can purchase a phone number. You can then use this phone number to send text messages or multi-media messages to your users. At the same time, users can also send text messages to that phone number in order to interact with your application. How it works is that when a specific person sends a text message to the phone number that has been assigned to you by Twilio. Twilio makes an HTTP request to the URL you assigned to that phone number. The HTTP request contains the same data that the person sent. You can then use this data to have your app do what the user requested.</p></li>
+<li><p><strong>Track SMS Conversations</strong> &ndash; this allows you to track conversations between two phone numbers through the use of HTTP cookies. These HTTP cookies are use to keep a state. Just like when you login to a specific website. Cookies allows you to continue accessing the admin pages as long as you have that cookie around. After being active for some time, the cookie expires automatically. The same idea is used when tracking conversations with Twilio. Each phone number is assigned a cookie, and this cookie is sent along with the text message on every HTTP request made by Twilio.</p></li>
+</ul>
+
+
+<h4>SMS API Hello World</h4>
+
+<p>Now were ready to write some code. First create a <code>composer.json</code> file and add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "twilio/sdk": "dev-master"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This tells composer to require the twilio sdk for PHP. If you don&rsquo;t know what composer is. You can check out <a href="https://getcomposer.org/">getcomposer.org</a> to get started. Once you have saved the file, execute <code>composer install</code> from your terminal to install the twilio sdk.</p>
+
+<p>Next, create a new PHP file then add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span> <span class="c1">//include the twilio sdk</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$sid</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">;</span> <span class="c1">//your twilio account sid number</span>
+</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="s2">&quot;yyy&quot;</span><span class="p">;</span> <span class="c1">//your twilio account token</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$your_twilio_phonenumber</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the friendly name of your twilio phone number</span>
+</span><span class='line'><span class="nv">$phone_number_to_send_to</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the phone number to send the message</span>
+</span><span class='line'><span class="nv">$text_to_send</span> <span class="o">=</span> <span class="s1">&#39;Hello world! from twilio&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Services_Twilio</span><span class="p">(</span><span class="nv">$sid</span><span class="p">,</span> <span class="nv">$token</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//send message</span>
+</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">messages</span><span class="o">-&gt;</span><span class="na">sendMessage</span><span class="p">(</span>
+</span><span class='line'>  <span class="nv">$your_twilio_phonenumber</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$phone_number_to_send_to</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$text_to_send</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">sid</span><span class="p">;</span> <span class="c1">//the message id</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line includes the twilio sdk. This allows us to easily make requests to the Twilio API. Next we declare the sid and token. You can find this on your <a href="https://www.twilio.com/user/account/settings">account settings page</a> under the <strong>API Credentials</strong> section. You can either use the live or the test credentials. The only thing to note is that when using the live credentials, your account is charged by Twilio. But if your account is in trial mode, you can only use the live credentials. Twilio doesn&rsquo;t charge you when your account is in trial mode. But there are <a href="https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work">some restrictions</a>. Going back to the code. Next we declare the twilio phone number. If you don&rsquo;t know what your twilio phone number is, visit the <a href="https://www.twilio.com/user/account/phone-numbers/incoming">numbers</a> page. You&rsquo;ll want to use the friendly name for your number. Next is the phone number where you want to send your message. This can be any phone number from any country supported twilio. Note that only United States and Canada are enabled by default. So you&rsquo;ll have to <a href="https://www.twilio.com/user/account/settings/international/sms">enable sending a message to your country</a> if you don&rsquo;t live in any of those places. Just add a check mark to the country you want to send the message to. Next add the text that you want to send. Then create a new instance of the <code>Services_Twilio</code> class and supply the sid and token that we declared earlier. Finally, send the message using the <code>sendMessage</code> method. This takes up 3 arguments: your twilio phone number, the phone number to send to and the message. This method returns the following data:</p>
+
+<ul>
+<li><code>sid</code> &ndash; a uniqued id assigned to the message.</li>
+<li><code>date_created</code> &ndash; the date and time that the message was created.</li>
+<li><code>date_updated</code> &ndash; the most recent date and time that the message was updated</li>
+<li><code>date_sent</code> &ndash; normally this is empty when the request to send a message has just been made. Twilio messages doesn&rsquo;t seem to be sent immediately when the <code>sendMessage</code> method is called (it is queued). Therefore its only natural for this to be empty and only updated when the message is actually sent.</li>
+<li><code>to</code> &ndash; the phone number where the message is sent.</li>
+<li><code>from</code> &ndash; the twilio phone number that you used for sending the message.</li>
+<li><code>body</code> &ndash; the actual text message.</li>
+<li><code>status</code> &ndash; the status of the message, normally this has a value of &lsquo;queued&rsquo; right after getting the response from the <code>sendMessage</code> method. It is then updated to &lsquo;sent&rsquo; once the message is actually sent. For inbound messages, the value for this is &lsquo;received&rsquo;. If the message is currently being sent, this will have a value of &lsquo;sending&rsquo;. If the sending failed, it will have &lsquo;failed&rsquo; as the value.</li>
+<li><code>num_segments</code> &ndash; the number of segments the message has. Text messages are only limited to 160 characters so your message is divided into 160-character segments. Each segment are then sent separately.</li>
+<li><code>num_media</code> &ndash; the number of media items associated with your message.</li>
+<li><code>direction</code> &ndash; can have a value of <code>outbound-api</code>, <code>inbound</code>, <code>outbound-call</code>, and <code>outbound-reply</code>. These are basically like the name suggests, <code>outbound-api</code> are the messages you have sent from your app. <code>inbound</code> are the ones that are sent from an actual phone number to your twilio phone number. <code>outbound-call</code> are the messages initiated during a call. And <code>outbound-reply</code> are messages initiated in response to an incoming SMS.</li>
+<li><code>api_version</code> &ndash; the twilio api version used when the message was sent.</li>
+<li><code>price</code> &ndash; the amount billed for the message.</li>
+<li><code>price_unit</code> &ndash; the currency used for the price.</li>
+<li><code>error_code</code> &ndash; the error code returned. This will only have a value if the value for <code>status</code> is failed. If you are having an error returned to you, be sure to check out the <a href="https://www.twilio.com/docs/errors/reference">errors reference</a>.</li>
+<li><code>uri</code> &ndash; the uri of the resource used for sending the message.</li>
+<li><code>subresource_uris</code> &ndash; the sub-resources used in sending the message. For SMS, a possible sub-resource can be the media resource.</li>
+</ul>
+
+
+<h4>Dev Tools</h4>
+
+<p>Before we move on to writing some more code. I&rsquo;d like to do a quick introduction on the dev tools offered by Twilio. Twilio&rsquo;s dev tools includes the following:</p>
+
+<ul>
+<li><p><strong>App Monitor</strong> &ndash; allows you to monitor the requests being made to your app. These requests can be an outbound test/call to a specific phone number, or an inbound text/call to your twilio phone number. Basically, every interaction to your app are logged in the app monitor.</p></li>
+<li><p><strong>API Explorer</strong> &ndash; allows you to make and explore API requests. This includes the parameters needed for a specific resource and the response that it returns. The good part is that it also includes code samples in different programming languages. Which you can readily copy and paste in order to test in your application. One thing to note when making requests through the API explorer is that you get charged for specific resources. An example of such resource is the resource for sending messages.</p></li>
+<li><p><strong>Connect Apps</strong> &ndash; allows you to create a twilio app for the purpose of letting your clients connect to it. This allows you to perform specific actions on behalf of your client. If you&rsquo;ve ever used the Facebook API before, its pretty much the same idea. The only difference is that its your clients twilio account that is connected to your app. This is useful for clients who have their own clients. This allows you to send messages or make calls to the clients of your client on their behalf. This means all the charges are being made to your clients twilio account instead of yours if you choose to.</p></li>
+</ul>
+
+
+<h3>Searching and Buying Phone Numbers</h3>
+
+<p>If your app allows your users to have their own phone numbers. You can also use the twilio API to search for available phone numbers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$area_code</span> <span class="o">=</span> <span class="mi">201</span><span class="p">;</span> <span class="c1">//only for US and Canada</span>
+</span><span class='line'><span class="nv">$search_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;AreaCode&#39;</span> <span class="o">=&gt;</span> <span class="nv">$area_code</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//make a request to search for available phone numbers on a specific area</span>
+</span><span class='line'><span class="nv">$numbers</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span><span class="o">-&gt;</span><span class="na">getList</span><span class="p">(</span><span class="s1">&#39;US&#39;</span><span class="p">,</span> <span class="s1">&#39;Local&#39;</span><span class="p">,</span> <span class="nv">$search_params</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$nums</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$numbers</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span> <span class="k">as</span> <span class="nv">$n</span><span class="p">){</span>
+</span><span class='line'>    <span class="nv">$nums</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">json_encode</span><span class="p">(</span><span class="nv">$n</span><span class="o">-&gt;</span><span class="na">phone_number</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$nums</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can supply the following arguments for your search:</p>
+
+<ul>
+<li><code>AreaCode</code> &ndash; any valid area code in US or Canada.</li>
+<li><code>Contains</code> &ndash; a regular expression for matching the characters you want the phone numbers to have.</li>
+<li><code>SmsEnabled</code> &ndash; if sms capabilities are enabled. This can either be true or false.</li>
+<li><code>MmsEnabled</code> &ndash; if mms capabilities are enabled. This can either be true or false.</li>
+<li><code>VoiceEnabled</code> &ndash; if making and receiving calls is enabled. This can either be true or false.</li>
+<li><code>ExcludeAllAddressRequired</code> &ndash; if you want to exclude the phone numbers that require an address or not.</li>
+<li><code>ExcludeLocalAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a local address or not.</li>
+<li><code>ExcludeForeignAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a foreign address or not.</li>
+</ul>
+
+
+<p>Once your user has selected a number, you can then make a request to buy a phone number:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$phone_number</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;phone_number&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$number</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">incoming_phone_numbers</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;VoiceUrl&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yourwebsite.com/greet&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;PhoneNumber&#39;</span> <span class="o">=&gt;</span> <span class="nv">$phone_number</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The request requires two arguments: the <code>VoiceUrl</code>, which is the URL which you want Twilio to make a request to when this specific phone number is called by someone. We&rsquo;ll talk more about this on the TwiML section, which is Twilio&rsquo;s way for interacting with users in a call through a computer voice. The second argument is the <code>PhoneNumber</code>, which is the phone number selected by the user which came from the search results earlier. Note that making a request to purchase a phone number costs money.</p>
+
+<h3>TwiML</h3>
+
+<p>TwiML or the Twilio Markup Language isn&rsquo;t exactly a new markup language created by Twilio. Its basically just plain old XML which you can use to do all kinds of cool stuff when a user calls your twilio phone number. Here are a few examples of awesome stuff you can do with TwiML. Note that these are all performed during a call:</p>
+
+<ul>
+<li><strong>Play</strong> &ndash; allows you to play an audio file.</li>
+<li><strong>Say</strong> &ndash; allows you to convert text to speech.</li>
+<li><strong>Dial</strong> &ndash; dials another phone number that can then be added to the current call.</li>
+<li><strong>Record</strong> &ndash; record the voice of the caller.</li>
+<li><strong>Sms</strong> &ndash; send a text message.</li>
+<li><strong>Gather</strong> &ndash; allows you to gather the users input. Currently inputs are only limited to numbers.</li>
+</ul>
+
+
+<p>Now that you have an idea what you can do with TwiML, lets move on to some practical stuff. Let&rsquo;s build an app that allows the user to input a number and have a different sound played based on the number.</p>
+
+<p>Start by creating a <code>hello.xml</code> file, then add the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;Response&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Say&gt;</span>Hello! Please enter a number from 1 to 5<span class="nt">&lt;/Say&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Gather</span> <span class="na">numDigits=</span><span class="s">&quot;1&quot;</span> <span class="na">action=</span><span class="s">&quot;/choose.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Response&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is allows you to control the response that the user hears when they call your twilio phone number. The first line specifies the xml version and the encoding. The second line is the response wrapper. This allows us to specify the actual response that the user will hear. The first thing that the user will hear is the speech version of the text that we added inside the <code>Say</code> verb. In this case, were asking the user for a single digit number from 1 to 5. Next we use the <code>Gather</code> verb to gather the digit entered by the user. The <code>numDigits</code> attribute allows you to specify the number of digits. This has an added benefit of submitting the response immediately after the number of digits you specified matches the number of digits entered by the user. The digits entered by the user are submitted to the page you specify on the <code>action</code> attribute. In this case its the <code>choose.php</code> file in the same request URL you added to your twilio number. If you don&rsquo;t know how to change the request URL used by your number, then visit the <a href="https://www.twilio.com/user/account/phone-numbers">numbers page</a> and click the number you want to use. That will redirect you to the settings page of that number. From there look for the voice section and then change the request url then click save. This means that if your request url is &lsquo;<a href="http://mywebsite.com">http://mywebsite.com</a>&rsquo; and you specified &lsquo;/choose.php&rsquo; as the action, then you need to have the &lsquo;choose.php&rsquo; file in the root web directory of your website in order for the digits to be submitted properly.</p>
+
+<p>Add the following code to the <code>choose.php</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;content-type: text/xml&quot;</span><span class="p">);</span> <span class="c1">//specify content type to be xml</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$digits</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;Digits&#39;</span><span class="p">];</span> <span class="c1">//the digit inputted by the user in his/her phone</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the array of sounds that we will be playing back to the user</span>
+</span><span class='line'><span class="nv">$animals</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;bassethound.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cat.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cattle.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;chicken.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;sheep.wav&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="cp">&lt;?</span><span class="nx">xml</span> <span class="nx">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nx">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;Response&gt;</span>
+</span><span class='line'><span class="x">  &lt;Say&gt;Here is the sound you selected&lt;/Say&gt;</span>
+</span><span class='line'><span class="x">  &lt;Play&gt;http://mywebsite.com/sounds/</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$animals</span><span class="p">[</span><span class="nv">$digits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/Play&gt;</span>
+</span><span class='line'><span class="x">&lt;/Response&gt;</span>
+</span><span class='line'><span class="x">?&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line specifies the content type to be xml. The second line is where we get the digits enterred by the user. Next we declare an array containing the sounds that we want to play. I got these sounds from <a href="http://www.animal-sounds.org/animal-sounds-free-download.html">animal-sounds.org</a>. Next we just set the response starting with a speech saying &lsquo;Here is the sound you selected&rsquo;, then we just play it back using the <code>Play</code> verb.</p>
+
+<h3>Conclusion</h3>
+
+<p>Twilio&rsquo;s API allows you to add SMS and Voice superpowers to your apps at ease. Their documentation, quick start guides can get you up and running pretty quickly. Their code samples include some of the most popular programming languages for the web. Such as PHP, Ruby, Python, Java and .Net. If you need to add SMS and Voice capabilities to your app, there is no doubt that Twilio should be your first choice.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.twilio.com/docs/quickstart">Twilio &ndash; Quickstart Docs</a></li>
+<li><a href="https://www.twilio.com/docs/api">Twilio &ndash; API Docs</a></li>
+<li><a href="https://www.twilio.com/docs/libraries">Twilio &ndash; Helper Libraries</a></li>
+<li><a href="https://www.twilio.com/docs/howto">Twilio &ndash; How-tos</a></li>
+<li><a href="https://www.twilio.com/docs/errors/reference">Twilio &ndash; Errors Reference</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-15T17:05:00+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/02/15/introduction-to-antares/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a developer there&rsquo;s no question as to why we need to <a href="http://programmers.stackexchange.com/questions/161099/why-do-developers-need-to-keep-up-to-date-with-technologies-and-methodologies">keep ourselves updated</a>. And that is why reading blogs is really important. There&rsquo;s no shortage of the most important people to follow on twitter, newsletters, podcasts and screencasts that helps us to keep up to date. But as the years pass the amount of resources that we use to keep ourselves updated tends to grow. This results in a browser window that looks like this:</p>
+
+<p><img src="/images/posts/antares/tabs.png" alt="too many tabs" /></p>
+
+<p>Just the act of opening the interesting links in new tabs can take up to 30 minutes or more (I know, I&rsquo;ve been there). All because of the sheer amount of resources that were trying to maintain. I&rsquo;ve been doing that for years, and as my collection of resources grew larger, it only became harder and harder to read all of those things that are seemingly important. That is when I had the idea of creating an app which would still allow me to keep up to date, but will save me the time in opening all those links in a new tab. That is what Antares is all about. Its essentially a news app for developers. It collects content from interesting places such as Hacker News, Github, Designer News, Medium, Readability Top Reads, Slashdot, EchoJS, SidebarIO, and Product Hunt. It also collects all the content linked from popular developer newsletters such as JavaScriptWeekly, HTML5Weekly, PHPWeekly, CSSWeekly, Web Design Weekly and many others. Its basically an all in one tool for keeping up to date. As for me, it also have the effect of just letting go. Because having all those newsletters sent in my email has this mental effect that its something I need to open no matter what. The kind of feeling that its your responsibility to read through all those articles being pointed out in the newsletter. The feeling that you&rsquo;d miss out on something really important if you don&rsquo;t. Antares isn&rsquo;t like that. You can just install it and let it sit there. And you only really open it if you have some free time. The news just keeps on flowing in there but it doesn&rsquo;t make you feel that you&rsquo;ll miss out on one half of your life as a developer if you don&rsquo;t.</p>
+
+<p>For the technical side of things, I used <a href="http://ionicframework.com/">Ionic framework</a> to build the app. Under the hood it uses HTML, CSS and JavaScript. Ionic is tied with Angular.js so there&rsquo;s really not much choice about what JavaScript framework to use. For the back-end I used Laravel to scrape the necessary data from all the relevant resources. It is then stored in a MySQL database. The data (mainly a title and a URL) is then requested via AJAX from the mobile app. Ionic then handles the presentation. To give you an idea, here&rsquo;s a couple of screenshot of how the app looks like:</p>
+
+<p><img src="/images/posts/antares/hn.jpg" alt="hacker news" /></p>
+
+<p><img src="/images/posts/antares/news.jpg" alt="article" /></p>
+
+<p>As a developer who loves working on the back-end, I didn&rsquo;t really bother customizing the look and feel of the app.</p>
+
+<p>This blog post is getting rather long for an introduction. Here&rsquo;s the <a href="https://play.google.com/store/apps/details?id=com.wern.antares">link to the app on Google Play Store</a>. If you got a Windows Phone, I also have the <code>.xap</code> file which you can use to install Antares. Antares doesn&rsquo;t have a version for apple devices. Mainly because it costs around $99 per year to be included in their developer program. As someone who doesn&rsquo;t really plan to make any money out of this. I think its unwise to pay for that amount. I&rsquo;m already paying $10 per month for the server costs and I paid $25 to put the app in the Google Play Store so I guess that&rsquo;s enough expenses on my part.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -385,1269 +1433,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/29/year-end-review/">Year-End Review</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-29T17:44:00+08:00" pubdate data-updated="true">Dec 29<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/12/29/year-end-review/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This has been a very good and productive year. Lots of articles written, podcasts listened to, articles and books read, company and client projects, side-projects, travels, video games played, anime series and movies, video tutorials and talks watched. In this blog post I&rsquo;ll try to recollect some of those.</p>
-
-<h3>Articles Written</h3>
-
-<p>I&rsquo;m not going to list out every article I&rsquo;ve written on this blog for this year. We have the <a href="http://wern-ancheta.com/blog/archives/">archives</a> for that. So here are the articles that I consider the best from 2014. These are based from the number of responses I got from both the commenting system and social media:</p>
-
-<ul>
-<li><a href="http://wern-ancheta.com/blog/2014/02/23/a-whirlwind-tour-of-web-developer-tools-virtualization/">A Whirlwind Tour of Web Developer Tools: Virtualization</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/03/08/a-whirlwind-tour-of-web-developer-tools-command-line-utilities/">A Whirlwind Tour of Web Developer Tools: Command Line Utilities</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/03/12/being-a-dark-matter-developer-must-be-nice/">Being a dark matter developer must be nice</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">A Whirlwind Tour of Web Developer Tools: Build Tools</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/07/13/how-i-work-with-clients/">How I work with Clients</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/08/10/using-datatables-with-laravel/">Using Datatables with Laravel</a></li>
-<li><a href="http://wern-ancheta.com/blog/2014/10/25/always-scratch-your-developer-itch/">Always scratch your developer itch</a></li>
-</ul>
-
-
-<p>I have also started writing for Sitepoint&rsquo;s PHP Channel this year. Here are some of the articles I&rsquo;ve written:</p>
-
-<ul>
-<li><a href="http://www.sitepoint.com/database-versioning-dbv/">Database Versioning with DBV</a></li>
-<li><a href="http://www.sitepoint.com/automate-php-phake-introduction/">Automate PHP with Phake</a></li>
-<li><a href="http://www.sitepoint.com/create-movie-recommendation-app-prediction-io-setup/">Create a Movie Recommendation app with Prediction.IO</a></li>
-<li><a href="http://www.sitepoint.com/getting-started-medoo-examples-use/">Getting Started with Medoo</a></li>
-</ul>
-
-
-<p>If you want to check out some of my other articles on Sitepoint, please visit <a href="http://www.sitepoint.com/author/wancheta/">my author page</a>.</p>
-
-<h3>Podcasts Listened To</h3>
-
-<h3>Articles Read</h3>
-
-<p>There&rsquo;s a gazillion of them. To give you an idea how much I articles I&rsquo;ve read this year, here&rsquo;s a screenshot of session buddy, a chrome extension that I&rsquo;m using for saving sets of tabs.</p>
-
-<p><img src="/images/posts/2014_yearend_review/sessions.png" alt="sessions" /></p>
-
-<h3>Books Read</h3>
-
-<p>Ok I was kidding when I said I read lots of books this year. Actually I finished one. That is <a href="http://www.amazon.com/Thinking-Fast-Slow-Daniel-Kahneman/dp/0374533555">Thinking Fast and Slow by Daniel Kahneman</a>. I tend to read 2 to 3 books at a time, so I&rsquo;m halfway through <a href="http://www.amazon.com/This-Will-Make-You-Smarter/dp/0062109391">This Will Make You Smarter: New Scientific Concepts to Improve Your Thinking by John Brockman</a>. And recently I&rsquo;ve started reading <a href="http://www.amazon.com/Optimism-Bias-Irrationally-Positive-Brain/dp/0307473511">Optimism Bias by Tali Sharot</a>.</p>
-
-<h3>Company and Client Projects</h3>
-
-<p>I&rsquo;m really thankful for having a great boss who always gives me some nice and cool projects to work on. This year I worked on a total of 7 company projects. 1 of those was from the previous company that I worked for. I joined my current company in late March this year so there&rsquo;s that 1 leftover project. Here are some of the company projects that I&rsquo;m most proud of:</p>
-
-<ul>
-<li><a href="http://wern-ancheta.com/projects/wpdonations">WP-Donations</a></li>
-<li><a href="http://wern-ancheta.com/projects/vmonial">Vmonial</a></li>
-<li><a href="http://wern-ancheta.com/projects/blink">Blink</a></li>
-<li><a href="http://wern-ancheta.com/projects/stockswitch">StockSwitch</a></li>
-<li><a href="http://wern-ancheta.com/projects/stockswitch-mobile">StockSwitch Mobile</a></li>
-</ul>
-
-
-<p>As for the client project, I don&rsquo;t actively look for them and even if I get one, I usually reject it because of lack of experience on the technologies to be used and overall lack of interest. There&rsquo;s only one project that got through the tight screening, and that is the <a href="http://wern-ancheta.com/projects/esa/">ebay store automator</a>.</p>
-
-<h3>Side-projects</h3>
-
-<p>There&rsquo;s an abundance of side-projects this year. I usually do these projects to automate some of the tasks that I usually do by hand, or to get my hands dirty on a specific technology I&rsquo;ve never worked with before. Here are some of those:</p>
-
-<ul>
-<li><a href="https://github.com/anchetaWern/octo-views">octo-views</a></li>
-<li><a href="https://github.com/anchetaWern/octo-iframe">octo-iframe</a></li>
-<li><a href="https://github.com/anchetaWern/laravel-bootstrap-starter">laravel bootstrap starter</a></li>
-<li><a href="https://github.com/anchetaWern/octo-wysiwyg">octo-wysiwyg</a></li>
-<li><a href="https://github.com/anchetaWern/jekyll-contact">jekyll-contact</a></li>
-<li><a href="https://github.com/anchetaWern/ahead">Ahead</a></li>
-<li><a href="https://play.google.com/store/apps/details?id=com.wern.antares">Antares</a></li>
-</ul>
-
-
-<h3>Travels</h3>
-
-<p>I recently got a car so I naturally got exposed more exposure to the outside world as an excuse for getting some driving experience. Here are some of the places I&rsquo;ve been to this year. I&rsquo;ve mostly visited towns inside the same province where I live:</p>
-
-<ul>
-<li>Botanical Garden, San Fernando City, La Union</li>
-<li>Intake Dam, Sudipen, La Union</li>
-<li>Bahay na Bato, Luna, La Union</li>
-<li>Occalong Falls, Luna, La Union</li>
-<li>Callao Caves, Penablanca, Cagayan</li>
-<li>Aparri, Cagayan</li>
-<li>Basilica Minore of Our Lady of Piat, Piat, Cagayan</li>
-<li>Baluarte, Vigan City, Ilocos Sur</li>
-<li>Pindangan Ruins, San Fernando City, La Union</li>
-<li>Pugo Adventure, Pugo, La Union</li>
-<li>Basilica Minore of Our Lady of Charity, Agoo, La Union</li>
-<li>Namacpacan Church, Luna, La Union</li>
-<li>Balay Anito Falls, Santol, La Union</li>
-</ul>
-
-
-<h3>Video Games</h3>
-
-<p>Not really a lot. I just played a bunch of Pokemon on my Nintendo DS Lite. These days I barely even touch it since I&rsquo;ve already finished all the Pokemon games available for DS. That&rsquo;s why I&rsquo;m planning on selling it to buy the 3DS which apparently have some pretty badass Pokemon Games in Full 3D.</p>
-
-<h3>Anime Series</h3>
-
-<p>I&rsquo;m a big anime fan, and I&rsquo;m probably watching more than what I should be watching. At most around 40 anime series per year. But here are the only ones that I can recommend:</p>
-
-<ul>
-<li>Parasyte</li>
-<li>Hamatora</li>
-<li>Haikyu</li>
-<li>Amagi Brilliant Park</li>
-<li>Hunter x Hunter (2011 Remake)</li>
-<li>Free!</li>
-<li>Noragami</li>
-<li>Terra Formars</li>
-<li>Nanatsu no Taizai</li>
-<li>Yowamushi Pedal</li>
-<li>Tokyo Ghoul</li>
-<li>Shingeki no Bahamut</li>
-<li>Garo: The Animation</li>
-<li>Terror in Resonance</li>
-<li>Captain Earth</li>
-<li>Log Horizon</li>
-<li>Sword Art Online (Season 2)</li>
-<li>Chunibyo</li>
-<li>Chaika &ndash; The Coffin Princess</li>
-<li>World Trigger</li>
-<li>Barakamon</li>
-<li>Brynhildr in the Darkness</li>
-<li>Kagerou Project</li>
-<li>Psycho Pass (Season 2)</li>
-<li>Aldnoah.Zero</li>
-<li>Akatsuki no Yona</li>
-<li>Akame Ga Kill</li>
-</ul>
-
-
-<h3>Movies</h3>
-
-<p>Lots of good movies this year but here&rsquo;s the best:</p>
-
-<ul>
-<li>Dawn of the Planet of the Apes</li>
-<li>Captain America: Winter Soldier</li>
-<li>X-men: Days of Future Past</li>
-<li>Lucy</li>
-<li>Divergent</li>
-<li>Cloverfield</li>
-</ul>
-
-
-<h3>Talks</h3>
-
-<p>I don&rsquo;t really go to conferences so I only watched talks from all over the world via Youtube. I&rsquo;ve watched a lot of them this year but I&rsquo;ll only pick this one talk:</p>
-
-<ul>
-<li><a href="https://www.youtube.com/watch?v=ctwEcZC_mmI">Our Web Development Workflow is Completely Broken</a>.</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/22/brain-dump-0/">Brain Dump 0</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-22T19:39:00+08:00" pubdate data-updated="true">Nov 22<span>nd</span>, 2014</time>
-        
-         | <a href="/blog/2014/11/22/brain-dump-0/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Welcome to the first issue of brain dump. Brain dump is my attempt on putting the things that are always at the back of my mind into writing. Everything has its limits, and that includes the brain. Brain dump is my way of freeing up some space in my brain in hopes that I can use it on something else.</p>
-
-<h3>Things I want to learn</h3>
-
-<ul>
-<li>Meteor.js</li>
-<li>Design Patterns in PHP and JavaScript</li>
-<li>Behavior Driven Development in PHP: Codeception</li>
-<li>JavaScript Unit Testing</li>
-<li>PostgreSQL</li>
-<li>Ember.js</li>
-<li>Python</li>
-<li>Django</li>
-<li>Ruby</li>
-<li>Ruby on Rails</li>
-<li>SEO</li>
-<li>Web Semantics</li>
-<li>How to program Arduino or Raspberry Pi</li>
-<li>ARIA</li>
-<li>Canvas</li>
-<li>SVG</li>
-<li>Agile Development</li>
-<li>Unit Testing</li>
-<li>Regression Testing</li>
-</ul>
-
-
-<h3>Books I want to read</h3>
-
-<ul>
-<li>How to Win Friends and Influence People</li>
-<li>Strangers to Ourselves</li>
-<li>The Willpower Instinct: How Self-Control Works</li>
-<li>You Are Not So Smart</li>
-<li>Sway: The Irresistible Pull of Irrational Behavior</li>
-<li>Mindfulness</li>
-<li>The Optimism Bias</li>
-<li>The Social Animal</li>
-<li>The Honest Truth About Dishonesty: How We Lie to Everyone</li>
-<li>Yes! (50 Scientifically Proven Ways to be Persuasive)</li>
-<li>The Design of Everyday Things</li>
-<li>The Paradox of Choice: Why More is Less</li>
-<li>The Compass of Pleasure</li>
-<li>The Lucifer Effect: Understanding How Good People Turn Evil</li>
-<li>The Pragmatic Programmer</li>
-<li>Clean Code</li>
-<li>Predictably Irrational</li>
-<li>Social Engineer: The Art of Human Hacking</li>
-<li>Made to Stick: Why Some Ideas Survive and Others Die</li>
-<li>Head First Design Patterns</li>
-<li>Refactoring &ndash; Improving the design of existing code</li>
-<li>The Passionate Programmer</li>
-<li>Ship it!</li>
-<li>What Makes Your Brain Happy (and Why You Should Do the Opposite)</li>
-<li>Don&rsquo;t Make Me Think</li>
-<li>Incognito: The Secret Lives of the Brain</li>
-<li>The Power of Habit (Why We Do What We Do)</li>
-<li>The Productive Programmer</li>
-<li>The Art of Choosing</li>
-<li>Mistakes Were Made (But Not By Me)</li>
-<li>Priceless</li>
-<li>Switch: How to Change Things When Change is Hard</li>
-<li>Writing Solid Code</li>
-<li>Practices of an Agile Developer</li>
-<li>Stumbling on Happiness</li>
-<li>Man&rsquo;s Search for Meaning</li>
-</ul>
-
-
-<h3>Video Courses I want to watch</h3>
-
-<ul>
-<li>Codeschool &ndash; JavaScript Best Practices</li>
-<li>Codeschool &ndash; Mastering Github</li>
-<li>Codeschool &ndash; Design Fundamentals</li>
-<li>Udemy &ndash; Life&rsquo;s Little Secrets</li>
-<li>Udemy &ndash; Improve Your Mental Well Being</li>
-<li>Udemy &ndash; Freelance Jumpstart</li>
-<li>Udemy &ndash; Sauce of Great Writing</li>
-<li>Udemy &ndash; Become a Super learner</li>
-<li>Tutsplus &ndash; Automated Testing with PHP</li>
-<li>Tutsplus &ndash; Artisan Commands and You</li>
-<li>Tutsplus- Custom Interactive Maps with Google Maps API</li>
-<li>Tutsplus &ndash; Canvas Essentials</li>
-<li>Tutsplus &ndash; SVG for Web Design</li>
-<li>Tutsplus &ndash; Django Unchained</li>
-<li>Tutsplus &ndash; SVG Uncovered</li>
-<li>Lynda &ndash; Web Semantics</li>
-</ul>
-
-
-<h3>Projects I want to build</h3>
-
-<ul>
-<li>Wordpress Donations Plugin &ndash; can accept bitcoins, paypal, stripe</li>
-<li>Newsletter Subscription for Octopress &ndash; using Mailchimp API</li>
-<li>Gilium &ndash; similar to hacker news reader; mobile app for aggregating and suggesting content</li>
-<li>Dropshipster &ndash; a web application for easy dropshipping</li>
-<li>Vacationr &ndash; vacation planner app + social network</li>
-</ul>
-
-
-<h3>Things I want to write</h3>
-
-<ul>
-<li>My web development workflow</li>
-<li>My mobile development workflow</li>
-<li>Getting Started Guides
-
-<ul>
-<li>Yahoo Finance API</li>
-<li>Ionic</li>
-<li>Shopify Theme Development</li>
-<li>Twilio</li>
-<li>Youtube API</li>
-<li>Vimeo API</li>
-<li>Facebook API</li>
-<li>Twitter API</li>
-<li>Linkedin API</li>
-<li>Stripe API</li>
-</ul>
-</li>
-<li>A Whirlwind Tour of Web Developer Tools
-
-<ul>
-<li>Linting</li>
-<li>Testing</li>
-<li>Pre-processors</li>
-<li>Coding Standards</li>
-<li>Boilerplates and Front-end frameworks</li>
-<li>Templating</li>
-<li>Deployment</li>
-<li>Miscellaneous &ndash; tools not mentioned in any of the above, but still useful</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>Articles I want to read</h3>
-
-<p>There&rsquo;s bazzilion of them. It would take forever to write it here.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/16/getting-started-with-rabbitmq-in-php/">Getting Started With RabbitMQ in PHP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-16T15:11:00+08:00" pubdate data-updated="true">Nov 16<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/11/16/getting-started-with-rabbitmq-in-php/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>This article was originally published at Binpress:<br/>http://www.binpress.com/tutorial/getting-started-with-rabbitmq-in-php/164</p></blockquote>
-
-
-<p>In this tutorial I&rsquo;m going to walk you through how you can use RabbitMQ in PHP. But first what is RabbitMQ? RabbitMQ is a message broker software. It acts as a middleman between a producer and a consumer. Producer being the data that we want to pass, and consumer being the entity that we want to pass it to. RabbitMQ uses a queue, you can think of it as a mailbox where you drop your letters. RabbitMQ then takes the letters and delivers it to its destination.</p>
-
-<h3>Installing RabbitMQ</h3>
-
-<p>In Ubuntu and other debian based operating system you can install RabbitMQ by executing the following commands from your terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>echo "deb http://www.rabbitmq.com/debian/ testing main"  | sudo tee  /etc/apt/sources.list.d/rabbitmq.list &gt; /dev/null
-</span><span class='line'>sudo wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-key add rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install rabbitmq-server -y
-</span><span class='line'>sudo service rabbitmq-server start
-</span><span class='line'>sudo rabbitmq-plugins enable rabbitmq_management
-</span><span class='line'>sudo service rabbitmq-server restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What the first command does is to append the rabbitmq source to the software sources list. Next we download the rabbitmq signing key using <code>wget</code>. Then add the key to Ubuntu. Next we call <code>apt-get update</code> to update the software sources list. Next we install the RabbitMQ server, start it then enable RabbitMQ management plugin. This provides an HTTP-based API management for monitoring your RabbitMQ server. Finally we restart the RabbitMQ server so that changes will take effect.
-The default username and password is <code>guest</code>. And the default port in which it runs is <code>5672</code>.</p>
-
-<p>If you&rsquo;re on another operating system, you can find how to install RabbitMQ for your specific operating system here: <a href="http://www.rabbitmq.com/download.html">Downloading and Installing RabbitMQ</a>.</p>
-
-<h3>Working with RabbitMQ</h3>
-
-<p>Once you&rsquo;re done installing RabbitMQ, we can now install the AMQP library for PHP. This implements the AMQP (Advanced Messaging Queue Protocol) protocol. As the name suggests it is a protocol used for messaging.
-Start by creating a new directory, this is where we will put all the files for testing RabbitMQ. Next create a composer.json file and add the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "require": {
-</span><span class='line'>      "videlalvaro/php-amqplib": "2.2.*"
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, open up your terminal and <code>cd</code> into the directory you created earlier then execute <code>composer install</code> to install the AMQP library.</p>
-
-<p>Before we move on, lets also install <a href="http://swiftmailer.org/">Swiftmailer</a>. You can do that by executing the following command from your terminal. This also adds an entry to Swiftmailer to your composer.json:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer require swiftmailer/swiftmailer @stable</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We will be using Swiftmailer for the sample app that were going to create. What we will do is create an app that will send emails for our users. Normally emails takes a few seconds before it is sent, adding an attachment to the email also adds to that time. In the real world we don&rsquo;t really want our users to wait. What we want to do is make them believe that we have already sent the email for them by outputting to the screen that their message has been sent.
-This is where RabbitMQ comes in. We will use it as some sort of a mailbox in which multiple users can just drop their messages in. RabbitMQ will then take care of sending the messages in the background.</p>
-
-<h4>Sending Messages</h4>
-
-<p>First lets create the form to be used for sending emails. This will accept the name and email address of the sender, the email address of the receiver and then the subject and message. Name the file <code>form.php</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">if(!empty($_GET[&#39;sent&#39;])){</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    Your message was sent!
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">}</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;mailer.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>From<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from&quot;</span> <span class="na">id=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>From Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from_email&quot;</span> <span class="na">id=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>To Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;to_email&quot;</span> <span class="na">id=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>Subject<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;subject&quot;</span> <span class="na">id=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;</span>Message<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span> <span class="na">id=</span><span class="s">&quot;message&quot;</span> <span class="na">cols=</span><span class="s">&quot;30&quot;</span> <span class="na">rows=</span><span class="s">&quot;10&quot;</span><span class="nt">&gt;&lt;/textarea&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Send<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the file which will push the message into the queue. Name the file <code>sender.php</code>.
-Require the <code>autoload.php</code> file so that our dependencies will be automatically loaded by PHP. Then use the <code>AMQPConnection</code> and <code>AMQPMessage</code> from the AMQP library. <code>AMQPConnection</code> allows us to create a new connection to the RabbitMQ server and <code>AMQPMessage</code> allows us to create messages that we can push to the queue.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Message\AMQPMessage</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, first we create a new connection by creating a new instance of the <code>AMQPConnection</code> class. This requires the following arguments:</p>
-
-<ul>
-<li><strong>host</strong> &ndash; the host in which the RabbitMQ server is running. In this case we&rsquo;ve installed RabbitMQ on the same computer we are running the script in. So it should be <code>localhost</code>. Note that in the real world we install RabbitMQ on a another server, different from the one were using to serve our websites. So instead of <code>localhost</code> we use the public ip address of that server.</li>
-<li><strong>port</strong> &ndash; the port in which the RabbitMQ server is running.</li>
-<li><strong>user</strong> &ndash; the username to use for logging in to the server. By default the username is set to <code>guest</code>.</li>
-<li><strong>password</strong> &ndash; the password of the user. By default the password is set to <code>guest</code>.</li>
-</ul>
-
-
-<p>Next we create a channel. We can do that by calling the <code>channel()</code> method from the connection that we have just declared.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare the queue to be used by calling the  <code>queue_declare</code> method.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>queue_declare</code> method takes up the following arguments:</p>
-
-<ul>
-<li><strong>queue name</strong> &ndash; a name that you want to use for the queue, you can supply anything for this.</li>
-<li><strong>passive</strong> &ndash; a boolean value for specifying whether to check for an existing exchange.</li>
-<li><strong>durable</strong> &ndash; a boolean value for specifying whether the RabbitMQ holds on to a queue when the server crashes.</li>
-<li><strong>exclusive</strong> &ndash; a boolean value for specifying whether the queue is used by only one connection.</li>
-<li><strong>auto-delete</strong> &ndash; a boolean value for specifying whether the queue is deleted when the last subscriber unsubscribes.</li>
-</ul>
-
-
-<p>Next we convert the POST data that we receive from the form to a JSON string. We can only pass strings as a message so we&rsquo;ll have to convert this later on into an array on the receiver&rsquo;s end.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we create a new message. This accepts 2 arguments: the data and an array of options. For the array of options we specify the <code>delivery_mode</code> to 2 which means that the message is persistent. This means that it isn&rsquo;t lost when the server crashes or an error occurs.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we publish the message by calling the <code>basic_publish()</code> method on the channel. This accepts 3 arguments: the message, the exchange and the name of the queue. If you&rsquo;re wondering why we set the value of exchange to an empty string, that&rsquo;s because we don&rsquo;t really need it. The exchange is commonly used for pub-sub patterns. What were using here is just basic publish.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we just redirect the user to the form.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Receiving Messages</h4>
-
-<p>Now were ready to write the code that will receive the messages sent by users. Name the file <code>receiver.php</code>. Here&rsquo;s the full contents of the file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39; * Waiting for messages. To exit press CTRL+C&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_qos</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_consume</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$callback</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">callbacks</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">wait</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, the first 5 lines of code are basically the same as the one we have on the <code>sender.php</code> file. Then we just output a message saying how we can stop the file from running. We need to run this file from the terminal so to stop it we just hit <code>CTRL + C</code>.</p>
-
-<p>Next we declare a named function. This will be used for processing the message that we passed from the sender. The first thing it does is output that the message was received. Then we use <code>json_decode()</code> to convert the JSON string back to an array.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we extract the data and assign them to each of their own variables:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new transporter to be used by Swiftmailer. This allows us to use a gmail account for sending emails. Declaring a new instance accepts 3 arguments: the host, port and the encryption. Then we set the username and password.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new mailer instance, and supplying the transporter as an argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create a new message, this also takes up the transporter as its argument. We then set the subject, from field, to field, and body of the message.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we send the message and output that the message was sent. The last line basically tells RabbitMQ that the sending of the message has indeed been successful.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Running the program</h4>
-
-<p>You can now run the receiver by going to your terminal and executing the following command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php receiver.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once its running, go to your browser and access the <code>sender.php</code> file. Enter the details of your message and click on send. You&rsquo;re instantly greeted by a &lsquo;Your message was sent!&rsquo; text but if you immediately check your email account its not there yet. If its not there then the queue is still processing it. Check the output displayed on the terminal window where you executed the receiver. You should see a &lsquo;Message was sent&rsquo; output if the email was already sent.</p>
-
-<h3>Conclusion</h3>
-
-<p>RabbitMQ is a nice way for implementing messaging applications such as the one we created in this tutorial. We have barely scratch the surface with this tutorial. I recommend you check out the <a href="http://www.rabbitmq.com/getstarted.html">getting started guides</a> and the <a href="http://www.rabbitmq.com/documentation.html">documentation</a> to learn more.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/08/christmas-wishlist-2014/">Christmas Wishlist 2014</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-08T10:39:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/11/08/christmas-wishlist-2014/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>13-inch MacBook Pro with Retina display</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/macbookpro.jpg" alt="macbook pro" /></p>
-
-<p>I have always wanted a Macbook Pro since birth. But due to its priciness I never got myself to buy one.</p>
-
-<p>I&rsquo;d like to stick with the following hardware:</p>
-
-<ul>
-<li><strong>Processor</strong>: 3.0GHz Dual-core Intel Core i7</li>
-<li><strong>Memory</strong>: 8GB 1600MHz DDR3L SDRAM</li>
-<li><strong>Storage</strong>: 512GB PCIe-based Flash Storage</li>
-</ul>
-
-
-<h3>Google Nexus 5</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/google_nexus5.jpg" alt="Google Nexus 5" /></p>
-
-<p>Not really a Google fanboy, I&rsquo;m just more curious about a smartphone made by Google rather than an Apple&rsquo;s iPhone or Samsung&rsquo;s Galaxy.</p>
-
-<h3>PS Vita</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/ps_vita.jpg" alt="sony ps vita" /></p>
-
-<p>I&rsquo;ve always been a fan of game consoles from Sony and their games are really good. Here are just some of the titles that I&rsquo;ve enjoyed playing on their PSP game console:</p>
-
-<ul>
-<li>Patapon &ndash; that&rsquo;s Patapon 1, 2 and 3</li>
-<li>God Eater</li>
-<li>Final Fantasy VII: Crisis Core</li>
-<li>Harvest Moon &ndash; boy &amp; girl, innocent life and hero of the leaf valley</li>
-<li>Ratchet and Clank</li>
-<li>Naruto Ultimate Ninja Heroes &ndash; that&rsquo;s 1, 2 and 3</li>
-<li>GTA: Vice City</li>
-<li>Ratchet and Clank</li>
-<li>Secret Agent Clank</li>
-<li>Valhalla Knights</li>
-</ul>
-
-
-<h3>Nintendo 3ds</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/3ds.jpg" alt="Nintendo 3ds" /></p>
-
-<p>To be honest I only really want this game console because of Pokemon. Nintendo 3ds have revolutionize the Pokemon gameplay in this console. There&rsquo;s a bunch of new stuff, and the best thing is that its 3D. So the Pokemon games created for this console won&rsquo;t really look like the Pokemon games created for Nintendo DS or Gameboy.</p>
-
-<h3>Fitbit Flex</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/fitbit.jpg" alt="Fitbit" /></p>
-
-<p>Fitbit is an all-in-one tracker for the body. With it you can do the following:</p>
-
-<ul>
-<li>track steps, distance and calories burned</li>
-<li>monitor how long and well you sleep</li>
-<li>silent wake alarm</li>
-<li>logs food consumption, weight changes</li>
-</ul>
-
-
-<h3>Bose QuietComfort 25</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/bose.jpg" alt="Bose Noise Cancelling Headphones" /></p>
-
-<p>I&rsquo;ve always wanted a noise cancelling headphones that I can use while working. Based on my research Bose is the best thing out there.</p>
-
-<h3>Olympus ME-52W Noise Canceling Microphone</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/olympus_mic.jpg" alt="olympus microphone" /></p>
-
-<p>Screencasting has always been on my TODO list. As a developer I wanted to create a Youtube Channel where I record screencasts of things I&rsquo;ve learned. The only thing that&rsquo;s stopping me is the not-so-quality sound recorder that comes with my laptop.</p>
-
-<h3>Seagate Backup Plus 5TB Desktop External Hard Drive</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/seagate.jpg" alt="seagate external hard drive" /></p>
-
-<p>Last thing on this list is this 5TB External Hard Drive from Seagate. I download a lot of stuff from the internet to prepare for events where there is no internet and I have nothing to do on my computer.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/25/always-scratch-your-developer-itch/">Always Scratch Your Developer Itch</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-25T07:31:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/10/25/always-scratch-your-developer-itch/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As developers, no matter how busy we are with our lives, its important for us to always scratch our developer itches every now and then. What I mean by itches are the things that you want to do as a developer. Be it working on a side-project that you&rsquo;ve been wanting to do for months, playing with a new technology, library or a programming language. Or reading an in-depth article about a new programming technique. Or watching a video tutorial about a framework that you&rsquo;ve been wanting to learn. Or watching recorded talks from developer conferences all over the world. Or writing an article about a cool technique you&rsquo;ve discovered recently. And other things that you always have at the back of your mind but never really got to do because of lack of time.</p>
-
-<p>Lack of time is always the reason we give to ourselves. But time is not really the problem. We can always make time for something if we really love to do it. Yes we also have lives to live. But we also need to give priority to the things that matter to us as a developer. As a developers, we have the responsibility for continuous learning. To improve our craft for the better. And this is what it means to scratch your developer itch. If you have it, you&rsquo;ll always find time to scratch it no matter how busy you may be.</p>
-
-<p>On the contrary, we also have lives to live. Nothing is more important than our families and our lives as actual people. So giving time to that is our priority as a human being. After all life is not all about work. Life is about living it in the best way possible. And that is through spending quality time with our loved one&rsquo;s.</p>
-
-<p>In conclusion, its really all about balance. If you can&rsquo;t find time every weekend to scratch your own developer itch, then maybe do it once or twice a month. Maybe 4-8 hours twice a month doing a side project is a good start. You can also go to work early and read up on blogs before and after the alloted time for work. Listen to podcasts while commuting. Most podcasts provide download links to each episode which you can save into your mp3 player of smartphone. Watching a 5-minute video tutorial just before going to bed. Every bit of time counts. It doesn&rsquo;t matter how little or how much, what&rsquo;s important is to give time to scratch our developer itches whenever we can. If you do, you&rsquo;ll be a happier developer. Its like the feeling you get when you were finally able to get what you&rsquo;ve been wanting to buy for a long time.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/18/on-sleep/">On Sleep</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-18T20:26:00+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/10/18/on-sleep/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As developers we tend to not give much priority to sleep. Most of the time its due to a lot of responsibilities: work, family, and side-projects. And oftentimes we even bring in our todo list in our mind when we go to bed.
-As a developer myself, I tend to get less sleep than what&rsquo;s required. Sometimes not enough to fully function and be productive during the day. In this blog post I&rsquo;m going to share some of the things I&rsquo;ve learned about sleep.</p>
-
-<h3>Stages of Sleep</h3>
-
-<p>There are actually stages to sleep, its not just being awake or asleep. It is important that we understand this concept because its the core of what sleep is all about.</p>
-
-<ol>
-<li><strong>Stage 1</strong> &ndash; also called light sleep. This is where we drift in and out of sleep.</li>
-<li><strong>Stage 2</strong> &ndash; heart rate slows down and body temperature starts decreasing in preparation for deep sleep.</li>
-<li><strong>Stage 3</strong> &ndash; breathing becomes slower, blood pressure begins to drop, muscles becomes relaxed, cell growth and restoration occurs.</li>
-<li><strong>Stage 4</strong> &ndash; slow brain waves are produced.</li>
-<li><strong>REM</strong> &ndash; Rapid Eye Movement sleep. This is where dreams usually occur. The body becomes immobile. Energy is provided to the brain and body.</li>
-</ol>
-
-
-<h3>Factors Affecting Sleep</h3>
-
-<p>There are 5 factors which affects sleep:</p>
-
-<ul>
-<li>Light</li>
-<li>Consistency</li>
-<li>Activeness</li>
-<li>Environment</li>
-<li>Consumption</li>
-</ul>
-
-
-<h4>Light</h4>
-
-<p>Light affects the production of melatonin, a sleep hormone. Ample exposure to light during the day, and minimal exposure during the night 1-2 hours before sleep is recommended. The best light source is sunlight in the morning around 6-8 AM. For rainy days you can use light boxes. The main idea is that exposure to light helps produce serotonin, a neurotransmitter which affects sleep.</p>
-
-<p>Earlier I&rsquo;ve said that light exposure should be minimized during the night. But we haven&rsquo;t really defined what light is. Light is not just the fluorescent light, its also the light which is emmitted by electronic devices such as laptops, tablets and smartphones. And if its not already obvious, the light which comes from a television is also light. As a developer I want to maximize the amount of time I spend doing something productive. And that almost always means staring at the computer screen until I actually go to bed. This is not good for sleep as it decreases melatonin production. A good alternative is to install <a href="https://justgetflux.com/">flux</a>. What it does is adjust the color temperature to adapt to the time of the day. This effectively reduces the bluelight which is bad for sleep. If you&rsquo;re using a tablet or smartphone at night, simply look for similar apps. <a href="https://play.google.com/store/apps/details?id=jp.ne.hardyinfinity.bluelightfilter.free&amp;hl=en">Blue light filter</a> is a good one for android phones.</p>
-
-<h4>Consistency</h4>
-
-<p>Our bodies love consistency. The idea is that you should always sleep and wake at the same time. Our bodies have something like an internal clock. And if you&rsquo;re consistent with your sleep schedule, you almost always wake up or feel sleepy at the same time of the day. You wouldn&rsquo;t even need an alarm clock to wake you up if you&rsquo;re consistent.</p>
-
-<h4>Activeness</h4>
-
-<p>Regular exercise is important. As developers, were basically one of the people with the most sedentary job. Our brains and fingers are the only part of the body that is moving. So to get good sleep we must make it a habit to have exercise of around 20-30 minutes a day.
-Quality sleep is all about temperature oscillation. The idea is that the higher the temperature our body reaches during the day, the lower it gets during the night. And the lower the temperature means more deep sleep.
-Take note that exercise a few hours before sleep is bad as it makes you active. Personally I prefer exercising in the morning as it completely removes the possibility of exercising too near before bed time. And it hits 2 birds with one stone, as I also get some morning sunlight while exercising.
-Jogging, cycling and running are good types of exercise.</p>
-
-<h4>Environment</h4>
-
-<p>The environment also affects sleep. The temperature should neither be too hot or too cold. Around 18-23 degree celsius is a good baseline. Turning on the AC is also good. It effectively lowers the room temperature and also blocks out outside noises because of its white noise. Its a no-brainer that to get quality sleep you must always sleep somewhere where you&rsquo;re comfortable.
-Sleeping position affects the quality of sleep as well, the general rule is to always sleep in a position in which you are comfortable. But its always a good idea to avoid sleeping on your stomach, as it reduces the amount of oxygen that goes to your lungs.</p>
-
-<h4>Consumption</h4>
-
-<p>What we eat affects our sleep as well. Here are some foods which is good and bad for sleep.</p>
-
-<h5>Foods to consume</h5>
-
-<ul>
-<li>Cherries</li>
-<li>Milk</li>
-<li>Jasmine Rice</li>
-<li>Banana</li>
-<li>Sweet Potato</li>
-<li>Turkey</li>
-<li>Valerian Tea</li>
-<li>Walnuts</li>
-<li>Almonds</li>
-<li>Cheese and Crackers</li>
-<li>Lettuce</li>
-<li>Tuna</li>
-<li>Garlic</li>
-<li>Chamomile Tea</li>
-<li>Honey</li>
-<li>Shrimp</li>
-</ul>
-
-
-<p>Basically anything else which can help produce melatonin. Or foods which has sedative properties or natural muscle relaxant.</p>
-
-<h5>Foods to avoid</h5>
-
-<ul>
-<li>Alcohol</li>
-<li>Fat</li>
-<li>Dark Chocolate</li>
-<li>Coffee</li>
-<li>Soda</li>
-<li>Spices</li>
-<li>Chicken</li>
-<li>Celery</li>
-<li>Ice Cream</li>
-</ul>
-
-
-<p>Avoid anything that is high on fat content or caffeine. Its best if you can avoid caffeine entirely as it stays on your body for long periods of time once consumed. Also avoid diuretics, a subtance which promotes the production of urine.</p>
-
-<p>The general consumption rule is don&rsquo;t eat too close to bed time. Eating around 2-4 hours before sleep is a good idea. 2 hours for light meals, 4 hours for heavy meals (dinner buffet).
-Another important thing is to stay hydrated, 8-10 glasses (8 ounces) of water is recommended. You can definitely consume more if you&rsquo;re an athletic type or you sweat a lot. Always remember to not drink too much near bed time to avoid waking up to go to the bathroom. As a rule, avoid drinking too much water 1-2 hours before sleep. You can consume in small amounts (half a glass) if you want.</p>
-
-<h5>Sleep Supplements</h5>
-
-<p>Sleep supplements helps you fall asleep easier. Here are some sleep supplements which you can try if you&rsquo;re having trouble falling asleep:</p>
-
-<ul>
-<li>Valerian</li>
-<li>Melatonin</li>
-<li>Magnesium</li>
-<li>Theanine</li>
-<li>5-HTP</li>
-<li>Antihistamines</li>
-<li>Anti-depressants</li>
-</ul>
-
-
-<p>You can look for these supplements on Amazon or Google. Just be sure to consult your doctor before taking any of these supplements. Because some might negatively affect an existing condition that you already have.</p>
-
-<p>As a general rule, sleep supplements should be avoided and should only be taken when you really can&rsquo;t sleep. They are just short-term fix, and they can leave chemicals in your body which can take around a week to fully expel. These chemicals might make you feel sleepy during the day which is not good for productivity.</p>
-
-<h3>Napping</h3>
-
-<p>You can nap around 20-30 minutes to gain a boost of productivity and avoid feeling tired or sleepy during the day. The best time to nap is around 1pm after lunch.</p>
-
-<h3>Sleep Tracking</h3>
-
-<p>If you want to have an idea how much sleep do you get per night. You can buy a sleep tracking device. Currently there are two brands which dominates this market: Jawbone and Fitbit. Just search for those on Amazon and pick one that feels right for you.
-These devices gives you a detailed look on how much sleep you get. That includes all stages of sleep that I&rsquo;ve mentioned earlier. Its basically a wearable device (wristband) which you can then connect to an app in your smartphone.</p>
-
-<h3>Sleep Disorders</h3>
-
-<p>There are lots of sleep disorder out there but I&rsquo;m only going to walk through these two: Insomnia and Sleep State Misperception.</p>
-
-<h4>Insomnia</h4>
-
-<p>Insomnia is a sleep disorder characterized by difficulty or inability to fall asleep. It can be either primary or secondary insomnia.</p>
-
-<ul>
-<li><strong>Primary insomnia</strong> &ndash; means that your insomnia isn&rsquo;t caused by any existing medical condition.</li>
-<li><strong>Secondary insomnia</strong> &ndash; means that your insomnia is a result of an existing medical condition such as asthma.</li>
-</ul>
-
-
-<p>If you believe you have an insomnia, its better to consult it to a doctor. A psychiatrist can help in most cases. Because oftentimes what&rsquo;s causing you to not be able to sleep is only in the mind.
-If a psychiatrist cannot help you, then look for a sleep specialist.</p>
-
-<h4>Sleep State Misperception</h4>
-
-<p>Sleep State Misperception is the inability to perceive sleep from wakefulness. People with this condition may report having only slept for a few hours but in fact they have slept more than that.</p>
-
-<h3>Tips and tricks on falling asleep faster</h3>
-
-<p>Finally here are some tips and tricks on how to fall asleep faster:</p>
-
-<ul>
-<li>Exercise in morning. Brisk walking, jogging or running will do. If you have a bicycle you can also use that.</li>
-<li>Take a warm bath before going to bed.</li>
-<li>Read a boring book.</li>
-<li>Use a todo list, don&rsquo;t try to hold things in your brain too much. As a developer, I always have things I want to do. Be it playing around a new technology, a library or a programming language. Or watching video tutorials and recorded talks from conferences all over the world. Or finally start a side-project I&rsquo;ve been wanting to do for months. Or read an article about what&rsquo;s new in the world of web development. Or write an article for my blog. The list is endless. The idea of a todo list is to put as much things outside of your brain as possible. This way you don&rsquo;t have to think about it or maintain it on your brain like a file that&rsquo;s saved in a filesystem in your computer.</li>
-<li>Get into a journaling habit. A bullet list of all the things you&rsquo;ve accomplished that day will make you feel at ease and awesome about yourself.</li>
-<li>Picture yourself as dead tired.</li>
-<li>Relax your mind. Imagine a beautiful and relaxing scenery such as the beach or mountain top. Basically anything that you find peaceful.</li>
-<li>Use air-conditioning to lower the room temperature. A cool environment will make you fall asleep faster.</li>
-<li>Turn off all the lights. If you can go pitch black or near pitch black do it.</li>
-<li>Hypnotize yourself. Imagine a pendulum swinging in front of your eyes back and forth.</li>
-<li>Listen to relaxing music. Look for soft piano pieces by mozart and put it into your phone or mp3 player.</li>
-<li>Get out of bed if you really can&rsquo;t sleep. If you still can&rsquo;t sleep 30 minutes after going to bed then its best to get out and do something that would occupy your mind. Like watching TV or reading a book. Just go back to bed once you feel sleepy again.</li>
-<li>Change position. Put your pillow to where your feet is currently pointing.</li>
-<li>Take some deep breaths. Inhale then count up to four then expel it around 8 counts. Then repeat again until you feel relaxed.</li>
-<li>Listen to a sleep hypnosis podcast.</li>
-<li>Replay all the things you did in the morning in your head.</li>
-<li>Stretch like a cat, curl your toes, or rub your belly. All of this somehow triggers us to yawn, which signals our bodies that hey its now time to fall asleep.</li>
-<li>Don&rsquo;t watch the clock when you can&rsquo;t sleep. This will only make it worse as it makes you more anxious and pressured to fall asleep faster. Forcing yourself to sleep is no good. Just remember that it will to you eventually.</li>
-</ul>
-
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://sleepfoundation.org/how-sleep-works/what-happens-when-you-sleep">What happens when you sleep</a></li>
-<li><a href="http://www.webmd.com/sleep-disorders/features/sleep-position-and-sleep-quality">The link between sleep position and sleep quality</a></li>
-<li><a href="http://www.rd.com/slideshows/foods-that-help-you-sleep/">Foods that help you sleep</a></li>
-<li><a href="http://www.thebetterhealthstore.com/Newsletter/030510_Top-5-Sleep-Supplements_08.html">Sleep Supplements</a></li>
-<li><a href="https://www.bulletproofexec.com/sleep-hacking-part-3-falling-asleep-fast-with-biochemistry/">Sleep Hacking</a></li>
-<li><a href="http://www.webmd.com/sleep-disorders/guide/insomnia-symptoms-and-causes">Insomnia</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1665,23 +1450,23 @@ If a psychiatrist cannot help you, then look for a sleep specialist.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls with PeerJS</a>
+        <a href="/blog/2015/05/09/getting-started-with-lumen/">Getting Started with Lumen</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
+        <a href="/blog/2015/05/06/building-a-nearby-places-search-app-with-google-places-api/">Building a Nearby Places Search App with Google Places API</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
+        <a href="/blog/2015/05/06/getting-started-with-google-calendar-api/">Getting Started with Google Calendar API</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/28/automating-deployment-with-git/">Automating Deployment to EC2 Instance with Git</a>
+        <a href="/blog/2015/05/06/using-mandrill-with-php/">Using Mandrill with PHP</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started with Stripe API</a>
+        <a href="/blog/2015/05/06/getting-started-with-the-wordpress-theme-customization-api/">Getting Started with the Wordpress Theme Customization API</a>
       </li>
     
   </ul>
