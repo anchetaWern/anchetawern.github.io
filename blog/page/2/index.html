@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="As a developer there&rsquo;s no question as to why we need to keep ourselves updated. And that is why reading blogs is really important. There&rsquo; &hellip;">
+  <meta name="description" content="In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,340 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/22/getting-started-with-twilio-api/">Getting Started With Twilio API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-22T07:42:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2015</time>
+        
+         | <a href="/blog/2015/02/22/getting-started-with-twilio-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud communications company. They offer APIs which developers can use to enable Text Messaging, Voice, VoIP on their apps.</p>
+
+<p>Now that we got the introduction out of the way. Let&rsquo;s get started.</p>
+
+<p>If you don&rsquo;t have an account with Twilio yet now is the time to create one. You can do so from this page: <a href="https://www.twilio.com/try-twilio">Try Twilio</a>. After signing up, Twilio will need to verify you&rsquo;re a human. You can either have them call you or send you a text message containing your verification code. You&rsquo;ll just have to select which country you&rsquo;re in and then your phone number. Twilio already adds the country code as the prefix so you will only have to add your actual phone number. After you have verified your phone number, Twilio assigns you your first phone number.</p>
+
+<p><img src="/images/posts/twilio/phone_number.png" alt="twilio phone number" /></p>
+
+<p>After that, Twilio will have you take your phone number for a spin. You can either make a call, send an SMS, receive a call, or receive an SMS.</p>
+
+<p><img src="/images/posts/twilio/test-drive.png" alt="twilio test drive" /></p>
+
+<p>Go ahead and try atleast one of those options so you have an idea how it works.</p>
+
+<h3>SMS API</h3>
+
+<p>Twilio&rsquo;s SMS API allows you to:</p>
+
+<ul>
+<li><p><strong>Send and receive SMS or MMS</strong> &ndash; when you signup with Twilio, you can purchase a phone number. You can then use this phone number to send text messages or multi-media messages to your users. At the same time, users can also send text messages to that phone number in order to interact with your application. How it works is that when a specific person sends a text message to the phone number that has been assigned to you by Twilio. Twilio makes an HTTP request to the URL you assigned to that phone number. The HTTP request contains the same data that the person sent. You can then use this data to have your app do what the user requested.</p></li>
+<li><p><strong>Track SMS Conversations</strong> &ndash; this allows you to track conversations between two phone numbers through the use of HTTP cookies. These HTTP cookies are use to keep a state. Just like when you login to a specific website. Cookies allows you to continue accessing the admin pages as long as you have that cookie around. After being active for some time, the cookie expires automatically. The same idea is used when tracking conversations with Twilio. Each phone number is assigned a cookie, and this cookie is sent along with the text message on every HTTP request made by Twilio.</p></li>
+</ul>
+
+
+<h4>SMS API Hello World</h4>
+
+<p>Now were ready to write some code. First create a <code>composer.json</code> file and add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "twilio/sdk": "dev-master"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This tells composer to require the twilio sdk for PHP. If you don&rsquo;t know what composer is. You can check out <a href="https://getcomposer.org/">getcomposer.org</a> to get started. Once you have saved the file, execute <code>composer install</code> from your terminal to install the twilio sdk.</p>
+
+<p>Next, create a new PHP file then add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span> <span class="c1">//include the twilio sdk</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$sid</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span><span class="p">;</span> <span class="c1">//your twilio account sid number</span>
+</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="s2">&quot;yyy&quot;</span><span class="p">;</span> <span class="c1">//your twilio account token</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$your_twilio_phonenumber</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the friendly name of your twilio phone number</span>
+</span><span class='line'><span class="nv">$phone_number_to_send_to</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">//the phone number to send the message</span>
+</span><span class='line'><span class="nv">$text_to_send</span> <span class="o">=</span> <span class="s1">&#39;Hello world! from twilio&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Services_Twilio</span><span class="p">(</span><span class="nv">$sid</span><span class="p">,</span> <span class="nv">$token</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//send message</span>
+</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">messages</span><span class="o">-&gt;</span><span class="na">sendMessage</span><span class="p">(</span>
+</span><span class='line'>  <span class="nv">$your_twilio_phonenumber</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$phone_number_to_send_to</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">$text_to_send</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">sid</span><span class="p">;</span> <span class="c1">//the message id</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line includes the twilio sdk. This allows us to easily make requests to the Twilio API. Next we declare the sid and token. You can find this on your <a href="https://www.twilio.com/user/account/settings">account settings page</a> under the <strong>API Credentials</strong> section. You can either use the live or the test credentials. The only thing to note is that when using the live credentials, your account is charged by Twilio. But if your account is in trial mode, you can only use the live credentials. Twilio doesn&rsquo;t charge you when your account is in trial mode. But there are <a href="https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work">some restrictions</a>. Going back to the code. Next we declare the twilio phone number. If you don&rsquo;t know what your twilio phone number is, visit the <a href="https://www.twilio.com/user/account/phone-numbers/incoming">numbers</a> page. You&rsquo;ll want to use the friendly name for your number. Next is the phone number where you want to send your message. This can be any phone number from any country supported twilio. Note that only United States and Canada are enabled by default. So you&rsquo;ll have to <a href="https://www.twilio.com/user/account/settings/international/sms">enable sending a message to your country</a> if you don&rsquo;t live in any of those places. Just add a check mark to the country you want to send the message to. Next add the text that you want to send. Then create a new instance of the <code>Services_Twilio</code> class and supply the sid and token that we declared earlier. Finally, send the message using the <code>sendMessage</code> method. This takes up 3 arguments: your twilio phone number, the phone number to send to and the message. This method returns the following data:</p>
+
+<ul>
+<li><code>sid</code> &ndash; a uniqued id assigned to the message.</li>
+<li><code>date_created</code> &ndash; the date and time that the message was created.</li>
+<li><code>date_updated</code> &ndash; the most recent date and time that the message was updated</li>
+<li><code>date_sent</code> &ndash; normally this is empty when the request to send a message has just been made. Twilio messages doesn&rsquo;t seem to be sent immediately when the <code>sendMessage</code> method is called (it is queued). Therefore its only natural for this to be empty and only updated when the message is actually sent.</li>
+<li><code>to</code> &ndash; the phone number where the message is sent.</li>
+<li><code>from</code> &ndash; the twilio phone number that you used for sending the message.</li>
+<li><code>body</code> &ndash; the actual text message.</li>
+<li><code>status</code> &ndash; the status of the message, normally this has a value of &lsquo;queued&rsquo; right after getting the response from the <code>sendMessage</code> method. It is then updated to &lsquo;sent&rsquo; once the message is actually sent. For inbound messages, the value for this is &lsquo;received&rsquo;. If the message is currently being sent, this will have a value of &lsquo;sending&rsquo;. If the sending failed, it will have &lsquo;failed&rsquo; as the value.</li>
+<li><code>num_segments</code> &ndash; the number of segments the message has. Text messages are only limited to 160 characters so your message is divided into 160-character segments. Each segment are then sent separately.</li>
+<li><code>num_media</code> &ndash; the number of media items associated with your message.</li>
+<li><code>direction</code> &ndash; can have a value of <code>outbound-api</code>, <code>inbound</code>, <code>outbound-call</code>, and <code>outbound-reply</code>. These are basically like the name suggests, <code>outbound-api</code> are the messages you have sent from your app. <code>inbound</code> are the ones that are sent from an actual phone number to your twilio phone number. <code>outbound-call</code> are the messages initiated during a call. And <code>outbound-reply</code> are messages initiated in response to an incoming SMS.</li>
+<li><code>api_version</code> &ndash; the twilio api version used when the message was sent.</li>
+<li><code>price</code> &ndash; the amount billed for the message.</li>
+<li><code>price_unit</code> &ndash; the currency used for the price.</li>
+<li><code>error_code</code> &ndash; the error code returned. This will only have a value if the value for <code>status</code> is failed. If you are having an error returned to you, be sure to check out the <a href="https://www.twilio.com/docs/errors/reference">errors reference</a>.</li>
+<li><code>uri</code> &ndash; the uri of the resource used for sending the message.</li>
+<li><code>subresource_uris</code> &ndash; the sub-resources used in sending the message. For SMS, a possible sub-resource can be the media resource.</li>
+</ul>
+
+
+<h4>Dev Tools</h4>
+
+<p>Before we move on to writing some more code. I&rsquo;d like to do a quick introduction on the dev tools offered by Twilio. Twilio&rsquo;s dev tools includes the following:</p>
+
+<ul>
+<li><p><strong>App Monitor</strong> &ndash; allows you to monitor the requests being made to your app. These requests can be an outbound test/call to a specific phone number, or an inbound text/call to your twilio phone number. Basically, every interaction to your app are logged in the app monitor.</p></li>
+<li><p><strong>API Explorer</strong> &ndash; allows you to make and explore API requests. This includes the parameters needed for a specific resource and the response that it returns. The good part is that it also includes code samples in different programming languages. Which you can readily copy and paste in order to test in your application. One thing to note when making requests through the API explorer is that you get charged for specific resources. An example of such resource is the resource for sending messages.</p></li>
+<li><p><strong>Connect Apps</strong> &ndash; allows you to create a twilio app for the purpose of letting your clients connect to it. This allows you to perform specific actions on behalf of your client. If you&rsquo;ve ever used the Facebook API before, its pretty much the same idea. The only difference is that its your clients twilio account that is connected to your app. This is useful for clients who have their own clients. This allows you to send messages or make calls to the clients of your client on their behalf. This means all the charges are being made to your clients twilio account instead of yours if you choose to.</p></li>
+</ul>
+
+
+<h3>Searching and Buying Phone Numbers</h3>
+
+<p>If your app allows your users to have their own phone numbers. You can also use the twilio API to search for available phone numbers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$area_code</span> <span class="o">=</span> <span class="mi">201</span><span class="p">;</span> <span class="c1">//only for US and Canada</span>
+</span><span class='line'><span class="nv">$search_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;AreaCode&#39;</span> <span class="o">=&gt;</span> <span class="nv">$area_code</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//make a request to search for available phone numbers on a specific area</span>
+</span><span class='line'><span class="nv">$numbers</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span><span class="o">-&gt;</span><span class="na">getList</span><span class="p">(</span><span class="s1">&#39;US&#39;</span><span class="p">,</span> <span class="s1">&#39;Local&#39;</span><span class="p">,</span> <span class="nv">$search_params</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$nums</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$numbers</span><span class="o">-&gt;</span><span class="na">available_phone_numbers</span> <span class="k">as</span> <span class="nv">$n</span><span class="p">){</span>
+</span><span class='line'>    <span class="nv">$nums</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">json_encode</span><span class="p">(</span><span class="nv">$n</span><span class="o">-&gt;</span><span class="na">phone_number</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$nums</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can supply the following arguments for your search:</p>
+
+<ul>
+<li><code>AreaCode</code> &ndash; any valid area code in US or Canada.</li>
+<li><code>Contains</code> &ndash; a regular expression for matching the characters you want the phone numbers to have.</li>
+<li><code>SmsEnabled</code> &ndash; if sms capabilities are enabled. This can either be true or false.</li>
+<li><code>MmsEnabled</code> &ndash; if mms capabilities are enabled. This can either be true or false.</li>
+<li><code>VoiceEnabled</code> &ndash; if making and receiving calls is enabled. This can either be true or false.</li>
+<li><code>ExcludeAllAddressRequired</code> &ndash; if you want to exclude the phone numbers that require an address or not.</li>
+<li><code>ExcludeLocalAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a local address or not.</li>
+<li><code>ExcludeForeignAddressRequired</code> &ndash; if you want to exclude the phone numbers that require a foreign address or not.</li>
+</ul>
+
+
+<p>Once your user has selected a number, you can then make a request to buy a phone number:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$phone_number</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;phone_number&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$number</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">account</span><span class="o">-&gt;</span><span class="na">incoming_phone_numbers</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;VoiceUrl&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yourwebsite.com/greet&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;PhoneNumber&#39;</span> <span class="o">=&gt;</span> <span class="nv">$phone_number</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The request requires two arguments: the <code>VoiceUrl</code>, which is the URL which you want Twilio to make a request to when this specific phone number is called by someone. We&rsquo;ll talk more about this on the TwiML section, which is Twilio&rsquo;s way for interacting with users in a call through a computer voice. The second argument is the <code>PhoneNumber</code>, which is the phone number selected by the user which came from the search results earlier. Note that making a request to purchase a phone number costs money.</p>
+
+<h3>TwiML</h3>
+
+<p>TwiML or the Twilio Markup Language isn&rsquo;t exactly a new markup language created by Twilio. Its basically just plain old XML which you can use to do all kinds of cool stuff when a user calls your twilio phone number. Here are a few examples of awesome stuff you can do with TwiML. Note that these are all performed during a call:</p>
+
+<ul>
+<li><strong>Play</strong> &ndash; allows you to play an audio file.</li>
+<li><strong>Say</strong> &ndash; allows you to convert text to speech.</li>
+<li><strong>Dial</strong> &ndash; dials another phone number that can then be added to the current call.</li>
+<li><strong>Record</strong> &ndash; record the voice of the caller.</li>
+<li><strong>Sms</strong> &ndash; send a text message.</li>
+<li><strong>Gather</strong> &ndash; allows you to gather the users input. Currently inputs are only limited to numbers.</li>
+</ul>
+
+
+<p>Now that you have an idea what you can do with TwiML, lets move on to some practical stuff. Let&rsquo;s build an app that allows the user to input a number and have a different sound played based on the number.</p>
+
+<p>Start by creating a <code>hello.xml</code> file, then add the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;Response&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Say&gt;</span>Hello! Please enter a number from 1 to 5<span class="nt">&lt;/Say&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Gather</span> <span class="na">numDigits=</span><span class="s">&quot;1&quot;</span> <span class="na">action=</span><span class="s">&quot;/choose.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Response&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is allows you to control the response that the user hears when they call your twilio phone number. The first line specifies the xml version and the encoding. The second line is the response wrapper. This allows us to specify the actual response that the user will hear. The first thing that the user will hear is the speech version of the text that we added inside the <code>Say</code> verb. In this case, were asking the user for a single digit number from 1 to 5. Next we use the <code>Gather</code> verb to gather the digit entered by the user. The <code>numDigits</code> attribute allows you to specify the number of digits. This has an added benefit of submitting the response immediately after the number of digits you specified matches the number of digits entered by the user. The digits entered by the user are submitted to the page you specify on the <code>action</code> attribute. In this case its the <code>choose.php</code> file in the same request URL you added to your twilio number. If you don&rsquo;t know how to change the request URL used by your number, then visit the <a href="https://www.twilio.com/user/account/phone-numbers">numbers page</a> and click the number you want to use. That will redirect you to the settings page of that number. From there look for the voice section and then change the request url then click save. This means that if your request url is &lsquo;<a href="http://mywebsite.com">http://mywebsite.com</a>&rsquo; and you specified &lsquo;/choose.php&rsquo; as the action, then you need to have the &lsquo;choose.php&rsquo; file in the root web directory of your website in order for the digits to be submitted properly.</p>
+
+<p>Add the following code to the <code>choose.php</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s2">&quot;content-type: text/xml&quot;</span><span class="p">);</span> <span class="c1">//specify content type to be xml</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$digits</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;Digits&#39;</span><span class="p">];</span> <span class="c1">//the digit inputted by the user in his/her phone</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the array of sounds that we will be playing back to the user</span>
+</span><span class='line'><span class="nv">$animals</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;bassethound.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cat.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;cattle.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;chicken.wav&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;sheep.wav&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="cp">&lt;?</span><span class="nx">xml</span> <span class="nx">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nx">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;Response&gt;</span>
+</span><span class='line'><span class="x">  &lt;Say&gt;Here is the sound you selected&lt;/Say&gt;</span>
+</span><span class='line'><span class="x">  &lt;Play&gt;http://mywebsite.com/sounds/</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$animals</span><span class="p">[</span><span class="nv">$digits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x">&lt;/Play&gt;</span>
+</span><span class='line'><span class="x">&lt;/Response&gt;</span>
+</span><span class='line'><span class="x">?&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the code above, the first line specifies the content type to be xml. The second line is where we get the digits enterred by the user. Next we declare an array containing the sounds that we want to play. I got these sounds from <a href="http://www.animal-sounds.org/animal-sounds-free-download.html">animal-sounds.org</a>. Next we just set the response starting with a speech saying &lsquo;Here is the sound you selected&rsquo;, then we just play it back using the <code>Play</code> verb.</p>
+
+<h3>Conclusion</h3>
+
+<p>Twilio&rsquo;s API allows you to add SMS and Voice superpowers to your apps at ease. Their documentation, quick start guides can get you up and running pretty quickly. Their code samples include some of the most popular programming languages for the web. Such as PHP, Ruby, Python, Java and .Net. If you need to add SMS and Voice capabilities to your app, there is no doubt that Twilio should be your first choice.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.twilio.com/docs/quickstart">Twilio &ndash; Quickstart Docs</a></li>
+<li><a href="https://www.twilio.com/docs/api">Twilio &ndash; API Docs</a></li>
+<li><a href="https://www.twilio.com/docs/libraries">Twilio &ndash; Helper Libraries</a></li>
+<li><a href="https://www.twilio.com/docs/howto">Twilio &ndash; How-tos</a></li>
+<li><a href="https://www.twilio.com/docs/errors/reference">Twilio &ndash; Errors Reference</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1434,50 +1768,6 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/25/always-scratch-your-developer-itch/">Always Scratch Your Developer Itch</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-25T07:31:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/10/25/always-scratch-your-developer-itch/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As developers, no matter how busy we are with our lives, its important for us to always scratch our developer itches every now and then. What I mean by itches are the things that you want to do as a developer. Be it working on a side-project that you&rsquo;ve been wanting to do for months, playing with a new technology, library or a programming language. Or reading an in-depth article about a new programming technique. Or watching a video tutorial about a framework that you&rsquo;ve been wanting to learn. Or watching recorded talks from developer conferences all over the world. Or writing an article about a cool technique you&rsquo;ve discovered recently. And other things that you always have at the back of your mind but never really got to do because of lack of time.</p>
-
-<p>Lack of time is always the reason we give to ourselves. But time is not really the problem. We can always make time for something if we really love to do it. Yes we also have lives to live. But we also need to give priority to the things that matter to us as a developer. As a developers, we have the responsibility for continuous learning. To improve our craft for the better. And this is what it means to scratch your developer itch. If you have it, you&rsquo;ll always find time to scratch it no matter how busy you may be.</p>
-
-<p>On the contrary, we also have lives to live. Nothing is more important than our families and our lives as actual people. So giving time to that is our priority as a human being. After all life is not all about work. Life is about living it in the best way possible. And that is through spending quality time with our loved one&rsquo;s.</p>
-
-<p>In conclusion, its really all about balance. If you can&rsquo;t find time every weekend to scratch your own developer itch, then maybe do it once or twice a month. Maybe 4-8 hours twice a month doing a side project is a good start. You can also go to work early and read up on blogs before and after the alloted time for work. Listen to podcasts while commuting. Most podcasts provide download links to each episode which you can save into your mp3 player of smartphone. Watching a 5-minute video tutorial just before going to bed. Every bit of time counts. It doesn&rsquo;t matter how little or how much, what&rsquo;s important is to give time to scratch our developer itches whenever we can. If you do, you&rsquo;ll be a happier developer. Its like the feeling you get when you were finally able to get what you&rsquo;ve been wanting to buy for a long time.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1495,6 +1785,10 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/16/creating-a-chrome-extension/">Creating a Chrome Extension</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/09/getting-started-with-lumen/">Getting Started with Lumen</a>
       </li>
     
@@ -1508,10 +1802,6 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
     
       <li class="post">
         <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/28/automating-deployment-with-git/">Automating Deployment to EC2 Instance with Git</a>
       </li>
     
   </ul>

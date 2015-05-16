@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Creating a Chrome Extension - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;ll be showing you how to create a very basic chrome extension. One that would allow us to schedule posts with the Ahead &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anchetawern.github.io/blog/2015/05/16/creating-a-chrome-extension">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anchetawern.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Creating a Chrome Extension</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-16T15:54:00+08:00" pubdate data-updated="true">May 16<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;ll be showing you how to create a very basic chrome extension. One that would allow us to schedule posts with the <a href="/projects/ahead/">Ahead project</a> that I created. Here&rsquo;s how it will work:</p>
+
+<ol>
+<li>User clicks on the extension on a page that he wants to share on a future time.</li>
+<li>The extension makes a request to the server where Ahead is currently hosted.</li>
+<li>The server returns a response and it is then outputted by the extension.</li>
+</ol>
+
+
+<h3>Creating the Extension</h3>
+
+<p>Before anything else we need to create the <code>manifest.json</code> file. This is the most important file since chrome won&rsquo;t be able to recognize our extension if we do not have this file.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "manifest_version": 2,
+</span><span class='line'>  "name": "Ahead",
+</span><span class='line'>  "version": "1.0",
+</span><span class='line'>  "description": "Easily schedule posts",
+</span><span class='line'>
+</span><span class='line'>  "browser_action": {
+</span><span class='line'>    "default_icon": "icon.png"
+</span><span class='line'>  },
+</span><span class='line'>
+</span><span class='line'>  "background": {
+</span><span class='line'>    "scripts": ["background.js"]
+</span><span class='line'>  },
+</span><span class='line'>
+</span><span class='line'>  "content_scripts": 
+</span><span class='line'>    [
+</span><span class='line'>        {
+</span><span class='line'>            "matches":["&lt;all_urls&gt;"],
+</span><span class='line'>            "js":["content.js"],
+</span><span class='line'>            "run_at": "document_end"
+</span><span class='line'>        }
+</span><span class='line'>    ],
+</span><span class='line'>  
+</span><span class='line'>  "permissions": ["&lt;all_urls&gt;", "storage"],
+</span><span class='line'>  "options_page": "options.html"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><p><code>manifest_version</code> &ndash; this is the version of the manifest file. The Chrome browser has been around for quite a while now. So are the extensions that have been written when it first came out. Currently the latest version that we can assign to a manifest file is <code>2</code>.</p></li>
+<li><p><code>name</code> &ndash; the name you want to give to the extension.</p></li>
+<li><code>version</code> &ndash; the version of the extension.</li>
+<li><code>description</code> &ndash; a descriptive text you want to show your users. This is the text that will show right under the name of the extension when the user accesses the <code>chrome://extensions</code> page.</li>
+<li><code>browser_action</code> &ndash; used to specify the element which will trigger the extension. In this case we want an icon to be the trigger so we set the <code>default_icon</code>. The value would be the filename of the icon.</li>
+<li><code>content_scripts</code> &ndash; these are the scripts that run in the context of the current web page. The <code>matches</code> property is where you specify an array of URL&rsquo;s where the content scripts can run. In this case we just set a special value called <code>"&lt;all urls&gt;"</code>. This way the script can run from any webpage. Next is the <code>js</code> property where we specify an array of items containing the path to the content scripts. Last is the <code>run_at</code> property where we specify when to run the content scripts. We just set it to <code>document_end</code> so we can make sure that the whole page is loaded before we execute our script.</li>
+<li><code>background</code> &ndash; used to specify the background scripts. Content scripts only has access to the elements in the current page but not the Chrome API methods. So we need a background script in order to access those methods. This property simply takes up a single property called <code>scripts</code> where you specify an array of the background scripts you wish to use. In thise case were just going to use a single <code>background.js</code> file.</li>
+<li><code>permissions</code> &ndash; this is where we can specify an array containing the list of items that the extension needs to use or has access in. In this case were just going to use <code>"&lt;all_urls&gt;"</code> and <code>storage</code>. We use <code>storage</code> to have access to the methods used for saving custom settings for the extension. In our case the setting would be the api key required by Ahead.</li>
+<li><code>options_page</code> &ndash; used for specifying which HTML file will be used for the options page.</li>
+</ul>
+
+
+<p>Next let&rsquo;s proceed with the options page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;&lt;title&gt;</span>Ahead<span class="nt">&lt;/title&gt;&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    API Key:
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;api_key&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;save&quot;</span><span class="nt">&gt;</span>Save<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;options.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can use css just like you would in a normal HTML page if you want. But for this tutorial we won&rsquo;t. The options page is pretty minimal. All we need is the actual field, a button to save the settings and then a link to the options page JavaScript file.</p>
+
+<p>Here&rsquo;s the <code>options.js</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">save_options</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">api_key</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+</span><span class='line'>    <span class="s1">&#39;api_key&#39;</span><span class="o">:</span> <span class="nx">api_key</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;API Key Saved!&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">restore_options</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+</span><span class='line'>    <span class="s1">&#39;api_key&#39;</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">items</span><span class="p">){</span>
+</span><span class='line'>    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">).</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">api_key</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="nx">restore_options</span><span class="p">);</span>
+</span><span class='line'><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;save&#39;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">save_options</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above file we declared 2 methods. <code>save_options</code> and <code>restore_options</code>. <code>save_options</code> is used for saving the settings to chrome storage. And <code>restore_options</code> is for retrieving the settings from the storage and populating the value for each of the fields. In the <code>options.js</code> file we got access to the chrome storage API. The main methods that were using are the <code>sync.set</code> and <code>sync.get</code>. We use <code>sync.set</code> to save the settings in the chrome storage and then output an alert box saying the settings are saved when its successful. <code>sync.get</code> on the other hand is used for retrieving the existing setting from chrome storage and then we use the retrieved value to populate the text field. The <code>save_options</code> method is called when the save button is clicked. And the <code>restore_options</code> method is called when the DOM of the options page has been fully loaded.</p>
+
+<p>Next is the <code>background.js</code> file. We primarily use this file to listen for the click event on the <code>browser_action</code> which is basically the icon of extension that is located on the upper right corner of Chrome:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">chrome</span><span class="p">.</span><span class="nx">browserAction</span><span class="p">.</span><span class="nx">onClicked</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tab</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">chrome</span><span class="p">.</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">active</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">currentWindow</span><span class="o">:</span> <span class="kc">true</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tabs</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">activeTab</span> <span class="o">=</span> <span class="nx">tabs</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>    <span class="nx">chrome</span><span class="p">.</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">activeTab</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="s2">&quot;clicked_browser_action&quot;</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You don&rsquo;t need to worry about the code above too much. All it does is listen for the click event on the icon of the extension. It then uses the <code>tabs.sendMessage</code> method to send a message to the current tab that hey the icon extension has been clicked. This then brings us to the <code>content.js</code> file which basically just waits for this message to be sent. Once it receives the message we then retrieve the api key using the <code>sync.get</code> method. Once we retrieved the api key we make a POST request to the Ahead URL which is responsible for accepting POST requests for posts to be published. The content would be the title of the current page and then its URL. We then construct a new form data and supply the <code>queue</code>, <code>api_key</code> and <code>content</code> as the fields. We set the <code>queue</code> to <code>true</code> because we want to schedule the post to be published later. If you set it to <code>false</code> then it will be published immediately. Next is the <code>api_key</code>. We simply supply what we got from chrome storage as the value. And last is the <code>content</code>. We then send this form data to the Ahead URL. Finally we listen for the <code>onload</code> event on the request. This event is fired up whenever the request is successful. All we have to do is parse the response since its a JSON string. We then alert the value for the <code>text</code> property. Which is basically just a message saying that the post was scheduled and when it will be published. If we do get an error, the <code>onerror</code> event is fired and we simply tell the user to try again by using an alert.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">sendResponse</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+</span><span class='line'>        <span class="s1">&#39;api_key&#39;</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="kd">function</span><span class="p">(</span><span class="nx">items</span><span class="p">){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">api_key</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">api_key</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">http_request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+</span><span class='line'>        <span class="nx">http_request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/api/post&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">content</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">form_data</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FormData</span><span class="p">();</span>
+</span><span class='line'>        <span class="nx">form_data</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;queue&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">form_data</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">,</span> <span class="nx">api_key</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">form_data</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="nx">content</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">http_request</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">form_data</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">http_request</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nx">http_request</span><span class="p">.</span><span class="nx">status</span> <span class="o">&gt;=</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="nx">http_request</span><span class="p">.</span><span class="nx">status</span> <span class="o">&lt;</span> <span class="mi">400</span><span class="p">){</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">response_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">http_request</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">alert</span><span class="p">(</span><span class="nx">response_data</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">http_request</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Something went wrong while trying to post. Please try again&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Installing the Extension</h3>
+
+<p>Now were ready to actually install the extension. You can do that by enabling developer mode on the chrome extensions page:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">chrome</span><span class="o">:</span><span class="c1">//extensions/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will show you 3 new buttons: load unpacked extension, pack extension and update extensions now. All we need is the first one. Click on it then select the folder that contains the <code>manifest.json</code> file on its root directory. Chrome will then list it as one of the available extensions:</p>
+
+<p><img src="/images/posts/creating_chrome_extension/ahead.png" alt="extensions" /></p>
+
+<p>Once its loaded, click on the &lsquo;options&rsquo; link to access the options page. From there add the api key which you can get from the <a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/">Ahead website</a>.</p>
+
+<p>At this point all of the new tabs that you open or the existing tabs which you reload would be useable with the extension. Just click on the extension icon and it will schedule a post using the title of the page and its URL as the content.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned the basics of how to create a chrome extension. You&rsquo;ve learned how to listen for the click event on the extension icon, how to add an options page and how to get the details from the current page.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-16T15:54:00+08:00" pubdate data-updated="true">May 16<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/chrome-extension/'>chrome-extension</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anchetawern.github.io/blog/2015/05/16/creating-a-chrome-extension/" data-via="wern_ancheta" data-counturl="http://anchetawern.github.io/blog/2015/05/16/creating-a-chrome-extension/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/09/getting-started-with-lumen/" title="Previous Post: Getting Started with Lumen">&laquo; Getting Started with Lumen</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/16/creating-a-chrome-extension/">Creating a Chrome Extension</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/09/getting-started-with-lumen/">Getting Started with Lumen</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls with PeerJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://anchetawern.github.io/blog/2015/05/16/creating-a-chrome-extension/';
+        var disqus_url = 'http://anchetawern.github.io/blog/2015/05/16/creating-a-chrome-extension/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
