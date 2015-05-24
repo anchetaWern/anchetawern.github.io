@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial I&rsquo;ll be walking you through how you can use datatables in Laravel. But first, let me give you a quick intro on what Datatabes &hellip;">
+  <meta name="description" content="Recently in my work I had this node.js script that I had to run persistently. Its basically a server that will generate images based on some JSON &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,137 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/15/getting-started-with-supervisor/">Getting Started With Supervisor</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-15T19:32:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/08/15/getting-started-with-supervisor/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently in my work I had this node.js script that I had to run persistently. Its basically a server that will generate images based on some JSON data that&rsquo;s passed from the client side. So I did some searching and found <a href="http://supervisord.org/">Supervisor</a>, a process control system. It allows you to run programs persistently.</p>
+
+<h3>Installation</h3>
+
+<p>You can install install Supervisor by executing the following command in your terminal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install supervisor</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuration</h3>
+
+<p>Once the installation is done, you can now create the config file. This is where you specify which script you want to run, the directory in where you want to run it, and a log file in which the output is redirected.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano /etc/supervisor/conf.d/image-creator.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s what a config file looks like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[program:imagecreator]
+</span><span class='line'>command=node image-creator.js
+</span><span class='line'>directory=/home/ubuntu/www
+</span><span class='line'>stdout_logfile=/home/ubuntu/logs/image-creator.log
+</span><span class='line'>redirect_stderr=true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. This is where we set the name of the program. Yes the <code>program:</code> is always there, only the thing that comes after it is updated. In this case the name of the program that I gave is <code>imagecreator</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[program:imagecreator]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the command that you execute when you&rsquo;re running the program in the terminal. In this case were executing the script via the <code>node</code> command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>command=node image-creator.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next is the directory where the program is stored. This can also be the directory where you want to execute the program:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>directory=/home/ubuntu/www</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is where you specify the file where you want to redirect the output of the program:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>stdout_logfile=/home/ubuntu/logs/image-creator.log</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly, we specify whether to send back the <code>stderr</code> output to supervisord on its stdout file descriptor:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>redirect_stderr=true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s pretty much all we need for the configuration file. You can go ahead and save it. If you want to specify more settings, check out the <a href="http://supervisord.org/configuration.html">docs on configuration</a></p>
+
+<h3>Adding the Process</h3>
+
+<p>Now that we have a configuration file in place we can now tell supervisor to add it to the list of processes that it currently manages. You can do that by using <code>supervisorctl</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo supervisorctl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Executing the command above will let you enter the supervisor program. Next execute the following commands in order:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>reread
+</span><span class='line'>add imagecreator
+</span><span class='line'>start imagecreator</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down:</p>
+
+<ul>
+<li><code>reread</code> tells supervisor to read the configuration files that are available.</li>
+<li><code>add</code> tells supervisor to add the program into the list of programs that it will manage.</li>
+<li><code>start</code> tells supervisor to run the program.</li>
+</ul>
+
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it! Supervisor is a neat little program that allows you to run programs persistently. Just be sure that errors are handled accordingly because supervisor wouldn&rsquo;t continue running your program if an error occurs while its running.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -798,7 +929,7 @@ I&rsquo;ve used their API in providing zestimates (zillow estimates) for real pr
 
 <h3>SPF and DKIM</h3>
 
-<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x61;&#119;&#x65;&#x73;&#111;&#x6d;&#101;&#x6e;&#x65;&#x73;&#x73;&#64;&#x63;&#x6f;&#x6f;&#x6c;&#110;&#x65;&#115;&#x73;&#46;&#99;&#x6f;&#109;">&#97;&#119;&#x65;&#115;&#x6f;&#x6d;&#101;&#110;&#101;&#x73;&#115;&#64;&#99;&#111;&#111;&#x6c;&#x6e;&#x65;&#x73;&#x73;&#x2e;&#99;&#111;&#x6d;</a> to work and actually make it to your customers inbox.</p>
+<p>SPF and DKIM is a way to authenticate mailing services such as Mandrill and Mailgun to send on behalf of your server. So you can get a cool looking email like: <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#97;&#119;&#x65;&#115;&#111;&#x6d;&#x65;&#x6e;&#x65;&#x73;&#x73;&#x40;&#x63;&#x6f;&#x6f;&#x6c;&#x6e;&#x65;&#x73;&#x73;&#x2e;&#99;&#111;&#x6d;">&#x61;&#x77;&#x65;&#115;&#111;&#109;&#101;&#110;&#101;&#x73;&#x73;&#64;&#99;&#111;&#x6f;&#x6c;&#x6e;&#101;&#x73;&#115;&#x2e;&#99;&#x6f;&#109;</a> to work and actually make it to your customers inbox.</p>
 
 <h3>Amazon EC2</h3>
 
@@ -1029,54 +1160,6 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/20/getting-started-with-zillow-api/">Getting Started With Zillow API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-20T14:01:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/03/20/getting-started-with-zillow-api/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial were going to have a quick look at the Zillow API. But before we move on with actually writing some code lets first define what Zillow is. Taken from the <a href="http://www.zillow.com/corp/About.htm">Zillow about page</a> itself:</p>
-
-<blockquote><p>Zillow is a home and real estate marketplace dedicated to helping homeowners, home buyers, sellers, renters, real estate agents, mortgage professionals, landlords and property managers find and share vital information about homes, real estate, mortgages and home improvement.</p></blockquote>
-
-
-<p>To sum it up Zillow is a place where you can find useful information on real estate properties that are up for sale or rent.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/20/getting-started-with-zillow-api/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1094,6 +1177,10 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/24/working-with-youtube-api-in-php/">Working with Youtube Data API in PHP</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/16/creating-a-chrome-extension/">Creating a Chrome Extension</a>
       </li>
     
@@ -1107,10 +1194,6 @@ As for the Vimeo API its a bit easier, they have Simple and Advanced API. The Si
     
       <li class="post">
         <a href="/blog/2015/04/26/getting-started-with-couchdb-in-node-dot-js/">Getting Started with CouchDB in Node.js</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/">Getting Started with the Yahoo Finance API</a>
       </li>
     
   </ul>

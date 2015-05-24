@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-16T19:17:51+08:00</updated>
+  <updated>2015-05-24T15:16:51+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,282 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Working with Youtube Data API in PHP]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/05/24/working-with-youtube-api-in-php/"/>
+    <updated>2015-05-24T16:28:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/05/24/working-with-youtube-api-in-php</id>
+    <content type="html"><![CDATA[<p>Decades ago I got this project where I needed to work with the Youtube API to get the details of videos uploaded by a specific channel. And then create something like a mini-youtube website out of it. Just kidding about the decades part, it was probably 4-6 months ago. Anyway its only this time that I got the time to actually write about it. So here it goes.</p>
+
+<h3>Getting API Credentials</h3>
+
+<p>First you need to get the API credentials from your Google Console. There&rsquo;s only a single API credential for all of the APIs that Google offers. So you might already have one. If you do then all you have to do is enable the API in your Google Console page. Currently you would see something like this when you go to APIs &amp; Auth and then click on APIs on your Google Console:</p>
+
+<p><img src="/images/posts/youtube_api/google-apis.png" alt="google apis" /></p>
+
+<p>What we need is the Youtube Data API v3. Click that and enable it. If you do not have an API credential then you can click on &lsquo;Credentials&rsquo; under the APIs &amp; Auth and click on &lsquo;Create new Key&rsquo; under the Public API Access section. Choose Server Key as the key type since were working primarily on the server. Don&rsquo;t take my word for it though. Based on my experience sometimes this doesn&rsquo;t work and you actually need to select Browser Key. I just hope google has fixed this already. Server keys are only supposed to be used in the server and browser keys on the client side. Clicking on either browser key or server key will generate an API Key for you. This is the key that you will use when you need to talk to the Youtube API.</p>
+
+<h3>Dependencies</h3>
+
+<p>As we are primarily going to be requesting data from another server, we will need curl. If you don&rsquo;t have it yet, install it on your system. Here&rsquo;s how you install it on Ubuntu:</p>
+
+<p><code>
+sudo apt-get install curl
+sudo apt-get update
+sudo apt-get install libcurl3 php5-curl
+</code></p>
+
+<p>If you&rsquo;re using another Operating System then feel free to ask Google.</p>
+
+<h3>Playing with the API</h3>
+
+<p>To make things easier we need a library that will do most of the heavy-lifting for us. Things like signing the request, constructing it and actually making the request to the server. Because were lazy folks we don&rsquo;t need to do that every time we need to talk to an API. Thankfully an awesome guy in the alias of <a href="https://github.com/madcoda">madcoda</a> has already done that work for us. If you already have <a href="getcomposer.org">composer</a> installed, simply execute the following command inside your project directory:</p>
+
+<p><code>
+composer require madcoda/php-youtube-api
+</code></p>
+
+<p>This will install the library into your <code>vendor</code> directory, autoload it and add it to your <code>composer.json</code> file.</p>
+
+<p>Once its done you can now use the library by including the <code>autoload.php</code> file under the <code>vendor</code> directory and then use the <code>Madcoda\Youtube</code> namespace.</p>
+
+<p>```php
+&lt;?php
+require &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Madcoda\Youtube;
+?>
+```</p>
+
+<p>Next create a new instance of the Youtube class and pass in the API Key that you acquired earlier as the <code>key</code> item in an array.</p>
+
+<p><code>php
+&lt;?php
+$youtube = new Youtube(array('key' =&gt; 'YOUR_API_KEY'));
+?&gt;
+</code></p>
+
+<h4>Searching</h4>
+
+<p>With this library you can search for videos, playlists and channels by using the <code>search</code> method. This method takes up your query as its argument. For example you want to find &lsquo;Awesome&rsquo;:</p>
+
+<p><code>php
+&lt;?php
+$results = $youtube-&gt;search('Awesome');
+?&gt;
+</code></p>
+
+<p>This will return something similar to the following if you use <code>print_r</code> on the <code>$results</code>:</p>
+
+<p>```</p>
+
+<pre><code>Array
+</code></pre>
+
+<p>(</p>
+
+<pre><code>[0] =&gt; stdClass Object
+    (
+        [kind] =&gt; youtube#searchResult
+        [etag] =&gt; "tbWC5XrSXxe1WOAx6MK9z4hHSU8/xBkrpubrM2M6Xi88aNBfaVJV6gE"
+        [id] =&gt; stdClass Object
+            (
+                [kind] =&gt; youtube#video
+                [videoId] =&gt; qmTDT92VIRc
+            )
+
+        [snippet] =&gt; stdClass Object
+            (
+                [publishedAt] =&gt; 2015-01-23T23:03:31.000Z
+                [channelId] =&gt; UCZpKcVBccIjO9n0RXx3ZGFg
+                [title] =&gt; PEOPLE ARE AWESOME 2015 (UNBELIEVABLE)
+                [description] =&gt; People are Awesome 2015 unbelievable talent and natural skills! Subscribe to NcCrullex for more people are awesome videos. Chris Samba Art Channel: ...
+                [thumbnails] =&gt; stdClass Object
+                    (
+                        [default] =&gt; stdClass Object
+                            (
+                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/default.jpg
+                            )
+
+                        [medium] =&gt; stdClass Object
+                            (
+                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/mqdefault.jpg
+                            )
+
+                        [high] =&gt; stdClass Object
+                            (
+                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/hqdefault.jpg
+                            )
+
+                    )
+
+                [channelTitle] =&gt; NcCrulleX
+                [liveBroadcastContent] =&gt; none
+            )
+
+    )
+</code></pre>
+
+<p>```</p>
+
+<p>As you can see most of the data that you might want is stored in the <code>snippet</code> item. Things like the title, description and URL to the thumbnails.</p>
+
+<p>You might ask, how you would know if the item is a video, playlist or channel? You might have already noticed based on the results above. Its located under the id &ndash;> kind. It would have a kind of <code>youtube#video</code> if its a video. <code>youtube#channel</code> if its a channel and <code>youtube#playlist</code> if its a playlist. Don&rsquo;t believe me? Try using the API to search for &lsquo;the new boston&rsquo; and you&rsquo;ll see.</p>
+
+<p>If you only want to search for videos then you can use the <code>searchVideos</code> method. Just like the <code>search</code> method this takes up your query as its argument:</p>
+
+<p><code>php
+&lt;?php
+$results = $youtube-&gt;searchVideos('Ninja');
+?&gt;
+</code></p>
+
+<p>If you only want to get videos from a specific channel, you can do it in 2 calls. First you need to get the channel id by using the <code>getChannelByName</code> method and then extract the id from the result that you get and then use the id for the <code>searchChannelVideos</code> to search for videos in a specific channel:</p>
+
+<p><code>php
+&lt;?php
+$channel = $youtube-&gt;getChannelByName('thenewboston');
+$results = $youtube-&gt;searchChannelVideos('ruby', $channel-&gt;id);
+?&gt;
+</code></p>
+
+<p>The code above would return the first page of results for the &lsquo;ruby&rsquo; videos in &lsquo;thenewboston&rsquo; channel.</p>
+
+<p>If you only want to return playlists on a specific channel, you can do:</p>
+
+<p><code>php
+&lt;?php
+$channel = $youtube-&gt;getChannelByName('thenewboston');
+$results = $youtube-&gt;getPlaylistsByChannelId($channel-&gt;id);
+?&gt;
+</code></p>
+
+<p>If you want to get the items in a playlist, you can do it in 3 calls:</p>
+
+<p><code>php
+&lt;?php
+$channel = $youtube-&gt;getChannelByName('thenewboston');
+$playlists = $youtube-&gt;getPlaylistsByChannelId($channel-&gt;id);
+$playlist_items = $youtube-&gt;getPlaylistItemsByPlaylistId($playlists[0]-&gt;id);
+?&gt;
+</code></p>
+
+<p>If you want to be more liberal with your search, you can use the <code>searchAdvanced</code> method:</p>
+
+<p>```
+&lt;?php
+$results = $youtube->searchAdvanced(array(</p>
+
+<pre><code>'q' =&gt; 'fruits',
+'part' =&gt; 'snippet',
+'order' =&gt; 'rating'
+</code></pre>
+
+<p>));
+?>
+```</p>
+
+<p>Here&rsquo;s a breakdown of the parameters we&rsquo;ve just used:</p>
+
+<ul>
+<li><code>q</code> &ndash; your query</li>
+<li><code>part</code> &ndash; the part of the result which you want to get. Earlier in the sample result we saw that there are only 2 parts. <code>id</code> and <code>snippet</code>. This parameter allows you to specify that. If you only need the video, playlist or channel id then supply <code>id</code> as the <code>part</code>. If you need the full details then use <code>snippet</code>. If you need both then you can use a comma-separated list: <code>id, snippet</code>.</li>
+<li><code>order</code> &ndash; the basis of the ordering. In the example we used <code>rating</code>. This orders the results based on the highest ratings to the lowest. Not really sure what the ratings is. But the first thing that comes to mind is the number of likes in the video. You can also use <code>viewCount</code> if you want. This will order the results with the videos, playlists or channels which has the highest number of views to the lowest.</li>
+<li><code>type</code> &ndash; the type of item. This can either be <code>video</code>, <code>playlist</code>, or <code>channel</code>.</li>
+</ul>
+
+
+<p>There&rsquo;s a whole bunch more which you can specify as a parameter. Be sure to check out the <a href="https://developers.google.com/youtube/v3/docs/search/list">search reference</a>.</p>
+
+<h4>Pagination</h4>
+
+<p>You can also paginate results. First you need to make an initial request so you can get the <code>nextPageToken</code>. Then check if the page token exists, if it does then add a <code>pageToken</code> item to the parameters that you supplied earlier. And then make another request. Since we supplied the <code>nextPageToken</code>, this will now navigate to the second page of the same result set. By default the youtube data api only returns 10 rows per request. This means that the second page will show you row 11 up to 21.</p>
+
+<p>```php
+&lt;?php
+$params = array(</p>
+
+<pre><code>'q' =&gt; 'Ruby',
+'type' =&gt; 'video',
+'part' =&gt; 'id, snippet',
+'maxResults' =&gt; 100 
+</code></pre>
+
+<p>);</p>
+
+<p>$search = $youtube->searchAdvanced($params, true);</p>
+
+<p>//check for a page token
+if(isset($search[&lsquo;info&rsquo;][&lsquo;nextPageToken&rsquo;])){</p>
+
+<pre><code>$params['pageToken'] = $search['info']['nextPageToken'];
+</code></pre>
+
+<p>}</p>
+
+<p>//make another request with the page token added
+$search = $youtube->searchAdvanced($params, true);</p>
+
+<p>//do something with the search results her
+?>       <br/>
+```</p>
+
+<p>You can also use the <code>paginateResults</code> method to implement pagination. Just like the method above, we need to make an initial request to get the <code>nextPageToken</code>. We then store it to an array so we can navigate through the results easily. The <code>paginateResults</code> method takes up the original search parameters as its first argument and the page token as its second. So all you have to do is supply the <code>nextPageToken</code> that you got from the previous results as the second argument for the <code>paginateResults</code> method to navigate to the next page. Note that in the example below, the indexes for the <code>$page_tokens</code> are just hard-coded. You will have to implement the generation of pagination links yourself and then use their index when navigating through the results. Also note that the results aren&rsquo;t cached, this means that whenever you paginate through the results a new request is made to the youtube data api. You will also need to implement caching if you don&rsquo;t want to easily run out of requests you can make.</p>
+
+<p>```php
+&lt;?php
+//your search parameters
+$params = array(</p>
+
+<pre><code>'q' =&gt; 'Python',
+'type' =&gt; 'video',
+'part' =&gt; 'id, snippet',
+'maxResults' =&gt; 100
+</code></pre>
+
+<p>);</p>
+
+<p>//array for storing page tokens
+$page_tokens = array();</p>
+
+<p>//make initial request
+$search = $youtube->paginateResults($params, null);</p>
+
+<p>//store page token
+$page_tokens[] = $search[&lsquo;info&rsquo;][&lsquo;nextPageToken&rsquo;];</p>
+
+<p>//navigate to the next page
+$search = $youtube->paginateResults($params, $page_tokens[0]);</p>
+
+<p>//store page token token
+$page_tokens[] = $search[&lsquo;info&rsquo;][&lsquo;nextPageToken&rsquo;];</p>
+
+<p>//navigate to the next page
+$search = $youtube->paginateResults($params, $page_tokens[1]);</p>
+
+<p>//store page token
+$page_tokens[] = $search[&lsquo;info&rsquo;][&lsquo;nextPageToken&rsquo;];</p>
+
+<p>//navigate to the previous page
+$search = $youtube->paginateResults($params, $page_tokens[0]);</p>
+
+<p>//do something with the search results here
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with the Youtube Data API in PHP. You&rsquo;ve learned how to get the info of a specific video, get general details about videos in a specific channel, get the videos in a specific playlist, and also search for videos, playlists and channels using a query. Don&rsquo;t forget to work through the API request limits though. The limit information can be found on the Youtube Data API page on your Google Console.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.google.com/youtube/v3/code_samples/php">Youtube DATA API: PHP Code Samples</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Lumen]]></title>
@@ -1367,180 +1643,6 @@ php receiver.php
 <h3>Conclusion</h3>
 
 <p>RabbitMQ is a nice way for implementing messaging applications such as the one we created in this tutorial. We have barely scratch the surface with this tutorial. I recommend you check out the <a href="http://www.rabbitmq.com/getstarted.html">getting started guides</a> and the <a href="http://www.rabbitmq.com/documentation.html">documentation</a> to learn more.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using Datatables with Laravel]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel/"/>
-    <updated>2014-08-10T16:48:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/08/10/using-datatables-with-laravel</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be walking you through how you can use datatables in Laravel. But first, let me give you a quick intro on what Datatabes is. <a href="http://datatables.net/">Datatables</a> is basically a jQuery plugin that allows you to add advanced interaction controls to your HTML tables. Things like search, pagination, sorting, and ordering. Datatables allows you to add those kinds of functionality into your tables with minimal code.</p>
-
-<p>In this tutorial were going to be using a Laravel package called <a href="https://github.com/Chumper/Datatable">Chumper</a>. Chumper allows us to easily create Datatables which uses the data returned from a model as its data source.</p>
-
-<p>First thing that you need to do is to add the following in your <code>composer.json</code> file:</p>
-
-<p>```
-&ldquo;require&rdquo;: {</p>
-
-<pre><code>"chumper/datatable": "2.*",
-</code></pre>
-
-<p>}
-```</p>
-
-<p>If you got other packages that you need for your project, just add it on the last part of the <code>require</code> item. Once you&rsquo;re done with that, execute <code>composer update</code> from your terminal to install Chumper.</p>
-
-<p>Once composer finishes installing Chumper, add the service provider for Chumper into the <code>providers</code> array in your <code>app.php</code> file inside the <code>app/config</code> directory of your Laravel installation:</p>
-
-<p><code>
-'Chumper\Datatable\DatatableServiceProvider',
-</code></p>
-
-<p>Still inside the <code>app.php</code> file, also add the following under the aliases array:</p>
-
-<p><code>
-'Datatable' =&gt; 'Chumper\Datatable\Facades\DatatableFacade',
-</code></p>
-
-<p>Once that&rsquo;s done, you can now create the main configuration file by executing the following from the terminal:</p>
-
-<p><code>
-php artisan config:publish chumper/datatable
-</code></p>
-
-<p>The main configuration file is stored under <code>app/config/packages/chumper/datatable/config.php</code> so go ahead and edit that if you want to change the default settings provided by Chumper. Things like the class or ID given to the tables generated can be configured from that file. This is particularly useful if you want to use classes or IDs to style the datatables in a specific way. Other than that the default settings can be used for most cases.</p>
-
-<p>Now that we have configured Chumper, we can now add a route that will return the page where the datatable is displayed in your <code>routes.php</code> file. In the example below, we have the a controller called <code>AdminController</code> and were using the data returned by the <code>users</code> method as a response whenever the <code>users</code> route is accessed via the <code>GET</code> method:</p>
-
-<p><code>php
-&lt;?php
-Route::get('users', 'AdminController@users');
-?&gt;
-</code></p>
-
-<p>Next we also need to add the route that will return the data into the client side. By default, Chumper uses the server for processing queries made through the datatable. This means that it only gets the actual data that is needed instead of getting all of the records in the database table that you specify. In the code below, were giving a name of <code>api.users</code> to the <code>api/users</code> route so that we can refer to it later in the controller. The <code>uses</code> keyword allows you to specify a controller action to the route. Its basically the same thing as what we did above but that&rsquo;s the way to do it if you&rsquo;re using named routes.</p>
-
-<p><code>
-&lt;?php
-Route::get('api/users', array('as' =&gt; 'api.users', 'uses' =&gt; 'AdminController@getUsersDataTable'));
-?&gt;
-</code></p>
-
-<p>Under your controller, here&rsquo;s the method that returns the page where the datatable is displayed:</p>
-
-<p>```
-&lt;?php
-public function users(){</p>
-
-<pre><code>$table = Datatable::table()
-    -&gt;addColumn('Name', 'Last Login', 'View')
-    -&gt;setUrl(route('api.users'))
-    -&gt;noScript();
-
-$this-&gt;layout-&gt;content = View::make('admin.users', array('table' =&gt; $table));
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>The code above assumes that you&rsquo;re using <a href="http://laravel.com/docs/templates">Laravel layouts</a>. If you don&rsquo;t know how to use layouts in Laravel, be sure to check out the docs. Breaking the code down, the following code allows you create the datatable. You can add columns to it by using the <code>addColumn</code> method. This method takes up the names that you want to give to the header for each field in the table. The <code>setUrl</code> method allows you to set the route that the datatable will use for processing queries made through it. Earlier we created a route and named it <code>api.users</code> so in the <code>setUrl</code> method all we have to do is to use the <code>route</code> method and then supply the name of the route which is responsible for returning the data for processing the queries. Lastly, we call the <code>noScript()</code> method to specify that we don&rsquo;t want to add the JavaScript code in the response that will be returned.</p>
-
-<p>```
-&lt;?php
-$table = Datatable::table()</p>
-
-<pre><code>-&gt;addColumn('Name', 'Last Login', 'View')
--&gt;setUrl(route('api.users'))
--&gt;noScript();
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>Next is the method which processes the queries made through the datatable:</p>
-
-<p>```
-&lt;?php
-public function getUsersDataTable(){</p>
-
-<pre><code>$query = User::select('name', 'active', 'last_login', 'id')-&gt;get();
-
-return Datatable::collection($query)
-    -&gt;addColumn('last_login', function($model){
-        return date('M j, Y h:i A', strtotime($model-&gt;last_login));
-    })
-    -&gt;addColumn('id', function($model){
-        return '&lt;a href="http://anchetawern.github.io/users/' . $model-&gt;id . '"&gt;view&lt;/a&gt;';
-    })
-    -&gt;searchColumns('name', 'last_login')
-    -&gt;orderColumns('name', 'last_login')
-    -&gt;make();
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Breaking it down, the code below allows you to specify the fields that you want to use for the response. These are the actual field names in your database table:</p>
-
-<p><code>
-&lt;?php
-$query = User::select('name', 'last_login', 'id')-&gt;get();
-?&gt;
-</code></p>
-
-<p>Next, we return the actual data using the <code>collection</code> method in the <code>Datatable</code> class. Well, not actually the <code>Datatable</code> class, since its just the Facade that we used earlier in the <code>app.php</code> file. The <code>collection</code> method requires the result set returned by our query to the users table earlier so we just set that as the argument. After that, we can call the <code>addColumn</code> method to update the presentation of the data returned for that specific field. In the case of the <code>last_login</code> field, its stored in the database as a time stamp which looks like this: <code>2014-07-29 11:37:39</code>. We don&rsquo;t really want to present that to the user like that so we format it using the <code>date</code> method. The first argument is the format that you want. In this case we want something like this: <code>Jul 29, 2014 11:37 AM</code>. Looking at the <a href="http://php.net/manual/en/function.date.php">official docs</a>, we know that we can do that by specifying the following: <code>M j, Y h:i A</code>. The second argument is a unix timestamp. We can convert the raw data that came from the database into a unix timestamp by using the <code>strtotime</code> method, so we do just that. Next is the <code>id</code> field. We don&rsquo;t actually want to display the users id to the user, what we want is to display a link that would lead the user to the page where more details for the user can be viewed. Thus we return an HTML anchor tag which uses the id as one of the component for the actual link.</p>
-
-<p>```
-&lt;?php
-return Datatable::collection($query)</p>
-
-<pre><code>-&gt;addColumn('last_login', function($model){
-    return date('M j, Y h:i A', strtotime($model-&gt;last_login));
-})
--&gt;addColumn('id', function($model){
-    return '&lt;a href="http://anchetawern.github.io/users/' . $model-&gt;id . '"&gt;view&lt;/a&gt;';
-})
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>Lastly, we can now display the datatable in our view. If you&rsquo;re using <a href="http://getbootstrap.com/">Twitter Bootstrap</a>, it should look similar to this one:</p>
-
-<p>
-``` html
-@section(&lsquo;content&rsquo;)</p>
-
-<div class="row">
-  <div class="col-md-12">
-  <h3>Users</h3>
-  {{ $table->render() }}
-  {{ $table->script() }}
-  </div>
-</div>
-
-
-<p>@stop
-```
-</p>
-
-<p>And don&rsquo;t forget to include the datatables stylesheet and JavaScript file on your views. You can download datatables from <a href="http://datatables.net/">datatables.net</a> or you can just use cdnjs:</p>
-
-<p>```html
-<link rel="stylesheet" type="text/css" href="http://anchetawern.github.io//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/css/jquery.dataTables.min.css"></p>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
-
-
-<p>```</p>
-
-<p>And yes, datatables depends on jQuery so you also need to include that before including datatables.</p>
-
-<p>Yup! as simple as that! All we have to do is to call the <code>render()</code> method to render the actual datatabase. And then we also call the <code>script()</code> method to render the JavaScript file that would do the talking to the server every time the user interacts with the table.</p>
 ]]></content>
   </entry>
   
