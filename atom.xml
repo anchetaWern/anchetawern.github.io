@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://anchetawern.github.io/atom.xml" rel="self"/>
   <link href="http://anchetawern.github.io/"/>
-  <updated>2015-05-30T09:24:05+08:00</updated>
+  <updated>2015-06-05T17:28:54+08:00</updated>
   <id>http://anchetawern.github.io/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,201 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Amazon S3]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/06/05/getting-started-with-amazon-s3/"/>
+    <updated>2015-06-05T05:28:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/06/05/getting-started-with-amazon-s3</id>
+    <content type="html"><![CDATA[<p>Amazon S3 is Amazon&rsquo;s file storage service. It allows users to upload their files to their server, for later access or for sharing to other people. In this tutorial I&rsquo;m going to walk you through how to use amazon s3 within your PHP applications.</p>
+
+<p>First thing that you need to do is create a <code>composer.json</code> file and add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "aws/aws-sdk-php": "2.7.*@dev"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next execute <code>composer install</code> from your terminal to install the Amazon Web Service SDK.</p>
+
+<p>Once the installation is done you can now create a <code>tester.php</code> file which we will use for interacting with the Amazon AWS API. Add the following code to the file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Aws\S3\Exception\S3Exception</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Aws\Common\Aws</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What the code above does is include the autoload file so that we can use the AWS SDK from our file. Next we set to use the <code>Aws\S3\Exception\S3Exception</code> and <code>Aws\Common\Aws</code> namespace so can access the different classes that are available in those namespaces. One of which classes is the <code>Aws</code> class which we can use to set the configuration options for the Bucket where we are trying to connect to. All we have to do is call the <code>factory</code> method and pass in the path to the configuration file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$aws</span> <span class="o">=</span> <span class="nx">Aws</span><span class="o">::</span><span class="na">factory</span><span class="p">(</span><span class="s1">&#39;config.php&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The configuration file contains the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">return</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;includes&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;_aws&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;services&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;default_settings&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;params&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;credentials&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s1">&#39;key&#39;</span>    <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_KEY&#39;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s1">&#39;secret&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_SECRET&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;region&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_BUCKET_REGION&#39;</span>
+</span><span class='line'>            <span class="p">)</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The configuration file basically just returns an array that contains the options that we need. First of those is the <code>includes</code>, which allows us to bootstrap the configuration file with AWS specific features. Next is the <code>services</code> where we specify the API credentials and region.</p>
+
+<h4>Uploading Files</h4>
+
+<p>Once that&rsquo;s done we can now upload files to the s3 bucket of your choice by using the <code>$aws</code> object and calling the <code>get</code> method. This method takes up the name of the AWS service you want use. In this case were using s3 so we put in <code>s3</code>. Next we call the <code>putObject</code> method on the <code>$s3</code> object and pass in the required parameters as an array. The required keys are <code>Bucket</code>, <code>Key</code>, <code>Body</code> and <code>ACL</code>. <code>Bucket</code> is the name of the bucket where you want to upload the file. <code>Key</code> is the path to the file. With s3 you don&rsquo;t have to worry if the directory where you are uploading the file already exists. No matter how deep it is, s3 automatically creates the directories for you. Next is the <code>Body</code> which takes up the results of the <code>fopen</code> method call. This method takes up the path to the file in your local computer and the operation you want to perform. In this case we just want to read the file contents so we specify <code>r</code>. Next is the <code>ACL</code> or the Access Control List of an object. Its basically like a file permission. Here we specified <code>public-read</code> which means that the file can be read publically. For more information about ACL, you can check out <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">this page</a>. We wrap all of those code inside a try catch so we can handle errors gracefully.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$s3</span> <span class="o">=</span> <span class="nv">$aws</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">putObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Body&#39;</span> <span class="o">=&gt;</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;/path/to/file_to_uploads&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s1">&#39;ACL&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;public-read&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">));</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span> <span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error uploading the file.&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Deleting Files</h3>
+
+<p>Next here&rsquo;s how to delete existing files from your s3 bucket. This uses the <code>deleteObject</code> method which takes up the name of the bucket and the path to the file as its argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">deleteObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span>
+</span><span class='line'>    <span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error deleting the file.&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Listing Buckets</h3>
+
+<p>Lastly here&rsquo;s how to get a list of buckets that are currently in your Amazon Account:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">listBuckets</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;Buckets&#39;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$bucket</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;CreationDate&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with Amazon S3 from within your PHP applications. Specifically, we&rsquo;ve taken a look at how to upload files, delete files and list buckets.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/guide/service-s3.html">Amazon Simple Storage Service PHP Guide</a></li>
+<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/api/class-Aws.S3.S3Client.html">AWS S3 API Reference</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building a Nearby Places Search App with Google Places API]]></title>
@@ -4579,155 +4774,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <li><a href="https://www.youtube.com/watch?v=ctwEcZC_mmI">Our Web Development Workflow is Completely Broken</a>.</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Brain Dump 0]]></title>
-    <link href="http://anchetawern.github.io/blog/2014/11/22/brain-dump-0/"/>
-    <updated>2014-11-22T19:39:00+08:00</updated>
-    <id>http://anchetawern.github.io/blog/2014/11/22/brain-dump-0</id>
-    <content type="html"><![CDATA[<p>Welcome to the first issue of brain dump. Brain dump is my attempt on putting the things that are always at the back of my mind into writing. Everything has its limits, and that includes the brain. Brain dump is my way of freeing up some space in my brain in hopes that I can use it on something else.</p>
-
-<h3>Things I want to learn</h3>
-
-<ul>
-<li>Meteor.js</li>
-<li>Design Patterns in PHP and JavaScript</li>
-<li>Behavior Driven Development in PHP: Codeception</li>
-<li>JavaScript Unit Testing</li>
-<li>PostgreSQL</li>
-<li>Ember.js</li>
-<li>Python</li>
-<li>Django</li>
-<li>Ruby</li>
-<li>Ruby on Rails</li>
-<li>SEO</li>
-<li>Web Semantics</li>
-<li>How to program Arduino or Raspberry Pi</li>
-<li>ARIA</li>
-<li>Canvas</li>
-<li>SVG</li>
-<li>Agile Development</li>
-<li>Unit Testing</li>
-<li>Regression Testing</li>
-</ul>
-
-
-<h3>Books I want to read</h3>
-
-<ul>
-<li>How to Win Friends and Influence People</li>
-<li>Strangers to Ourselves</li>
-<li>The Willpower Instinct: How Self-Control Works</li>
-<li>You Are Not So Smart</li>
-<li>Sway: The Irresistible Pull of Irrational Behavior</li>
-<li>Mindfulness</li>
-<li>The Optimism Bias</li>
-<li>The Social Animal</li>
-<li>The Honest Truth About Dishonesty: How We Lie to Everyone</li>
-<li>Yes! (50 Scientifically Proven Ways to be Persuasive)</li>
-<li>The Design of Everyday Things</li>
-<li>The Paradox of Choice: Why More is Less</li>
-<li>The Compass of Pleasure</li>
-<li>The Lucifer Effect: Understanding How Good People Turn Evil</li>
-<li>The Pragmatic Programmer</li>
-<li>Clean Code</li>
-<li>Predictably Irrational</li>
-<li>Social Engineer: The Art of Human Hacking</li>
-<li>Made to Stick: Why Some Ideas Survive and Others Die</li>
-<li>Head First Design Patterns</li>
-<li>Refactoring &ndash; Improving the design of existing code</li>
-<li>The Passionate Programmer</li>
-<li>Ship it!</li>
-<li>What Makes Your Brain Happy (and Why You Should Do the Opposite)</li>
-<li>Don&rsquo;t Make Me Think</li>
-<li>Incognito: The Secret Lives of the Brain</li>
-<li>The Power of Habit (Why We Do What We Do)</li>
-<li>The Productive Programmer</li>
-<li>The Art of Choosing</li>
-<li>Mistakes Were Made (But Not By Me)</li>
-<li>Priceless</li>
-<li>Switch: How to Change Things When Change is Hard</li>
-<li>Writing Solid Code</li>
-<li>Practices of an Agile Developer</li>
-<li>Stumbling on Happiness</li>
-<li>Man&rsquo;s Search for Meaning</li>
-</ul>
-
-
-<h3>Video Courses I want to watch</h3>
-
-<ul>
-<li>Codeschool &ndash; JavaScript Best Practices</li>
-<li>Codeschool &ndash; Mastering Github</li>
-<li>Codeschool &ndash; Design Fundamentals</li>
-<li>Udemy &ndash; Life&rsquo;s Little Secrets</li>
-<li>Udemy &ndash; Improve Your Mental Well Being</li>
-<li>Udemy &ndash; Freelance Jumpstart</li>
-<li>Udemy &ndash; Sauce of Great Writing</li>
-<li>Udemy &ndash; Become a Super learner</li>
-<li>Tutsplus &ndash; Automated Testing with PHP</li>
-<li>Tutsplus &ndash; Artisan Commands and You</li>
-<li>Tutsplus- Custom Interactive Maps with Google Maps API</li>
-<li>Tutsplus &ndash; Canvas Essentials</li>
-<li>Tutsplus &ndash; SVG for Web Design</li>
-<li>Tutsplus &ndash; Django Unchained</li>
-<li>Tutsplus &ndash; SVG Uncovered</li>
-<li>Lynda &ndash; Web Semantics</li>
-</ul>
-
-
-<h3>Projects I want to build</h3>
-
-<ul>
-<li>Wordpress Donations Plugin &ndash; can accept bitcoins, paypal, stripe</li>
-<li>Newsletter Subscription for Octopress &ndash; using Mailchimp API</li>
-<li>Gilium &ndash; similar to hacker news reader; mobile app for aggregating and suggesting content</li>
-<li>Dropshipster &ndash; a web application for easy dropshipping</li>
-<li>Vacationr &ndash; vacation planner app + social network</li>
-</ul>
-
-
-<h3>Things I want to write</h3>
-
-<ul>
-<li>My web development workflow</li>
-<li>My mobile development workflow</li>
-<li>Getting Started Guides
-
-<ul>
-<li>Yahoo Finance API</li>
-<li>Ionic</li>
-<li>Shopify Theme Development</li>
-<li>Twilio</li>
-<li>Youtube API</li>
-<li>Vimeo API</li>
-<li>Facebook API</li>
-<li>Twitter API</li>
-<li>Linkedin API</li>
-<li>Stripe API</li>
-</ul>
-</li>
-<li>A Whirlwind Tour of Web Developer Tools
-
-<ul>
-<li>Linting</li>
-<li>Testing</li>
-<li>Pre-processors</li>
-<li>Coding Standards</li>
-<li>Boilerplates and Front-end frameworks</li>
-<li>Templating</li>
-<li>Deployment</li>
-<li>Miscellaneous &ndash; tools not mentioned in any of the above, but still useful</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>Articles I want to read</h3>
-
-<p>There&rsquo;s bazzilion of them. It would take forever to write it here.</p>
 ]]></content>
   </entry>
   
