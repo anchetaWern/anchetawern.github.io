@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: amazon-cloudfront | Wern Ancheta]]></title>
+  <link href="http://anchetawern.github.io/blog/categories/amazon-cloudfront/atom.xml" rel="self"/>
+  <link href="http://anchetawern.github.io/"/>
+  <updated>2015-07-11T20:23:27+08:00</updated>
+  <id>http://anchetawern.github.io/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Amazon Cloudfront]]></title>
+    <link href="http://anchetawern.github.io/blog/2015/07/11/getting-started-with-amazon-cloudfront/"/>
+    <updated>2015-07-11T08:01:00+08:00</updated>
+    <id>http://anchetawern.github.io/blog/2015/07/11/getting-started-with-amazon-cloudfront</id>
+    <content type="html"><![CDATA[<p>When developing websites, it&rsquo;s important to deliver front-end assets as fast as possible to the client. One tool that web developers use is the Content Delivery Network (CDN). Which is basically a way of distributing front-end assets (scripts, stylesheets and images) on servers across the globe so that the files will have to travel less distance. This works by having the nearest server deliver the file to the client. Nicholas Zakas has written a really good article on <a href="http://www.nczonline.net/blog/2011/11/29/how-content-delivery-networks-cdns-work/">how content delivery networks work</a>. You can check that out if you want to dive deeper.
+In this article we&rsquo;re going to take a look at Amazon Cloudfront, which is the content delivery network offered by Amazon Web Services.</p>
+
+<h3>Setting Up a New Distribution</h3>
+
+<p>Amazon Cloudfront utilizes the files from your S3 bucket.
+First thing that you need to do is to go to the Amazon Web Services console, select Cloudfront from the list of services, select create distribution, then click on the &lsquo;Get Started&rsquo; button under the Web section.</p>
+
+<p><img src="/images/posts/cloudfront/step-one.jpg" alt="getting started" /></p>
+
+<p>Once you&rsquo;re redirected to the next page, you will be greeted by a form where you enter the details of your new distribution.</p>
+
+<p><img src="/images/posts/cloudfront/step-two.jpg" alt="distribution details" /></p>
+
+<p>Each distribution uses a specific S3 bucket and you can pick that on Origin Domain Name. It would look something like <code>app-name.s3.amazonaws.com</code>. Once you have selected the Origin Domain Name, the Origin ID will automatically get filled up. You can click on the help icon on each field to get information on what they are. Knowing that, you can just leave the optional fields as blank and stick with the default values. Once you&rsquo;re done filling out the form, you can click on the &lsquo;Create Distribution&rsquo; button. After creation, it will be listed as the top item in your list of distributions. Your new distribution won&rsquo;t be immediately useable. You can see it from the status field in the table. Right after creation, its status would be &lsquo;In Progress&rsquo;. I&rsquo;m not really sure what goes on behind the scenes during this time, but I assume it&rsquo;s distributing all the files that is stored on the S3 bucket that you selected across different servers around the globe. Once your new distribution is ready, you can now use the domain name assigned to your distribution as the domain name when linking your files. Do note that files distributed using Cloudfront should be invalidated every time you make a change to them. So it&rsquo;s not recommended to use Cloudfront when you&rsquo;re still developing your app. As you frequently have to invalidate the files as you make changes to your code.</p>
+
+<h3>Invalidating Files</h3>
+
+<p>You will need to invalidate files when you make changes to a file in your S3 bucket. The changes won&rsquo;t take effect in the distribution that&rsquo;s why you need to invalidate. To do that, click the distribution on the list. Once in there, click the invalidations tab, click &lsquo;create invalidation&rsquo; and enter the path of the file you want to invalidate. The path is relative to the root of your bucket. So if your bucket is named <code>bookr</code> and your file is at <code>/uploads/users/image/image-001.jpg</code> then use that as the path. Do note that invalidating a file can take a while so use it sparingly.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you have learned how to use Amazon&rsquo;s Cloudfront as a solution for your CDN needs. It&rsquo;s really easy to get setup if you&rsquo;re already using S3 to serve your front-end assets.</p>
+]]></content>
+  </entry>
+  
+</feed>
