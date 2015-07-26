@@ -4,7 +4,7 @@
   <title><![CDATA[Category: peer-js | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/peer-js/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-07-18T18:58:07+08:00</updated>
+  <updated>2015-07-26T17:34:30+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,160 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Implementing Video Calls with PeerJS]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs/"/>
+    <updated>2015-07-26T16:31:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs</id>
+    <content type="html"><![CDATA[<p>Picking up from where we left off <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">last time</a>. Let&rsquo;s now try to add a video on our simple calling app with PeerJS. If you haven&rsquo;t read my previous tutorial, go ahead and read it as this article wouldn&rsquo;t make sense if you haven&rsquo;t yet.</p>
+
+<p>First, we still need to use the same scripts we used on the last tutorial.</p>
+
+<p>```html</p>
+
+<script src="http://wern-ancheta.com//cdn.peerjs.com/0.3/peer.min.js"></script>
+
+
+<script src="http://wern-ancheta.com//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+<script src="http://wern-ancheta.com//www.WebRTC-Experiment.com/RecordRTC.js"></script>
+
+
+<p>```</p>
+
+<p>But for our HTML, we need to replace the <code>audio</code> element with <code>video</code>. We also set the video to autoplay so that as soon as the stream becomes available, the video starts playing.</p>
+
+<p><code>html
+&lt;button id="start-call"&gt;start call&lt;/button&gt;
+&lt;video controls autoplay&gt;&lt;/video&gt;
+</code></p>
+
+<p>For our custom script, we still have the <code>getParameterByName</code> function.</p>
+
+<p>```javascript
+function getParameterByName(name){</p>
+
+<pre><code>name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+var regex = new RegExp("[\\?&amp;]" + name + "=([^&amp;#]*)"),
+    results = regex.exec(location.search);
+return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As for the <code>getAudio</code> function that we previously used for getting the audio input from the users device. We now replace it with <code>getVideo</code>:</p>
+
+<p>```javascript
+function getVideo(successCallback, errorCallback){</p>
+
+<pre><code>navigator.getUserMedia({audio: true, video: true}, successCallback, errorCallback);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>When the call is received, we now call the <code>getVideo</code> function instead of <code>getAudio</code>.</p>
+
+<p>```javascript
+function onReceiveCall(call){</p>
+
+<pre><code>console.log('peer is calling...');
+console.log(call);
+
+getVideo(
+    function(MediaStream){
+        call.answer(MediaStream);
+        console.log('answering call started...');
+    },
+    function(err){
+        console.log('an error occured while getting the video');
+        console.log(err);
+    }
+);
+
+call.on('stream', onReceiveStream);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Once a stream is received, we also need to replace the element that we&rsquo;re selecting. So we now select the video element instead of audio.</p>
+
+<p>```javascript
+function onReceiveStream(stream){</p>
+
+<pre><code>var video = document.querySelector('video');
+video.src = window.URL.createObjectURL(stream);
+video.onloadedmetadata = function(){
+    console.log('loaded');
+};
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The code for getting the current user and the peer is also the same.</p>
+
+<p><code>javascript
+var from = getParameterByName('from');
+var to = getParameterByName('to');
+</code></p>
+
+<p>But for the creation of the peer, we now use the PeerServer Cloud service instead of our own since we already did that last time.</p>
+
+<p><code>javascript
+var peer = new Peer(from, {key: 'Your PeerJS API Key'});
+</code></p>
+
+<p>Then we listen for the open event on the peer just so we can check if the peer has actually been created.</p>
+
+<p>```javascript
+peer.on(&lsquo;open&rsquo;, function(id){</p>
+
+<pre><code>console.log('My peer ID is: ' + id);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>We also listen to the call event so we can receive incoming calls.</p>
+
+<p><code>javascript
+peer.on('call', onReceiveCall);
+</code></p>
+
+<p>For the start call button click event, we use the <code>getVideo</code> function and proceed as usual.</p>
+
+<p>```javascript
+$(&lsquo;#start-call&rsquo;).click(function(){</p>
+
+<pre><code>console.log('starting call...');
+
+getVideo(
+    function(MediaStream){
+
+        console.log('now calling ' + to);
+        var call = peer.call(to, MediaStream);
+        call.on('stream', onReceiveStream);
+    },
+    function(err){
+        console.log('an error occured while getting the video');
+        console.log(err);
+    }
+);
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! We have implemented video calling using peerJS. Do note that this will consume more bandwidth than audio calls so the performance might be affected depending on the network.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Implementing Audio Calls with PeerJS]]></title>

@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Implementing Video Calls with PeerJS - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Picking up from where we left off last time. Let&rsquo;s now try to add a video on our simple calling app with PeerJS. If you haven&rsquo;t read my &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wern-ancheta.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Implementing Video Calls With PeerJS</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T16:31:00+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Picking up from where we left off <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">last time</a>. Let&rsquo;s now try to add a video on our simple calling app with PeerJS. If you haven&rsquo;t read my previous tutorial, go ahead and read it as this article wouldn&rsquo;t make sense if you haven&rsquo;t yet.</p>
+
+<p>First, we still need to use the same scripts we used on the last tutorial.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdn.peerjs.com/0.3/peer.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But for our HTML, we need to replace the <code>audio</code> element with <code>video</code>. We also set the video to autoplay so that as soon as the stream becomes available, the video starts playing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;start-call&quot;</span><span class="nt">&gt;</span>start call<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;video</span> <span class="na">controls</span> <span class="na">autoplay</span><span class="nt">&gt;&lt;/video&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For our custom script, we still have the <code>getParameterByName</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\[]/</span><span class="p">,</span> <span class="s2">&quot;\\[&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\]]/</span><span class="p">,</span> <span class="s2">&quot;\\]&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">regex</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;[\\?&amp;]&quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;=([^&amp;#]*)&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">results</span> <span class="o">=</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">results</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\+/g</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As for the <code>getAudio</code> function that we previously used for getting the audio input from the users device. We now replace it with <code>getVideo</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getVideo</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">({</span><span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">video</span><span class="o">:</span> <span class="kc">true</span><span class="p">},</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the call is received, we now call the <code>getVideo</code> function instead of <code>getAudio</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveCall</span><span class="p">(</span><span class="nx">call</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;peer is calling...&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">call</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getVideo</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">answer</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;answering call started...&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the video&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once a stream is received, we also need to replace the element that we&rsquo;re selecting. So we now select the video element instead of audio.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">video</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">video</span><span class="p">.</span><span class="nx">onloadedmetadata</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code for getting the current user and the peer is also the same.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">from</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But for the creation of the peer, we now use the PeerServer Cloud service instead of our own since we already did that last time.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span><span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we listen for the open event on the peer just so we can check if the peer has actually been created.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;My peer ID is: &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We also listen to the call event so we can receive incoming calls.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;call&#39;</span><span class="p">,</span> <span class="nx">onReceiveCall</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the start call button click event, we use the <code>getVideo</code> function and proceed as usual.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#start-call&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;starting call...&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getVideo</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now calling &#39;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">);</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">call</span> <span class="o">=</span> <span class="nx">peer</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">to</span><span class="p">,</span> <span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the video&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! We have implemented video calling using peerJS. Do note that this will consume more bandwidth than audio calls so the performance might be affected depending on the network.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T16:31:00+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/peer-js/'>peer-js</a>, <a class='category' href='/blog/categories/webrtc/'>webRTC</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs/" data-via="wern_ancheta" data-counturl="http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/07/18/things-i-learned-while-writing-for-sitepoint/" title="Previous Post: Things I Learned While Writing for Sitepoint">&laquo; Things I Learned While Writing for Sitepoint</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/26/implementing-video-calls-with-peerjs/">Implementing Video Calls with PeerJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/18/things-i-learned-while-writing-for-sitepoint/">Things I Learned While Writing for Sitepoint</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/11/getting-started-with-amazon-cloudfront/">Getting Started with Amazon Cloudfront</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/24/best-anime-of-all-time/">Best Anime of All Time</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/11/quick-tip-how-to-add-custom-pages-in-wordpress/">Quick Tip: How to Add Custom Pages in Wordpress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs/';
+        var disqus_url = 'http://wern-ancheta.com/blog/2015/07/26/implementing-video-calls-with-peerjs/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>
