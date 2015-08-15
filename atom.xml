@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-09T19:08:18+08:00</updated>
+  <updated>2015-08-15T22:00:24+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Naughtyfire]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/08/15/introduction-to-naughtyfire/"/>
+    <updated>2015-08-15T14:36:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/08/15/introduction-to-naughtyfire</id>
+    <content type="html"><![CDATA[<p>Welcome to yet another introduction to a side-project of mine. This time I&rsquo;d like to talk about Naughtyfire.</p>
+
+<p>Naughtyfire allows remote (home-based) developers to automatically notify their boss that they are taking a day off for a specific date. Settings, clients and events can be set in the web interface. All you need to do is to put it in the <code>www</code> or <code>public_html</code> directory in your home folder.</p>
+
+<p>Notifications are done via email through a mail provider of your choice. I&rsquo;ve only tested Mandrill configuration but it should work with other mail service providers supported by SwiftMailer.</p>
+
+<p>This project is meant to be used locally on your own computer. But you can also upload it on a server and set it up from there.</p>
+
+<h3>Dependencies</h3>
+
+<ul>
+<li>Apache</li>
+<li>MySQL</li>
+<li>Composer</li>
+<li>SwiftMailer</li>
+<li>Phinx</li>
+</ul>
+
+
+<h3>How to Use</h3>
+
+<ol>
+<li>Put it on your <code>www</code> or <code>public_html</code> directory</li>
+<li>If you have installed it on a folder under your <code>www</code> or <code>public_html</code> directory, you have to setup a virtual host for that path and then use it when accessing it from the browser. Accessing it via <code>http://localhost/naughtyfire</code> wouldn&rsquo;t work since the assets are linked using an absolute path. I recommend seetting the host name to <code>naughtyfire.dev</code>.</li>
+<li>Navigate to the naughtyfire root directory then install the libraries by executing <code>composer install</code> on your terminal.</li>
+<li>Create the database that naughtyfire will use.</li>
+<li><p>Create a <code>phinx.yml</code> file and update the database credentials. You only have to update the values under the <code>development</code> configuration. Specifically the <code>name</code>, <code>user</code> and <code>pass</code>.</p>
+
+<p> &#8220;`
+ paths:
+     migrations: %%PHINX_CONFIG_DIR%%/migrations</p>
+
+<p> environments:
+     default_migration_table: phinxlog
+     default_database: development
+     production:
+         adapter: mysql
+         host: localhost
+         name: production_db
+         user: root
+         pass: &lsquo;&rsquo;
+         port: 3306
+         charset: utf8</p>
+
+<pre><code> development:
+     adapter: mysql
+     host: localhost
+     name: naughtyfire
+     user: root
+     pass: ''
+     port: 3306
+     charset: utf8
+
+ testing:
+     adapter: mysql
+     host: localhost
+     name: testing_db
+     user: root
+     pass: ''
+     port: 3306
+     charset: utf8
+</code></pre>
+
+<p> &#8220;`</p></li>
+<li><p>Access the host that you have selected (e.g. <code>naughtyfire.dev</code>) from your browser. The default page is the page for creating new events. But you can also access the following pages.</p>
+
+<ul>
+<li><code>/settings</code> &ndash; for updating the settings. Here you can set the twilio credentials and mail settings. If you leave the twilio credentials or mail settings blank, the notification wouldn&rsquo;t work. Choose either one of those or both and then supply the correct values.</li>
+<li><code>/recepients</code> &ndash; for listing current recepients.</li>
+<li><code>/recepients/new</code> &ndash; for creating a new recepient.</li>
+</ul>
+</li>
+<li><p>Open cron.</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>crontab -e</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Use <code>wget</code> to request for the notifer URL once a day.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 0 * * * wget -O - http://naughtyfire.dev/notify &gt;/dev/null 2&gt;&1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are a couple of screenshots of the app.</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/naughtyfire/new-event.png" alt="new event" /></p>
+
+<p><img src="http://wern-ancheta.com/images/posts/naughtyfire/mail-sample.png" alt="mail sample" /></p>
+
+<p>You can find more details about this project on <a href="http://wern-ancheta.com/projects/naughtyfire/">its project page</a>.</p>
+
+<p>If you have an idea or you want to contribute to this project, feel free to check it out, fork it, or create an issue in its <a href="https://github.com/anchetaWern/naughtyfire">github repo</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[My OSX Development Environment]]></title>
@@ -4510,134 +4613,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 
 <p>That&rsquo;s all for now. If you want to know more about this project. You can always visit <a href="http://wern-ancheta.com/projects/antares_web/">its project page</a>. If you&rsquo;re a developer, you can check out this project at <a href="https://github.com/anchetaWern/antares">Github</a>. Feel free to contribute.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to Implement Infinite Scroll in Laravel]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/03/01/how-to-implement-scroll-in-laravel/"/>
-    <updated>2015-03-01T14:39:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/03/01/how-to-implement-scroll-in-laravel</id>
-    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
-
-<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
-</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    @foreach($news as $item)
-</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>    @endforeach
-</span><span class='line'>    
-</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">})();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
-
-<ul>
-<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
-<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
-<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
-</ul>
-
-
-<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
-
-<ul>
-<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
-<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
-<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
-<li><code>itemSelector</code> &ndash; an individual item.</li>
-</ul>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
 ]]></content>
   </entry>
   

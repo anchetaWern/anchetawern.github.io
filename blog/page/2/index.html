@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial I&rsquo;ll be showing you how to create a very basic chrome extension. One that would allow us to schedule posts with the Ahead &hellip;">
+  <meta name="description" content="Decades ago I got this project where I needed to work with the Youtube API to get the details of videos uploaded by a specific channel. And then &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,426 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/24/working-with-youtube-api-in-php/">Working With Youtube Data API in PHP</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-24T16:28:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/05/24/working-with-youtube-api-in-php/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Decades ago I got this project where I needed to work with the Youtube API to get the details of videos uploaded by a specific channel. And then create something like a mini-youtube website out of it. Just kidding about the decades part, it was probably 4-6 months ago. Anyway its only this time that I got the time to actually write about it. So here it goes.</p>
+
+<h3>Getting API Credentials</h3>
+
+<p>First you need to get the API credentials from your Google Console. There&rsquo;s only a single API credential for all of the APIs that Google offers. So you might already have one. If you do then all you have to do is enable the API in your Google Console page. Currently you would see something like this when you go to APIs &amp; Auth and then click on APIs on your Google Console:</p>
+
+<p><img src="/images/posts/youtube_api/google-apis.png" alt="google apis" /></p>
+
+<p>What we need is the Youtube Data API v3. Click that and enable it. If you do not have an API credential then you can click on &lsquo;Credentials&rsquo; under the APIs &amp; Auth and click on &lsquo;Create new Key&rsquo; under the Public API Access section. Choose Server Key as the key type since were working primarily on the server. Don&rsquo;t take my word for it though. Based on my experience sometimes this doesn&rsquo;t work and you actually need to select Browser Key. I just hope google has fixed this already. Server keys are only supposed to be used in the server and browser keys on the client side. Clicking on either browser key or server key will generate an API Key for you. This is the key that you will use when you need to talk to the Youtube API.</p>
+
+<h3>Dependencies</h3>
+
+<p>As we are primarily going to be requesting data from another server, we will need curl. If you don&rsquo;t have it yet, install it on your system. Here&rsquo;s how you install it on Ubuntu:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install curl
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install libcurl3 php5-curl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re using another Operating System then feel free to ask Google.</p>
+
+<h3>Playing with the API</h3>
+
+<p>To make things easier we need a library that will do most of the heavy-lifting for us. Things like signing the request, constructing it and actually making the request to the server. Because were lazy folks we don&rsquo;t need to do that every time we need to talk to an API. Thankfully an awesome guy in the alias of <a href="https://github.com/madcoda">madcoda</a> has already done that work for us. If you already have <a href="getcomposer.org">composer</a> installed, simply execute the following command inside your project directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require madcoda/php-youtube-api</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install the library into your <code>vendor</code> directory, autoload it and add it to your <code>composer.json</code> file.</p>
+
+<p>Once its done you can now use the library by including the <code>autoload.php</code> file under the <code>vendor</code> directory and then use the <code>Madcoda\Youtube</code> namespace.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Madcoda\Youtube</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a new instance of the Youtube class and pass in the API Key that you acquired earlier as the <code>key</code> item in an array.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$youtube</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Youtube</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_API_KEY&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Searching</h4>
+
+<p>With this library you can search for videos, playlists and channels by using the <code>search</code> method. This method takes up your query as its argument. For example you want to find &lsquo;Awesome&rsquo;:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;Awesome&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will return something similar to the following if you use <code>print_r</code> on the <code>$results</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[0] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [kind] =&gt; youtube#searchResult</span>
+</span><span class='line'><span class="x">        [etag] =&gt; &quot;tbWC5XrSXxe1WOAx6MK9z4hHSU8/xBkrpubrM2M6Xi88aNBfaVJV6gE&quot;</span>
+</span><span class='line'><span class="x">        [id] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [kind] =&gt; youtube#video</span>
+</span><span class='line'><span class="x">                [videoId] =&gt; qmTDT92VIRc</span>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">        [snippet] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [publishedAt] =&gt; 2015-01-23T23:03:31.000Z</span>
+</span><span class='line'><span class="x">                [channelId] =&gt; UCZpKcVBccIjO9n0RXx3ZGFg</span>
+</span><span class='line'><span class="x">                [title] =&gt; PEOPLE ARE AWESOME 2015 (UNBELIEVABLE)</span>
+</span><span class='line'><span class="x">                [description] =&gt; People are Awesome 2015 unbelievable talent and natural skills! Subscribe to NcCrullex for more people are awesome videos. Chris Samba Art Channel: ...</span>
+</span><span class='line'><span class="x">                [thumbnails] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [default] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">                            (</span>
+</span><span class='line'><span class="x">                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/default.jpg</span>
+</span><span class='line'><span class="x">                            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        [medium] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">                            (</span>
+</span><span class='line'><span class="x">                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/mqdefault.jpg</span>
+</span><span class='line'><span class="x">                            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                        [high] =&gt; stdClass Object</span>
+</span><span class='line'><span class="x">                            (</span>
+</span><span class='line'><span class="x">                                [url] =&gt; https://i.ytimg.com/vi/qmTDT92VIRc/hqdefault.jpg</span>
+</span><span class='line'><span class="x">                            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [channelTitle] =&gt; NcCrulleX</span>
+</span><span class='line'><span class="x">                [liveBroadcastContent] =&gt; none</span>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    )</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see most of the data that you might want is stored in the <code>snippet</code> item. Things like the title, description and URL to the thumbnails.</p>
+
+<p>You might ask, how you would know if the item is a video, playlist or channel? You might have already noticed based on the results above. Its located under the id &ndash;> kind. It would have a kind of <code>youtube#video</code> if its a video. <code>youtube#channel</code> if its a channel and <code>youtube#playlist</code> if its a playlist. Don&rsquo;t believe me? Try using the API to search for &lsquo;the new boston&rsquo; and you&rsquo;ll see.</p>
+
+<p>If you only want to search for videos then you can use the <code>searchVideos</code> method. Just like the <code>search</code> method this takes up your query as its argument:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">searchVideos</span><span class="p">(</span><span class="s1">&#39;Ninja&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you only want to get videos from a specific channel, you can do it in 2 calls. First you need to get the channel id by using the <code>getChannelByName</code> method and then extract the id from the result that you get and then use the id for the <code>searchChannelVideos</code> to search for videos in a specific channel:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getChannelByName</span><span class="p">(</span><span class="s1">&#39;thenewboston&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">searchChannelVideos</span><span class="p">(</span><span class="s1">&#39;ruby&#39;</span><span class="p">,</span> <span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above would return the first page of results for the &lsquo;ruby&rsquo; videos in &lsquo;thenewboston&rsquo; channel.</p>
+
+<p>If you only want to return playlists on a specific channel, you can do:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getChannelByName</span><span class="p">(</span><span class="s1">&#39;thenewboston&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getPlaylistsByChannelId</span><span class="p">(</span><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to get the items in a playlist, you can do it in 3 calls:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getChannelByName</span><span class="p">(</span><span class="s1">&#39;thenewboston&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$playlists</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getPlaylistsByChannelId</span><span class="p">(</span><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$playlist_items</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">getPlaylistItemsByPlaylistId</span><span class="p">(</span><span class="nv">$playlists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to be more liberal with your search, you can use the <code>searchAdvanced</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">searchAdvanced</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;q&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;fruits&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;part&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;snippet&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;order&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;rating&#39;</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s a breakdown of the parameters we&rsquo;ve just used:</p>
+
+<ul>
+<li><code>q</code> &ndash; your query</li>
+<li><code>part</code> &ndash; the part of the result which you want to get. Earlier in the sample result we saw that there are only 2 parts. <code>id</code> and <code>snippet</code>. This parameter allows you to specify that. If you only need the video, playlist or channel id then supply <code>id</code> as the <code>part</code>. If you need the full details then use <code>snippet</code>. If you need both then you can use a comma-separated list: <code>id, snippet</code>.</li>
+<li><code>order</code> &ndash; the basis of the ordering. In the example we used <code>rating</code>. This orders the results based on the highest ratings to the lowest. Not really sure what the ratings is. But the first thing that comes to mind is the number of likes in the video. You can also use <code>viewCount</code> if you want. This will order the results with the videos, playlists or channels which has the highest number of views to the lowest.</li>
+<li><code>type</code> &ndash; the type of item. This can either be <code>video</code>, <code>playlist</code>, or <code>channel</code>.</li>
+</ul>
+
+
+<p>There&rsquo;s a whole bunch more which you can specify as a parameter. Be sure to check out the <a href="https://developers.google.com/youtube/v3/docs/search/list">search reference</a>.</p>
+
+<h4>Pagination</h4>
+
+<p>You can also paginate results. First you need to make an initial request so you can get the <code>nextPageToken</code>. Then check if the page token exists, if it does then add a <code>pageToken</code> item to the parameters that you supplied earlier. And then make another request. Since we supplied the <code>nextPageToken</code>, this will now navigate to the second page of the same result set. By default the youtube data api only returns 10 rows per request. This means that the second page will show you row 11 up to 21.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;q&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ruby&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;video&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;part&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;id, snippet&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;maxResults&#39;</span> <span class="o">=&gt;</span> <span class="mi">100</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">searchAdvanced</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//check for a page token</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$search</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;nextPageToken&#39;</span><span class="p">])){</span>
+</span><span class='line'>    <span class="nv">$params</span><span class="p">[</span><span class="s1">&#39;pageToken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$search</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;nextPageToken&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//make another request with the page token added</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">searchAdvanced</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with the search results her</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x">         </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also use the <code>paginateResults</code> method to implement pagination. Just like the method above, we need to make an initial request to get the <code>nextPageToken</code>. We then store it to an array so we can navigate through the results easily. The <code>paginateResults</code> method takes up the original search parameters as its first argument and the page token as its second. So all you have to do is supply the <code>nextPageToken</code> that you got from the previous results as the second argument for the <code>paginateResults</code> method to navigate to the next page. Note that in the example below, the indexes for the <code>$page_tokens</code> are just hard-coded. You will have to implement the generation of pagination links yourself and then use their index when navigating through the results. Also note that the results aren&rsquo;t cached, this means that whenever you paginate through the results a new request is made to the youtube data api. You will also need to implement caching if you don&rsquo;t want to easily run out of requests you can make.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="c1">//your search parameters</span>
+</span><span class='line'><span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;q&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Python&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;video&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;part&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;id, snippet&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;maxResults&#39;</span> <span class="o">=&gt;</span> <span class="mi">100</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//array for storing page tokens</span>
+</span><span class='line'><span class="nv">$page_tokens</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//make initial request</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">paginateResults</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//store page token</span>
+</span><span class='line'><span class="nv">$page_tokens</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$search</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;nextPageToken&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//navigate to the next page</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">paginateResults</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="nv">$page_tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//store page token token</span>
+</span><span class='line'><span class="nv">$page_tokens</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$search</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;nextPageToken&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//navigate to the next page</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">paginateResults</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="nv">$page_tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//store page token</span>
+</span><span class='line'><span class="nv">$page_tokens</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$search</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;nextPageToken&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//navigate to the previous page</span>
+</span><span class='line'><span class="nv">$search</span> <span class="o">=</span> <span class="nv">$youtube</span><span class="o">-&gt;</span><span class="na">paginateResults</span><span class="p">(</span><span class="nv">$params</span><span class="p">,</span> <span class="nv">$page_tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//do something with the search results here</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with the Youtube Data API in PHP. You&rsquo;ve learned how to get the info of a specific video, get general details about videos in a specific channel, get the videos in a specific playlist, and also search for videos, playlists and channels using a query. Don&rsquo;t forget to work through the API request limits though. The limit information can be found on the Youtube Data API page on your Google Console.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://developers.google.com/youtube/v3/code_samples/php">Youtube DATA API: PHP Code Samples</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3026,163 +3446,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/">How to Implement Infinite Scroll in Laravel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-01T14:39:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
-
-<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
-</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    @foreach($news as $item)
-</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>    @endforeach
-</span><span class='line'>    
-</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">})();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
-
-<ul>
-<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
-<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
-<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
-</ul>
-
-
-<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
-
-<ul>
-<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
-<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
-<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
-<li><code>itemSelector</code> &ndash; an individual item.</li>
-</ul>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -3200,6 +3463,10 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/15/introduction-to-naughtyfire/">Introduction to Naughtyfire</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/09/my-osx-development-environment/">My OSX Development Environment</a>
       </li>
     
@@ -3213,10 +3480,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
     
       <li class="post">
         <a href="/blog/2015/07/18/things-i-learned-while-writing-for-sitepoint/">Things I Learned While Writing for Sitepoint</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/11/getting-started-with-amazon-cloudfront/">Getting Started with Amazon Cloudfront</a>
       </li>
     
   </ul>

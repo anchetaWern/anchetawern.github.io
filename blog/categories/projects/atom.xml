@@ -4,7 +4,7 @@
   <title><![CDATA[Category: projects | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/projects/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-09T19:08:18+08:00</updated>
+  <updated>2015-08-15T22:00:24+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Naughtyfire]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/08/15/introduction-to-naughtyfire/"/>
+    <updated>2015-08-15T14:36:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/08/15/introduction-to-naughtyfire</id>
+    <content type="html"><![CDATA[<p>Welcome to yet another introduction to a side-project of mine. This time I&rsquo;d like to talk about Naughtyfire.</p>
+
+<p>Naughtyfire allows remote (home-based) developers to automatically notify their boss that they are taking a day off for a specific date. Settings, clients and events can be set in the web interface. All you need to do is to put it in the <code>www</code> or <code>public_html</code> directory in your home folder.</p>
+
+<p>Notifications are done via email through a mail provider of your choice. I&rsquo;ve only tested Mandrill configuration but it should work with other mail service providers supported by SwiftMailer.</p>
+
+<p>This project is meant to be used locally on your own computer. But you can also upload it on a server and set it up from there.</p>
+
+<h3>Dependencies</h3>
+
+<ul>
+<li>Apache</li>
+<li>MySQL</li>
+<li>Composer</li>
+<li>SwiftMailer</li>
+<li>Phinx</li>
+</ul>
+
+
+<h3>How to Use</h3>
+
+<ol>
+<li>Put it on your <code>www</code> or <code>public_html</code> directory</li>
+<li>If you have installed it on a folder under your <code>www</code> or <code>public_html</code> directory, you have to setup a virtual host for that path and then use it when accessing it from the browser. Accessing it via <code>http://localhost/naughtyfire</code> wouldn&rsquo;t work since the assets are linked using an absolute path. I recommend seetting the host name to <code>naughtyfire.dev</code>.</li>
+<li>Navigate to the naughtyfire root directory then install the libraries by executing <code>composer install</code> on your terminal.</li>
+<li>Create the database that naughtyfire will use.</li>
+<li><p>Create a <code>phinx.yml</code> file and update the database credentials. You only have to update the values under the <code>development</code> configuration. Specifically the <code>name</code>, <code>user</code> and <code>pass</code>.</p>
+
+<p> ```
+ paths:
+     migrations: %%PHINX_CONFIG_DIR%%/migrations</p>
+
+<p> environments:
+     default_migration_table: phinxlog
+     default_database: development
+     production:
+         adapter: mysql
+         host: localhost
+         name: production_db
+         user: root
+         pass: &lsquo;&rsquo;
+         port: 3306
+         charset: utf8</p>
+
+<pre><code> development:
+     adapter: mysql
+     host: localhost
+     name: naughtyfire
+     user: root
+     pass: ''
+     port: 3306
+     charset: utf8
+
+ testing:
+     adapter: mysql
+     host: localhost
+     name: testing_db
+     user: root
+     pass: ''
+     port: 3306
+     charset: utf8
+</code></pre>
+
+<p> ```</p></li>
+<li><p>Access the host that you have selected (e.g. <code>naughtyfire.dev</code>) from your browser. The default page is the page for creating new events. But you can also access the following pages.</p>
+
+<ul>
+<li><code>/settings</code> &ndash; for updating the settings. Here you can set the twilio credentials and mail settings. If you leave the twilio credentials or mail settings blank, the notification wouldn&rsquo;t work. Choose either one of those or both and then supply the correct values.</li>
+<li><code>/recepients</code> &ndash; for listing current recepients.</li>
+<li><code>/recepients/new</code> &ndash; for creating a new recepient.</li>
+</ul>
+</li>
+<li><p>Open cron.</p></li>
+</ol>
+
+
+<p><code>
+crontab -e
+</code></p>
+
+<p>Use <code>wget</code> to request for the notifer URL once a day.</p>
+
+<p><code>
+0 0 * * * wget -O - http://naughtyfire.dev/notify &gt;/dev/null 2&gt;&amp;1
+</code></p>
+
+<p>Here are a couple of screenshots of the app.</p>
+
+<p><img src="/images/posts/naughtyfire/new-event.png" alt="new event" /></p>
+
+<p><img src="/images/posts/naughtyfire/mail-sample.png" alt="mail sample" /></p>
+
+<p>You can find more details about this project on <a href="/projects/naughtyfire/">its project page</a>.</p>
+
+<p>If you have an idea or you want to contribute to this project, feel free to check it out, fork it, or create an issue in its <a href="https://github.com/anchetaWern/naughtyfire">github repo</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Staticizer]]></title>
@@ -132,64 +235,6 @@ I created this project to make it easier for me to setup a Laravel project faste
 <li><strong>database backup</strong> &ndash; every project must have an automated database backup functionality. I&rsquo;m thinking of using cron for running the backup script and then upload the backup to an Amazon s3 bucket.</li>
 <li><strong>generators</strong> &ndash; there are 2 projects doing this already, one is <a href="https://github.com/JeffreyWay/Laravel-4-Generators">Jeffrey Way&rsquo;s Laravel 4 Generators</a> and the other is <a href="https://github.com/wdollar/Laravel-4-Generators-Bootstrap-3">Wes Dollar&rsquo;s forked version</a>, both looks pretty good. I think I&rsquo;ll be able to get some ideas from these projects. Basically the plan here is to be able to use the terminal for generating boilerplate code which I can then build upon.</li>
 <li><strong>build tool integration</strong> &ndash; I want to be able to just hit one command and it will install and configure everything that I need to get the project started. Yeoman seems to be a very good fit for this.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Ahead]]></title>
-    <link href="http://wern-ancheta.com/blog/2014/09/28/introduction-to-ahead/"/>
-    <updated>2014-09-28T09:20:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2014/09/28/introduction-to-ahead</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been in side-project frenzy these past few weeks. And this time I&rsquo;m writing again about another side-project that I&rsquo;ve been working on, its called <a href="https://github.com/anchetaWern/ahead">Ahead</a>. Ahead is an app that allows you to schedule posts to your facebook, twitter and linkedin accounts. Pretty much like Buffer. But Buffer has limits for free accounts, that&rsquo;s why I built this app so I can schedule posts without limits.</p>
-
-<h3>How to Use</h3>
-
-<p>You can use Ahead by going to its <a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/">demo website</a>. Create and account then login. Once logged in, go to the networks page and connect the accounts where you want to publish by clicking on the connect button:</p>
-
-<p><img src="/images/posts/intro_to_ahead/networks.png" alt="networks" /></p>
-
-<p>Once your accounts has been connected, you can now start scheduling posts:</p>
-
-<p><img src="/images/posts/intro_to_ahead/schedulenew_post.png" alt="schedule new post" /></p>
-
-<p>You can check the time in which your post will be published from the posts page. From the published column you can also see if your post has already been published or not:</p>
-
-<p><img src="/images/posts/intro_to_ahead/posts.png" alt="posts" /></p>
-
-<p>If you don&rsquo;t want to select the networks in which you want to publish all the time, you can visit the settings page and then select the networks which you want to select by default:</p>
-
-<p><img src="/images/posts/intro_to_ahead/settings.png" alt="settings" /></p>
-
-<p>If you don&rsquo;t want your posts to be published one hour after another you can also add custom schedules by visiting the schedules page:</p>
-
-<p><img src="/images/posts/intro_to_ahead/schedule.png" alt="new schedule" /></p>
-
-<p>Just select an interval that you want and it will be available as an option when you schedule a new post. Of course you can also select a default schedule from the settings page once you&rsquo;re done creating a schedule. Currently only the following intervals are supported:</p>
-
-<ul>
-<li>every 1 hour</li>
-<li>every 2 hours</li>
-<li>every 3 hours</li>
-<li>every 4 hours</li>
-<li>every 5 hours</li>
-<li>random time in the next 72 hours (3 days)</li>
-<li>random time in the next 168 hours (1 week)</li>
-</ul>
-
-
-<h3>Future Plans</h3>
-
-<p>Ahead is still in early stages of development. Its already quite functional but I&rsquo;m planning to add the following features in the future:</p>
-
-<ul>
-<li><strong>Publish posts without links</strong> &ndash; currently it can only publish posts with links in it. I originally envisioned this project for my personal use only and I don&rsquo;t really schedule posts without links in it.</li>
-<li><strong>Add social login</strong> &ndash; currently you can only start using the app by signing up with your email.</li>
-<li><strong>Email verification</strong> &ndash; currently you can use fake emails when signing up.</li>
-<li><strong>Editing and deleting posts</strong> &ndash; currently you can no longer edit posts that has already been scheduled. I&rsquo;m planning to add an edit or delete feature in order for users to be able to make changes to their scheduled posts.</li>
-<li><strong>Immediate publishing</strong> &ndash; currently only scheduled posts are supported.</li>
-<li><strong>Add custom intervals to schedules</strong></li>
 </ul>
 
 ]]></content>
