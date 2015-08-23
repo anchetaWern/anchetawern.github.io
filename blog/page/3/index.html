@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s &hellip;">
+  <meta name="description" content="Welcome to yet another promotional post on another side-project of mine. This time its the web version of Antares. If you don&rsquo;t know what &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,60 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/07/introduction-to-antares-web/">Introduction to Antares Web</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-07T07:27:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/07/introduction-to-antares-web/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Welcome to yet another promotional post on another side-project of mine. This time its the web version of Antares. If you don&rsquo;t know what Antares is, its basically a news app for Android. Its a news app targeted to developers to be exact. You can read all about it here: <a href="/blog/2015/02/15/introduction-to-antares/">Introduction to Antares</a>.</p>
+
+<p>So yeah, Antares web is just a website were you can read all the news from popular sources such as Hacker News, Product Hunt, Medium, Designer News, Slashdot and many others. There are also news coming from popular curators such as echojs and developer newsletters. The news items are ordered from the latest to the least latest so you&rsquo;re assured that the ones on top are the latest one. Antares uses infinite scrolling. So if you missed yesterday&rsquo;s news, you can always scroll until you find something you&rsquo;re interested in reading.</p>
+
+<h3>Future Plans</h3>
+
+<ul>
+<li>More news sources.</li>
+<li>Viewing of news on a specific date.</li>
+<li>Top news. Something simple like logging the view count on each link based on the number of clicks it gets. And then ordering the results from the most number of views to the least.</li>
+<li>Mobile version. Currently it doesn&rsquo;t look that good on mobile. Especially on devices below 400px width.</li>
+<li>Social Sharing. Facebook, Twitter, LinkedIn sharing. And possibly Google plus. I&rsquo;ll just add it as a button below each news link, so that users can easily share. Integration with my <a href="/blog/2014/09/28/introduction-to-ahead/">Ahead project</a> seems to be a good idea as well. So users can easily schedule posts to their social accounts for later publishing.</li>
+<li>Bookmarking. I&rsquo;m looking at pocket integration. So each news link will have its own button for saving to pocket.</li>
+</ul>
+
+
+<p>That&rsquo;s all for now. If you want to know more about this project. You can always visit <a href="/projects/antares_web/">its project page</a>. If you&rsquo;re a developer, you can check out this project at <a href="https://github.com/anchetaWern/antares">Github</a>. Feel free to contribute.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1296,520 +1350,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/16/getting-started-with-rabbitmq-in-php/">Getting Started With RabbitMQ in PHP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-16T15:11:00+08:00" pubdate data-updated="true">Nov 16<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/11/16/getting-started-with-rabbitmq-in-php/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>This article was originally published at Binpress:<br/>http://www.binpress.com/tutorial/getting-started-with-rabbitmq-in-php/164</p></blockquote>
-
-
-<p>In this tutorial I&rsquo;m going to walk you through how you can use RabbitMQ in PHP. But first what is RabbitMQ? RabbitMQ is a message broker software. It acts as a middleman between a producer and a consumer. Producer being the data that we want to pass, and consumer being the entity that we want to pass it to. RabbitMQ uses a queue, you can think of it as a mailbox where you drop your letters. RabbitMQ then takes the letters and delivers it to its destination.</p>
-
-<h3>Installing RabbitMQ</h3>
-
-<p>In Ubuntu and other debian based operating system you can install RabbitMQ by executing the following commands from your terminal:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>echo "deb http://www.rabbitmq.com/debian/ testing main"  | sudo tee  /etc/apt/sources.list.d/rabbitmq.list &gt; /dev/null
-</span><span class='line'>sudo wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-key add rabbitmq-signing-key-public.asc
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install rabbitmq-server -y
-</span><span class='line'>sudo service rabbitmq-server start
-</span><span class='line'>sudo rabbitmq-plugins enable rabbitmq_management
-</span><span class='line'>sudo service rabbitmq-server restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What the first command does is to append the rabbitmq source to the software sources list. Next we download the rabbitmq signing key using <code>wget</code>. Then add the key to Ubuntu. Next we call <code>apt-get update</code> to update the software sources list. Next we install the RabbitMQ server, start it then enable RabbitMQ management plugin. This provides an HTTP-based API management for monitoring your RabbitMQ server. Finally we restart the RabbitMQ server so that changes will take effect.
-The default username and password is <code>guest</code>. And the default port in which it runs is <code>5672</code>.</p>
-
-<p>If you&rsquo;re on another operating system, you can find how to install RabbitMQ for your specific operating system here: <a href="http://www.rabbitmq.com/download.html">Downloading and Installing RabbitMQ</a>.</p>
-
-<h3>Working with RabbitMQ</h3>
-
-<p>Once you&rsquo;re done installing RabbitMQ, we can now install the AMQP library for PHP. This implements the AMQP (Advanced Messaging Queue Protocol) protocol. As the name suggests it is a protocol used for messaging.
-Start by creating a new directory, this is where we will put all the files for testing RabbitMQ. Next create a composer.json file and add the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "require": {
-</span><span class='line'>      "videlalvaro/php-amqplib": "2.2.*"
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, open up your terminal and <code>cd</code> into the directory you created earlier then execute <code>composer install</code> to install the AMQP library.</p>
-
-<p>Before we move on, lets also install <a href="http://swiftmailer.org/">Swiftmailer</a>. You can do that by executing the following command from your terminal. This also adds an entry to Swiftmailer to your composer.json:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer require swiftmailer/swiftmailer @stable</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We will be using Swiftmailer for the sample app that were going to create. What we will do is create an app that will send emails for our users. Normally emails takes a few seconds before it is sent, adding an attachment to the email also adds to that time. In the real world we don&rsquo;t really want our users to wait. What we want to do is make them believe that we have already sent the email for them by outputting to the screen that their message has been sent.
-This is where RabbitMQ comes in. We will use it as some sort of a mailbox in which multiple users can just drop their messages in. RabbitMQ will then take care of sending the messages in the background.</p>
-
-<h4>Sending Messages</h4>
-
-<p>First lets create the form to be used for sending emails. This will accept the name and email address of the sender, the email address of the receiver and then the subject and message. Name the file <code>form.php</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">if(!empty($_GET[&#39;sent&#39;])){</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    Your message was sent!
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cp">}</span>
-</span><span class='line'><span class="cp">?&gt;</span>
-</span><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;mailer.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>From<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from&quot;</span> <span class="na">id=</span><span class="s">&quot;from&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>From Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;from_email&quot;</span> <span class="na">id=</span><span class="s">&quot;from_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>To Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;to_email&quot;</span> <span class="na">id=</span><span class="s">&quot;to_email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>Subject<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;subject&quot;</span> <span class="na">id=</span><span class="s">&quot;subject&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;</span>Message<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span> <span class="na">id=</span><span class="s">&quot;message&quot;</span> <span class="na">cols=</span><span class="s">&quot;30&quot;</span> <span class="na">rows=</span><span class="s">&quot;10&quot;</span><span class="nt">&gt;&lt;/textarea&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Send<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, create the file which will push the message into the queue. Name the file <code>sender.php</code>.
-Require the <code>autoload.php</code> file so that our dependencies will be automatically loaded by PHP. Then use the <code>AMQPConnection</code> and <code>AMQPMessage</code> from the AMQP library. <code>AMQPConnection</code> allows us to create a new connection to the RabbitMQ server and <code>AMQPMessage</code> allows us to create messages that we can push to the queue.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Message\AMQPMessage</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, first we create a new connection by creating a new instance of the <code>AMQPConnection</code> class. This requires the following arguments:</p>
-
-<ul>
-<li><strong>host</strong> &ndash; the host in which the RabbitMQ server is running. In this case we&rsquo;ve installed RabbitMQ on the same computer we are running the script in. So it should be <code>localhost</code>. Note that in the real world we install RabbitMQ on a another server, different from the one were using to serve our websites. So instead of <code>localhost</code> we use the public ip address of that server.</li>
-<li><strong>port</strong> &ndash; the port in which the RabbitMQ server is running.</li>
-<li><strong>user</strong> &ndash; the username to use for logging in to the server. By default the username is set to <code>guest</code>.</li>
-<li><strong>password</strong> &ndash; the password of the user. By default the password is set to <code>guest</code>.</li>
-</ul>
-
-
-<p>Next we create a channel. We can do that by calling the <code>channel()</code> method from the connection that we have just declared.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare the queue to be used by calling the  <code>queue_declare</code> method.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>queue_declare</code> method takes up the following arguments:</p>
-
-<ul>
-<li><strong>queue name</strong> &ndash; a name that you want to use for the queue, you can supply anything for this.</li>
-<li><strong>passive</strong> &ndash; a boolean value for specifying whether to check for an existing exchange.</li>
-<li><strong>durable</strong> &ndash; a boolean value for specifying whether the RabbitMQ holds on to a queue when the server crashes.</li>
-<li><strong>exclusive</strong> &ndash; a boolean value for specifying whether the queue is used by only one connection.</li>
-<li><strong>auto-delete</strong> &ndash; a boolean value for specifying whether the queue is deleted when the last subscriber unsubscribes.</li>
-</ul>
-
-
-<p>Next we convert the POST data that we receive from the form to a JSON string. We can only pass strings as a message so we&rsquo;ll have to convert this later on into an array on the receiver&rsquo;s end.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we create a new message. This accepts 2 arguments: the data and an array of options. For the array of options we specify the <code>delivery_mode</code> to 2 which means that the message is persistent. This means that it isn&rsquo;t lost when the server crashes or an error occurs.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPMessage</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;delivery_mode&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we publish the message by calling the <code>basic_publish()</code> method on the channel. This accepts 3 arguments: the message, the exchange and the name of the queue. If you&rsquo;re wondering why we set the value of exchange to an empty string, that&rsquo;s because we don&rsquo;t really need it. The exchange is commonly used for pub-sub patterns. What were using here is just basic publish.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_publish</span><span class="p">(</span><span class="nv">$msg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;email_queue&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we just redirect the user to the form.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Location: form.php?sent=true&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Receiving Messages</h4>
-
-<p>Now were ready to write the code that will receive the messages sent by users. Name the file <code>receiver.php</code>. Here&rsquo;s the full contents of the file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">PhpAmqpLib\Connection\AMQPConnection</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AMQPConnection</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5672</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;guest&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span> <span class="o">=</span> <span class="nv">$connection</span><span class="o">-&gt;</span><span class="na">channel</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">queue_declare</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39; * Waiting for messages. To exit press CTRL+C&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_qos</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">basic_consume</span><span class="p">(</span><span class="s1">&#39;email_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nv">$callback</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">callbacks</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$channel</span><span class="o">-&gt;</span><span class="na">wait</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, the first 5 lines of code are basically the same as the one we have on the <code>sender.php</code> file. Then we just output a message saying how we can stop the file from running. We need to run this file from the terminal so to stop it we just hit <code>CTRL + C</code>.</p>
-
-<p>Next we declare a named function. This will be used for processing the message that we passed from the sender. The first thing it does is output that the message was received. Then we use <code>json_decode()</code> to convert the JSON string back to an array.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$callback</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$msg</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot; * Message received&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we extract the data and assign them to each of their own variables:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$from</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$from_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;from_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$to_email</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;to_email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$subject</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new transporter to be used by Swiftmailer. This allows us to use a gmail account for sending emails. Declaring a new instance accepts 3 arguments: the host, port and the encryption. Then we set the username and password.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$transporter</span> <span class="o">=</span> <span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span><span class="p">,</span> <span class="s1">&#39;ssl&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_EMAIL&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;YOUR_GMAIL_PASSWORD&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new mailer instance, and supplying the transporter as an argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span> <span class="o">=</span> <span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create a new message, this also takes up the transporter as its argument. We then set the subject, from field, to field, and body of the message.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$message</span> <span class="o">=</span> <span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transporter</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$from_email</span> <span class="o">=&gt;</span> <span class="nv">$from</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$to_email</span><span class="p">))</span>
-</span><span class='line'>        <span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we send the message and output that the message was sent. The last line basically tells RabbitMQ that the sending of the message has indeed been successful.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot; * Message was sent&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">basic_ack</span><span class="p">(</span><span class="nv">$msg</span><span class="o">-&gt;</span><span class="na">delivery_info</span><span class="p">[</span><span class="s1">&#39;delivery_tag&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Running the program</h4>
-
-<p>You can now run the receiver by going to your terminal and executing the following command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php receiver.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once its running, go to your browser and access the <code>sender.php</code> file. Enter the details of your message and click on send. You&rsquo;re instantly greeted by a &lsquo;Your message was sent!&rsquo; text but if you immediately check your email account its not there yet. If its not there then the queue is still processing it. Check the output displayed on the terminal window where you executed the receiver. You should see a &lsquo;Message was sent&rsquo; output if the email was already sent.</p>
-
-<h3>Conclusion</h3>
-
-<p>RabbitMQ is a nice way for implementing messaging applications such as the one we created in this tutorial. We have barely scratch the surface with this tutorial. I recommend you check out the <a href="http://www.rabbitmq.com/getstarted.html">getting started guides</a> and the <a href="http://www.rabbitmq.com/documentation.html">documentation</a> to learn more.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1827,6 +1367,10 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/">What Playing Clash of Clans Can Teach You About Life</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/15/introduction-to-naughtyfire/">Introduction to Naughtyfire</a>
       </li>
     
@@ -1840,10 +1384,6 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
     
       <li class="post">
         <a href="/blog/2015/07/26/implementing-video-calls-with-peerjs/">Implementing Video Calls with PeerJS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/18/things-i-learned-while-writing-for-sitepoint/">Things I Learned While Writing for Sitepoint</a>
       </li>
     
   </ul>
