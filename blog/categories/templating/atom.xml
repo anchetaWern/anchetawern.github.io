@@ -4,7 +4,7 @@
   <title><![CDATA[Category: templating | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/templating/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-31T19:40:39+08:00</updated>
+  <updated>2015-08-31T20:04:39+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -70,6 +70,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'age' =&gt; 19));
 <p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
 
 <p>```html
+
 &lt;!DOCTYPE html>
 <html lang="en">
 <head></p>
@@ -87,6 +88,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'age' =&gt; 19));
 
 <p></body>
 </html>
+
 ```</p>
 
 <p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
@@ -114,6 +116,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'html_string' =&gt; '&l
 <p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
 
 <p>```html
+
 <body></p>
 
 <pre><code>&lt;h1&gt;Hi {{ name }}!&lt;/h1&gt;
@@ -122,6 +125,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'html_string' =&gt; '&l
 </code></pre>
 
 <p></body>
+
 ```</p>
 
 <h4>Looping through Arrays</h4>
@@ -171,12 +175,14 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
         </tr>
     </thead>
     <tbody>
+        
         {% for user in users %}
         <tr>
             <td>{{ user.name }}</td>
             <td>{{ user.age }}</td>
         </tr>
         {% endfor %}
+        
     </tbody>
 </table>
 
@@ -204,6 +210,7 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
         </tr>
     </thead>
     <tbody>
+        
         {% for user in users %}
             {% if user.age >= 14 %}
             <tr>
@@ -212,6 +219,7 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
             </tr>
             {% endif %}
         {% endfor %}
+        
     </tbody>
 </table>
 
@@ -230,11 +238,13 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
 
 <pre><code>&lt;head&gt;
     &lt;link rel="stylesheet" href="assets/css/style.css" /&gt;
-    &lt;title&gt;{{ title }}&lt;/title&gt;
+    &lt;title&gt;&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;div id="content"&gt;
+    
     {% block content %}{% endblock %}
+    
     &lt;/div&gt;
 &lt;/body&gt;
 </code></pre>
@@ -245,10 +255,12 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
 <p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
 
 <p><code>html
+
 {% extends "base.html" %}
 {% block content %}
    &lt;h1&gt;Hello World!&lt;/h1&gt;
 {% endblock %}
+
 </code></p>
 
 <p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
@@ -298,7 +310,9 @@ $data = array(</p>
 <p>```html</p>
 
 <p>
+
 {{ "Hi I'm %s, I am %s years old" | format(name, age) }}
+
 </p>
 
 
@@ -330,7 +344,9 @@ $data = array(</p>
 <p>```html</p>
 
 <p>
+
     {{ string | nl2br }}
+    
 </p>
 
 
@@ -353,14 +369,16 @@ $date = array(</p>
 ?>
 ```</p>
 
-<p>```html</p>
+<p>```html
+</p>
 
 <p>
     {{ date | date_modify("+1 week") | date('M d, Y') }}
 </p>
 
 
-<p>```</p>
+<p>
+```</p>
 
 <p>The code above will output.</p>
 
@@ -373,8 +391,10 @@ Aug 03, 2015
 <p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
 
 <p><code>
+
 {{ 'MAKE ME LOWER' | lower }}
 {{ 'make me higher' | upper }}
+
 </code></p>
 
 <p>The output will be:</p>
@@ -422,12 +442,12 @@ to create an output: a data source and a template.</p>
 <p>Mustache mainly accepts JavaScript objects as its data source
 and an html string for the template.</p>
 
-<p>{% raw %}
+<p>
 <code>javascript
 var name_obj = {'name' : 'Killua Zoldyc'}; //data source
 var name_template = "&lt;h1&gt;{{name}}&lt;/h1&gt;"; //template
 </code>
-{% endraw %}</p>
+</p>
 
 <p>After that, we can call the <code>Mustache.to_html()</code> method
 to merge the data source and the template together:</p>
@@ -461,7 +481,7 @@ var hunters = {</p>
 <p>For the template were going to make use of a table to display
 both their names and nen ability:</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="hunters" type="text/html">
@@ -483,20 +503,20 @@ both their names and nen ability:</p>
 
 <p> <br/>
 ```
-{% endraw %}</p>
+</p>
 
 <p>On our previous example we made use of a variable which stores an html string for the template.
 But for the example above were using a <code>script</code> tag which has a type of <code>text/html</code> and plain html on its body.</p>
 
 <p>We also used a new pair of tags for looping through the items in the array:</p>
 
-<p>{% raw %}
+<p>
 <code>
 {{#hunters}}
   #access the value for each of the properties here
 {{/hunters}}
 </code>
-{% endraw %}</p>
+</p>
 
 <p>The hash <code>#</code> marks the start of the loop and the forward slash <code>/</code> marks its end.
 Then within those tags you can access the properties of the object.
@@ -513,7 +533,7 @@ method inside jQuery&rsquo;s <code>document.read</code> event.</p>
 
 <p>```</p>
 
-<p>{% raw %}
+<p>
 ```
 var hunters_html = Mustache.to_html($(&lsquo;#hunters&rsquo;).html(), hunters);
 $(function(){</p>
@@ -523,9 +543,9 @@ $(function(){</p>
 
 <p>});
 ```
-{% endraw %}</p>
+</p>
 
-<p>{% jsfiddle aj73t %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aj73t/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h4>Arrays</h4>
 
@@ -545,7 +565,7 @@ var hunter_names = {</p>
 
 <p>To access each of the items in the <code>hunter_names</code> array all we have to do is to place a dot <code>.</code> inside the template tags. The dot represents the current item in the array:</p>
 
-<p>{% raw %}
+<p>
 ```</p>
 
 <script type="text/html" id="hunter_names">
@@ -556,9 +576,9 @@ var hunter_names = {</p>
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
-<p>{% jsfiddle Tb8pu %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Tb8pu/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h4>Functions</h4>
 
@@ -612,7 +632,7 @@ It seems like Mustache already does some of its sorcery once we call the    <cod
 cart.cart[0].subtotal();
 </code></p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="functions" type="text/html">
@@ -636,17 +656,17 @@ cart.cart[0].subtotal();
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>The common use cases for functions is when checking for the existence or truthiness of a value, computing values, and adding extra markup based on a certain condition.</p>
 
-<p>{% jsfiddle mGmPG/2 %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mGmPG/2/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h3>Handlebars</h3>
 
 <p>There&rsquo;s not really much difference between Mustache and Handlebars.</p>
 
-<p>They still use the same template tags which looks like a double mustache <code>{{}}</code>.
+<p>They still use the same template tags which looks like a double mustache <code></code>.
 But the template tags also look like the Handlebars of a bicycle so maybe that&rsquo;s the reason behind the naming of this templating library.</p>
 
 <p>Handlebars packs more features than Mustache since it has some simple logic tags which you can use like <code>if</code> , <code>with</code> and <code>each</code>. I believe templates should contain less logic as possible since templates are only for presentation.</p>
@@ -691,7 +711,7 @@ var subtotal = function(){
 <p>And for the template the only change that we have here is the value of the type attribute of the script tag.
 In this case the value is <code>text/x-handlebars-template</code>.</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="functions" type="text/x-handlebars-template">
@@ -716,7 +736,7 @@ In this case the value is <code>text/x-handlebars-template</code>.</p>
 
 <p> <br/>
 ```
-{% endraw %}</p>
+</p>
 
 <p>Handlebars isn&rsquo;t really picky when it comes to the value of tye <code>type</code> attribute.
 You can actually use <code>text/html</code> as the value or nothing at all.</p>
@@ -742,13 +762,13 @@ var cart_html = Handlebars.compile($('#functions').html());
 $('.container').html(cart_html(cart));
 </code></p>
 
-<p>{% jsfiddle H8Bac %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/H8Bac/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <p>In the above example we did not explicitly specify that we want to loop through the items in the cart.
 In handlebars there&rsquo;s actually an alternative syntax for looping through the items in an array.
 And that is by using the <code>each</code> keyword followed by the name of the array.</p>
 
-<p>{% raw %}
+<p>
 <code>html
 {{#each cart}}
 &lt;tr&gt;
@@ -759,7 +779,7 @@ And that is by using the <code>each</code> keyword followed by the name of the a
 &lt;/tr&gt;
 {{/each}}
 </code>
-{% endraw %}</p>
+</p>
 
 <h4>With</h4>
 
@@ -782,7 +802,7 @@ var hunter = {</p>
 
 <p>Then our template:</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="hunter" type="text/x-handlebars-template">
@@ -803,14 +823,14 @@ var hunter = {</p>
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>As you can see from the template above we have change the context to <code>hunter</code> so any properties that are defined inside the <code>hunter</code> object will be accessible as long as they are within the <code>with</code> tags.</p>
 
 <p>But if you want to access properties outside of the current context you can use <code>../</code> just like what we do when stepping back a single directory when linking assets relatively in html.
 From our example the <code>family_occupation</code> property is outside the <code>hunter</code> object so we&rsquo;ve used <code>../</code> to step back.</p>
 
-<p>{% jsfiddle ZprP6 %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZprP6/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h4>If</h4>
 
@@ -863,7 +883,7 @@ var family = {</p>
 
 <p>We can then use <code>if</code> and <code>else</code> to check if the value is present or not and output something else if the value is not present:</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="ifs" type="text/x-handlebars-template">
@@ -896,9 +916,9 @@ var family = {</p>
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
-<p>{% jsfiddle J8qXs %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/J8qXs/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h4>Helpers</h4>
 
@@ -928,7 +948,7 @@ Handlebars.registerHelper('multiply_by_10', function(num){
 
 <p>We can then create the template and call the helper that we just created, supplying the current item in the array of numbers. The current item in an array is represented by <code>this</code> in Handlebars.</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="helpers" type="text/x-handlebars-template">
@@ -947,7 +967,7 @@ Handlebars.registerHelper('multiply_by_10', function(num){
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>Let&rsquo;s do another example, this time were going to use the cart object that we used earlier.
 But now we&rsquo;ll remove the <code>subtotal</code> property since we will let our helper take care of that.</p>
@@ -1005,7 +1025,7 @@ We then append this value to the the <code>table_headers</code> variable.</p>
 
 <p>After looping through all of the properties of the object we then return the string accumulated by the <code>table_headers</code> variable. We have to return a <code>new Handlebars.SafeString(html_string)</code> because Handlebars automatically escapes HTML tags. This is a way of telling Handlebars not to escape the specific HTML that were trying to return from the helper.</p>
 
-<p>{% jsfiddle tENVa %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tENVa/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h4>JSON</h4>
 
@@ -1015,7 +1035,7 @@ so were going to make use of the data from Twitter as the data source for our te
 
 <p>Here&rsquo;s our template:</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <script id="tweets">
@@ -1037,7 +1057,7 @@ so were going to make use of the data from Twitter as the data source for our te
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>Then extend the String prototype by adding a method called <code>replaceArray</code> this method will take two arrays as arguments. All it does is to loop through the <code>find</code> array and replaces the current item in the <code>find</code> array with the current item in the <code>replace</code> array and then assign it back to the original string which is represented by <code>this</code>. After looping through all of the items it just returns the string which now has been replaced with the items in the <code>replace</code> array:</p>
 
@@ -1134,7 +1154,7 @@ success: function(tweets){
 <p>});
 ```</p>
 
-<p>{% jsfiddle aZra5 %}</p>
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aZra5/embedded/js,resources,html,css,result/light/"></iframe></p>
 
 <h3>Smarty</h3>
 
@@ -1189,7 +1209,7 @@ $smarty-&gt;assign('anime', $names);
 <p>For our template we simply loop through the items in the array.
 Here were using <code>foreach</code> to loop through the items.</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <h1>Anime</h1>
@@ -1199,7 +1219,7 @@ Here were using <code>foreach</code> to loop through the items.</p>
   <li>{$n}</li>
 {/foreach}
 ```
-{% endraw %}</p>
+</p>
 
 <p>For our final example were just going to reuse the cart that we had earlier:</p>
 
@@ -1236,7 +1256,7 @@ $cart = array(
 
 <p>And for the template:</p>
 
-<p>{% raw %}
+<p>
 ```html</p>
 
 <h2>Cart</h2>
@@ -1261,7 +1281,7 @@ $cart = array(
 
 <p>There are {$cart|count} items in the cart.
 ```
-{% endraw %}</p>
+</p>
 
 <p>Some of the functions that you can use on PHP can also be used inside Smarty templates.
 For the code above we have used the <code>count</code> function. To use a function inside a template you simply specify the value that you want to supply as the argument of the function and then followed by a pipe <code>|</code> and then the function name, in this case the function name is <code>count</code> which simply returns how many items are in the array that was specified.</p>

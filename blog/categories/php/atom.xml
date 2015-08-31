@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-31T19:40:39+08:00</updated>
+  <updated>2015-08-31T20:04:39+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -70,6 +70,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'age' =&gt; 19));
 <p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
 
 <p>```html
+
 &lt;!DOCTYPE html>
 <html lang="en">
 <head></p>
@@ -87,6 +88,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'age' =&gt; 19));
 
 <p></body>
 </html>
+
 ```</p>
 
 <p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
@@ -114,6 +116,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'html_string' =&gt; '&l
 <p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
 
 <p>```html
+
 <body></p>
 
 <pre><code>&lt;h1&gt;Hi {{ name }}!&lt;/h1&gt;
@@ -122,6 +125,7 @@ echo $template-&gt;render(array('name' =&gt; 'John Doe', 'html_string' =&gt; '&l
 </code></pre>
 
 <p></body>
+
 ```</p>
 
 <h4>Looping through Arrays</h4>
@@ -171,12 +175,14 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
         </tr>
     </thead>
     <tbody>
+        
         {% for user in users %}
         <tr>
             <td>{{ user.name }}</td>
             <td>{{ user.age }}</td>
         </tr>
         {% endfor %}
+        
     </tbody>
 </table>
 
@@ -204,6 +210,7 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
         </tr>
     </thead>
     <tbody>
+        
         {% for user in users %}
             {% if user.age >= 14 %}
             <tr>
@@ -212,6 +219,7 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
             </tr>
             {% endif %}
         {% endfor %}
+        
     </tbody>
 </table>
 
@@ -230,11 +238,13 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
 
 <pre><code>&lt;head&gt;
     &lt;link rel="stylesheet" href="assets/css/style.css" /&gt;
-    &lt;title&gt;{{ title }}&lt;/title&gt;
+    &lt;title&gt;&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;div id="content"&gt;
+    
     {% block content %}{% endblock %}
+    
     &lt;/div&gt;
 &lt;/body&gt;
 </code></pre>
@@ -245,10 +255,12 @@ $template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
 <p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
 
 <p><code>html
+
 {% extends "base.html" %}
 {% block content %}
    &lt;h1&gt;Hello World!&lt;/h1&gt;
 {% endblock %}
+
 </code></p>
 
 <p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
@@ -298,7 +310,9 @@ $data = array(</p>
 <p>```html</p>
 
 <p>
+
 {{ "Hi I'm %s, I am %s years old" | format(name, age) }}
+
 </p>
 
 
@@ -330,7 +344,9 @@ $data = array(</p>
 <p>```html</p>
 
 <p>
+
     {{ string | nl2br }}
+    
 </p>
 
 
@@ -353,14 +369,16 @@ $date = array(</p>
 ?>
 ```</p>
 
-<p>```html</p>
+<p>```html
+</p>
 
 <p>
     {{ date | date_modify("+1 week") | date('M d, Y') }}
 </p>
 
 
-<p>```</p>
+<p>
+```</p>
 
 <p>The code above will output.</p>
 
@@ -373,8 +391,10 @@ Aug 03, 2015
 <p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
 
 <p><code>
+
 {{ 'MAKE ME LOWER' | lower }}
 {{ 'make me higher' | upper }}
+
 </code></p>
 
 <p>The output will be:</p>

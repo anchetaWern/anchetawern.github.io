@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial were going to build an app that would allow users to search for a specific place and then find nearby places based on a specific &hellip;">
+  <meta name="description" content="Amazon S3 is Amazon&rsquo;s file storage service. It allows users to upload their files to their server, for later access or for sharing to other &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,230 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/05/getting-started-with-amazon-s3/">Getting Started With Amazon S3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-05T05:28:00+08:00" pubdate data-updated="true">Jun 5<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/06/05/getting-started-with-amazon-s3/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Amazon S3 is Amazon&rsquo;s file storage service. It allows users to upload their files to their server, for later access or for sharing to other people. In this tutorial I&rsquo;m going to walk you through how to use amazon s3 within your PHP applications.</p>
+
+<p>First thing that you need to do is create a <code>composer.json</code> file and add the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "require": {
+</span><span class='line'>        "aws/aws-sdk-php": "2.7.*@dev"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next execute <code>composer install</code> from your terminal to install the Amazon Web Service SDK.</p>
+
+<p>Once the installation is done you can now create a <code>tester.php</code> file which we will use for interacting with the Amazon AWS API. Add the following code to the file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Aws\S3\Exception\S3Exception</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Aws\Common\Aws</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What the code above does is include the autoload file so that we can use the AWS SDK from our file. Next we set to use the <code>Aws\S3\Exception\S3Exception</code> and <code>Aws\Common\Aws</code> namespace so can access the different classes that are available in those namespaces. One of which classes is the <code>Aws</code> class which we can use to set the configuration options for the Bucket where we are trying to connect to. All we have to do is call the <code>factory</code> method and pass in the path to the configuration file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$aws</span> <span class="o">=</span> <span class="nx">Aws</span><span class="o">::</span><span class="na">factory</span><span class="p">(</span><span class="s1">&#39;config.php&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The configuration file contains the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">return</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;includes&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;_aws&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;services&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;default_settings&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;params&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;credentials&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s1">&#39;key&#39;</span>    <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_KEY&#39;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s1">&#39;secret&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_SECRET&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;region&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_BUCKET_REGION&#39;</span>
+</span><span class='line'>            <span class="p">)</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The configuration file basically just returns an array that contains the options that we need. First of those is the <code>includes</code>, which allows us to bootstrap the configuration file with AWS specific features. Next is the <code>services</code> where we specify the API credentials and region.</p>
+
+<h4>Uploading Files</h4>
+
+<p>Once that&rsquo;s done we can now upload files to the s3 bucket of your choice by using the <code>$aws</code> object and calling the <code>get</code> method. This method takes up the name of the AWS service you want use. In this case were using s3 so we put in <code>s3</code>. Next we call the <code>putObject</code> method on the <code>$s3</code> object and pass in the required parameters as an array. The required keys are <code>Bucket</code>, <code>Key</code>, <code>Body</code> and <code>ACL</code>. <code>Bucket</code> is the name of the bucket where you want to upload the file. <code>Key</code> is the path to the file. With s3 you don&rsquo;t have to worry if the directory where you are uploading the file already exists. No matter how deep it is, s3 automatically creates the directories for you. Next is the <code>Body</code> which takes up the results of the <code>fopen</code> method call. This method takes up the path to the file in your local computer and the operation you want to perform. In this case we just want to read the file contents so we specify <code>r</code>. Next is the <code>ACL</code> or the Access Control List of an object. Its basically like a file permission. Here we specified <code>public-read</code> which means that the file can be read publically. For more information about ACL, you can check out <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">this page</a>. We wrap all of those code inside a try catch so we can handle errors gracefully.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$s3</span> <span class="o">=</span> <span class="nv">$aws</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">putObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Body&#39;</span> <span class="o">=&gt;</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;/path/to/file_to_uploads&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s1">&#39;ACL&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;public-read&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">));</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span> <span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error uploading the file.&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Deleting Files</h3>
+
+<p>Next here&rsquo;s how to delete existing files from your s3 bucket. This uses the <code>deleteObject</code> method which takes up the name of the bucket and the path to the file as its argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">deleteObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span>
+</span><span class='line'>    <span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error deleting the file.&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Listing Buckets</h3>
+
+<p>Lastly here&rsquo;s how to get a list of buckets that are currently in your Amazon Account:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">listBuckets</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;Buckets&#39;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$bucket</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;CreationDate&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with Amazon S3 from within your PHP applications. Specifically, we&rsquo;ve taken a look at how to upload files, delete files and list buckets.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/guide/service-s3.html">Amazon Simple Storage Service PHP Guide</a></li>
+<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/api/class-Aws.S3.S3Client.html">AWS S3 API Reference</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -4037,61 +4261,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/">How to Assign a Namecheap Domain Name on a DigitalOcean Droplet</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-15T07:30:00+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to assign a domain name bought from namecheap into your digitalocean droplet.</p>
-
-<p>First login to your namecheap account. Click on the <strong>manage domains</strong> menu that can be found under your username. Click on the domain name that you want to assign. On the menus on the left side, under the general section. Click on the <strong>Domain name server setup</strong> link. Once in that page, select the <strong>specify custom DNS servers</strong> option. And then enter the following:</p>
-
-<ul>
-<li>ns1.digitalocean.com</li>
-<li>ns2.digitalocean.com</li>
-<li>ns3.digitalocean.com</li>
-</ul>
-
-
-<p>Next login to your digitalocean account and navigate to the droplet that you want to use. From your droplets main page, click on the <strong>DNS</strong> link. Next click on the <strong>Add Domain</strong> button. This shows the form for adding a new domain. Set the value of the name to the domain name that you&rsquo;re trying to assign and the ip address to the ip address of your droplet or just select your droplet from the dropdown.</p>
-
-<p><img src="/images/posts/digitalocean_namecheap/digitalocean-dns.png" alt="dns settings" /></p>
-
-<p>Once you&rsquo;ve filled all that out, click on the <strong>create domain</strong> button.</p>
-
-<p>That&rsquo;s it! Just wait for about 30 minutes to an hour for the settings to propagate. And once that&rsquo;s done, you can now access your droplet using the domain name that you assigned.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -4109,6 +4278,10 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/">Using the Twig Templating Engine in PHP</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/">What Playing Clash of Clans Can Teach You About Life</a>
       </li>
     
@@ -4122,10 +4295,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
     
       <li class="post">
         <a href="/blog/2015/08/02/introduction-to-staticizer/">Introduction to Staticizer</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/26/implementing-video-calls-with-peerjs/">Implementing Video Calls with PeerJS</a>
       </li>
     
   </ul>

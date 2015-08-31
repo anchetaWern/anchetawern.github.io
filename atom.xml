@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-23T13:01:30+08:00</updated>
+  <updated>2015-08-31T20:04:39+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,529 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using the Twig Templating Engine in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php/"/>
+    <updated>2015-08-31T21:40:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php</id>
+    <content type="html"><![CDATA[<p>Separation of concerns is a design principle in Computer Science for separating a program into sections, each with their own responsibility. MVC, an architectural pattern used in most PHP frameworks allows developers to implement separation of concerns. One part of MVC is the View which handles the presentation layer of the application. In this tutorial I&rsquo;ll walk you through Twig, a templating engine for PHP. This allows us to separate the view from the business logic of the app.</p>
+
+<h3>Installation</h3>
+
+<p>Execute the following on your terminal to install Twig.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require twig/twig</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In your working directory, create a <code>template</code> folder for storing the Twig templates and a <code>cache</code> folder for storing the cached templates. Twig puts the compiled version of templates into this folder so that the next time it&rsquo;s requested and there&rsquo;s no change in the template, it serves the cached version instead. Be sure to change the file permissions of the <code>cache</code> folder so that Twig can write into it. I had to do the following to have it work.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo chmod -R 777 cache</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To use Twig, include the vendor autoload file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a new instance of the <code>Twig_Loader_Filesystem</code> class and supply the path to the <code>templates</code> directory as its argument. After that, create a new instance of the <code>Twig_Environment</code> class and pass in the loader and an array of options as its argument. In this case, only the <code>cache</code> item is specified. This allows you specify the path of the <code>cache</code> directory.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Loader_Filesystem</span><span class="p">(</span><span class="s1">&#39;templates&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$twig</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Environment</span><span class="p">(</span><span class="nv">$loader</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;cache&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;cache&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To load a template, use the <code>loadTemplate</code> method on the Twig instance that you created earlier. Then pass in the path to the template that you want to use. After that, you can now output the view by calling the <code>render</code> method on the template. This accepts the data that you want to pass in to the view.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">19</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>twig<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/twig/twig-first.png" alt="twig hello world" /></p>
+
+<p>Note that Twig is pretty forgiving when it comes to data that you pass in to the template. For example, if you do not pass in the <code>age</code>, it wouldn&rsquo;t throw an error at you.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Outputting Raw HTML</h4>
+
+<p>Twig automatically escapes HTML so if you pass in HTML as data for your template, it is outputted as is.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;html_string&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&lt;h3&gt;hi Im an html inside a template&lt;/h3&gt;&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>    {{ html_string | raw }}
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Looping through Arrays</h4>
+
+<p>You can also load arrays for the data.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;users&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Yoh Asakura&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">14</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Naruto Uzumaki&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">25</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the way you output them in your template is by using the <code>for</code> tag. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% for user in users %}
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>        {% endfor %}
+</span><span class='line'>        
+</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use the <code>for</code> tag, assign an alias for each item in the array that you specified. In this case, the array is <code>users</code> and each item is represented by the <code>user</code> variable. Inside the <code>for</code> tag, you can then access each user field. After you have outputted all the user details, close it with the <code>endfor</code> tag.</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/twig/array.png" alt="for" /></p>
+
+<h4>Conditions</h4>
+
+<p>Twig allows you to use tags such as <code>if</code>, <code>else</code>, <code>elseif</code>, and <code>if not</code> for checking for simple conditions in your templates. Here&rsquo;s an example of using the <code>if</code> tag for checking if the age of the user is greater than or equal to 14.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% for user in users %}
+</span><span class='line'>            {% if user.age &gt;= 14 %}
+</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>            {% endif %}
+</span><span class='line'>        {% endfor %}
+</span><span class='line'>        
+</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://wern-ancheta.com/images/posts/twig/if.png" alt="if" /></p>
+
+<h4>Layouts</h4>
+
+<p>Layouts can be used in order to avoid repitition of re-occurring elements of the page such as the header and the footer. To use layouts, you need a base template (<code>base.html</code>). This is the template that contains all the re-occurring elements of the page. This is essentially the main template in which all the other templates (child templates) inherits from. Your main template is where you usually declare the content block. This is the block that&rsquo;s going to get replaced by the content that you supply on your child template.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;assets/css/style.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;title&gt;</span><span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% block content %}{% endblock %}
+</span><span class='line'>        
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'>{% extends &quot;base.html&quot; %}
+</span><span class='line'>{% block content %}
+</span><span class='line'>   <span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>{% endblock %}
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">background</span><span class="o">:</span> <span class="nb">orange</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, from your PHP file, all you need to do is render the child template.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;child.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;my page&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s how its going to look like:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/twig/layouts.png" alt="layouts" /></p>
+
+<h4>Filters</h4>
+
+<p>Twig also comes with filters. Filters as the name suggests, allows you to filter the content that you pass into it.</p>
+
+<h5>Format</h5>
+
+<p>If you need to perform a find and replace on a string, you can use the <code>format</code> filter. Here&rsquo;s how you can use it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ami Damaru&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">110</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>
+</span><span class='line'>{{ &quot;Hi I&#39;m %s, I am %s years old&quot; | format(name, age) }}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you have seen above, to use the <code>format</code> filter, simply pipe it to the string that you want to perform find and replace on. Each string that you want to replace within the string should be <code>%s</code>. So in this case, the name and age is substituted for that value. It should result in the following output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Hi I&#39;m Ami Damaru, I am 110 years old
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>nl2br</h5>
+
+<p>The <code>nl2br</code> filter allows you to replace line breaks (<code>\n</code>) in your string with <code>&lt;br /&gt;</code> tags. This is useful if you want to output a string which uses line breaks instead of <code>&lt;br /&gt;</code> tags.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;string&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;The quick brown fox</span><span class="se">\n</span><span class="s2"> jumps over the heade</span><span class="se">\n</span><span class="s2"> of the lazy dog&quot;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    {{ string | nl2br }}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>date and date_modify</h5>
+
+<p>The <code>date</code> and <code>date_modify</code> filters allows you to modify the formatting of a date.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$date</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;date&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;2015-03-17&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>    {{ date | date_modify(&quot;+1 week&quot;) | date(&#39;M d, Y&#39;) }}
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above will output.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Aug 03, 2015
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>upper and lower</h5>
+
+<p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'>{{ &#39;MAKE ME LOWER&#39; | lower }}
+</span><span class='line'>{{ &#39;make me higher&#39; | upper }}
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will be:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>make me lower MAKE ME HIGHER
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with Twig, a templating engine for PHP. For more information about Twig, check out the <a href="http://twig.sensiolabs.org/documentation">official docs</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[What Playing Clash of Clans Can Teach You About Life]]></title>
@@ -653,10 +1176,7 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
 <li>Darker than Black</li>
 <li>Full Metal Alchemist: Brotherhood</li>
 <li>Steins;Gate</li>
-<li><ol type="a">
-<li>Gray Man</li>
-</ol>
-</li>
+<li>DGray Man</li>
 <li>Hunter X Hunter</li>
 <li>The Melancholy of Haruhi Suzumiya</li>
 <li>K-on</li>
@@ -4637,32 +5157,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <li><a href="https://stripe.com/docs/api?lang=php">Stripe API</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to Assign a Namecheap Domain Name on a DigitalOcean Droplet]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet/"/>
-    <updated>2015-03-15T07:30:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/03/15/how-to-assign-a-namecheap-domain-name-on-a-digitalocean-droplet</id>
-    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll be showing you how to assign a domain name bought from namecheap into your digitalocean droplet.</p>
-
-<p>First login to your namecheap account. Click on the <strong>manage domains</strong> menu that can be found under your username. Click on the domain name that you want to assign. On the menus on the left side, under the general section. Click on the <strong>Domain name server setup</strong> link. Once in that page, select the <strong>specify custom DNS servers</strong> option. And then enter the following:</p>
-
-<ul>
-<li>ns1.digitalocean.com</li>
-<li>ns2.digitalocean.com</li>
-<li>ns3.digitalocean.com</li>
-</ul>
-
-
-<p>Next login to your digitalocean account and navigate to the droplet that you want to use. From your droplets main page, click on the <strong>DNS</strong> link. Next click on the <strong>Add Domain</strong> button. This shows the form for adding a new domain. Set the value of the name to the domain name that you&rsquo;re trying to assign and the ip address to the ip address of your droplet or just select your droplet from the dropdown.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/digitalocean_namecheap/digitalocean-dns.png" alt="dns settings" /></p>
-
-<p>Once you&rsquo;ve filled all that out, click on the <strong>create domain</strong> button.</p>
-
-<p>That&rsquo;s it! Just wait for about 30 minutes to an hour for the settings to propagate. And once that&rsquo;s done, you can now access your droplet using the domain name that you assigned.</p>
 ]]></content>
   </entry>
   
