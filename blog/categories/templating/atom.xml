@@ -4,7 +4,7 @@
   <title><![CDATA[Category: templating | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/templating/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-08-23T13:01:30+08:00</updated>
+  <updated>2015-08-31T08:51:17+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,382 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using the Twig Templating Engine in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php/"/>
+    <updated>2015-08-31T21:40:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php</id>
+    <content type="html"><![CDATA[<p>Separation of concerns is a design principle in Computer Science for separating a program into sections, each with their own responsibility. MVC, an architectural pattern used in most PHP frameworks allows developers to implement separation of concerns. One part of MVC is the View which handles the presentation layer of the application. In this tutorial I&rsquo;ll walk you through Twig, a templating engine for PHP. This allows us to separate the view from the business logic of the app.</p>
+
+<h3>Installation</h3>
+
+<p>Execute the following on your terminal to install Twig.</p>
+
+<p><code>
+composer require twig/twig
+</code></p>
+
+<p>In your working directory, create a <code>template</code> folder for storing the Twig templates and a <code>cache</code> folder for storing the cached templates. Twig puts the compiled version of templates into this folder so that the next time it&rsquo;s requested and there&rsquo;s no change in the template, it serves the cached version instead. Be sure to change the file permissions of the <code>cache</code> folder so that Twig can write into it. I had to do the following to have it work.</p>
+
+<p><code>
+sudo chmod -R 777 cache
+</code></p>
+
+<h3>Usage</h3>
+
+<p>To use Twig, include the vendor autoload file.</p>
+
+<p><code>php
+&lt;?php
+require_once 'vendor/autoload.php';
+?&gt;
+</code></p>
+
+<p>Next create a new instance of the <code>Twig_Loader_Filesystem</code> class and supply the path to the <code>templates</code> directory as its argument. After that, create a new instance of the <code>Twig_Environment</code> class and pass in the loader and an array of options as its argument. In this case, only the <code>cache</code> item is specified. This allows you specify the path of the <code>cache</code> directory.</p>
+
+<p>```php
+&lt;?php
+$loader = new Twig_Loader_Filesystem(&lsquo;templates&rsquo;);
+$twig = new Twig_Environment($loader, array(</p>
+
+<pre><code>'cache' =&gt; 'cache',
+</code></pre>
+
+<p>));
+?>
+```</p>
+
+<p>To load a template, use the <code>loadTemplate</code> method on the Twig instance that you created earlier. Then pass in the path to the template that you want to use. After that, you can now output the view by calling the <code>render</code> method on the template. This accepts the data that you want to pass in to the view.</p>
+
+<p><code>php
+&lt;?php
+$template = $twig-&gt;loadTemplate('index.html');
+echo $template-&gt;render(array('name' =&gt; 'John Doe', 'age' =&gt; 19));
+?&gt;
+</code></p>
+
+<p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
+
+<p>```html
+&lt;!DOCTYPE html>
+<html lang="en">
+<head></p>
+
+<pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;twig&lt;/title&gt;
+</code></pre>
+
+<p></head>
+<body></p>
+
+<pre><code>&lt;h1&gt;Hi {{ name }}!&lt;/h1&gt;
+&lt;h2&gt;You are {{ age }} years old&lt;/h2&gt;
+</code></pre>
+
+<p></body>
+</html>
+```</p>
+
+<p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
+
+<p><img src="/images/posts/twig/twig-first.png" alt="twig hello world" /></p>
+
+<p>Note that Twig is pretty forgiving when it comes to data that you pass in to the template. For example, if you do not pass in the <code>age</code>, it wouldn&rsquo;t throw an error at you.</p>
+
+<p><code>php
+&lt;?php
+echo $template-&gt;render(array('name' =&gt; 'John Doe'));
+?&gt;
+</code></p>
+
+<h4>Outputting Raw HTML</h4>
+
+<p>Twig automatically escapes HTML so if you pass in HTML as data for your template, it is outputted as is.</p>
+
+<p><code>php
+&lt;?php
+echo $template-&gt;render(array('name' =&gt; 'John Doe', 'html_string' =&gt; '&lt;h3&gt;hi Im an html inside a template&lt;/h3&gt;'));
+?&gt;
+</code></p>
+
+<p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
+
+<p>```html
+<body></p>
+
+<pre><code>&lt;h1&gt;Hi {{ name }}!&lt;/h1&gt;
+&lt;h2&gt;You are {{ age }} years old&lt;/h2&gt;
+{{ html_string | raw }}
+</code></pre>
+
+<p></body>
+```</p>
+
+<h4>Looping through Arrays</h4>
+
+<p>You can also load arrays for the data.</p>
+
+<p>```php
+&lt;?php
+$template = $twig->loadTemplate(&lsquo;index.html&rsquo;);</p>
+
+<p>$data = array(</p>
+
+<pre><code>'users' =&gt; array(
+    array(
+        'name' =&gt; 'Yoh Asakura',
+        'age' =&gt; 10
+    ),
+    array(
+        'name' =&gt; 'Ash Ketchum',
+        'age' =&gt; 14
+    ),
+    array(
+        'name' =&gt; 'Naruto Uzumaki',
+        'age' =&gt; 25
+    )
+)
+</code></pre>
+
+<p>);</p>
+
+<p>echo $template->render($data);
+?>
+```</p>
+
+<p>And the way you output them in your template is by using the <code>for</code> tag. Here&rsquo;s an example.</p>
+
+<p>```html</p>
+
+<h1>Users</h1>
+
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.age }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<p>```</p>
+
+<p>To use the <code>for</code> tag, assign an alias for each item in the array that you specified. In this case, the array is <code>users</code> and each item is represented by the <code>user</code> variable. Inside the <code>for</code> tag, you can then access each user field. After you have outputted all the user details, close it with the <code>endfor</code> tag.</p>
+
+<p><img src="/images/posts/twig/array.png" alt="for" /></p>
+
+<h4>Conditions</h4>
+
+<p>Twig allows you to use tags such as <code>if</code>, <code>else</code>, <code>elseif</code>, and <code>if not</code> for checking for simple conditions in your templates. Here&rsquo;s an example of using the <code>if</code> tag for checking if the age of the user is greater than or equal to 14.</p>
+
+<p>```html</p>
+
+<h1>Users</h1>
+
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            {% if user.age >= 14 %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.age }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<p>```</p>
+
+<p><img src="/images/posts/twig/if.png" alt="if" /></p>
+
+<h4>Layouts</h4>
+
+<p>Layouts can be used in order to avoid repitition of re-occurring elements of the page such as the header and the footer. To use layouts, you need a base template (<code>base.html</code>). This is the template that contains all the re-occurring elements of the page. This is essentially the main template in which all the other templates (child templates) inherits from. Your main template is where you usually declare the content block. This is the block that&rsquo;s going to get replaced by the content that you supply on your child template.</p>
+
+<p>```html
+&lt;!DOCTYPE html>
+<html></p>
+
+<pre><code>&lt;head&gt;
+    &lt;link rel="stylesheet" href="assets/css/style.css" /&gt;
+    &lt;title&gt;{{ title }}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="content"&gt;
+    {% block content %}{% endblock %}
+    &lt;/div&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p></html>
+```</p>
+
+<p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
+
+<p><code>html
+{% extends "base.html" %}
+{% block content %}
+   &lt;h1&gt;Hello World!&lt;/h1&gt;
+{% endblock %}
+</code></p>
+
+<p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
+
+<p>```css
+body {</p>
+
+<pre><code>background: orange;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Finally, from your PHP file, all you need to do is render the child template.</p>
+
+<p><code>php
+&lt;?php
+$template = $twig-&gt;loadTemplate('child.html');
+echo $template-&gt;render(array('title' =&gt; 'my page'));
+?&gt;
+</code></p>
+
+<p>Here&rsquo;s how its going to look like:</p>
+
+<p><img src="/images/posts/twig/layouts.png" alt="layouts" /></p>
+
+<h4>Filters</h4>
+
+<p>Twig also comes with filters. Filters as the name suggests, allows you to filter the content that you pass into it.</p>
+
+<h5>Format</h5>
+
+<p>If you need to perform a find and replace on a string, you can use the <code>format</code> filter. Here&rsquo;s how you can use it.</p>
+
+<p>```php
+&lt;?php
+$data = array(</p>
+
+<pre><code>'name' =&gt; 'Ami Damaru',
+'age' =&gt; 110
+</code></pre>
+
+<p>);
+?>
+```</p>
+
+<p>```html</p>
+
+<p>
+{{ "Hi I'm %s, I am %s years old" | format(name, age) }}
+</p>
+
+
+<p>```</p>
+
+<p>As you have seen above, to use the <code>format</code> filter, simply pipe it to the string that you want to perform find and replace on. Each string that you want to replace within the string should be <code>%s</code>. So in this case, the name and age is substituted for that value. It should result in the following output:</p>
+
+<p><code>
+Hi I'm Ami Damaru, I am 110 years old
+</code></p>
+
+<h5>nl2br</h5>
+
+<p>The <code>nl2br</code> filter allows you to replace line breaks (<code>\n</code>) in your string with <code>&lt;br /&gt;</code> tags. This is useful if you want to output a string which uses line breaks instead of <code>&lt;br /&gt;</code> tags.</p>
+
+<p>```php
+&lt;?php
+$data = array(</p>
+
+<pre><code>'string' =&gt; "The quick brown fox\n jumps over the heade\n of the lazy dog"
+</code></pre>
+
+<p>);</p>
+
+<p>echo $template->render($data);
+?>
+```</p>
+
+<p>```html</p>
+
+<p>
+    {{ string | nl2br }}
+</p>
+
+
+<p>```</p>
+
+<h5>date and date_modify</h5>
+
+<p>The <code>date</code> and <code>date_modify</code> filters allows you to modify the formatting of a date.</p>
+
+<p>```php
+&lt;?php
+$date = array(</p>
+
+<pre><code>'date' =&gt; '2015-03-17'
+</code></pre>
+
+<p>);</p>
+
+<p>echo $template->render($data);
+?>
+```</p>
+
+<p>```html</p>
+
+<p>
+    {{ date | date_modify("+1 week") | date('M d, Y') }}
+</p>
+
+
+<p>```</p>
+
+<p>The code above will output.</p>
+
+<p><code>
+Aug 03, 2015
+</code></p>
+
+<h5>upper and lower</h5>
+
+<p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
+
+<p><code>
+{{ 'MAKE ME LOWER' | lower }}
+{{ 'make me higher' | upper }}
+</code></p>
+
+<p>The output will be:</p>
+
+<p><code>
+make me lower MAKE ME HIGHER
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with Twig, a templating engine for PHP. For more information about Twig, check out the <a href="http://twig.sensiolabs.org/documentation">official docs</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Playing with Templating Libraries]]></title>
@@ -46,12 +422,12 @@ to create an output: a data source and a template.</p>
 <p>Mustache mainly accepts JavaScript objects as its data source
 and an html string for the template.</p>
 
-<p>
+<p>{% raw %}
 <code>javascript
 var name_obj = {'name' : 'Killua Zoldyc'}; //data source
 var name_template = "&lt;h1&gt;{{name}}&lt;/h1&gt;"; //template
 </code>
-</p>
+{% endraw %}</p>
 
 <p>After that, we can call the <code>Mustache.to_html()</code> method
 to merge the data source and the template together:</p>
@@ -85,7 +461,7 @@ var hunters = {</p>
 <p>For the template were going to make use of a table to display
 both their names and nen ability:</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="hunters" type="text/html">
@@ -107,20 +483,20 @@ both their names and nen ability:</p>
 
 <p> <br/>
 ```
-</p>
+{% endraw %}</p>
 
 <p>On our previous example we made use of a variable which stores an html string for the template.
 But for the example above were using a <code>script</code> tag which has a type of <code>text/html</code> and plain html on its body.</p>
 
 <p>We also used a new pair of tags for looping through the items in the array:</p>
 
-<p>
+<p>{% raw %}
 <code>
 {{#hunters}}
   #access the value for each of the properties here
 {{/hunters}}
 </code>
-</p>
+{% endraw %}</p>
 
 <p>The hash <code>#</code> marks the start of the loop and the forward slash <code>/</code> marks its end.
 Then within those tags you can access the properties of the object.
@@ -137,7 +513,7 @@ method inside jQuery&rsquo;s <code>document.read</code> event.</p>
 
 <p>```</p>
 
-<p>
+<p>{% raw %}
 ```
 var hunters_html = Mustache.to_html($(&lsquo;#hunters&rsquo;).html(), hunters);
 $(function(){</p>
@@ -147,9 +523,9 @@ $(function(){</p>
 
 <p>});
 ```
-</p>
+{% endraw %}</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aj73t/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle aj73t %}</p>
 
 <h4>Arrays</h4>
 
@@ -169,7 +545,7 @@ var hunter_names = {</p>
 
 <p>To access each of the items in the <code>hunter_names</code> array all we have to do is to place a dot <code>.</code> inside the template tags. The dot represents the current item in the array:</p>
 
-<p>
+<p>{% raw %}
 ```</p>
 
 <script type="text/html" id="hunter_names">
@@ -180,9 +556,9 @@ var hunter_names = {</p>
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Tb8pu/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle Tb8pu %}</p>
 
 <h4>Functions</h4>
 
@@ -236,7 +612,7 @@ It seems like Mustache already does some of its sorcery once we call the    <cod
 cart.cart[0].subtotal();
 </code></p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="functions" type="text/html">
@@ -260,17 +636,17 @@ cart.cart[0].subtotal();
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>The common use cases for functions is when checking for the existence or truthiness of a value, computing values, and adding extra markup based on a certain condition.</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/mGmPG/2/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle mGmPG/2 %}</p>
 
 <h3>Handlebars</h3>
 
 <p>There&rsquo;s not really much difference between Mustache and Handlebars.</p>
 
-<p>They still use the same template tags which looks like a double mustache <code></code>.
+<p>They still use the same template tags which looks like a double mustache <code>{{}}</code>.
 But the template tags also look like the Handlebars of a bicycle so maybe that&rsquo;s the reason behind the naming of this templating library.</p>
 
 <p>Handlebars packs more features than Mustache since it has some simple logic tags which you can use like <code>if</code> , <code>with</code> and <code>each</code>. I believe templates should contain less logic as possible since templates are only for presentation.</p>
@@ -315,7 +691,7 @@ var subtotal = function(){
 <p>And for the template the only change that we have here is the value of the type attribute of the script tag.
 In this case the value is <code>text/x-handlebars-template</code>.</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="functions" type="text/x-handlebars-template">
@@ -340,7 +716,7 @@ In this case the value is <code>text/x-handlebars-template</code>.</p>
 
 <p> <br/>
 ```
-</p>
+{% endraw %}</p>
 
 <p>Handlebars isn&rsquo;t really picky when it comes to the value of tye <code>type</code> attribute.
 You can actually use <code>text/html</code> as the value or nothing at all.</p>
@@ -366,13 +742,13 @@ var cart_html = Handlebars.compile($('#functions').html());
 $('.container').html(cart_html(cart));
 </code></p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/H8Bac/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle H8Bac %}</p>
 
 <p>In the above example we did not explicitly specify that we want to loop through the items in the cart.
 In handlebars there&rsquo;s actually an alternative syntax for looping through the items in an array.
 And that is by using the <code>each</code> keyword followed by the name of the array.</p>
 
-<p>
+<p>{% raw %}
 <code>html
 {{#each cart}}
 &lt;tr&gt;
@@ -383,7 +759,7 @@ And that is by using the <code>each</code> keyword followed by the name of the a
 &lt;/tr&gt;
 {{/each}}
 </code>
-</p>
+{% endraw %}</p>
 
 <h4>With</h4>
 
@@ -406,7 +782,7 @@ var hunter = {</p>
 
 <p>Then our template:</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="hunter" type="text/x-handlebars-template">
@@ -427,14 +803,14 @@ var hunter = {</p>
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>As you can see from the template above we have change the context to <code>hunter</code> so any properties that are defined inside the <code>hunter</code> object will be accessible as long as they are within the <code>with</code> tags.</p>
 
 <p>But if you want to access properties outside of the current context you can use <code>../</code> just like what we do when stepping back a single directory when linking assets relatively in html.
 From our example the <code>family_occupation</code> property is outside the <code>hunter</code> object so we&rsquo;ve used <code>../</code> to step back.</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ZprP6/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle ZprP6 %}</p>
 
 <h4>If</h4>
 
@@ -487,7 +863,7 @@ var family = {</p>
 
 <p>We can then use <code>if</code> and <code>else</code> to check if the value is present or not and output something else if the value is not present:</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="ifs" type="text/x-handlebars-template">
@@ -520,9 +896,9 @@ var family = {</p>
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/J8qXs/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle J8qXs %}</p>
 
 <h4>Helpers</h4>
 
@@ -552,7 +928,7 @@ Handlebars.registerHelper('multiply_by_10', function(num){
 
 <p>We can then create the template and call the helper that we just created, supplying the current item in the array of numbers. The current item in an array is represented by <code>this</code> in Handlebars.</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="helpers" type="text/x-handlebars-template">
@@ -571,7 +947,7 @@ Handlebars.registerHelper('multiply_by_10', function(num){
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>Let&rsquo;s do another example, this time were going to use the cart object that we used earlier.
 But now we&rsquo;ll remove the <code>subtotal</code> property since we will let our helper take care of that.</p>
@@ -629,7 +1005,7 @@ We then append this value to the the <code>table_headers</code> variable.</p>
 
 <p>After looping through all of the properties of the object we then return the string accumulated by the <code>table_headers</code> variable. We have to return a <code>new Handlebars.SafeString(html_string)</code> because Handlebars automatically escapes HTML tags. This is a way of telling Handlebars not to escape the specific HTML that were trying to return from the helper.</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/tENVa/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle tENVa %}</p>
 
 <h4>JSON</h4>
 
@@ -639,7 +1015,7 @@ so were going to make use of the data from Twitter as the data source for our te
 
 <p>Here&rsquo;s our template:</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <script id="tweets">
@@ -661,7 +1037,7 @@ so were going to make use of the data from Twitter as the data source for our te
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>Then extend the String prototype by adding a method called <code>replaceArray</code> this method will take two arrays as arguments. All it does is to loop through the <code>find</code> array and replaces the current item in the <code>find</code> array with the current item in the <code>replace</code> array and then assign it back to the original string which is represented by <code>this</code>. After looping through all of the items it just returns the string which now has been replaced with the items in the <code>replace</code> array:</p>
 
@@ -758,7 +1134,7 @@ success: function(tweets){
 <p>});
 ```</p>
 
-<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/aZra5/embedded/js,resources,html,css,result/light/"></iframe></p>
+<p>{% jsfiddle aZra5 %}</p>
 
 <h3>Smarty</h3>
 
@@ -813,7 +1189,7 @@ $smarty-&gt;assign('anime', $names);
 <p>For our template we simply loop through the items in the array.
 Here were using <code>foreach</code> to loop through the items.</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <h1>Anime</h1>
@@ -823,7 +1199,7 @@ Here were using <code>foreach</code> to loop through the items.</p>
   <li>{$n}</li>
 {/foreach}
 ```
-</p>
+{% endraw %}</p>
 
 <p>For our final example were just going to reuse the cart that we had earlier:</p>
 
@@ -860,7 +1236,7 @@ $cart = array(
 
 <p>And for the template:</p>
 
-<p>
+<p>{% raw %}
 ```html</p>
 
 <h2>Cart</h2>
@@ -885,7 +1261,7 @@ $cart = array(
 
 <p>There are {$cart|count} items in the cart.
 ```
-</p>
+{% endraw %}</p>
 
 <p>Some of the functions that you can use on PHP can also be used inside Smarty templates.
 For the code above we have used the <code>count</code> function. To use a function inside a template you simply specify the value that you want to supply as the argument of the function and then followed by a pipe <code>|</code> and then the function name, in this case the function name is <code>count</code> which simply returns how many items are in the array that was specified.</p>
