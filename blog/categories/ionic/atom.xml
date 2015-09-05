@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ionic | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/ionic/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-09-05T19:11:30+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Ionic]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/05/getting-started-with-ionic/"/>
+    <updated>2015-09-05T08:01:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/05/getting-started-with-ionic</id>
+    <content type="html"><![CDATA[<p>Hybrid Mobile App Development has been gaining traction lately. With the advent of tools such as Cordova, Sencha Touch and Titanium. There&rsquo;s no more stopping web developers from creating their own mobile apps with web technologies. Yes I just said web technologies, that&rsquo;s HTML, CSS, JavaScript and a little bit of talking to a server and you can already create a fancy mobile app. And because of this, lots of mobile frameworks has popped out. There&rsquo;s Ionic, Onsen UI, Junior, Mobile Angular UI, and Kendo UI to name a few. Of those I&rsquo;ve only ever tried jQuery Mobile and Ionic. At first I tried jQuery Mobile since I was already using jQuery for a long time. But it didn&rsquo;t take me long to realize that it wasn&rsquo;t for me nor the project that I was working on at that time. It just didn&rsquo;t have what I need. jQuery Mobile is just a set of UI components that I could use in a mobile app. It didn&rsquo;t have the foundation in which I could build upon. What I needed was a framework that would allow me to just start writing the app without having to worry about laying out the structure myself. This is where Ionic came in. It didn&rsquo;t take me long to find it since it&rsquo;s the first result that came up when I googled &lsquo;mobile hybrid app framework&rsquo;. Ionic utilizes Angular for its UI interactions, gestures and animations. And the best part is you can also use it to structure your app, because Angular itself is a JavaScript framework.
+Ok this intro is getting long. Let&rsquo;s proceed with the fun stuff.</p>
+
+<h3>Setup</h3>
+
+<h4>Node</h4>
+
+<p>In order to start working with Ionic, you first have to install <a href="https://nodejs.org/download/">Node</a>. Go ahead and download the installer for your platform if you don&rsquo;t already have it. If you&rsquo;re an Ubuntu user, you can install Node using NVM (Node Version Manager). To install NVM, execute the following commands in order:</p>
+
+<p>```
+sudo apt-get install build-essential libssl-dev</p>
+
+<p>curl <a href="https://raw.githubusercontent.com/creationix/nvm/v0.16.1/install.sh">https://raw.githubusercontent.com/creationix/nvm/v0.16.1/install.sh</a> | sh</p>
+
+<p>source ~/.profile
+```</p>
+
+<p>The first command, installs the build tools and SSL development libraries. The second downloads the NVM installer, and the third sources the <code>~/.profile</code> file so that your current command-line session knows about the changes. This basically allows you to use the NVM command without having to logout.</p>
+
+<p>Next, you can now list the available Node versions:</p>
+
+<p><code>
+nvm ls-remote
+</code></p>
+
+<p>This will list out a whole bunch of Node versions that are available. But usually you would want to install the current version, which is the last item on the list. At the time of writing of this article, the current version is <code>v0.12.7</code>. So you can go ahead and install that using the <code>nvm install</code> command:</p>
+
+<p><code>
+nvm install v0.12.7
+</code></p>
+
+<p>Now when you check the Node version installed on your machine, you would see <code>v0.12.7</code>.</p>
+
+<p><code>
+node -v
+</code></p>
+
+<p>Next you need to set this version as the default, otherwise you&rsquo;ll have to execute <code>nvm use v0.12.7</code> every time you need to use Node.</p>
+
+<p><code>
+nvm alias default v0.12.7
+nvm use default
+</code></p>
+
+<h4>Cordova and Ionic</h4>
+
+<p>Now we&rsquo;re ready to install Cordova and Ionic:</p>
+
+<p><code>
+npm install -g cordova ionic
+</code></p>
+
+<p>Once that&rsquo;s done installing, you can create a new project using the <code>ionic start</code> command. There are currently 3 available starter templates you can use: blank, tabs, and sidemenu. In this tutorial we&rsquo;re going to use the tabs.</p>
+
+<p><code>
+ionic start demoApp tabs
+</code></p>
+
+<h4>Ionic Directory Structure</h4>
+
+<p>The command above will create a <code>demoApp</code> directory which contains the following:</p>
+
+<p><code>
+hooks
+plugins
+scss
+www
+bower.json
+config.xml
+gulpfile.js
+ionic.project
+package.json
+</code></p>
+
+<p>The <code>hooks</code> directory is where you will put the scripts for customizing Cordova commands. I&rsquo;ve never had the need to use this feature so I can&rsquo;t share anything about it. But if you&rsquo;re just getting started, you wouldn&rsquo;t normally need to touch this directory.</p>
+
+<p>The <code>platforms</code> directory is where the different platforms in which your app will be compiled to is stored. Note that its not there by default, you have to install a platform first.</p>
+
+<p>The <code>plugins</code> directory is where Cordova plugins gets installed.</p>
+
+<p>The <code>scss</code> directory is where the main Ionic sass file (ionic.app.scss) is stored. It contains the primary variables for customizing the colors used in your app.</p>
+
+<p>The <code>www</code> directory is where you would usually work. This contains the HTML, JavaScript and CSS files. I won&rsquo;t walk you through each of the contents of the <code>www</code> directory as they&rsquo;re pretty self-explanatory.</p>
+
+<p>The <code>bower.json</code> file contains the front-end dependencies of your app. By default it depends on Ionic. All bower dependencies are installed on the <code>www/lib</code> directory by default. You can install new one&rsquo;s by using the <code>bower install</code> command and then link them on the <code>index.html</code> file in the <code>www</code> directory. When you install new libraries using bower, use the <code>--save</code> or <code>--saveDev</code> option so that it will save the package name on the <code>bower.json</code> file. The <code>--save</code> option is used to specify that the library you&rsquo;re installing is a front-end asset. For example, jQuery or Bootstrap. While the <code>--saveDev</code> option is used for development only. Things like jshint or jasmine.</p>
+
+<p>The <code>config.xml</code> file is where you can change the name, description and author of your app. You can also set your preference for device orientation (either portrait or landscape), features and URL&rsquo;s which your app is allowed to access.</p>
+
+<p>The <code>gulpfile.js</code> file is the Gulp config file used by Ionic. Normally you wouldn&rsquo;t need to touch this. What you need to understand is that this is used by Ionic to execute tasks such as compiling sass files to CSS or watching a specific directory for changes.</p>
+
+<p>The <code>ionic.project</code> file is where you can update the name and app_id of your app. You won&rsquo;t really need to touch this.</p>
+
+<p>Lastly, the <code>package.json</code> file. This contains the dependencies of the Ionic framework. You won&rsquo;t really need to touch this.</p>
+
+<p>```json
+{
+  &ldquo;name&rdquo;: &ldquo;demoapp&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;1.0.0&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;demoApp: An Ionic project&rdquo;,
+  &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"gulp": "^3.5.6",
+"gulp-sass": "^1.3.3",
+"gulp-concat": "^2.2.0",
+"gulp-minify-css": "^0.3.0",
+"gulp-rename": "^1.2.0"
+</code></pre>
+
+<p>  },
+  &ldquo;devDependencies&rdquo;: {</p>
+
+<pre><code>"bower": "^1.3.3",
+"gulp-util": "^2.2.14",
+"shelljs": "^0.3.0"
+</code></pre>
+
+<p>  },
+  &ldquo;cordovaPlugins&rdquo;: [</p>
+
+<pre><code>"cordova-plugin-device",
+"cordova-plugin-console",
+"cordova-plugin-whitelist",
+"cordova-plugin-splashscreen",
+"com.ionic.keyboard"
+</code></pre>
+
+<p>  ],
+  &ldquo;cordovaPlatforms&rdquo;: []
+}
+```</p>
+
+<h4>Platforms</h4>
+
+<p>With Cordova there&rsquo;s only a select few platforms that it supports. So it&rsquo;s not completely write once, compile to all kind of thing. There are different sets of problems to solve for each platform in which you plan to release your app.
+The common platforms that you may want to install are android, ios and browser. For a list of all the platforms supported by Cordova, you can check out the <a href="https://cordova.apache.org/docs/en/4.0.0/guide_platforms_index.md.html#Platform%20Guides">Cordova Platform Guides</a>. Each platform has a different dependency. Usually it&rsquo;s the SDK or the recommended developer tool for that platform. For Android, it&rsquo;s the Android SDK, for iOS it&rsquo;s Xcode, for Windows it&rsquo;s Visual Studio. I&rsquo;m only going to walk you through the Android platform in this tutorial.</p>
+
+<p>You can download the Android SDK installer from <a href="https://developer.android.com/sdk/index.html#Other">this page</a>. Under the SDK Tools Only section, download the package for your platform. I&rsquo;m on Ubuntu so I will download the one for Linux. Once the download is done, extract the files using the <code>tar</code> command or you can also right click on the file and select the archive manager of your choice.</p>
+
+<p><code>
+tar -xvzf android-sdk_r24.3.3-linux.tgz
+</code></p>
+
+<p>After extraction, it would yield an <code>android-sdk-linux</code> folder which contains the following:</p>
+
+<p><code>
+add-ons
+platforms
+tools
+SDK Readme.txt
+</code></p>
+
+<p>From that directory, navigate to the <code>tools</code> directory and execute the <code>android</code> command:</p>
+
+<p><code>
+./tools/android
+</code></p>
+
+<p>This will open up the Android SDK Manager which you can use to install the tools that you need to develop Android apps. At this point you might wonder why we need to install the same things that Android developers need to install. Well, that&rsquo;s because we&rsquo;re still subjected to the same rules even if we write our apps using HTML, CSS, and JavaScript. Since apps created with Cordova and Ionic are just utilizing the Android WebView. Which is basically just a browser without a frame. That&rsquo;s where the HTML, CSS and JavaScript are used. And Cordova just acts as a middleman between the WebView and the native Android functionalities. So if you need to use the camera for your app, Cordova uses the Android API to call for the camera. And once you&rsquo;re done taking a picture it&rsquo;s also the one responsible for returning the data back to your app. This means that Cordova just abstracts away the parts which we usually need to work on as native app developers so we can write our code in JavaScript instead of Java.</p>
+
+<p>Back to where we left. Let&rsquo;s now install the tools we need to get Cordova do its job. Check the following items on the Android SDK Manager and click on Install. This might take a while depending on your download speed.</p>
+
+<p><strong>Tools</strong>
+&ndash; Android SDK Tools</p>
+
+<p><strong>Android 5.1.1 (API 22)</strong>
+&ndash; SDK Platform</p>
+
+<p><strong>Android 5.0.1 (API 21)</strong>
+&ndash; SDK Platform
+&ndash; Google APIs</p>
+
+<p><strong>Android 4.4W.2 (API 20)</strong>
+&ndash; SDK Platform</p>
+
+<p><strong>Android 4.4.2 (API 19)</strong>
+&ndash; SDK Platform
+&ndash; Google APIs (ARM System Image)</p>
+
+<p><strong>Extras</strong>
+&ndash; Android Support Repository
+&ndash; Android Support Library
+&ndash; Google Repository</p>
+
+<p>Once that&rsquo;s done installing, add the path in which the Android SDK is installed to your environment. In Ubuntu and OSX, you can add the following on your <code>.bashrc</code> file:</p>
+
+<p><code>
+export ANDROID_HOME=/path/to/android-sdk-linux/sdk
+PATH=$PATH:/path/to/android-sdk-linux/sdk/tools
+export PATH
+</code></p>
+
+<p>In Windows, there&rsquo;s something called the Environment Variables. I&rsquo;ve written about it in my old blog: <a href="https://kyokasuigetsu25.wordpress.com/2010/10/29/how-to-set-environment-variables/">How to set environment variables</a>.</p>
+
+<p>Once that&rsquo;s done, you can now install the Android platform, you can use the <code>ionic platform add</code> command followed by the name of the platform you want to install.</p>
+
+<p><code>
+ionic platform add android
+</code></p>
+
+<h3>Using Sass</h3>
+
+<p>You can use sass with ionic by executing the following command while inside your project directory:</p>
+
+<p><code>
+ionic setup sass
+</code></p>
+
+<p>What this does is install the packages and tasks needed to compile sass. Then remove the following from your <code>index.html</code> file:</p>
+
+<p><code>html
+&lt;link href="lib/ionic/css/ionic.css" rel="stylesheet"&gt;
+&lt;link href="css/style.css" rel="stylesheet"&gt;
+</code></p>
+
+<p>It also adds the link to the <code>ionic.app.css</code> file which is basically just the compiled version of the <code>ionic.app.scss</code> file found in the <code>scss</code> directory.</p>
+
+<p><code>html
+&lt;link href="css/ionic.app.css" rel="stylesheet"&gt;
+</code></p>
+
+<p>Finally, it adds the following in your <code>ionic.project</code> file. This tells ionic to start the sass and watch command when gulp starts. It also specifies the watch patterns, so that every time you make a change to a file that matches the pattern, the sass command gets executed and compiles the sass files to css.</p>
+
+<p>```json
+  &ldquo;gulpStartupTasks&rdquo;: [</p>
+
+<pre><code>"sass",
+"watch"
+</code></pre>
+
+<p>  ],
+  &ldquo;watchPatterns&rdquo;: [</p>
+
+<pre><code>"www/**/*",
+"!www/lib/**/*"
+</code></pre>
+
+<p>  ]
+```</p>
+
+<p>If you want to change the default colors used by Ionic, this is where you can do that. Be sure to uncomment the variables just like what we have below.</p>
+
+<p>```css
+/*
+To customize the look and feel of Ionic, you can override the variables
+in ionic&rsquo;s _variables.scss file.</p>
+
+<p>For example, you might change some of the default colors:
+*/</p>
+
+<p>$light:                           #fff !default;
+$stable:                          #f8f8f8 !default;
+$positive:                        #387ef5 !default;
+$calm:                            #11c1f3 !default;
+$balanced:                        #33cd5f !default;
+$energized:                       #ffc900 !default;
+$assertive:                       #ef473a !default;
+$royal:                           #886aea !default;
+$dark:                            #444 !default;</p>
+
+<p>// The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: &ldquo;../lib/ionic/fonts&rdquo; !default;</p>
+
+<p>// Include all of Ionic
+@import &ldquo;www/lib/ionic/scss/ionic&rdquo;;
+```</p>
+
+<p>Now anytime you make a change to the file while running <code>ionic serve</code>, it will compile it to the <code>ionic.app.css</code> found at the <code>www/css</code> directory.</p>
+
+<h3>Developing an App</h3>
+
+<p>You can start developing your app by executing <code>ionic serve</code> from the root directory of your project. This will launch a new browser tab containing the app. If you&rsquo;re using Chrome, you can click on the phone icon on the left of the elements tab when you open the developer tools. This would show your app inside a smaller screen depending on the device that you specify. You can change the device by clicking on the drawer icon which looks like this: <code>&gt;__</code>. And then click on the emulation tab then select the device from the model dropdown. You might need to refresh the page after doing this so that it will render correctly.</p>
+
+<p><img src="/images/posts/ionic/app-window.png" alt="app window" /></p>
+
+<p>Now open the <code>index.html</code> file in the root directory of your project. This is where every thing is hooked up. If you have ever developed a single-page app before, this would be familiar to you. Basically how a single-page app works is that every script that you need is linked in the <code>index.html</code> file. You might be thinking this is a bad practice since it will take too long for the page to load. Well it&rsquo;s not since the front-end assets are included in the app locally. It wouldn&rsquo;t need to download it over the internet so it&rsquo;s fast even if we have a lot of files linked in there.</p>
+
+<p>```html
+&lt;!DOCTYPE html>
+<html>
+  <head></p>
+
+<pre><code>&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width"&gt;
+&lt;title&gt;&lt;/title&gt;
+
+
+&lt;!-- compiled css output --&gt;
+&lt;link href="css/ionic.app.css" rel="stylesheet"&gt;
+
+&lt;!-- ionic/angularjs js --&gt;
+&lt;script src="lib/ionic/js/ionic.bundle.js"&gt;&lt;/script&gt;
+
+&lt;!-- cordova script (this will be a 404 during development) --&gt;
+&lt;script src="cordova.js"&gt;&lt;/script&gt;
+
+&lt;!-- your app's js --&gt;
+&lt;script src="js/app.js"&gt;&lt;/script&gt;
+&lt;script src="js/controllers.js"&gt;&lt;/script&gt;
+&lt;script src="js/services.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>  </head>
+  <body ng-app="starter"></p>
+
+<pre><code>&lt;!--
+  The nav bar that will be updated as we navigate between views.
+--&gt;
+&lt;ion-nav-bar class="bar-stable"&gt;
+  &lt;ion-nav-back-button&gt;
+  &lt;/ion-nav-back-button&gt;
+&lt;/ion-nav-bar&gt;
+&lt;!--
+  The views will be rendered in the &lt;ion-nav-view&gt; directive below
+  Templates are in the /templates folder (but you could also
+  have templates inline in this html file if you'd like).
+--&gt;
+&lt;ion-nav-view&gt;&lt;/ion-nav-view&gt;
+</code></pre>
+
+<p>  </body>
+</html>
+```</p>
+
+<p>Ok let&rsquo;s break this file down. First we set the charset to utf-8 and viewport so that the initial and maximum scale is 1, we also set the <code>user-scalable</code> option to <code>no</code>. This basically means the user wouldn&rsquo;t be able to resize or zoom the app.</p>
+
+<p><code>html
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width"&gt;
+</code></p>
+
+<p>Next we have the title. This means nothing since we&rsquo;re on an app not a website. So users wouldn&rsquo;t be able to see this. You can leave it as blank.</p>
+
+<p><code>html
+&lt;title&gt;&lt;/title&gt;
+</code></p>
+
+<p>And we also have the main ionic css file.</p>
+
+<p><code>html
+ &lt;!-- compiled css output --&gt;
+&lt;link href="css/ionic.app.css" rel="stylesheet"&gt;
+</code></p>
+
+<p>Angular is bundled together with the Ionic JavaScript.</p>
+
+<p>```html</p>
+
+<!-- ionic/angularjs js -->
+
+
+<script src="lib/ionic/js/ionic.bundle.js"></script>
+
+
+<p>```</p>
+
+<p>We also need to link the <code>cordova.js</code> file so we can use Cordova within our app. This would allow us to use Cordova plugins as well via <code>cordova.plugins</code>.</p>
+
+<p>```html</p>
+
+<!-- cordova script (this will be a 404 during development) -->
+
+
+<script src="cordova.js"></script>
+
+
+<p>```</p>
+
+<p>Then we have our custom JavaScript files. This is where we put code that makes the app do things for us. Note that the <code>js/app.js</code> file is the main JavaScript file. It is where we link every thing together. This is where we intialize a new module in which we could hook up different parts of our app. If we need to use a new service, this is where we hook it up. If we want to add a new state, this is where we add it. If we need to call a specific function every time the app starts, this is where we do it. Next we have the <code>js/controllers.js</code> file, in the default controller created by Ionic, all the controllers are added in a single file. This is fine for really small apps but for medium to large size apps it&rsquo;s recommended to have a single controller for each entity in your app. For example, you might have a user controller where you put all the code that has something to do with the user. Things like updating user settings. The controller is where you usually put code that responds to a specific event such as clicking a button or pulling to refresh. Lastly, we have the <code>js/services.js</code> file. A service is responsible for adding a specific functionality to your app. You would want to create a service for making requests to your server, or storing data in local storage. It&rsquo;s recommended that you search for existing solutions first before writing your own services. So you won&rsquo;t waste time re-implementing the same thing.</p>
+
+<p>```html</p>
+
+<script src="js/app.js"></script>
+
+
+<script src="js/controllers.js"></script>
+
+
+<script src="js/services.js"></script>
+
+
+<p>```</p>
+
+<p>Then we have the following:</p>
+
+<p>```html
+<body ng-app="starter"></p>
+
+<pre><code>&lt;!--
+  The nav bar that will be updated as we navigate between views.
+--&gt;
+&lt;ion-nav-bar class="bar-stable"&gt;
+  &lt;ion-nav-back-button&gt;
+  &lt;/ion-nav-back-button&gt;
+&lt;/ion-nav-bar&gt;
+&lt;!--
+  The views will be rendered in the &lt;ion-nav-view&gt; directive below
+  Templates are in the /templates folder (but you could also
+  have templates inline in this html file if you'd like).
+--&gt;
+&lt;ion-nav-view&gt;&lt;/ion-nav-view&gt;
+</code></pre>
+
+<p></body>
+```</p>
+
+<p>In a typical Angular app we set the <code>ng-app</code> attribute to the name of the module. Ionic has used <code>starter</code> as the name of the module by default. You can change that on your <code>app.js</code> file. Here the name of the module is starter.</p>
+
+<p><code>javascript
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+</code></p>
+
+<p>You can change it to the following if you want. Here the name of the module is changed to <code>my_awesome_app</code>:</p>
+
+<p><code>javascript
+angular.module('my_awesome_app', ['ionic', 'my_awesome_app.controllers', 'my_awesome_app.services'])
+</code></p>
+
+<p>If you did change the name of the module. You also need to change the value of the <code>ng-app</code> attribute:</p>
+
+<p><code>html
+&lt;body ng-app="my_awesome_app"&gt;
+</code></p>
+
+<p>As well as your controllers and services:</p>
+
+<p><code>javascript
+angular.module('my_awesome_app.controllers', [])
+angular.module('my_awesome_app.services', [])
+</code></p>
+
+<p>Going back to the <code>app.js</code> file. This is the code responsible for setting the name of the module and the services and controllers it depends on. By default it depends on the ionic service, and your custom controllers and services.</p>
+
+<p><code>javascript
+angular.module('my_awesome_app', ['ionic', 'my_awesome_app.controllers', 'my_awesome_app.services'])
+</code></p>
+
+<p>You can think of <code>my_awesome_app.controllers</code> and <code>my_awesome_app.services</code> as a submodule of the <code>my_awesome_app</code> module. We declared those two modules in the <code>js/controllers.js</code> and <code>js/services.js</code> file.</p>
+
+<p><code>javascript
+angular.module('my_awesome_app.controllers', [])
+angular.module('my_awesome_app.services', [])
+</code></p>
+
+<p>You might be wondering what&rsquo;s the need for these sub-modules? Well, their main purpose is to have a different parent module for each controller and service. So every controller would depend on the <code>my_awesome_app.controllers</code> module and all services would depend on the <code>my_awesome_app.services</code> module. We do this because simply depending on the main module wouldn&rsquo;t work:</p>
+
+<p><code>javascript
+angular.module('my_awesome_app', [])
+</code></p>
+
+<p>Next we have the <code>run</code> function. This is where Ionic executes functions which needs to be executed every time the app is opened. All function calls should be wrapped in the <code>$ionicPlatform.ready</code> event to make sure all the plugins and other features that we need are loaded. Inside the event, we check if the Cordova keyboard plugin is accessible. If it is then we hide the keyboard accessory bar. Finally we use the lightContent statusbar (light text for dark backgrounds) by calling the <code>styleLightContent</code> method provided by the <code>StatusBar</code> plugin.</p>
+
+<p>```javascript
+.run(function($ionicPlatform) {
+  $ionicPlatform.ready(function() {</p>
+
+<pre><code>// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+// for form inputs)
+if (window.cordova &amp;&amp; window.cordova.plugins &amp;&amp; window.cordova.plugins.Keyboard) {
+  cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+}
+if (window.StatusBar) {
+  // org.apache.cordova.statusbar required
+  StatusBar.styleLightContent();
+}
+</code></pre>
+
+<p>  });
+})
+```</p>
+
+<p>Next we set the app configuration by calling the <code>config</code> method in the Angular module. You can use this to set the routes of your app.</p>
+
+<p>```javascript
+.config(function($stateProvider, $urlRouterProvider) {</p>
+
+<p>  // Ionic uses AngularUI Router which uses the concept of states
+  // Learn more here: <a href="https://github.com/angular-ui/ui-router">https://github.com/angular-ui/ui-router</a>
+  // Set up the various states which the app can be in.
+  // Each state&rsquo;s controller can be found in controllers.js
+  $stateProvider</p>
+
+<p>  // setup an abstract state for the tabs directive</p>
+
+<pre><code>.state('tab', {
+url: "/tab",
+abstract: true,
+templateUrl: "templates/tabs.html"
+</code></pre>
+
+<p>  })</p>
+
+<p>  // Each tab has its own nav history stack:</p>
+
+<p>  .state(&lsquo;tab.dash&rsquo;, {</p>
+
+<pre><code>url: '/dash',
+views: {
+  'tab-dash': {
+    templateUrl: 'templates/tab-dash.html',
+    controller: 'DashCtrl'
+  }
+}
+</code></pre>
+
+<p>  })</p>
+
+<p>  .state(&lsquo;tab.chats&rsquo;, {</p>
+
+<pre><code>  url: '/chats',
+  views: {
+    'tab-chats': {
+      templateUrl: 'templates/tab-chats.html',
+      controller: 'ChatsCtrl'
+    }
+  }
+})
+.state('tab.chat-detail', {
+  url: '/chats/:chatId',
+  views: {
+    'tab-chats': {
+      templateUrl: 'templates/chat-detail.html',
+      controller: 'ChatDetailCtrl'
+    }
+  }
+})
+</code></pre>
+
+<p>  .state(&lsquo;tab.account&rsquo;, {</p>
+
+<pre><code>url: '/account',
+views: {
+  'tab-account': {
+    templateUrl: 'templates/tab-account.html',
+    controller: 'AccountCtrl'
+  }
+}
+</code></pre>
+
+<p>  });</p>
+
+<p>  // if none of the above states are matched, use this as the fallback
+  $urlRouterProvider.otherwise(&lsquo;/tab/dash&rsquo;);</p>
+
+<p>});
+```</p>
+
+<p>Breaking it down, we use the <code>$stateProvider</code> to set different states. A state is equivalent to a route in your app. You can call the <code>state</code> method to create a new route, this accepts the name of the state as its first argument and the config as its second.</p>
+
+<p>```javascript
+ // setup an abstract state for the tabs directive</p>
+
+<pre><code>.state('tab', {
+url: "/tab",
+abstract: true,
+templateUrl: "templates/tabs.html"
+</code></pre>
+
+<p>})
+```</p>
+
+<p>A state can be abstract or not. You usually declare a state as an abstract one if it has a child state. In the above example the tab state is an abstract one. This means you don&rsquo;t access it directly from your browser. Instead, you access its child states. In this case the child states are <code>dash</code>, <code>chats</code>, <code>chat-detail</code> and <code>account</code>.</p>
+
+<p>```javascript
+  .state(&lsquo;tab.dash&rsquo;, {</p>
+
+<pre><code>url: '/dash',
+views: {
+  'tab-dash': {
+    templateUrl: 'templates/tab-dash.html',
+    controller: 'DashCtrl'
+  }
+}
+</code></pre>
+
+<p>  })
+ .state(&lsquo;tab.chats&rsquo;, {</p>
+
+<pre><code>  url: '/chats',
+  views: {
+    'tab-chats': {
+      templateUrl: 'templates/tab-chats.html',
+      controller: 'ChatsCtrl'
+    }
+  }
+})
+.state('tab.chat-detail', {
+  url: '/chats/:chatId',
+  views: {
+    'tab-chats': {
+      templateUrl: 'templates/chat-detail.html',
+      controller: 'ChatDetailCtrl'
+    }
+  }
+})
+</code></pre>
+
+<p>  .state(&lsquo;tab.account&rsquo;, {</p>
+
+<pre><code>url: '/account',
+views: {
+  'tab-account': {
+    templateUrl: 'templates/tab-account.html',
+    controller: 'AccountCtrl'
+  }
+}
+</code></pre>
+
+<p>  });
+```</p>
+
+<p>An abstract state takes the following options:</p>
+
+<ul>
+<li><strong>url</strong> &ndash; the URL that you will use to access the state. For an abstract state, this would be the parent URL that each child state will use.</li>
+<li><strong>abstract</strong> &ndash; a boolean value that is set to <code>true</code> to specify that the state is an abstract one.</li>
+<li><strong>templateUrl</strong> &ndash; the path to where the template is located locally.</li>
+</ul>
+
+
+<p>A child state would accept the same options, the only difference is that you have to set the <code>views</code> option and the add a single property with the name of the view. Then that property would have the <code>templateUrl</code> property and <code>controller</code> which is basically the name of the controller that the state uses. The <code>controller</code> property is optional, you can set this on the template if you want. But you have to note that you can&rsquo;t specify the controller name on both the template and the <code>app.js</code> file. Otherwise methods that run every time the controller is executed is called twice. Here is a sample child state. As you can see the <code>url</code> is set to <code>/chats</code> but you would need to specify the URL of the abstract state first. So accessing it in the brower would be <code>tab/chats</code>.</p>
+
+<p>```javascript
+  url: &lsquo;/chats&rsquo;,
+  views: {</p>
+
+<pre><code>'tab-chats': {
+  templateUrl: 'templates/tab-chats.html',
+  controller: 'ChatsCtrl'
+}
+</code></pre>
+
+<p>  }
+```</p>
+
+<p>Next we specify the views with the <code>view</code> property. As I&rsquo;ve said earlier, this accepts the name of the view as its property. This is tied with the name of the view in the <code>ion-tabs</code> directive. You can find it in the <code>templates/tabs.html</code> file. The view <code>name</code> property in the <code>ion-nav-view</code> directive should be the same as the name of view in your state declaration.</p>
+
+<p>```html</p>
+
+<!--
+Create tabs with an icon and label, using the tabs-positive style.
+Each tab's child <ion-nav-view> directive will have its own
+navigation history that also transitions its views in and out.
+-->
+
+
+<p>&lt;ion-tabs class=&ldquo;tabs-icon-top tabs-color-active-positive&rdquo;></p>
+
+<p>  <!-- Dashboard Tab -->
+  &lt;ion-tab title=&ldquo;Status&rdquo; icon-off=&ldquo;ion-ios-pulse&rdquo; icon-on=&ldquo;ion-ios-pulse-strong&rdquo; href=&ldquo;#/tab/dash&rdquo;></p>
+
+<pre><code>&lt;ion-nav-view name="tab-dash"&gt;&lt;/ion-nav-view&gt;
+</code></pre>
+
+<p>  &lt;/ion-tab></p>
+
+<p>  <!-- Chats Tab -->
+  &lt;ion-tab title=&ldquo;Chats&rdquo; icon-off=&ldquo;ion-ios-chatboxes-outline&rdquo; icon-on=&ldquo;ion-ios-chatboxes&rdquo; href=&ldquo;#/tab/chats&rdquo;></p>
+
+<pre><code>&lt;ion-nav-view name="tab-chats"&gt;&lt;/ion-nav-view&gt;
+</code></pre>
+
+<p>  &lt;/ion-tab></p>
+
+<p>  <!-- Account Tab -->
+  &lt;ion-tab title=&ldquo;Account&rdquo; icon-off=&ldquo;ion-ios-gear-outline&rdquo; icon-on=&ldquo;ion-ios-gear&rdquo; href=&ldquo;#/tab/account&rdquo;></p>
+
+<pre><code>&lt;ion-nav-view name="tab-account"&gt;&lt;/ion-nav-view&gt;
+</code></pre>
+
+<p>  &lt;/ion-tab></p>
+
+<p>&lt;/ion-tabs>
+```</p>
+
+<p>Now open up the <code>controllers.js</code> file. On the first line we&rsquo;re declaring a new module called <code>my_awesome_app.controllers</code>. If you remember from earlier, this is one of the modules that we specified as a dependency for the main module in the <code>app.js</code> file.</p>
+
+<p><code>javascript
+angular.module('my_awesome_app.controllers', [])
+</code></p>
+
+<p>Then we create a new controller by using the <code>controller</code> method. This accepts the name of the controller as its first argument and the function to execute when the controller is accessed as its second. For the <code>DashCtrl</code>, we have an empty function body as we do not need to execute anything.</p>
+
+<p><code>javascript
+.controller('DashCtrl', function($scope) {})
+</code></p>
+
+<p>For the <code>ChatCtrl</code>, we get a list of chat messages using the <code>Chats</code> services. We&rsquo;ll go through that in a moment, but for now understand that to use a service you need to declare it as a parameter in the function body of the controller. This way you can access it from inside the function and call the different methods that are accessible from that service. Also notice that we have also declared a <code>$scope</code> variable as a parameter. This allows us to pass in data to the current scope. We do this so we can access the data in the view. Back to the <code>Chats</code> service, we are calling the <code>all</code> method in the <code>Chats</code> service. This returns an array of messages. We then assign whatever it returns to the <code>chats</code> property in the <code>$scope</code>. Note that you can name it anything you want. Next we&rsquo;re also assigning a <code>remove</code> method to the <code>$scope</code>. What this does is remove a specific chat message.</p>
+
+<p>```javascript
+.controller(&lsquo;ChatsCtrl&rsquo;, function($scope, Chats) {
+  // With the new view caching in Ionic, Controllers are only called
+  // when they are recreated or on app start, instead of every page change.
+  // To listen for when this page is active (for example, to refresh data),
+  // listen for the $ionicView.enter event:
+  //
+  //$scope.$on(&lsquo;$ionicView.enter&rsquo;, function(e) {
+  //});</p>
+
+<p>  $scope.chats = Chats.all();
+  $scope.remove = function(chat) {</p>
+
+<pre><code>Chats.remove(chat);
+</code></pre>
+
+<p>  }
+})
+```</p>
+
+<p>Here&rsquo;s the view utilizing the <code>ChatsCtrl</code>. It&rsquo;s in the <code>templates/tab-chats.html</code>:</p>
+
+<p>```html
+&lt;ion-view view-title=&ldquo;Chats&rdquo;>
+  &lt;ion-content></p>
+
+<pre><code>&lt;ion-list&gt;
+  &lt;ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/chats/"&gt;
+    &lt;img ng-src=""&gt;
+    &lt;h2&gt;&lt;/h2&gt;
+    &lt;p&gt;&lt;/p&gt;
+    &lt;i class="icon ion-chevron-right icon-accessory"&gt;&lt;/i&gt;
+
+    &lt;ion-option-button class="button-assertive" ng-click="remove(chat)"&gt;
+      Delete
+    &lt;/ion-option-button&gt;
+  &lt;/ion-item&gt;
+&lt;/ion-list&gt;
+</code></pre>
+
+<p>  &lt;/ion-content>
+&lt;/ion-view>
+```</p>
+
+<p>The <code>ChatDetailCtrl</code> is the controller responsible for showing the details of a specific chat message. Here we&rsquo;re using a new parameter in the function body called <code>$stateParams</code>. This allows us to get the value of a specific route parameter. Route parameters are passed in the URL of the app. If you go back to the <code>app.js</code> file, you can see from the <code>tab.chat-detail</code> state&rsquo;s URL is <code>/chats/:chatId</code>. The <code>:chatId</code> here is the route parameter. Every route parameter in Angular always starts in a colon followed by the name. So in the <code>ChatDetailCtrl</code> we are merely getting the value passed in this route parameter and then using it as an argument for the <code>get</code> method in the <code>Chats</code> service. This method basically fetches a specific chat message from the array of chats. We then just assign the value to the <code>chat</code> variable in the <code>$scope</code>.</p>
+
+<p><code>javascript
+.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
+  $scope.chat = Chats.get($stateParams.chatId);
+})
+</code></p>
+
+<p>You can see this being used in the <code>templates/chat-detail.html</code>.</p>
+
+<p>```html
+&lt;ion-view view-title=&ldquo;&rdquo;>
+  &lt;ion-content class=&ldquo;padding&rdquo;></p>
+
+<pre><code>&lt;img ng-src="" style="width: 64px; height: 64px"&gt;
+&lt;p&gt;
+  
+&lt;/p&gt;
+</code></pre>
+
+<p>  &lt;/ion-content>
+&lt;/ion-view>
+```</p>
+
+<p>Finally we have the <code>AccountCtrl</code>. Nothing fancy here. All we&rsquo;re doing is passing in an object to the scope.</p>
+
+<p>```javascript
+.controller(&lsquo;AccountCtrl&rsquo;, function($scope) {
+  $scope.settings = {</p>
+
+<pre><code>enableFriends: true
+</code></pre>
+
+<p>  };
+});
+```</p>
+
+<p>We can see this being used from the view in <code>templates/tab-account.html</code>:</p>
+
+<p>```html
+&lt;ion-view view-title=&ldquo;Account&rdquo;>
+  &lt;ion-content></p>
+
+<pre><code>&lt;ion-list&gt;
+&lt;ion-toggle  ng-model="settings.enableFriends"&gt;
+    Enable Friends
+&lt;/ion-toggle&gt;
+&lt;/ion-list&gt;
+</code></pre>
+
+<p>  &lt;/ion-content>
+&lt;/ion-view>
+```</p>
+
+<p>From the above HTML, the <code>enableFriends</code> property is used as the model for the <code>ion-toggle</code> directive which basically just outputs a switch UI. In this case the switch should be turned on since the value of the <code>enableFriends</code> property is <code>true</code>.</p>
+
+<p>Now we take a look at the service file at <code>js/services.js</code>. Same with the controllers, we declare a new module called <code>my_awesome_app.services</code>. From there we call the <code>factory</code> method in order to create a service. We call this service <code>Chats</code>. Inside the function body, we have an array of objects containing the details for each chat message. After that, we expose the methods that we want the controllers that will use this service to use by returning them. Here we have 3 methods, the <code>all</code> method which just returns all the chat messages. The <code>remove</code> method which removes a specific chat message from the array of chat messages. And last is the <code>get</code> method, which returns a specific chat message based on the id.</p>
+
+<p>```javascript
+angular.module(&lsquo;my_awesome_app.services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;Chats&rsquo;, function() {
+  // Might use a resource here that returns a JSON array</p>
+
+<p>  // Some fake testing data
+  var chats = [{</p>
+
+<pre><code>id: 0,
+name: 'Ben Sparrow',
+lastText: 'You on your way?',
+face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
+</code></pre>
+
+<p>  }, {</p>
+
+<pre><code>id: 1,
+name: 'Max Lynx',
+lastText: 'Hey, it\'s me',
+face: 'https://avatars3.githubusercontent.com/u/11214?v=3&amp;s=460'
+</code></pre>
+
+<p>  },{</p>
+
+<pre><code>id: 2,
+name: 'Adam Bradleyson',
+lastText: 'I should buy a boat',
+face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
+</code></pre>
+
+<p>  }, {</p>
+
+<pre><code>id: 3,
+name: 'Perry Governor',
+lastText: 'Look at my mukluks!',
+face: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png'
+</code></pre>
+
+<p>  }, {</p>
+
+<pre><code>id: 4,
+name: 'Mike Harrington',
+lastText: 'This is wicked good ice cream.',
+face: 'https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png'
+</code></pre>
+
+<p>  }];</p>
+
+<p>  return {</p>
+
+<pre><code>all: function() {
+  return chats;
+},
+remove: function(chat) {
+  chats.splice(chats.indexOf(chat), 1);
+},
+get: function(chatId) {
+  for (var i = 0; i &lt; chats.length; i++) {
+    if (chats[i].id === parseInt(chatId)) {
+      return chats[i];
+    }
+  }
+  return null;
+}
+</code></pre>
+
+<p>  };
+});
+```</p>
+
+<h3>Plugins</h3>
+
+<p>Plugins allows you to add native functionalities to your app. Things like the camera, calendar, contacts, or flashlight can be controlled using JavaScript through the use of plugins.</p>
+
+<p>You can install plugins by using the <code>ionic plugin add</code> command. Here&rsquo;s an example of how we might add the camera plugin:</p>
+
+<p><code>
+ionic plugin add cordova-plugin-camera
+</code></p>
+
+<p>If you decide later on that you no longer need a plugin, you can use the <code>ionic plugin rm</code> command:</p>
+
+<p><code>
+ionic plugin rm cordova-plugin-camera
+</code></p>
+
+<p>Every plugin already has the necessary instructions which will setup everything that is needed in order for it to work when installed. Things like putting the necessary permissions in the <code>AndroidManifest.xml</code> file so that you can use specific features of the device.</p>
+
+<p>I won&rsquo;t dive in much into plugins, what&rsquo;s important is that you know they are available and you can use Google to look for them. There&rsquo;s the <a href="http://plugins.cordova.io/#/">Cordova Plugin Repository</a> and Github if you want to look for a plugin that can solve your specific problem.</p>
+
+<h3>Changing the App Icon and Splash Screens</h3>
+
+<p>To change the icon of the app, simply put an <code>icon.png</code>, <code>icon.psd</code>, or <code>icon.ai</code> on the <code>resources</code> directory in the root of your app. For the splash it&rsquo;s <code>splash.png</code>, <code>splash.psd</code>, or <code>splash.ai</code>. The recommended icon size is 500x500 and the splash image is 1200x1200. Once you&rsquo;ve added the files, execute <code>ionic resources</code> from the terminal to generate your icons and splash screens.</p>
+
+<h3>Compiling to Android</h3>
+
+<p>You can create an apk file using the <code>ionic build android</code> command. This will create the <code>android-debug.apk</code> file under the <code>platforms/android/build/outputs/apk</code> directory. Note that this is the debug version of the app. You can use this for testing on your mobile device. But you cannot submit it to the Google Play Store. To do that you&rsquo;ll have to build a release version for your apk by adding the <code>--release</code> option when using the <code>cordova build</code>. Note that we&rsquo;re using <code>cordova</code> instead of <code>ionic</code>. Ionic simply wraps the Cordova commands so you can use them interchangeably.</p>
+
+<p><code>
+cordova build --release android
+</code></p>
+
+<p>Next, generate a keystore for the app by using <code>keytool</code>. Breaking down the command below, we&rsquo;re setting the following options:</p>
+
+<ul>
+<li><strong>genkey</strong> &ndash; not actually an option, but a command to generate the key.</li>
+<li><strong>keystore</strong> &ndash; the file name you want to give to the keystore</li>
+<li><strong>alias</strong> &ndash; the alias of the key.</li>
+<li><strong>keyalg</strong> &ndash; the algorithm to be used to generate the key.</li>
+<li><strong>keysize</strong> &ndash; the size of the key in bytes.</li>
+<li><strong>validity</strong> &ndash; the number of days in which this keystore will be valid.</li>
+</ul>
+
+
+<p><code>
+keytool -genkey -v -keystore demoApp.keystore -alias demoApp -keyalg RSA -keysize 2048 -validity 10000
+</code></p>
+
+<p>Executing the command above will ask you for the keystore password and some questions. Just provide an answer to each question since the information that you supply will be used to generate the keystore. Here&rsquo;s how it looks like in my machine:</p>
+
+<p><img src="/images/posts/ionic/keytool.png" alt="keytool" /></p>
+
+<p>If you cannot use keytool, then maybe you don&rsquo;t have Java installed yet. You can install it by executing the following commands in order.</p>
+
+<p>```
+sudo apt-get install default-jre</p>
+
+<p>sudo apt-get install default-jdk</p>
+
+<p>sudo apt-get install openjdk-7-jre</p>
+
+<p>sudo apt-get install openjdk-7-jdk
+```</p>
+
+<p>Now we&rsquo;re ready to sign the apk file with the keystore that we generated. To do that, first copy the <code>demoApp.keystore</code> to the <code>platforms/android/build/outputs/apk</code> directory, open a terminal on that directory then execute the following command:</p>
+
+<p><code>
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore demoApp.keystore android-release-unsigned.apk demoApp
+</code></p>
+
+<p>This will ask you for the password that you entered earlier when you created the keystore.</p>
+
+<p>Finally, to generate the apk that you can submit in the Google Play Store, use <code>zipalign</code>. This accepts the name of the unsigned apk file and the name of the signed apk which it will generate.</p>
+
+<p><code>
+zipalign -v 4 android-release-unsigned.apk demoApp.apk
+</code></p>
+
+<p>If you need the key you can execute the following:</p>
+
+<p><code>
+keytool -exportcert -alias demoApp -keystore demoApp.keystore | openssl sha1 -binary | openssl base64
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned the basics of working with the Ionic framework. We have only scratched the surface in this tutorial, be sure to check out the resources below to learn more.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="http://ionicframework.com/docs/">Ionic Docs</a></li>
+<li><a href="http://learn.ionicframework.com/formulas/">Ionic Formulas</a></li>
+<li><a href="http://cordova.apache.org/docs/en/5.0.0/">Cordova Docs</a></li>
+<li><a href="http://ngcordova.com/">Ng-Cordova</a></li>
+<li><a href="http://plugins.cordova.io/#/">Cordova Plugin Repository</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
