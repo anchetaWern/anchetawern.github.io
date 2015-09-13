@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: file-system | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/file-system/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-09-13T08:06:48+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Working with the Filesystem with Flysystem]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/13/working-with-the-filesystem-with-flysystem/"/>
+    <updated>2015-09-13T11:10:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/13/working-with-the-filesystem-with-flysystem</id>
+    <content type="html"><![CDATA[<h3>Installation</h3>
+
+<p>You can install Flysystem via <a href="https://getcomposer.org/">Composer</a>.</p>
+
+<p><code>
+composer require league/flysystem
+</code></p>
+
+<h3>Usage</h3>
+
+<p>To use Flysystem, you first have to include the vendor autoload file which you got when you installed Flysystem on your working directory. After that, use the <code>Filesystem</code> class in the <code>League\Flysystem</code> namespace and the <code>Local</code> class in the <code>League\Flysystem\Adapter</code> namespace. The <code>Filesystem</code> class allows you to use the main Flysystem package. And the <code>Local</code> class allows you to use the local adapter. With Flysystem it&rsquo;s not just the local filesystem that you can work with. It has adapters for any cloud storage service that you can think of. Theres an adapter for Dropbox, FTP, AWS S3, Rackspace and even a Zip archive. So the <code>Local</code> class allows you to work with files in your local filesystem.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Local;
+?>
+```</p>
+
+<p>Next, create a new instance of the <code>Local</code> class and pass in the path to the base path you want to work with. This allows you to create an adapter for a local path in your filesystem. In the example below, it&rsquo;s the <code>upload</code> directory located in the root of my working directory. After that, create a new instance of the <code>Filesystem</code> class and pass in the local adapter as the argument.</p>
+
+<p><code>php
+&lt;?php
+$adapter = new Local(__DIR__ . '/uploads');
+$filesystem = new Filesystem($adapter);
+?&gt;
+</code></p>
+
+<p>Once that&rsquo;s done, you can now use Flysystem to wreack havoc on your local filesystem.</p>
+
+<h4>Check if File Exists</h4>
+
+<p>To check if a file exists, you can use the <code>has</code> method and then pass in the path to the file. Remember that this uses the root path that you passed in when you created the local adapter.</p>
+
+<p><code>php
+&lt;?php
+$exists = $filesystem-&gt;has('path/to/image.png');
+?&gt;
+</code></p>
+
+<h4>Read Files</h4>
+
+<p>Reading files only really makes sense for text files. You can use the <code>read</code> method for this.</p>
+
+<p><code>php
+&lt;?php
+$contents = $filesystem-&gt;read('path/to/file.txt');
+?&gt;
+</code></p>
+
+<h4>Write to Files</h4>
+
+<p>When writing to files, the path doesn&rsquo;t need to already exist. You can pass in a long path and it will create the individual directories that precedes the actual file.</p>
+
+<p><code>php
+&lt;?php
+$contents = $filesystem-&gt;write('path/to/file.txt');
+?&gt;
+</code></p>
+
+<h4>Copy Files</h4>
+
+<p>Copying files can work with any file type and the destination doesn&rsquo;t need to be the same path where the original file exists.</p>
+
+<p><code>php
+&lt;?php
+$filesystem-&gt;copy('original.txt', 'path/to/copy.txt');
+?&gt;
+</code></p>
+
+<h4>Rename Files</h4>
+
+<p>You can use the <code>rename</code> method to rename files. This also doubles as a move function because you can assign the same name to the file but have a different path.</p>
+
+<p><code>php
+&lt;?php
+$filesystem-&gt;rename('original_name.txt', 'new_name.txt'); //rename
+$filesystem-&gt;rename('original_name.txt', 'path/to/original_name.txt'); //move
+?&gt;
+</code></p>
+
+<h4>Delete Files</h4>
+
+<p>If you want to delete a file, use the <code>delete</code> method.</p>
+
+<p><code>php
+&lt;?php
+$filesystem-&gt;delete('path/to/file.txt');
+?&gt;
+</code></p>
+
+<h4>Listing Contents of a Directory</h4>
+
+<p>To list the contents of the root directory, you need to call the <code>listContents</code> method. This returns an array containing the items in the root directory. Note that this isn&rsquo;t a recursive function. This means that only the direct children of the root directory is going to be listed.</p>
+
+<p>```php
+&lt;?php
+$contents = $filesystem->listContents();
+foreach ($contents as $object) {
+  if ($object[&lsquo;type&rsquo;] == &lsquo;file&rsquo;) {</p>
+
+<pre><code>echo $object['basename'] . "&lt;br&gt;";
+</code></pre>
+
+<p>  }
+}
+?>
+```</p>
+
+<h4>Get File Information</h4>
+
+<p>You can use any of the functions below to get specific information about the file.</p>
+
+<p><code>php
+&lt;?php
+$mimetype = $filesystem-&gt;getMimetype('path/to/photo.jpg'); // image/jpeg
+$timestamp = $filesystem-&gt;getTimestamp('path/to/photo.jpg'); // 1438143700
+$size = $filesystem-&gt;getSize('path/to/photo.jpg'); // 101771
+?&gt;
+</code></p>
+
+<h4>Exceptions</h4>
+
+<p>When performing an operation on the filesystem, be sure to wrap it in a <code>try..catch</code> block so that you can handle the errors accordingly. In the example below, if <code>file.txt</code> doesn&rsquo;t exists in the directory, it would return an error.</p>
+
+<p>```php
+&lt;?php
+try {</p>
+
+<pre><code>$filesystem-&gt;delete('file.txt');
+</code></pre>
+
+<p>} catch (Exception $e) {</p>
+
+<pre><code>echo $e-&gt;getMessage();
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned how to ease filesystem work with the Flysystem library. You have barely scratch the surface with what&rsquo;s possible with Flysystem. Be sure to check out their <a href="http://flysystem.thephpleague.com/">official website</a> to learn more.</p>
+]]></content>
+  </entry>
+  
+</feed>

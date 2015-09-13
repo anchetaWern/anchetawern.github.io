@@ -9,7 +9,8 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Hybrid Mobile App Development has been gaining traction lately. With the advent of tools such as Cordova, Sencha Touch and Titanium. There&rsquo;s no &hellip;">
+  <meta name="description" content="Installation You can install Flysystem via Composer. 1
+composer require league/flysystem Usage To use Flysystem, you first have to include the vendor &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +72,229 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/">Working With the Filesystem With Flysystem</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-13T11:10:00+08:00" pubdate data-updated="true">Sep 13<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Installation</h3>
+
+<p>You can install Flysystem via <a href="https://getcomposer.org/">Composer</a>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require league/flysystem</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To use Flysystem, you first have to include the vendor autoload file which you got when you installed Flysystem on your working directory. After that, use the <code>Filesystem</code> class in the <code>League\Flysystem</code> namespace and the <code>Local</code> class in the <code>League\Flysystem\Adapter</code> namespace. The <code>Filesystem</code> class allows you to use the main Flysystem package. And the <code>Local</code> class allows you to use the local adapter. With Flysystem it&rsquo;s not just the local filesystem that you can work with. It has adapters for any cloud storage service that you can think of. Theres an adapter for Dropbox, FTP, AWS S3, Rackspace and even a Zip archive. So the <code>Local</code> class allows you to work with files in your local filesystem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">League\Flysystem\Filesystem</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">League\Flysystem\Adapter\Local</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create a new instance of the <code>Local</code> class and pass in the path to the base path you want to work with. This allows you to create an adapter for a local path in your filesystem. In the example below, it&rsquo;s the <code>upload</code> directory located in the root of my working directory. After that, create a new instance of the <code>Filesystem</code> class and pass in the local adapter as the argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Local</span><span class="p">(</span><span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/uploads&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$filesystem</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filesystem</span><span class="p">(</span><span class="nv">$adapter</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can now use Flysystem to wreack havoc on your local filesystem.</p>
+
+<h4>Check if File Exists</h4>
+
+<p>To check if a file exists, you can use the <code>has</code> method and then pass in the path to the file. Remember that this uses the root path that you passed in when you created the local adapter.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$exists</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">has</span><span class="p">(</span><span class="s1">&#39;path/to/image.png&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Read Files</h4>
+
+<p>Reading files only really makes sense for text files. You can use the <code>read</code> method for this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">read</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Write to Files</h4>
+
+<p>When writing to files, the path doesn&rsquo;t need to already exist. You can pass in a long path and it will create the individual directories that precedes the actual file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">write</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Copy Files</h4>
+
+<p>Copying files can work with any file type and the destination doesn&rsquo;t need to be the same path where the original file exists.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">copy</span><span class="p">(</span><span class="s1">&#39;original.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/copy.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Rename Files</h4>
+
+<p>You can use the <code>rename</code> method to rename files. This also doubles as a move function because you can assign the same name to the file but have a different path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">rename</span><span class="p">(</span><span class="s1">&#39;original_name.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;new_name.txt&#39;</span><span class="p">);</span> <span class="c1">//rename</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">rename</span><span class="p">(</span><span class="s1">&#39;original_name.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/original_name.txt&#39;</span><span class="p">);</span> <span class="c1">//move</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Delete Files</h4>
+
+<p>If you want to delete a file, use the <code>delete</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Listing Contents of a Directory</h4>
+
+<p>To list the contents of the root directory, you need to call the <code>listContents</code> method. This returns an array containing the items in the root directory. Note that this isn&rsquo;t a recursive function. This means that only the direct children of the root directory is going to be listed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">listContents</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="nv">$contents</span> <span class="k">as</span> <span class="nv">$object</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nv">$object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$object</span><span class="p">[</span><span class="s1">&#39;basename&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Get File Information</h4>
+
+<p>You can use any of the functions below to get specific information about the file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$mimetype</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getMimetype</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// image/jpeg</span>
+</span><span class='line'><span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// 1438143700</span>
+</span><span class='line'><span class="nv">$size</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getSize</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// 101771</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Exceptions</h4>
+
+<p>When performing an operation on the filesystem, be sure to wrap it in a <code>try..catch</code> block so that you can handle the errors accordingly. In the example below, if <code>file.txt</code> doesn&rsquo;t exists in the directory, it would return an error.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned how to ease filesystem work with the Flysystem library. You have barely scratch the surface with what&rsquo;s possible with Flysystem. Be sure to check out their <a href="http://flysystem.thephpleague.com/">official website</a> to learn more.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2756,106 +2980,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/24/best-anime-of-all-time/">Best Anime of All Time</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-06-24T20:17:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/06/24/best-anime-of-all-time/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I decided to give my blog 3 weeks break so I could make time for the 200 other things that I want to do. But then I said &ldquo;fuck it&rdquo;. Its not just programming stuff that I can publish here on this blog. Its my personal blog after all. I can always publish some other stuff that won&rsquo;t take much of my time to write. So this time I decided to disguise the list of the best anime of all time as an actual blog post. But of course, this is all just my opinion. We all have different taste so don&rsquo;t take my word for it. Try watching 2 or 3 episodes and see for yourself. Ok here goes:</p>
-
-<ul>
-<li>Psycho Pass</li>
-<li>Code Geass</li>
-<li>Samurai Champloo</li>
-<li>Anohana</li>
-<li>Guilty Crown</li>
-<li>Xam&rsquo;d: Lost Memories</li>
-<li>Parasyte the Maxim</li>
-<li>Durarara!!</li>
-<li>Eden of the East</li>
-<li>Darker than Black</li>
-<li>Full Metal Alchemist: Brotherhood</li>
-<li>Steins;Gate</li>
-<li>DGray Man</li>
-<li>Hunter X Hunter</li>
-<li>The Melancholy of Haruhi Suzumiya</li>
-<li>K-on</li>
-<li>Hajime no Ippo</li>
-<li>Katanagatari</li>
-<li>Tengen Toppa Gurren Lagan</li>
-<li>Kill la Kill</li>
-<li>Haikyuu!!</li>
-<li>Kuroko no Basket</li>
-<li>Gatchaman Crowds</li>
-<li>Tsuritama</li>
-<li>Death Note</li>
-<li>Yu Yu Hakusho</li>
-<li>Attack on Titan</li>
-<li>Avatar: The Last Airbender</li>
-<li>Avatar: The Legend of Korra</li>
-<li>Mirai Nikki</li>
-<li>Toradora!</li>
-<li>Kaichou wa Maid-sama!</li>
-<li>Medaka Box</li>
-<li>Accel World</li>
-<li>Deadman Wonderland</li>
-<li>Magi</li>
-<li>Shaman King</li>
-<li>Baccano!</li>
-<li>Sket Dance</li>
-<li>Akame Ga Kill</li>
-<li>Nanatsu no Taizai</li>
-<li>Slam Dunk</li>
-<li>Assasination Classroom</li>
-<li>Oregairu</li>
-<li>Shokugeki no Soma</li>
-<li>Hitsugi no Chaika</li>
-<li>One Week Friends</li>
-<li>Kakumeiki Valvrave</li>
-<li>Yowamushi Pedal</li>
-<li>Hamatora</li>
-<li>Zankyou no Terror</li>
-<li>Bakuman</li>
-<li>Usagi Drop</li>
-<li>Hanasaku Iroha</li>
-<li>Tiger &amp; Bunny</li>
-<li>A-Channel</li>
-</ul>
-
-
-<p>That&rsquo;s all I can think of for now. I really have a bad memory so even if I&rsquo;ve watched a really really good anime, it might not have made it in this list.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2871,6 +2995,10 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/">Working with the Filesystem with Flysystem</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/05/getting-started-with-ionic/">Getting Started with Ionic</a>
       </li>
     
@@ -2884,10 +3012,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
     
       <li class="post">
         <a href="/blog/2015/08/15/introduction-to-naughtyfire/">Introduction to Naughtyfire</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/09/my-osx-development-environment/">My OSX Development Environment</a>
       </li>
     
   </ul>

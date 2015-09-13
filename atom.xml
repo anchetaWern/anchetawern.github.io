@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-09-05T19:11:30+08:00</updated>
+  <updated>2015-09-13T08:06:48+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,200 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Working with the Filesystem with Flysystem]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/13/working-with-the-filesystem-with-flysystem/"/>
+    <updated>2015-09-13T11:10:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/13/working-with-the-filesystem-with-flysystem</id>
+    <content type="html"><![CDATA[<h3>Installation</h3>
+
+<p>You can install Flysystem via <a href="https://getcomposer.org/">Composer</a>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require league/flysystem</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To use Flysystem, you first have to include the vendor autoload file which you got when you installed Flysystem on your working directory. After that, use the <code>Filesystem</code> class in the <code>League\Flysystem</code> namespace and the <code>Local</code> class in the <code>League\Flysystem\Adapter</code> namespace. The <code>Filesystem</code> class allows you to use the main Flysystem package. And the <code>Local</code> class allows you to use the local adapter. With Flysystem it&rsquo;s not just the local filesystem that you can work with. It has adapters for any cloud storage service that you can think of. Theres an adapter for Dropbox, FTP, AWS S3, Rackspace and even a Zip archive. So the <code>Local</code> class allows you to work with files in your local filesystem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">League\Flysystem\Filesystem</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">League\Flysystem\Adapter\Local</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create a new instance of the <code>Local</code> class and pass in the path to the base path you want to work with. This allows you to create an adapter for a local path in your filesystem. In the example below, it&rsquo;s the <code>upload</code> directory located in the root of my working directory. After that, create a new instance of the <code>Filesystem</code> class and pass in the local adapter as the argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Local</span><span class="p">(</span><span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/uploads&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$filesystem</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filesystem</span><span class="p">(</span><span class="nv">$adapter</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can now use Flysystem to wreack havoc on your local filesystem.</p>
+
+<h4>Check if File Exists</h4>
+
+<p>To check if a file exists, you can use the <code>has</code> method and then pass in the path to the file. Remember that this uses the root path that you passed in when you created the local adapter.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$exists</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">has</span><span class="p">(</span><span class="s1">&#39;path/to/image.png&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Read Files</h4>
+
+<p>Reading files only really makes sense for text files. You can use the <code>read</code> method for this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">read</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Write to Files</h4>
+
+<p>When writing to files, the path doesn&rsquo;t need to already exist. You can pass in a long path and it will create the individual directories that precedes the actual file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">write</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Copy Files</h4>
+
+<p>Copying files can work with any file type and the destination doesn&rsquo;t need to be the same path where the original file exists.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">copy</span><span class="p">(</span><span class="s1">&#39;original.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/copy.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Rename Files</h4>
+
+<p>You can use the <code>rename</code> method to rename files. This also doubles as a move function because you can assign the same name to the file but have a different path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">rename</span><span class="p">(</span><span class="s1">&#39;original_name.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;new_name.txt&#39;</span><span class="p">);</span> <span class="c1">//rename</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">rename</span><span class="p">(</span><span class="s1">&#39;original_name.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/original_name.txt&#39;</span><span class="p">);</span> <span class="c1">//move</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Delete Files</h4>
+
+<p>If you want to delete a file, use the <code>delete</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;path/to/file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Listing Contents of a Directory</h4>
+
+<p>To list the contents of the root directory, you need to call the <code>listContents</code> method. This returns an array containing the items in the root directory. Note that this isn&rsquo;t a recursive function. This means that only the direct children of the root directory is going to be listed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$contents</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">listContents</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="nv">$contents</span> <span class="k">as</span> <span class="nv">$object</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nv">$object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$object</span><span class="p">[</span><span class="s1">&#39;basename&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Get File Information</h4>
+
+<p>You can use any of the functions below to get specific information about the file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$mimetype</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getMimetype</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// image/jpeg</span>
+</span><span class='line'><span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// 1438143700</span>
+</span><span class='line'><span class="nv">$size</span> <span class="o">=</span> <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">getSize</span><span class="p">(</span><span class="s1">&#39;path/to/photo.jpg&#39;</span><span class="p">);</span> <span class="c1">// 101771</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Exceptions</h4>
+
+<p>When performing an operation on the filesystem, be sure to wrap it in a <code>try..catch</code> block so that you can handle the errors accordingly. In the example below, if <code>file.txt</code> doesn&rsquo;t exists in the directory, it would return an error.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$filesystem</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned how to ease filesystem work with the Flysystem library. You have barely scratch the surface with what&rsquo;s possible with Flysystem. Be sure to check out their <a href="http://flysystem.thephpleague.com/">official website</a> to learn more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Ionic]]></title>
@@ -5820,256 +6014,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
 
 <p>That&rsquo;s it! The Yahoo Finance API is a really nice way of getting financial information about specific companies.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Automating Deployment to EC2 Instance with Git]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/03/28/automating-deployment-with-git/"/>
-    <updated>2015-03-28T17:10:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/03/28/automating-deployment-with-git</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to show you how to automate the deployment of changes to your ec2 instance using git. Deployment is done by setting up a bare git repo somewhere in the home directory of the ec2 instance. A post-receive hook is then setup to automatically update the web root based on the changes. The post-receive hook is executed whenever a push is made to the bare git repo in the ec2 instance.</p>
-
-<h3>Setup SSH</h3>
-
-<p>First thing you need to do is to setup ssh access on your development machine (local computer). You can do that by navigating to the ssh directory:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.ssh</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then open up the <code>config</code> file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano config</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next add the Host (alias of the ec2 instance), Hostname, User and IdentityFile:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Host websitebroker
-</span><span class='line'>Hostname ec2-54-191-181-129.us-west-2.compute.amazonaws.com
-</span><span class='line'>User ubuntu
-</span><span class='line'>IdentityFile ~/.ssh/amazon-aws.pem</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s a breakdown:</p>
-
-<ul>
-<li><code>Host</code> &ndash; a unique name you want to give to the server. This is used for referring to the server later on.</li>
-<li><code>Hostname</code> &ndash; the ip address of domain name of the server.</li>
-<li><code>User</code> &ndash; the user used for logging in to the server. For ec2 Ubuntu instance, this is usually Ubuntu.</li>
-<li><code>IdentityFile</code> &ndash; the path to the amazon identity file you have downloaded when you created the ec2 instance.</li>
-</ul>
-
-
-<p>You can test if the ssh configuration works by logging in to the server using the <code>Host</code> you&rsquo;ve added.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh websitebroker</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Executing the command above should log you in to the server if youre configuration is correct.</p>
-
-<h3>Setup Git</h3>
-
-<p>Once that&rsquo;s done, you can login to the server using ssh and setup git like you would usually set it up on your local computer.</p>
-
-<p>First you install git:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:pdoes/ppa
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install git-core</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, give identity to the server:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git config --global user.name "websitebroker"
-</span><span class='line'>git config --global user.email websitebroker@islickmedia.com</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, generate an ssh keypair:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh-keygen -t rsa -C "websitebroker@islickmedia.com"
-</span><span class='line'>ssh-add id_rsa</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you&rsquo;re getting the following error when adding the private keyfile:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Could not open a connection to your authentication agent</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can try starting <code>ssh-agent</code> before executing <code>ssh-add</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>eval `ssh-agent -s`</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If that doesn&rsquo;t work, you can try the <a href="http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent">following solutions</a>.</p>
-
-<p>Once that&rsquo;s done, you can now add the public key to bitbucket, github or any other git service you&rsquo;re currently using. To do that, navigate to your ssh directory then output the contents of the <code>id_rsa.pub</code> file. Copy the output and paste it into the git service you&rsquo;re using:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.ssh
-</span><span class='line'>cat id_rsa.pub</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Setup Deployment</h3>
-
-<p>Navigate to the home directory of the server:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /home/ubuntu</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Create and navigate to the directory where were going to push our changes later on:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir website.git
-</span><span class='line'>cd website.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, setup a bare git repo:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git init --bare</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create a <code>post-receive</code> file under the <code>hooks</code> directory:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/sh
-</span><span class='line'>#
-</span><span class='line'># An example hook script for the "post-receive" event.
-</span><span class='line'>#
-</span><span class='line'># The "post-receive" script is run after receive-pack has accepted a pack
-</span><span class='line'># and the repository has been updated.  It is passed arguments in through
-</span><span class='line'># stdin in the form
-</span><span class='line'>#  &lt;oldrev&gt; &lt;newrev&gt; &lt;refname&gt;
-</span><span class='line'># For example:
-</span><span class='line'>#  aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b7$
-</span><span class='line'>#
-</span><span class='line'># see contrib/hooks/ for an sample, or uncomment the next line and
-</span><span class='line'># rename the file to "post-receive".
-</span><span class='line'>
-</span><span class='line'>#. /usr/share/doc/git-core/contrib/hooks/post-receive-email
-</span><span class='line'>GIT_WORK_TREE=/home/ubuntu/www
-</span><span class='line'>export GIT_WORK_TREE
-</span><span class='line'>git checkout -f</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The only thing you need to change here is the <code>GIT_WORK_TREE</code>, which is basically the path to where changes are being pushed when someone pushes into the bare git repo. Since we want changes to take effect on the public facing website, we setup the <code>GIT_WORK_TREE</code> to be the www directory. Which is the directory used by Apache to serve the website.</p>
-
-<p>Next, open up the <code>config</code> file of the bare git repo:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /home/ubuntu/website.git
-</span><span class='line'>sudo nano config</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make sure it contains something similar to the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[core]
-</span><span class='line'>        repositoryformatversion = 0
-</span><span class='line'>        filemode = true
-</span><span class='line'>        bare = false
-</span><span class='line'>        worktree = /home/ubuntu/www
-</span><span class='line'>[receive]
-</span><span class='line'>        denycurrentbranch = ignore</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, you need to make the <code>post-receive</code> file executable:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>chmod +x hooks/post-receive</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now in your development machine. Navigate to your project directory then add a new <code>remote</code> and call it <code>deploy</code>. The path would be the ssh alias you&rsquo;ve given to the website earlier. In this case its <code>websitebroker</code>. Followed by a colon then the path to the bare git repo:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add deploy websitebroker:/home/ubuntu/website.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next push the references using <code>git push</code>. You only have to do this for the first time.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git push deploy +master:refs/heads/master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now everytime you push to your bitbucket or github remote repo. You can also push the changes to the server:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git push deploy master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you want to do it in one command, you can edit the config file of your project (still on your development machine) and add the urls in there:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[remote "all"]
-</span><span class='line'>        url = https://github.com/YourGitAccount/ProjectDir.git
-</span><span class='line'>        url = websitebroker:/home/ubuntu/website.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now all you have to do is push using the <code>all</code> alias:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git push all master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that this deployment strategy doesn&rsquo;t update the dependencies. So you still need to login to the server and update your dependencies manually.</p>
-
-<h2>Conclusion</h2>
-
-<p>Automating deployment with Git is a nice way on saving up time manually pushing the changes to the server using ftp. With the deployment strategy we&rsquo;ve seen in this tutorial, you can easily push changes to your server by executing a single command in the terminal. It also gives you the advantage of being able to rollback the changes you&rsquo;ve made.</p>
-
-<h2>Resources</h2>
-
-<ul>
-<li><a href="http://chilipepperdesign.com/2013/01/07/deploying-code-with-git/">Deploying Code with Git</a></li>
-<li><a href="http://www.jeffhoefs.com/2012/09/setup-git-deploy-for-aws-ec2-ubuntu-instance/">Setup Git Deploy for AWS Ec2 Instance</a></li>
-<li><a href="http://deductiveblog.in/2013/05/19/deploy-to-amazon-ec2-using-git/">Deploy to Amazon EC2 using Git</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
