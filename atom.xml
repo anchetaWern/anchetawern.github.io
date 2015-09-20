@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-09-13T08:06:48+08:00</updated>
+  <updated>2015-09-20T09:01:59+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,294 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Database Migrations in PHP with Phinx]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/"/>
+    <updated>2015-09-20T17:29:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx</id>
+    <content type="html"><![CDATA[<p>Gone are the days where you use the export functionality of your database management tool and share the SQL file to your team mates. Most PHP frameworks today already comes with a database migration tool which you can use to construct and make changes to your database and easily share them through your version control system of choice. In this tutorial I&rsquo;ll be walking you through <a href="https://phinx.org/">Phinx</a>, a database migration tool for PHP.</p>
+
+<p>If you don&rsquo;t know what a database migration is, it&rsquo;s basically a way to version your database. Pretty much like what you do with version control systems like Git, SVN or Mercurial. It allows you to make changes to your database and easily rollback any of those changes later on if you make a mistake or if there are some changes that needs to be implemented. You can then share the changes you&rsquo;ve made to your team by committing it to your version control system and pushing it to the main repository of your project. Your team mates can then pull those changes into their own copy and run the migrations so that they have the same state of the database as you do.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Phinx through Composer by executing the following commands on your terminal. If you have an existing project, you can navigate to your project directory and execute it from there.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require robmorgan/phinx
+</span><span class='line'>composer install --no-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a <code>migrations</code> folder. This is where the database migrations are going to be stored.</p>
+
+<p>Finally, execute the following command to initialize Phinx.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php vendor/bin/phinx init</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuration</h3>
+
+<p>When Phinx was initialized, you might have noticed that it created a <code>phinx.yml</code> file on the root of your project. This file is the Phinx configuration. This is where you can modify the database used by Phinx for production, development and testing environments. By default Phinx uses the development environment so go ahead and modify the details for that.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>paths:
+</span><span class='line'>    migrations: %%PHINX_CONFIG_DIR%%/migrations
+</span><span class='line'>
+</span><span class='line'>environments:
+</span><span class='line'>    default_migration_table: phinxlog
+</span><span class='line'>    default_database: development
+</span><span class='line'>    production:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: production_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span><span class='line'>
+</span><span class='line'>    development:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: development_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span><span class='line'>
+</span><span class='line'>    testing:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: testing_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>Using Phinx mainly composed of the following workflow:</p>
+
+<ol>
+<li>Create a migration</li>
+<li>Modify the migration class</li>
+<li>Run the migration</li>
+<li>If you need to make a change to a previous migration, roll it back, make the change to the migration class and run the migration again.</li>
+</ol>
+
+
+<h4>Creating Migrations</h4>
+
+<p>To create a new migration, you use the Phinx shell script. Below is a migration for creating a users table.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php vendor/bin/phinx create CreateUsersTable</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This creates a new file in the <code>migrations</code> directory. For me it created a file named <code>20150727004941_create_users_table.php</code>. The filename is made up of the timestamp and the machine-friendly version of the name of the migration that you provided.</p>
+
+<p>It&rsquo;s best practice that you name your migrations based on what they do, so that you can easily look for them if you need to modify something. Each migration should only be doing one specific task so that you can easily roll them back without having to worry about side-effects. Creating a users table should add the fields that are necessary to that table. But if you&rsquo;re modifying a specific table, in most cases, you should only modify one field at a time. For example, you need to modify the data type from <code>INT</code> to <code>VARCHAR</code>. Only modify one field. But if it makes sense to change two or more fields in a single migration, then do so. For example, if you need to modify the length of the <code>username</code> and <code>password</code> fields so they can accomodate more data.</p>
+
+<p>Going back to the migration file. Open it up if you haven&rsquo;t yet. Here&rsquo;s how it looks like by default.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Phinx\Migration\AbstractMigration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CreateUsersTable</span> <span class="k">extends</span> <span class="nx">AbstractMigration</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Change Method.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Write your reversible migrations using this method.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * More information on writing migrations is available here:</span>
+</span><span class='line'><span class="sd">     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">change</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Phinx already creates a skeleton class for you s you only need to modify what&rsquo;s in the <code>change</code> function. This is where you need to add the code for modifying your database. In this case the change is to create a <code>users</code> table. Add the following inside the <code>change</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="nv">$table</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">create</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The table is declared using the <code>table</code> function. This accepts the name of the table as its argument. The fields are then added by calling the <code>addColumn</code> method in the table. This accepts 2 required arguments: the name of the field and the data type. Finally, the <code>create</code> function is called to actually create the table. Once that&rsquo;s done, save the file.</p>
+
+<p>Let&rsquo;s pretend we forgot to add the <code>photo</code> field, so create another migration to add that.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx migrate AddPhotoFieldToUsersTable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add the following inside the <code>change</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$table = $this-&gt;table(&#39;users&#39;);</span>
+</span><span class='line'><span class="x">$table-&gt;addColumn(&#39;photo&#39;, &#39;string&#39;, array(&#39;after&#39; =&gt; &#39;username&#39;))</span>
+</span><span class='line'><span class="x">        -&gt;update();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nothing new here, the only thing that&rsquo;s changed is the method to be called to actually execute the change that you need to make. In this case instead of <code>create</code>, the <code>update</code> method is used. This is how Phinx will know that you are trying to update the <code>users</code> table by adding the <code>photo</code> field.</p>
+
+<h4>Running Migrations</h4>
+
+<p>You can run all the migrations that haven&rsquo;t been run yet by using the <code>migrate</code> command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It would output something similar to the following when the migration is run.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">warning no environment specified, defaulting to: development</span>
+</span><span class='line'><span class="x">using adapter mysql</span>
+</span><span class='line'><span class="x">using database tester</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: migrating</span>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: migrated 0.3325s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: migrating</span>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: migrated 0.5018s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">All Done. Took 0.6773s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can now check if the table was actually created by opening your database management tool of choice. Also notice that there is a <code>phinxlog</code> table in your database. This is used by Phinx to keep track of which specific migrations were run and the start and end time for each. The migration is determined by its version, which is basically the first part of the file name for a specific migration file. On my testing, the version is <code>20150727004941</code>.</p>
+
+<h4>Rolling Back Changes</h4>
+
+<p>To rollback changes you can use the <code>rollback</code> command which does exactly the opposite of the <code>migrate</code> command. All it does is rollback everything that has changed on the last migrate.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx rollback</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above outputs something similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">warning no environment specified, defaulting to: development</span>
+</span><span class='line'><span class="x">using adapter mysql</span>
+</span><span class='line'><span class="x">using database tester</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: reverting</span>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: reverted 0.4672s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: reverting</span>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: reverted 0.1503s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">All Done. Took 0.6175s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to create database migrations with Phinx. Be sure to check out the <a href="http://docs.phinx.org/en/latest/">official documentation</a> if you want to learn more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Working with the Filesystem with Flysystem]]></title>
@@ -5675,345 +5963,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 <li><a href="http://guide.couchdb.org/">CouchDB Definitive Guide</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with the Yahoo Finance API]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/04/05/getting-started-with-the-yahoo-finance-api/"/>
-    <updated>2015-04-05T13:24:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/04/05/getting-started-with-the-yahoo-finance-api</id>
-    <content type="html"><![CDATA[<p>The Yahoo Finance API provides a way for developers to get the latest information about the stock market. How the different stocks are doing. What&rsquo;s the current buying price for a single stock. How much is the difference of the current market value to that of yesterday&rsquo;s, etc.</p>
-
-<p>First thing that you need to do is to install the Guzzle library for PHP. This allows us to easily make http requests to the server. You can do that by adding the following on your <code>composer.json</code> file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> {
-</span><span class='line'>   "require": {
-</span><span class='line'>      "guzzlehttp/guzzle": "~5.0"
-</span><span class='line'>   }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then execute <code>composer install</code> from your terminal.</p>
-
-<p>Next create a <code>test.php</code> file and put the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This allows us to use guzzle from our file.</p>
-
-<p>Before we move on here are the specific data that you can get from the API:</p>
-
-<p><strong>Pricing</strong></p>
-
-<ul>
-<li><code>a</code> &ndash; ask</li>
-<li><code>b</code> &ndash; bid</li>
-<li><code>b2</code> &ndash; ask (realtime)</li>
-<li><code>b3</code> &ndash; bid (realtime)</li>
-<li><code>p</code> &ndash; previous close</li>
-<li><code>o</code> &ndash; open</li>
-</ul>
-
-
-<p><strong>Dividends</strong></p>
-
-<ul>
-<li><code>y</code> &ndash; dividend yield</li>
-<li><code>d</code> &ndash; dividend per share</li>
-<li><code>r1</code> &ndash; dividend pay date</li>
-<li><code>q</code> &ndash; ex-dividend date</li>
-</ul>
-
-
-<p><strong>Date</strong></p>
-
-<ul>
-<li><code>c1</code> &ndash; change</li>
-<li><code>c</code> &ndash; change &amp; percentage change</li>
-<li><code>c6</code> &ndash; change (realtime)</li>
-<li><code>k2</code> &ndash; change percent</li>
-<li><code>p2</code> &ndash; change in percent</li>
-<li><code>d1</code> &ndash; last trade date</li>
-<li><code>d2</code> &ndash; trade date</li>
-<li><code>t1</code> &ndash; last trade time</li>
-</ul>
-
-
-<p><strong>Averages</strong></p>
-
-<ul>
-<li><code>c8</code> &ndash; after hours change</li>
-<li><code>c3</code> &ndash; commission</li>
-<li><code>g</code> &ndash; day&rsquo;s low</li>
-<li><code>h</code> &ndash; day&rsquo;s high</li>
-<li><code>k1</code> &ndash; last trade (realtime) with time</li>
-<li><code>l</code> &ndash; last trade (with time)</li>
-<li><code>l1</code> &ndash; last trade (price only)</li>
-<li><code>t8</code> &ndash; 1 yr target price</li>
-<li><code>m5</code> &ndash; change from 200 day moving average</li>
-<li><code>m6</code> &ndash; percent change from 200 day moving average</li>
-<li><code>m7</code> &ndash; change from 50 day moving average</li>
-<li><code>m8</code> &ndash; percent change from 50 day moving average</li>
-<li><code>m3</code> &ndash; 50 day moving average</li>
-<li><code>m4</code> &ndash; 200 day moving average</li>
-</ul>
-
-
-<p><strong>Misc</strong></p>
-
-<ul>
-<li><code>w1</code> &ndash; day&rsquo;s value change</li>
-<li><code>w4</code> &ndash; day&rsquo;s value change (realtime)</li>
-<li><code>p1</code> &ndash; price paid</li>
-<li><code>m</code> &ndash; day&rsquo;s range</li>
-<li><code>m2</code> &ndash; day&rsquo;s range (realtime)</li>
-<li><code>g1</code> &ndash; holding gain percent</li>
-<li><code>g3</code> &ndash; annualized gain</li>
-<li><code>g4</code> &ndash; holdings gain</li>
-<li><code>g5</code> &ndash; holdings gain percent (realtime)</li>
-<li><code>g6</code> &ndash; holdings gain (realtime)</li>
-<li><code>t7</code> &ndash; ticker trend</li>
-<li><code>t6</code> &ndash; trade links</li>
-<li><code>i5</code> &ndash; order book (realtime)</li>
-<li><code>l2</code> &ndash; high limit</li>
-<li><code>l3</code> &ndash; low limit</li>
-<li><code>v1</code> &ndash; holdings value</li>
-<li><code>v7</code> &ndash; holdings value (realtime)</li>
-<li><code>s6</code> &ndash; revenue</li>
-</ul>
-
-
-<p><strong>52 Week Pricing</strong></p>
-
-<ul>
-<li><code>k</code> &ndash; 52 week high</li>
-<li><code>j</code> &ndash; 52 week low</li>
-<li><code>j5</code> &ndash; change from 52 week low</li>
-<li><code>k4</code> &ndash; change from 52 week high</li>
-<li><code>j6</code> &ndash; percent change from 52 week low</li>
-<li><code>k5</code> &ndash; percent change from 52 week high</li>
-<li><code>w</code> &ndash; 52 week range</li>
-</ul>
-
-
-<p><strong>Symbol Info</strong></p>
-
-<ul>
-<li><code>v</code> &ndash; more info</li>
-<li><code>j1</code> &ndash; market capitalization</li>
-<li><code>j3</code> &ndash; market cap (realtime)</li>
-<li><code>f6</code> &ndash; float shares</li>
-<li><code>n</code> &ndash; name</li>
-<li><code>n4</code> &ndash; notes</li>
-<li><code>s</code> &ndash; symbol</li>
-<li><code>s1</code> &ndash; shares owned</li>
-<li><code>x</code> &ndash; stock exchange</li>
-<li><code>j2</code> &ndash; shares outstanding</li>
-</ul>
-
-
-<p><strong>Volume</strong></p>
-
-<ul>
-<li><code>v</code> &ndash; volume</li>
-<li><code>a5</code> &ndash; ask size</li>
-<li><code>b6</code> &ndash; bid size</li>
-<li><code>k3</code> &ndash; last trade size</li>
-<li><code>a2</code> &ndash; average daily volume</li>
-</ul>
-
-
-<p><strong>Ratios</strong></p>
-
-<ul>
-<li><code>e</code> &ndash; earnings per share</li>
-<li><code>e7</code> &ndash; eps estimate current year</li>
-<li><code>e8</code> &ndash; eps estimate next year</li>
-<li><code>e9</code> &ndash; eps estimate next quarter</li>
-<li><code>b4</code> &ndash; book value</li>
-<li><code>j4</code> &ndash; EBITDA</li>
-<li><code>p5</code> &ndash; price / sales</li>
-<li><code>p6</code> &ndash; price / book</li>
-<li><code>r</code> &ndash; P/E ratio</li>
-<li><code>r2</code> &ndash; P/E ratio (realtime)</li>
-<li><code>r5</code> &ndash; PEG ratio</li>
-<li><code>r6</code> &ndash; price / eps estimate current year</li>
-<li><code>r7</code> &ndash; price /eps estimate next year</li>
-<li><code>s7</code> &ndash; short ratio</li>
-</ul>
-
-
-<p>Wew! Ok so that&rsquo;s a lot. I&rsquo;ll let you catch your breath for a second. Ready?</p>
-
-<p>Ok so now were ready to make a request to the API. You can either do that from here:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://download.finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Or here:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s={SYMBOLS}&amp;f={DATA THAT WE WANT}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Doesn&rsquo;t really matter which. Both returns the same thing. Here&rsquo;s an example which you can just copy and paste into your browser&rsquo;s address bar:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s=GOOGL&amp;f=abo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. We make a request to this URL:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then we pass in some query parameters: <code>s</code> and <code>f</code>. <code>s</code> represents the symbol or symbols that you want to query. And <code>f</code> represents the data that you want. That&rsquo;s the big list that we just went through earlier. So if you want the API to return the ask, bid and open. We just need to pass in:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">f=abo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In the example that we have. Were requesting this information for the <code>GOOGL</code> symbol. Which is basically Google. When this is requested in the browser, it downloads a <code>quotes.csv</code> file which contain something similar to the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">580.36,575.90,576.35</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Its a comma-separated list of all the values you requested. So 580.36 is the ask price, 575.90 is the bidding price, and 576.35 is the open price.</p>
-
-<p>If you want to query more than one symbol, you just separate each symbol with a comma. So for example you want to request the stock information about Google, Apple, Microsoft and Facebook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://finance.yahoo.com/d/quotes.csv?s=GOOGL,AAPL,MSFT,FB&amp;f=abo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now let&rsquo;s proceed with actually making this all work with PHP. First we need to create a table that will store all the information that we need. In this case, we only need the symbol, ask, bid and open values:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">symbols</span> <span class="p">(</span>
-</span><span class='line'>    <span class="n">id</span> <span class="nb">INT</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="n">UNSIGNED</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">symbol</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">ask</span> <span class="n">DOUBLE</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">bid</span> <span class="n">DOUBLE</span><span class="p">,</span>
-</span><span class='line'>    <span class="k">open</span> <span class="n">DOUBLE</span>
-</span><span class='line'><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create an <code>indexer.php</code> file. What this file does is to query the yahoo finance api and then save the results to a csv file. Note that we can only query up to 200 symbols per request. So we&rsquo;ll have to work based on that on our code.</p>
-
-<p>The first thing that the code below does is to query the number of symbols currently in the database. And then we calculate how many times we need to loop in order to update all the symbols. We also need to declare the file path of the csv file in which will save all the results from the API. And initialize it by setting its value to an empty string. Then we declare the format <code>sabo</code>. Which means symbol, ask, bid and open. Next we create a for loop that will keep on executing until the value of <code>$x</code> reaches the total loop times that we got from dividing the total number of symbols by the API limit. Inside the loop we calculate the offset value by multiplying the current value of <code>$x</code> by the API limit. After that, we select the symbols that we need based on that. Then we loop through the results, specifically the symbol and then put them in an array. After looping through all the results, we convert the array into a comma separated list. This allows us to use this value for querying the API. Once we get the result back, we just save it to the csv file using <code>file_put_contents</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Mysqli</span><span class="p">(</span><span class="nx">HOST</span><span class="p">,</span> <span class="nx">USER</span><span class="p">,</span> <span class="nx">PASS</span><span class="p">,</span> <span class="nx">DB</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$symbols_count_result</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(id) FROM symbols&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$symbol_row</span> <span class="o">=</span> <span class="nv">$symbols_count_result</span><span class="o">-&gt;</span><span class="na">fetch_row</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$symbol_count</span> <span class="o">=</span> <span class="nv">$symbol_row</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$api_limit</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$loop_times</span> <span class="o">=</span> <span class="nv">$symbol_count</span> <span class="o">/</span> <span class="nv">$api_limit</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$loop_times</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$loop_times</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$file</span> <span class="o">=</span> <span class="s1">&#39;uploads/csv/stocks.csv&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$format</span> <span class="o">=</span> <span class="s1">&#39;sabo&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="nv">$x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$x</span> <span class="o">&lt;</span> <span class="nv">$loop_times</span><span class="p">;</span> <span class="nv">$x</span><span class="o">++</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$from</span> <span class="o">=</span> <span class="nv">$x</span> <span class="o">*</span> <span class="nv">$api_limit</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$symbols_result</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM symbols LIMIT &#39;</span><span class="si">$api_limit</span><span class="s2">&#39; OFFSET &#39;</span><span class="si">$from</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$symbols_result</span><span class="o">-&gt;</span><span class="na">num_rows</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nv">$symbols</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>        <span class="k">while</span><span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$symbols_result</span><span class="o">-&gt;</span><span class="na">fetch_object</span><span class="p">()){</span>
-</span><span class='line'>            <span class="nx">symbols</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">symbol</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nv">$symbols_str</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$symbols</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$stocks</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;http://download.finance.yahoo.com/d/quotes.csv?s=</span><span class="si">{</span><span class="nv">$symbols_str</span><span class="si">}</span><span class="s2">&amp;f=</span><span class="si">{</span><span class="nv">$format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nv">$stocks</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="nx">FILE_APPEND</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s it! The Yahoo Finance API is a really nice way of getting financial information about specific companies.</p>
 ]]></content>
   </entry>
   

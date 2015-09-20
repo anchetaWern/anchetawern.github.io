@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Database Migrations in PHP with Phinx - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Gone are the days where you use the export functionality of your database management tool and share the SQL file to your team mates. Most PHP &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wern-ancheta.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Database Migrations in PHP With Phinx</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-20T17:29:00+08:00" pubdate data-updated="true">Sep 20<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Gone are the days where you use the export functionality of your database management tool and share the SQL file to your team mates. Most PHP frameworks today already comes with a database migration tool which you can use to construct and make changes to your database and easily share them through your version control system of choice. In this tutorial I&rsquo;ll be walking you through <a href="https://phinx.org/">Phinx</a>, a database migration tool for PHP.</p>
+
+<p>If you don&rsquo;t know what a database migration is, it&rsquo;s basically a way to version your database. Pretty much like what you do with version control systems like Git, SVN or Mercurial. It allows you to make changes to your database and easily rollback any of those changes later on if you make a mistake or if there are some changes that needs to be implemented. You can then share the changes you&rsquo;ve made to your team by committing it to your version control system and pushing it to the main repository of your project. Your team mates can then pull those changes into their own copy and run the migrations so that they have the same state of the database as you do.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Phinx through Composer by executing the following commands on your terminal. If you have an existing project, you can navigate to your project directory and execute it from there.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require robmorgan/phinx
+</span><span class='line'>composer install --no-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a <code>migrations</code> folder. This is where the database migrations are going to be stored.</p>
+
+<p>Finally, execute the following command to initialize Phinx.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php vendor/bin/phinx init</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuration</h3>
+
+<p>When Phinx was initialized, you might have noticed that it created a <code>phinx.yml</code> file on the root of your project. This file is the Phinx configuration. This is where you can modify the database used by Phinx for production, development and testing environments. By default Phinx uses the development environment so go ahead and modify the details for that.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>paths:
+</span><span class='line'>    migrations: %%PHINX_CONFIG_DIR%%/migrations
+</span><span class='line'>
+</span><span class='line'>environments:
+</span><span class='line'>    default_migration_table: phinxlog
+</span><span class='line'>    default_database: development
+</span><span class='line'>    production:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: production_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span><span class='line'>
+</span><span class='line'>    development:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: development_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span><span class='line'>
+</span><span class='line'>    testing:
+</span><span class='line'>        adapter: mysql
+</span><span class='line'>        host: localhost
+</span><span class='line'>        name: testing_db
+</span><span class='line'>        user: root
+</span><span class='line'>        pass: ''
+</span><span class='line'>        port: 3306
+</span><span class='line'>        charset: utf8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>Using Phinx mainly composed of the following workflow:</p>
+
+<ol>
+<li>Create a migration</li>
+<li>Modify the migration class</li>
+<li>Run the migration</li>
+<li>If you need to make a change to a previous migration, roll it back, make the change to the migration class and run the migration again.</li>
+</ol>
+
+
+<h4>Creating Migrations</h4>
+
+<p>To create a new migration, you use the Phinx shell script. Below is a migration for creating a users table.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>php vendor/bin/phinx create CreateUsersTable</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This creates a new file in the <code>migrations</code> directory. For me it created a file named <code>20150727004941_create_users_table.php</code>. The filename is made up of the timestamp and the machine-friendly version of the name of the migration that you provided.</p>
+
+<p>It&rsquo;s best practice that you name your migrations based on what they do, so that you can easily look for them if you need to modify something. Each migration should only be doing one specific task so that you can easily roll them back without having to worry about side-effects. Creating a users table should add the fields that are necessary to that table. But if you&rsquo;re modifying a specific table, in most cases, you should only modify one field at a time. For example, you need to modify the data type from <code>INT</code> to <code>VARCHAR</code>. Only modify one field. But if it makes sense to change two or more fields in a single migration, then do so. For example, if you need to modify the length of the <code>username</code> and <code>password</code> fields so they can accomodate more data.</p>
+
+<p>Going back to the migration file. Open it up if you haven&rsquo;t yet. Here&rsquo;s how it looks like by default.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Phinx\Migration\AbstractMigration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CreateUsersTable</span> <span class="k">extends</span> <span class="nx">AbstractMigration</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Change Method.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Write your reversible migrations using this method.</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * More information on writing migrations is available here:</span>
+</span><span class='line'><span class="sd">     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">change</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Phinx already creates a skeleton class for you s you only need to modify what&rsquo;s in the <code>change</code> function. This is where you need to add the code for modifying your database. In this case the change is to create a <code>users</code> table. Add the following inside the <code>change</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="nv">$table</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">addColumn</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">-&gt;</span><span class="na">create</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The table is declared using the <code>table</code> function. This accepts the name of the table as its argument. The fields are then added by calling the <code>addColumn</code> method in the table. This accepts 2 required arguments: the name of the field and the data type. Finally, the <code>create</code> function is called to actually create the table. Once that&rsquo;s done, save the file.</p>
+
+<p>Let&rsquo;s pretend we forgot to add the <code>photo</code> field, so create another migration to add that.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx migrate AddPhotoFieldToUsersTable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add the following inside the <code>change</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$table = $this-&gt;table(&#39;users&#39;);</span>
+</span><span class='line'><span class="x">$table-&gt;addColumn(&#39;photo&#39;, &#39;string&#39;, array(&#39;after&#39; =&gt; &#39;username&#39;))</span>
+</span><span class='line'><span class="x">        -&gt;update();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nothing new here, the only thing that&rsquo;s changed is the method to be called to actually execute the change that you need to make. In this case instead of <code>create</code>, the <code>update</code> method is used. This is how Phinx will know that you are trying to update the <code>users</code> table by adding the <code>photo</code> field.</p>
+
+<h4>Running Migrations</h4>
+
+<p>You can run all the migrations that haven&rsquo;t been run yet by using the <code>migrate</code> command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It would output something similar to the following when the migration is run.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">warning no environment specified, defaulting to: development</span>
+</span><span class='line'><span class="x">using adapter mysql</span>
+</span><span class='line'><span class="x">using database tester</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: migrating</span>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: migrated 0.3325s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: migrating</span>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: migrated 0.5018s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">All Done. Took 0.6773s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can now check if the table was actually created by opening your database management tool of choice. Also notice that there is a <code>phinxlog</code> table in your database. This is used by Phinx to keep track of which specific migrations were run and the start and end time for each. The migration is determined by its version, which is basically the first part of the file name for a specific migration file. On my testing, the version is <code>20150727004941</code>.</p>
+
+<h4>Rolling Back Changes</h4>
+
+<p>To rollback changes you can use the <code>rollback</code> command which does exactly the opposite of the <code>migrate</code> command. All it does is rollback everything that has changed on the last migrate.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php vendor/bin/phinx rollback</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The command above outputs something similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">warning no environment specified, defaulting to: development</span>
+</span><span class='line'><span class="x">using adapter mysql</span>
+</span><span class='line'><span class="x">using database tester</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: reverting</span>
+</span><span class='line'><span class="x"> == 20150727013547 AddPhotoFieldToUsersTable: reverted 0.4672s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: reverting</span>
+</span><span class='line'><span class="x"> == 20150727004941 CreateUsersTable: reverted 0.1503s</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">All Done. Took 0.6175s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to create database migrations with Phinx. Be sure to check out the <a href="http://docs.phinx.org/en/latest/">official documentation</a> if you want to learn more.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-20T17:29:00+08:00" pubdate data-updated="true">Sep 20<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/database/'>database</a>, <a class='category' href='/blog/categories/database-migrations/'>database-migrations</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/" data-via="wern_ancheta" data-counturl="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/" title="Previous Post: Working with the Filesystem with Flysystem">&laquo; Working with the Filesystem with Flysystem</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/database-migrations-in-php-with-phinx/">Database Migrations in PHP with Phinx</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/">Working with the Filesystem with Flysystem</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/05/getting-started-with-ionic/">Getting Started with Ionic</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/">Using the Twig Templating Engine in PHP</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/">What Playing Clash of Clans Can Teach You About Life</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/';
+        var disqus_url = 'http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

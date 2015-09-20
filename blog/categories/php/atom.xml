@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-09-13T08:06:48+08:00</updated>
+  <updated>2015-09-20T09:01:59+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,220 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Database Migrations in PHP with Phinx]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/"/>
+    <updated>2015-09-20T17:29:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx</id>
+    <content type="html"><![CDATA[<p>Gone are the days where you use the export functionality of your database management tool and share the SQL file to your team mates. Most PHP frameworks today already comes with a database migration tool which you can use to construct and make changes to your database and easily share them through your version control system of choice. In this tutorial I&rsquo;ll be walking you through <a href="https://phinx.org/">Phinx</a>, a database migration tool for PHP.</p>
+
+<p>If you don&rsquo;t know what a database migration is, it&rsquo;s basically a way to version your database. Pretty much like what you do with version control systems like Git, SVN or Mercurial. It allows you to make changes to your database and easily rollback any of those changes later on if you make a mistake or if there are some changes that needs to be implemented. You can then share the changes you&rsquo;ve made to your team by committing it to your version control system and pushing it to the main repository of your project. Your team mates can then pull those changes into their own copy and run the migrations so that they have the same state of the database as you do.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Phinx through Composer by executing the following commands on your terminal. If you have an existing project, you can navigate to your project directory and execute it from there.</p>
+
+<p><code>
+composer require robmorgan/phinx
+composer install --no-dev
+</code></p>
+
+<p>Next create a <code>migrations</code> folder. This is where the database migrations are going to be stored.</p>
+
+<p>Finally, execute the following command to initialize Phinx.</p>
+
+<p><code>
+php vendor/bin/phinx init
+</code></p>
+
+<h3>Configuration</h3>
+
+<p>When Phinx was initialized, you might have noticed that it created a <code>phinx.yml</code> file on the root of your project. This file is the Phinx configuration. This is where you can modify the database used by Phinx for production, development and testing environments. By default Phinx uses the development environment so go ahead and modify the details for that.</p>
+
+<p>```
+paths:</p>
+
+<pre><code>migrations: %%PHINX_CONFIG_DIR%%/migrations
+</code></pre>
+
+<p>environments:</p>
+
+<pre><code>default_migration_table: phinxlog
+default_database: development
+production:
+    adapter: mysql
+    host: localhost
+    name: production_db
+    user: root
+    pass: ''
+    port: 3306
+    charset: utf8
+
+development:
+    adapter: mysql
+    host: localhost
+    name: development_db
+    user: root
+    pass: ''
+    port: 3306
+    charset: utf8
+
+testing:
+    adapter: mysql
+    host: localhost
+    name: testing_db
+    user: root
+    pass: ''
+    port: 3306
+    charset: utf8
+</code></pre>
+
+<p>```</p>
+
+<h3>Usage</h3>
+
+<p>Using Phinx mainly composed of the following workflow:</p>
+
+<ol>
+<li>Create a migration</li>
+<li>Modify the migration class</li>
+<li>Run the migration</li>
+<li>If you need to make a change to a previous migration, roll it back, make the change to the migration class and run the migration again.</li>
+</ol>
+
+
+<h4>Creating Migrations</h4>
+
+<p>To create a new migration, you use the Phinx shell script. Below is a migration for creating a users table.</p>
+
+<p><code>
+php vendor/bin/phinx create CreateUsersTable
+</code></p>
+
+<p>This creates a new file in the <code>migrations</code> directory. For me it created a file named <code>20150727004941_create_users_table.php</code>. The filename is made up of the timestamp and the machine-friendly version of the name of the migration that you provided.</p>
+
+<p>It&rsquo;s best practice that you name your migrations based on what they do, so that you can easily look for them if you need to modify something. Each migration should only be doing one specific task so that you can easily roll them back without having to worry about side-effects. Creating a users table should add the fields that are necessary to that table. But if you&rsquo;re modifying a specific table, in most cases, you should only modify one field at a time. For example, you need to modify the data type from <code>INT</code> to <code>VARCHAR</code>. Only modify one field. But if it makes sense to change two or more fields in a single migration, then do so. For example, if you need to modify the length of the <code>username</code> and <code>password</code> fields so they can accomodate more data.</p>
+
+<p>Going back to the migration file. Open it up if you haven&rsquo;t yet. Here&rsquo;s how it looks like by default.</p>
+
+<p>```php
+&lt;?php</p>
+
+<p>use Phinx\Migration\AbstractMigration;</p>
+
+<p>class CreateUsersTable extends AbstractMigration
+{</p>
+
+<pre><code>/**
+ * Change Method.
+ *
+ * Write your reversible migrations using this method.
+ *
+ * More information on writing migrations is available here:
+ * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
+ */
+public function change()
+{
+
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Phinx already creates a skeleton class for you s you only need to modify what&rsquo;s in the <code>change</code> function. This is where you need to add the code for modifying your database. In this case the change is to create a <code>users</code> table. Add the following inside the <code>change</code> function.</p>
+
+<p>```php
+&lt;?php
+  $table = $this->table(&lsquo;users&rsquo;);
+  $table->addColumn(&lsquo;username&rsquo;, &lsquo;string&rsquo;)</p>
+
+<pre><code>  -&gt;addColumn('email', 'string')
+  -&gt;addColumn('password', 'string')
+  -&gt;create();
+</code></pre>
+
+<p>?>
+```</p>
+
+<p>The table is declared using the <code>table</code> function. This accepts the name of the table as its argument. The fields are then added by calling the <code>addColumn</code> method in the table. This accepts 2 required arguments: the name of the field and the data type. Finally, the <code>create</code> function is called to actually create the table. Once that&rsquo;s done, save the file.</p>
+
+<p>Let&rsquo;s pretend we forgot to add the <code>photo</code> field, so create another migration to add that.</p>
+
+<p><code>
+php vendor/bin/phinx migrate AddPhotoFieldToUsersTable
+</code></p>
+
+<p>Add the following inside the <code>change</code> method.</p>
+
+<p>```php</p>
+
+<pre><code>$table = $this-&gt;table('users');
+$table-&gt;addColumn('photo', 'string', array('after' =&gt; 'username'))
+        -&gt;update();
+</code></pre>
+
+<p>```</p>
+
+<p>Nothing new here, the only thing that&rsquo;s changed is the method to be called to actually execute the change that you need to make. In this case instead of <code>create</code>, the <code>update</code> method is used. This is how Phinx will know that you are trying to update the <code>users</code> table by adding the <code>photo</code> field.</p>
+
+<h4>Running Migrations</h4>
+
+<p>You can run all the migrations that haven&rsquo;t been run yet by using the <code>migrate</code> command.</p>
+
+<p><code>
+php vendor/bin/phinx migrate
+</code></p>
+
+<p>It would output something similar to the following when the migration is run.</p>
+
+<p>```
+warning no environment specified, defaulting to: development
+using adapter mysql
+using database tester</p>
+
+<p> == 20150727004941 CreateUsersTable: migrating
+ == 20150727004941 CreateUsersTable: migrated 0.3325s</p>
+
+<p> == 20150727013547 AddPhotoFieldToUsersTable: migrating
+ == 20150727013547 AddPhotoFieldToUsersTable: migrated 0.5018s</p>
+
+<p>All Done. Took 0.6773s
+```</p>
+
+<p>You can now check if the table was actually created by opening your database management tool of choice. Also notice that there is a <code>phinxlog</code> table in your database. This is used by Phinx to keep track of which specific migrations were run and the start and end time for each. The migration is determined by its version, which is basically the first part of the file name for a specific migration file. On my testing, the version is <code>20150727004941</code>.</p>
+
+<h4>Rolling Back Changes</h4>
+
+<p>To rollback changes you can use the <code>rollback</code> command which does exactly the opposite of the <code>migrate</code> command. All it does is rollback everything that has changed on the last migrate.</p>
+
+<p><code>
+php vendor/bin/phinx rollback
+</code></p>
+
+<p>The command above outputs something similar to the following:</p>
+
+<p>```
+warning no environment specified, defaulting to: development
+using adapter mysql
+using database tester</p>
+
+<p> == 20150727013547 AddPhotoFieldToUsersTable: reverting
+ == 20150727013547 AddPhotoFieldToUsersTable: reverted 0.4672s</p>
+
+<p> == 20150727004941 CreateUsersTable: reverting
+ == 20150727004941 CreateUsersTable: reverted 0.1503s</p>
+
+<p>All Done. Took 0.6175s
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to create database migrations with Phinx. Be sure to check out the <a href="http://docs.phinx.org/en/latest/">official documentation</a> if you want to learn more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Working with the Filesystem with Flysystem]]></title>
@@ -765,454 +979,6 @@ $result = $s3->listBuckets();</p>
 <ul>
 <li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/guide/service-s3.html">Amazon Simple Storage Service PHP Guide</a></li>
 <li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/api/class-Aws.S3.S3Client.html">AWS S3 API Reference</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Building a Nearby Places Search App with Google Places API]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/05/30/building-a-nearby-places-search-app-with-google-places-api/"/>
-    <updated>2015-05-30T07:52:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/05/30/building-a-nearby-places-search-app-with-google-places-api</id>
-    <content type="html"><![CDATA[<p>In this tutorial were going to build an app that would allow users to search for a specific place and then find nearby places based on a specific category. Such as restaurants, churches, and schools. We will implement the app with Google Maps, Google Places and PHP.</p>
-
-<h3>Getting API Credentials</h3>
-
-<p>First you need to get API Credentials from your Google Console and then enable the Google Maps and Google Places API. If you don&rsquo;t know how to do that, feel free to ask Google. I believe this topic has already been written before. Here are the APIs that you need to enable:</p>
-
-<ul>
-<li>Google Maps JavaScript API</li>
-<li>Google Places API Web Service</li>
-</ul>
-
-
-<h3>Building the App</h3>
-
-<p>Now were ready to build the app. First lets work on the back-end side of things.</p>
-
-<h4>Getting Results from the Places API</h4>
-
-<p>To make our life easier, were going to use a library for making the request to the Google Places API. Add the following in your <code>composer.json</code> file:</p>
-
-<p>```
-{</p>
-
-<pre><code>"require": {
-    "joshtronic/php-googleplaces": "dev-master"
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Once you&rsquo;re done, execute <code>composer install</code> on your terminal to install the library. Now we can use the library like so:</p>
-
-<p>```php
-&lt;?php</p>
-
-<p>require &lsquo;vendor/autoload.php&rsquo;;</p>
-
-<p>$google_places = new joshtronic\GooglePlaces(&lsquo;YOUR_GOOGLE_API_KEY&rsquo;);</p>
-
-<p>$lat = $<em>POST[&lsquo;lat&rsquo;]
-$lng = $</em>POST[&lsquo;lng&rsquo;];
-$place_types = $_POST[&lsquo;place_types&rsquo;];</p>
-
-<p>$google_places->location = array($lat, $lng);
-$google_places->radius = 8046; //hard-coded radius
-$google_places->types = $place_types;
-$nearby_places = $google_places->nearbySearch();</p>
-
-<p>?>
-```</p>
-
-<p>Breaking it down. First we include the autoload file so we can access the library from our file:</p>
-
-<p><code>php
-&lt;?php
-require 'vendor/autoload.php';
-?&gt;
-</code></p>
-
-<p>Next, we created a new instance of the <code>GooglePlaces</code> class. You need supply the API Key that you got earlier from your Google Console:</p>
-
-<p><code>php
-&lt;?php
-$google_places = new joshtronic\GooglePlaces('YOUR_GOOGLE_API_KEY');
-?&gt;
-</code></p>
-
-<p>Next, we get the data that we will be supplying later on in the client-side and assign them to their own variables:</p>
-
-<p><code>php
-&lt;?php
-$lat = $_POST['lat']
-$lng = $_POST['lng'];
-$place_types = $_POST['place_types'];
-?&gt;
-</code></p>
-
-<p>Lastly, we make the actual request to the Google Places API. This library works a little bit different from your usual one. In the sense that we pass in the parameters needed by the actual search method using the object that we got from declaring a new instance of the <code>GooglePlaces</code> class. The first thing that we need to pass is the <code>location</code>, this takes up an array containing the coordinates (latitude and longitude) of the place that we are using as a reference point. This is basically the place where we are at, the place where we want to find nearby places on. Next you need to supply the <code>radius</code>. This is how many meters from your reference point you want your search to be limited. In this case we supplied a hard-coded value of 8046 meters, which is about 8 kilometers. If you want the user to have more control over this value, you can try adding a slider that the user can use to change the radius. And the last one is the <code>types</code>, this is an array of the types of places you want to see in the results. An example of this is restaurants (yeah I&rsquo;m hungry so I mentioned this twice now), parks, shopping center, etc. Once you&rsquo;ve supplied those, you can now call the <code>nearbySearch</code> method. This will make the request to the API and return the data that we need. We just have to turn it into a JSON string so it can be parsed and read later on from the client-side.</p>
-
-<p>```php
-&lt;?php
-$google_places->location = array($lat, $lng);
-$google_places->radius = 8046; //hard-coded radius
-$google_places->types = $place_types;
-$nearby_places = $google_places->nearbySearch();</p>
-
-<p>echo json_encode($nearby_places);
-?>
-```</p>
-
-<h4>Creating the Map</h4>
-
-<p>Next we move on to the client-side. Create a new <code>index.html</code> file and put the following code:</p>
-
-<p>```html
-&lt;!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>gmap</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&sensor=false&libraries=places"></script>
-</head>
-<body>
-  <div id="map-container"></p>
-
-<pre><code>&lt;input type="text" id="search"&gt;
-&lt;div id="map-canvas"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>  </div></p>
-
-<p>  <div id="place-types"></p>
-
-<pre><code>&lt;ul&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="bar"&gt; bar
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="bus_station"&gt; bus station
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="hospital"&gt; hospital
-  &lt;/li&gt; 
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="health"&gt; health
-  &lt;/li&gt; 
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="police"&gt; police
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="post_office"&gt; post office
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="store"&gt; store
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="library"&gt; library
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="fire_station"&gt; fire station
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="gas_station"&gt; gas station
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="convenience_store"&gt; convenience store
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;input type="checkbox" data-type="school"&gt; school
-  &lt;/li&gt;
-&lt;/ul&gt;
-&lt;button id="find-places"&gt;Find Places&lt;/button&gt;
-</code></pre>
-
-<p>  </div></p>
-
-<p>  <script src="map.js"></script>
-</body>
-</html>
-```</p>
-
-<p>Breaking it down. We include the stylesheet in the page:</p>
-
-<p><code>html
-&lt;link rel="stylesheet" href="style.css"&gt;
-</code></p>
-
-<p>Then we include jQuery and the Google Maps JavaScript library. Be sure to update the code so it uses your Google API Key:</p>
-
-<p>```html</p>
-
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-
-
-<p>  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&sensor=false&libraries=places"></script>
-```</p>
-
-<p>Next is the map container where we have <code>map-canvas</code> that will serve as the element where the map will be created. And the search box where the user will search for the place that will be used as a reference point:</p>
-
-<p>```html</p>
-
-<div id="map-container">  
-    <input type="text" id="search">
-    <div id="map-canvas"></div>
-  </div>
-
-
-<p>```</p>
-
-<p>And then the type of places that we can find. Note that this isn&rsquo;t everything we can find in Google Places API. I just picked some of the places that I think are essential. For a more complete list you can check <a href="https://developers.google.com/places/supported_types">this page</a>. Here we added the <code>data-type</code> attribute which represents the place type. And then after the list we have the &lsquo;Find Places&rsquo; button which basically just triggers the search:</p>
-
-<p>```html</p>
-
-<div id="place-types">
-  <ul>
-    <li>
-      <input type="checkbox" data-type="bar"> bar
-    </li>
-    <li>
-      <input type="checkbox" data-type="bus_station"> bus station
-    </li>
-    <li>
-      <input type="checkbox" data-type="hospital"> hospital
-    </li> 
-    <li>
-      <input type="checkbox" data-type="health"> health
-    </li> 
-    <li>
-      <input type="checkbox" data-type="police"> police
-    </li>
-    <li>
-      <input type="checkbox" data-type="post_office"> post office
-    </li>
-    <li>
-      <input type="checkbox" data-type="store"> store
-    </li>
-    <li>
-      <input type="checkbox" data-type="library"> library
-    </li>
-    <li>
-      <input type="checkbox" data-type="fire_station"> fire station
-    </li>
-    <li>
-      <input type="checkbox" data-type="gas_station"> gas station
-    </li>
-    <li>
-      <input type="checkbox" data-type="convenience_store"> convenience store
-    </li>
-    <li>
-      <input type="checkbox" data-type="school"> school
-    </li>
-  </ul>
-  <button id="find-places">Find Places</button>
-</div>
-
-
-<p>```</p>
-
-<p>And then lastly we include the <code>map.js</code> file which will make this all work:</p>
-
-<p>```html</p>
-
-<script src="map.js"></script>
-
-
-<p>```</p>
-
-<p>Next create the <code>style.css</code> file and put the following code:</p>
-
-<p>```css</p>
-
-<h1>map-container {</h1>
-
-<p>  float: left;
-}</p>
-
-<h1>map-canvas {</h1>
-
-<p>  height: 500px;
-  width: 1000px;
-}</p>
-
-<h1>place-types {</h1>
-
-<pre><code>float: left;
-</code></pre>
-
-<p>}</p>
-
-<h1>place-types ul li {</h1>
-
-<pre><code>list-style: none;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Finally we move on to the <code>map.js</code> file. First declare the default coordinate of the place that the map will display:</p>
-
-<p><code>javascript
-var lat = 18.35827827454; //default latitude
-var lng = 121.63744354248; //default longitude
-var home_coordinates = new google.maps.LatLng(lat, lng); //set default coordinates
-</code></p>
-
-<p>Next, assign it to the map:</p>
-
-<p><code>javascript
-var map_options = {
-  center: new google.maps.LatLng(lat, lng), //set map center
-  zoom: 17, //set zoom level to 17
-  mapTypeId: google.maps.MapTypeId.ROADMAP //set map type to road map
-};
-</code></p>
-
-<p>Next we set the search box as an auto-complete element. This will allow the user to see suggestions of matching locations as he types in the search box. We also need to bind it to the map so the auto-complete bounds are driven by the current viewport of the map.</p>
-
-<p><code>javascript
-var input = document.getElementById('search'); //get element to use as input for autocomplete
-var autocomplete = new google.maps.places.Autocomplete(input); //set it as the input for autocomplete
-autocomplete.bindTo('bounds', map); //bind auto-complete object to the map
-</code></p>
-
-<p>Next we listen for the <code>place_changed</code> event that is triggered from the search box. If this event happens then we get the place information using the <code>getPlace</code> method available on the auto-complete object. This allows us to check if the place being searched is within the current map viewport. If it is then we just call the <code>fitBounds</code> method on the map object and pass in the <code>geometry.viewport</code> attribute from the <code>place</code> object. This sets the map center to the coordinates of the location. If its not within the current viewport then we call the <code>setCenter</code> method in the map object and pass in the <code>geometry.location</code> attribute in the <code>place</code> object. We also call the <code>setZoom</code> method in the map to ensure we still got the same zoom level. Lastly we set the position of the <code>home_marker</code> to the <code>geometry.location</code> in the <code>place</code> object.</p>
-
-<p>```javascript
-//executed when a place is selected from the search field
-google.maps.event.addListener(autocomplete, &lsquo;place_changed&rsquo;, function(){</p>
-
-<pre><code>//get information about the selected place in the autocomplete text field
-var place = autocomplete.getPlace();
-
-if (place.geometry.viewport){ //for places within the default view port (continents, countries)
-  map.fitBounds(place.geometry.viewport); //set map center to the coordinates of the location
-} else { //for places that are not on the default view port (cities, streets)
-  map.setCenter(place.geometry.location);  //set map center to the coordinates of the location
-  map.setZoom(17); //set a custom zoom level of 17
-}
-
-home_marker.setMap(map); //set the map to be used by the  marker
-home_marker.setPosition(place.geometry.location); //plot marker into the coordinates of the location
-</code></pre>
-
-<p>});
-```</p>
-
-<p>Next we declare an array that will store the markers for the places that will be searched. Don&rsquo;t confuse this with the place used as the reference point, the <code>home_marker</code> is used for this. The places I&rsquo;m referring to are the place types such as grocery, church, etc. For convenience I&rsquo;ll be referring to those markers as place type markers.</p>
-
-<p><code>javascript
-var markers_array = [];
-</code></p>
-
-<p>Next create the method that would remove the place type markers from the map. We would need to call this every time the user clicks on the &lsquo;Find Places&rsquo; button so that the previous search results will be removed from the map.</p>
-
-<p>```javascript
-function removeMarkers(){
-  for(i = 0; i &lt; markers_array.length; i++){</p>
-
-<pre><code>markers_array[i].setMap(null);
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<p>Finally we have the method that listens for the click event on the &lsquo;Find Places&rsquo; button. The first thing it does is to get the coordinates of the <code>home_marker</code>. This represents the coordinates of the reference point. After that, we declare an empty array, this is where we will store the place types selected by the user. We do that by looping through all the place types selected by the user and then we push the value for their <code>data-type</code> attribute in the array. Next we call the <code>removeMarkers</code> method to remove the place types markers that are currently plotted on the map. Next we make a <code>POST</code> request to the server and then passing in the coordinates of the reference point and the place types array. Once we get a response, we call the <code>JSON.parse</code> method so we can extract the results from the response. From there we loop through all the results and get the coordinates for each and then we plot the marker into the map. After that we assign an infowindow to each of the markers to that when its clicked it shows the name of the place.</p>
-
-<p>```javascript
-$(&lsquo;#find-places&rsquo;).click(function(){</p>
-
-<p>  var lat = home_marker.getPosition().lat();
-  var lng = home_marker.getPosition().lng();</p>
-
-<p>  var place_types = [];</p>
-
-<p>  //loop through all the place types that has been checked and push it to the place_types array
-  $(&lsquo;#place-types input:checked&rsquo;).each(function(){</p>
-
-<pre><code>var type = $(this).data('type');
-place_types.push(type);
-</code></pre>
-
-<p>  });</p>
-
-<p>  removeMarkers(); //remove the current place type markers from the map</p>
-
-<p>  //make a request to the server for the matching places
-  $.post(</p>
-
-<pre><code>'places.php',
-{
-  'lat': lat,
-  'lng': lng,
-  'place_types': place_types
-},
-function(response){
-
-  var response_data = JSON.parse(response);
-
-  if(response_data.results){
-    var results = response_data.results;
-    var result_count = results.length;
-
-    for(var x = 0; x &lt; result_count; x++){
-
-      //get coordinates of the place
-      var lat = results[x]['geometry']['location']['lat'];
-      var lng = results[x]['geometry']['location']['lng'];
-
-      //create a new infowindow
-      var infowindow = new google.maps.InfoWindow();
-
-      //plot the marker into the map
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(lat, lng),
-        map: map,
-        icon: results[x]['icon']
-      });
-
-      markers_array.push(marker);
-
-      //assign an infowindow to the marker so that when its clicked it shows the name of the place
-      google.maps.event.addListener(marker, 'click', (function(marker, x){
-        return function(){
-          infowindow.setContent("&lt;div class='no-scroll'&gt;&lt;strong&gt;" + results[x]['name'] + "&lt;/strong&gt;&lt;br&gt;" + results[x]['vicinity'] + "&lt;/div&gt;");
-          infowindow.open(map, marker);
-        }
-      })(marker, x));
-
-
-    }
-  }
-
-}
-</code></pre>
-
-<p>  );</p>
-
-<p>});
-```</p>
-
-<p>Here&rsquo;s a screenshot of the final output:</p>
-
-<p><img src="/images/posts/google_places/google-places.png" alt="google places" /></p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with the Google Place API in PHP. We have also create a simple app that would allow users to search specific types of places that is near the location used as a reference point. If you want to learn more, be sure to check out the resources below.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://developers.google.com/places/webservice/intro">Google Places API</a></li>
-<li><a href="https://developers.google.com/places/supported_types">Place Types</a></li>
-<li><a href="https://developers.google.com/maps/documentation/javascript/examples/places-searchbox">Places Search box</a></li>
 </ul>
 
 ]]></content>
