@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Absentist - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="Lately I&rsquo;ve been working on a few projects that will ease up all the housekeeping work that I need to do as a teacher. Things like checking the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wern-ancheta.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Absentist</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-27T19:18:00+08:00" pubdate data-updated="true">Sep 27<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Lately I&rsquo;ve been working on a few projects that will ease up all the housekeeping work that I need to do as a teacher. Things like checking the attendance of students and checking the works of students.</p>
+
+<p>When I started working as a teacher, I used a spreadsheet to monitor attendance. There&rsquo;s a column for the name of the student and a column for meeting days. That&rsquo;s about 36 columns for the laboratory, where I meet them 2 times per week. And then 18 columns for the lecture, where I meet them once per week. What I do is to put an <em>A</em> in the cell where the student and the day intersects if the student is absent. And when a student accumulates 2 of those <em>A&rsquo;s</em> in the laboratory, then they&rsquo;re ripe for dropping. And for the lecture, they only need one. When I say drop, it means dropping the class card of the student to the Student Affairs Office. I won&rsquo;t dive in too much with the details but this process is implemented so the students wouldn&rsquo;t want to be absent too often. Because its really a pain to claim class cards.</p>
+
+<p>Going back to my old process in monitoring attendance, here&rsquo;s what the spreadsheet that I used for monitoring looks like:</p>
+
+<p><img src="/images/posts/absentist/attendance.png" alt="attendance spreadsheet" /></p>
+
+<p>Well, guess what. This quickly turned into a headache. Because there&rsquo;s no way to monitor which students are currently dropped, which one&rsquo;s are ripe for dropping and which one&rsquo;s has already returned their class cards to me.</p>
+
+<p>As a programmer, I always want to make my work easy. Make the computer do most of the work as much as possible. So I decided to work on this project which I now call as Absentist. It&rsquo;s an attendance monitoring app which is custom built for my current needs. The way it works is simple. First, the teacher creates a class and adds the students. This part asks for the details such as the name of the class, some additional details that the teacher wants to enter, the number of absences needed before dropping the class card, the meeting days, then the start time and end time for each meeting day. Since the school already has a system for accessing class details. All I needed to do was to export it to a spreadsheet and then copy-paste it to a textarea. Then in the back-end, I simply parsed the pasted data so I can extract the ID Number, First Name, Last Name, Middle Initial and the gender of the student.</p>
+
+<p><img src="/images/posts/absentist/newclass.png" alt="new class" /></p>
+
+<p>Once a class has been created, it is listed in the classes page. This page has the links for updating a class, viewing students that are ripe for dropping and students that are already dropped.</p>
+
+<p><img src="/images/posts/absentist/classes.png" alt="new class" /></p>
+
+<p>Here&rsquo;s what the interface for dropping looks like:</p>
+
+<p><img src="/images/posts/absentist/todrop.png" alt="to drop" /></p>
+
+<p>From here, the teacher can do two things: first is to mark the class card as dropped. This should be done once all the class cards has been dropped. Currently there&rsquo;s no button for dropping everything with a single click but this would do for now. There should only be a few clicks needed. Next is the absences link, this shows all the days that the student was absent.</p>
+
+<p><img src="/images/posts/absentist/absences.png" alt="absences" /></p>
+
+<p>Next is the page for viewing class card that has already been dropped. From here, the teacher can click on the <em>claim</em> button to mark that the student has returned their class card. When this button is clicked, the absences counter for that student goes back to 0.</p>
+
+<p><img src="/images/posts/absentist/dropped.png" alt="dropped" /></p>
+
+<p>But how is the attendance actually updated you ask? It is through the attendance page. This uses the days and time that has been entered on the class settings. When the attendance page is accessed in a time between the start time and end time that was entered and the day matches. Then it will automatically show a list of students in the class. From there, the teacher can call on the students one by one. If a student is absent but is not excused then the absent button beside that student is clicked. If excused then the excused button is clicked. The only difference between the 2 is that excused absences aren&rsquo;t counted as an actual absence. Its just there for the sake of recording.</p>
+
+<p><img src="/images/posts/absentist/update-attendance.png" alt="update attendance" /></p>
+
+<p>Once the roll call is done, the teacher can then filter the list to only show the students who are absent or excused. This is useful for verifying if all the students in the list are really absent or excused. If not then the absent or excused button is clicked again to remove the student from the list. Once that&rsquo;s done, the <em>update attendance</em> button is clicked to commit the changes to the database. This increments the absences counter for the student if they are absent. Or marks the student to be dropped if the absences counter becomes equal to that of what was added to the class settings.</p>
+
+<p><img src="/images/posts/absentist/show-absent.png" alt="update attendance" /></p>
+
+<h3>Future Plans</h3>
+
+<p>Future plans for this project includes the following:</p>
+
+<ul>
+<li>Adding students one at a time. This would be useful for when a student comes in late or for instances where there&rsquo;s no available spreadsheet export for student data.</li>
+<li>Different start and end times for each meeting day.</li>
+<li>User Documentation</li>
+</ul>
+
+
+<p>That&rsquo;s it! If you want to use this project or contribute to it, you can <a href="https://github.com/anchetaWern/absentist">download it on Github</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-27T19:18:00+08:00" pubdate data-updated="true">Sep 27<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/projects/'>projects</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/" data-via="wern_ancheta" data-counturl="http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/20/database-migrations-in-php-with-phinx/" title="Previous Post: Database Migrations in PHP with Phinx">&laquo; Database Migrations in PHP with Phinx</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/27/introduction-to-absentist/">Introduction to Absentist</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/database-migrations-in-php-with-phinx/">Database Migrations in PHP with Phinx</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/13/working-with-the-filesystem-with-flysystem/">Working with the Filesystem with Flysystem</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/05/getting-started-with-ionic/">Getting Started with Ionic</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/">Using the Twig Templating Engine in PHP</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/';
+        var disqus_url = 'http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

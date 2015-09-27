@@ -4,7 +4,7 @@
   <title><![CDATA[Category: projects | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/projects/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-09-20T09:01:59+08:00</updated>
+  <updated>2015-09-27T10:25:04+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,64 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Absentist]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/"/>
+    <updated>2015-09-27T19:18:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been working on a few projects that will ease up all the housekeeping work that I need to do as a teacher. Things like checking the attendance of students and checking the works of students.</p>
+
+<p>When I started working as a teacher, I used a spreadsheet to monitor attendance. There&rsquo;s a column for the name of the student and a column for meeting days. That&rsquo;s about 36 columns for the laboratory, where I meet them 2 times per week. And then 18 columns for the lecture, where I meet them once per week. What I do is to put an <em>A</em> in the cell where the student and the day intersects if the student is absent. And when a student accumulates 2 of those <em>A&rsquo;s</em> in the laboratory, then they&rsquo;re ripe for dropping. And for the lecture, they only need one. When I say drop, it means dropping the class card of the student to the Student Affairs Office. I won&rsquo;t dive in too much with the details but this process is implemented so the students wouldn&rsquo;t want to be absent too often. Because its really a pain to claim class cards.</p>
+
+<p>Going back to my old process in monitoring attendance, here&rsquo;s what the spreadsheet that I used for monitoring looks like:</p>
+
+<p><img src="/images/posts/absentist/attendance.png" alt="attendance spreadsheet" /></p>
+
+<p>Well, guess what. This quickly turned into a headache. Because there&rsquo;s no way to monitor which students are currently dropped, which one&rsquo;s are ripe for dropping and which one&rsquo;s has already returned their class cards to me.</p>
+
+<p>As a programmer, I always want to make my work easy. Make the computer do most of the work as much as possible. So I decided to work on this project which I now call as Absentist. It&rsquo;s an attendance monitoring app which is custom built for my current needs. The way it works is simple. First, the teacher creates a class and adds the students. This part asks for the details such as the name of the class, some additional details that the teacher wants to enter, the number of absences needed before dropping the class card, the meeting days, then the start time and end time for each meeting day. Since the school already has a system for accessing class details. All I needed to do was to export it to a spreadsheet and then copy-paste it to a textarea. Then in the back-end, I simply parsed the pasted data so I can extract the ID Number, First Name, Last Name, Middle Initial and the gender of the student.</p>
+
+<p><img src="/images/posts/absentist/newclass.png" alt="new class" /></p>
+
+<p>Once a class has been created, it is listed in the classes page. This page has the links for updating a class, viewing students that are ripe for dropping and students that are already dropped.</p>
+
+<p><img src="/images/posts/absentist/classes.png" alt="new class" /></p>
+
+<p>Here&rsquo;s what the interface for dropping looks like:</p>
+
+<p><img src="/images/posts/absentist/todrop.png" alt="to drop" /></p>
+
+<p>From here, the teacher can do two things: first is to mark the class card as dropped. This should be done once all the class cards has been dropped. Currently there&rsquo;s no button for dropping everything with a single click but this would do for now. There should only be a few clicks needed. Next is the absences link, this shows all the days that the student was absent.</p>
+
+<p><img src="/images/posts/absentist/absences.png" alt="absences" /></p>
+
+<p>Next is the page for viewing class card that has already been dropped. From here, the teacher can click on the <em>claim</em> button to mark that the student has returned their class card. When this button is clicked, the absences counter for that student goes back to 0.</p>
+
+<p><img src="/images/posts/absentist/dropped.png" alt="dropped" /></p>
+
+<p>But how is the attendance actually updated you ask? It is through the attendance page. This uses the days and time that has been entered on the class settings. When the attendance page is accessed in a time between the start time and end time that was entered and the day matches. Then it will automatically show a list of students in the class. From there, the teacher can call on the students one by one. If a student is absent but is not excused then the absent button beside that student is clicked. If excused then the excused button is clicked. The only difference between the 2 is that excused absences aren&rsquo;t counted as an actual absence. Its just there for the sake of recording.</p>
+
+<p><img src="/images/posts/absentist/update-attendance.png" alt="update attendance" /></p>
+
+<p>Once the roll call is done, the teacher can then filter the list to only show the students who are absent or excused. This is useful for verifying if all the students in the list are really absent or excused. If not then the absent or excused button is clicked again to remove the student from the list. Once that&rsquo;s done, the <em>update attendance</em> button is clicked to commit the changes to the database. This increments the absences counter for the student if they are absent. Or marks the student to be dropped if the absences counter becomes equal to that of what was added to the class settings.</p>
+
+<p><img src="/images/posts/absentist/show-absent.png" alt="update attendance" /></p>
+
+<h3>Future Plans</h3>
+
+<p>Future plans for this project includes the following:</p>
+
+<ul>
+<li>Adding students one at a time. This would be useful for when a student comes in late or for instances where there&rsquo;s no available spreadsheet export for student data.</li>
+<li>Different start and end times for each meeting day.</li>
+<li>User Documentation</li>
+</ul>
+
+
+<p>That&rsquo;s it! If you want to use this project or contribute to it, you can <a href="https://github.com/anchetaWern/absentist">download it on Github</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Naughtyfire]]></title>
@@ -225,39 +283,6 @@ php push.php
 <p>As a developer who loves working on the back-end, I didn&rsquo;t really bother customizing the look and feel of the app.</p>
 
 <p>This blog post is getting rather long for an introduction. Here&rsquo;s the <a href="https://play.google.com/store/apps/details?id=com.wern.antares">link to the app on Google Play Store</a>. If you got a Windows Phone, I also have the <code>.xap</code> file which you can use to install Antares. Antares doesn&rsquo;t have a version for apple devices. Mainly because it costs around $99 per year to be included in their developer program. As someone who doesn&rsquo;t really plan to make any money out of this. I think its unwise to pay for that amount. I&rsquo;m already paying $10 per month for the server costs and I paid $25 to put the app in the Google Play Store so I guess that&rsquo;s enough expenses on my part.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Laravel Bootstrap Starter]]></title>
-    <link href="http://wern-ancheta.com/blog/2014/10/04/introduction-ton-l4b3/"/>
-    <updated>2014-10-04T19:10:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2014/10/04/introduction-ton-l4b3</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m still on side-project frenzy. This week its the <a href="https://github.com/anchetaWern/laravel-bootstrap-starter">Laravel Bootstrap Starter</a>.
-I created this project to make it easier for me to setup a Laravel project faster. I&rsquo;m using Laravel in the company that I work for and every time I start a new project I have to install it via composer, configure it so that it doesn&rsquo;t show <code>/public</code> in the URL. From there I add the default controllers, add the sign up and login code, add the functionality for updating and resetting password, install node, grunt and then bower. And then install the grunt plugins that I need for front-end performance optimization. The list goes on, and just setting up a project may take a whole day. That&rsquo;s why I decided to create this project.</p>
-
-<h3>Features</h3>
-
-<p>Like most of the projects that I decided to do so far. It only contains the essential features:</p>
-
-<ul>
-<li>sign up and login</li>
-<li>resetting passwords</li>
-<li>admin (updating account information)</li>
-</ul>
-
-
-<h3>Future Plans</h3>
-
-<p>As I move along with this project I&rsquo;m gonna be adding the following features:</p>
-
-<ul>
-<li><strong>social login</strong> &ndash; google, twitter, facebook, linkedin</li>
-<li><strong>database backup</strong> &ndash; every project must have an automated database backup functionality. I&rsquo;m thinking of using cron for running the backup script and then upload the backup to an Amazon s3 bucket.</li>
-<li><strong>generators</strong> &ndash; there are 2 projects doing this already, one is <a href="https://github.com/JeffreyWay/Laravel-4-Generators">Jeffrey Way&rsquo;s Laravel 4 Generators</a> and the other is <a href="https://github.com/wdollar/Laravel-4-Generators-Bootstrap-3">Wes Dollar&rsquo;s forked version</a>, both looks pretty good. I think I&rsquo;ll be able to get some ideas from these projects. Basically the plan here is to be able to use the terminal for generating boilerplate code which I can then build upon.</li>
-<li><strong>build tool integration</strong> &ndash; I want to be able to just hit one command and it will install and configure everything that I need to get the project started. Yeoman seems to be a very good fit for this.</li>
-</ul>
-
 ]]></content>
   </entry>
   
