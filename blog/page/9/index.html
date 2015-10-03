@@ -9,8 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Have you ever wanted to get a specific data from another website but there&rsquo;s no API available for it?
-That&rsquo;s where Web Scraping comes in &hellip;">
+  <meta name="description" content="In this article I&rsquo;m going to introduce Portfolio, an Octopress plugin that I created for easily creating portfolio pages based on the images on &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,121 @@ That&rsquo;s where Web Scraping comes in &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress/">Introduction to Portfolio Plugin for Octopress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-18T20:19:00+08:00" pubdate data-updated="true">Aug 18<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/18/introduction-to-portfolio-plugin-for-octopress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I&rsquo;m going to introduce Portfolio, an Octopress plugin that I created for easily creating portfolio pages based on the images on your filesystem.</p>
+
+<p>The portfolio plugin is a liquid tag type of plugin which means that it gives you the ability to use the tag to generate a specific content. In this case the portfolio plugin allows you to generate image tags based on the images in a directory that you specify.</p>
+
+<h3>How to Install</h3>
+
+<p>You can install the portfolio plugin by simply copying the <code>portfolio.rb</code> file into the <code>plugins</code> directory of your Octopress installation.</p>
+
+<h3>How to Setup</h3>
+
+<p>You can setup the plugin by opening up the <code>_config.yml</code> file and specify the root directories in which the plugin will look for the files that it will be using.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>portfolio_root: /portfolio
+</span><span class='line'>portfolio_img_root: /images/pages/portfolio
+</span><span class='line'>portfolio_path: /web_files/blog/octopress/source/images/pages/portfolio
+</span><span class='line'>portfolio_url: images/posts/pages/portfolio</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>portfolio_root</code> is the name of the directory where your portfolio is saved.
+The <code>portfolio_img_root</code> is where the images for your portfolio is saved.
+The <code>portfolio_path</code> is the actual path in your filesystem where your portfolio is saved.
+And the <code>portfolio_url</code> is the address where you can access your portfolio from the browser.</p>
+
+<p>The plugin doesn&rsquo;t come with a default styling so you have to add them on your own. You can simply hook up to the markup that has been provided,
+that is the <code>gallery-item</code> class.
+In the example above I gave it a default <code>width</code> and <code>height</code>.
+The <code>overflow</code> is set to hidden so that the image that it contains won&rsquo;t overflow.
+The <code>margin</code> is <code>10px</code> all around. Lastly, its floated to the left so it would align nicely.
+You can add this on the <code>sass/base/_layout.scss</code> file or anywhere you feel would be appropriate.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nf">#content</span> <span class="nc">.gallery-item</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">390px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">150px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="n">lightgray</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a directory where the details of your projects will reside. The ideal location would be in the <code>octopress/source</code> directory. This should be the same as the value of the <code>portfolio_path</code> that you have included in your <code>_config.yml</code> file earlier. Each of your project will have its own directory, so if you have a project named <code>echo</code> then you have to create the following directory: <code>octopress/source/portfolio/echo</code>.</p>
+
+<p>Also create the directory where the images for each of your project will reside. Following the path that we specified earlier we should have the following directory for project <code>echo</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">octopress</span><span class="o">/</span><span class="nt">source</span><span class="o">/</span><span class="nt">images</span><span class="o">/</span><span class="nt">pages</span><span class="o">/</span><span class="nt">portfolio</span><span class="o">/</span><span class="nt">echo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>echo</code> directory is where you will save your images. If you intend to use lightbox or any other alternative you can simply put <code>small-</code> as a prefix to the name of your image files. The images with this prefix will automatically be used as the initial image and the one without it will be larger image. So if you have an image file named <code>index.png</code> you also need to have <code>small-index.png</code> file. Of course this should also be resized. Having the browser do the resizing for you by setting the width and height of the image using css is not a good idea.</p>
+
+<p>It&rsquo;s also recommended that you run your images through an image optimizer before you actually add them to the directory as Octopress won&rsquo;t optimize it automatically. This is to ensure that your project page will load faster.</p>
+
+<h3>How to Use</h3>
+
+<p>You can use the plugin by using the <code>portfolio</code> liquid tag followed by a single space then the name of your project. Just put on underscores if you need spaces. Also there shouldn&rsquo;t be any special characters. For our imaginary <code>echo</code> project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="p">{</span><span class="o">%</span> <span class="n">portfolio</span> <span class="n">echo</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resources</h3>
+
+<p><a href="http://jekyllrb.com/docs/plugins/">Jekyll Plugins</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -468,49 +582,6 @@ Nah! Sometimes that is all you really need but most of the time you need to know
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/21/digging-into-chrome-dev-tools/">Digging Into Chrome Dev Tools</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-21T17:15:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/21/digging-into-chrome-dev-tools/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this article I&rsquo;m going to walk you through some of the things that we can do with the Chrome Developer Tools to improve our web development workflow.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/21/digging-into-chrome-dev-tools/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/10/">&larr; Older</a>
@@ -528,6 +599,10 @@ Nah! Sometimes that is all you really need but most of the time you need to know
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/03/quick-tip-introduction-to-phpsh/">Quick Tip: Introduction to phpsh</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/27/introduction-to-absentist/">Introduction to Absentist</a>
       </li>
     
@@ -541,10 +616,6 @@ Nah! Sometimes that is all you really need but most of the time you need to know
     
       <li class="post">
         <a href="/blog/2015/09/05/getting-started-with-ionic/">Getting Started with Ionic</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/">Using the Twig Templating Engine in PHP</a>
       </li>
     
   </ul>
