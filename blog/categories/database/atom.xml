@@ -4,7 +4,7 @@
   <title><![CDATA[Category: database | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/database/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-10-03T18:35:53+08:00</updated>
+  <updated>2015-10-10T21:34:05+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,211 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using PDO in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/10/10/using-pdo-in-php/"/>
+    <updated>2015-10-10T20:20:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/10/10/using-pdo-in-php</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to walk you through how to use the PDO extension in PHP to connect to a MySQL database.</p>
+
+<h3>Connecting to the Database</h3>
+
+<p>The PDO extension is installed by default on modern versions of PHP so you don&rsquo;t have to worry about not having it on the machine. You should be upgrading to a recent version any way to take advantage of the security patches and other updates.</p>
+
+<p>To connect to the database, you have to supply a data source name (DSN) as the first argument when creating a new instance of the PDO class. And then pass in the username and password of the user you want to login to the database as the second and third argument. You need to wrap the code in a <code>try..catch</code> block because it will return an error if there&rsquo;s a problem connecting to the database. Next, set the error mode to return an exception if there&rsquo;s an error executing a specific database query. And finally, set the emulation of prepared statements to <code>false</code>. This allows you to use the native parametrized query feature of the database instead of emulating it in the PHP side.</p>
+
+<p>```php
+&lt;?php
+$dsn = &lsquo;mysql:dbname=DATABASE-NAME;host=DB-HOST&rsquo;;
+$username = &lsquo;DATABASE-USER&rsquo;;
+$password = &lsquo;USER-PASSWORD&rsquo;;
+try {</p>
+
+<pre><code>$db = new PDO($dsn, $username, $password);
+$db-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$db-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+</code></pre>
+
+<p>} catch (PDOException $e){</p>
+
+<pre><code>echo 'could not connect to the database';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Inserting Data</h3>
+
+<p>Open up phpmyadmin or any database management tool that you&rsquo;re using and create a new database. Then execute the following query to create a <code>users</code> table. We will be using this table for executing queries in the database. If you&rsquo;re following along, don&rsquo;t forget to update the data source name to match the name of the database.</p>
+
+<p><code>sql
+CREATE TABLE IF NOT EXISTS `users` (
+`id` int(11) NOT NULL,
+  `name` varchar(300) NOT NULL,
+  `age` int(11) NOT NULL,
+  `email` varchar(300) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+</code></p>
+
+<p>Once that&rsquo;s created, you can now try inserting a new user row in the <code>users</code> table. Just pass in the typical INSERT query as an argument to the <code>query</code> method using the new PDO instance that you created earlier.</p>
+
+<p>```php
+&lt;?php
+$name = &lsquo;yoh asakura&rsquo;;
+$age = 10;
+$email = &lsquo;<a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#121;&#x6f;&#x68;&#x2d;&#97;&#115;&#x61;&#x6b;&#x75;&#114;&#x61;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;">&#121;&#x6f;&#x68;&#45;&#97;&#x73;&#x61;&#x6b;&#117;&#114;&#x61;&#64;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#109;</a>&rsquo;;</p>
+
+<p>$db->query(&ldquo;INSERT INTO users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo;&rdquo;);
+?>
+```</p>
+
+<h3>Updating Data</h3>
+
+<p>If you want to update a specific user, you still use the <code>query</code> method. The only difference is the query that you are passing in. This time you have to pass in an <code>UPDATE</code> query to set the new values and then use the <code>WHERE</code> clause to specify which specific row you want to update. In this case it&rsquo;s the first row in the <code>users</code> table.</p>
+
+<p>```php
+&lt;?php
+$id = 1;
+$name = &lsquo;ren tao&rsquo;;
+$age = 10;
+$email = &lsquo;<a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#114;&#x65;&#110;&#45;&#116;&#97;&#x6f;&#64;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#114;&#x65;&#x6e;&#x2d;&#x74;&#97;&#111;&#64;&#103;&#109;&#x61;&#105;&#108;&#46;&#99;&#x6f;&#109;</a>&rsquo;;</p>
+
+<p>$db->query(&ldquo;UPDATE users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo; WHERE id = &lsquo;$id&rsquo;&rdquo;);
+?>
+```</p>
+
+<h3>Deleting Data</h3>
+
+<p>If you want to delete a specific row, use the <code>DELETE</code> query and a <code>WHERE</code> clause to specify which rows you want to delete.</p>
+
+<p><code>php
+&lt;?php
+$id = 1;
+$db-&gt;query("DELETE  FROM users WHERE id = '$id'");
+?&gt;
+</code></p>
+
+<h3>Selecting Data</h3>
+
+<p>Selecting data still uses the same <code>query</code> method. Only this time you have to pass in a <code>SELECT</code> query. Then you can loop through the results and access the column that you want to output just like you would when accessing an item in an associative array.</p>
+
+<p>```php
+&lt;?php
+$results = $db->query(&ldquo;SELECT name FROM users&rdquo;);
+foreach($results as $row){</p>
+
+<pre><code>echo $row['name'] . "&lt;br&gt;";
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>If you think objects look better, you can use the <code>setAttribute</code> method to modify the default fetch mode.</p>
+
+<p><code>php
+&lt;?php
+$db-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+?&gt;
+</code></p>
+
+<h3>Prepared Statements</h3>
+
+<p>Prepared statements makes your queries more secure. Why? Because data is treated as data when you use prepared statements. This means that SQL statements such as <code>OR DROP TABLE users</code> wouldn&rsquo;t work if the user inputs an SQL statement instead of the expected data.
+This is implemented in PDO by calling the <code>prepare</code> method and then passing in the query that you wish to execute. But instead of supplying the data directly, you replace it with placeholders. In this case the placeholder is <code>:name</code>.
+You then call the <code>execute</code> method to actually execute the query. This method accepts an associative array containing the placeholder as the key and the actual value that you want to pass in as its value. Finally, you call the <code>FetchAll</code> method to fetch all the results that was returned.</p>
+
+<p>```php
+&lt;?php
+$query = $db->prepare(&ldquo;SELECT name FROM users WHERE name LIKE :name&rdquo;);
+$query->execute(array(</p>
+
+<pre><code>':name' =&gt; 'Mr.%'
+</code></pre>
+
+<p>));</p>
+
+<p>$results = $query->FetchAll();
+foreach($results as $row){</p>
+
+<pre><code>echo $row-&gt;name . "&lt;br&gt;";
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>For queries that&rsquo;s only expected to return a single row, you can use the <code>fetch</code> method instead.</p>
+
+<p><code>php
+&lt;?php
+$query = $db-&gt;prepare('SELECT name FROM users WHERE id = :id');
+$query-&gt;execute(array(':id' =&gt; 2));
+$user = $query-&gt;fetch();
+echo $user-&gt;name;
+?&gt;
+</code></p>
+
+<h3>Transactions</h3>
+
+<p>Transactions in databases is a sequence of database operations that are treated as a single unit. You can use it to ensure that all the queries that you want to execute are all completed successfully. If one fails, nothing is actually committed to the database.</p>
+
+<p>To test transactions, open up your database management tool of choice and execute the following. This will create the <code>other_details</code> table which stores the other details of a user.</p>
+
+<p><code>sql
+CREATE TABLE IF NOT EXISTS `other_details` (
+`id` int(11) NOT NULL,
+  `school` varchar(300) NOT NULL,
+  `city` varchar(300) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+</code></p>
+
+<p>For the example below, I&rsquo;m using a library called <a href="https://github.com/fzaninotto/Faker">Faker</a>. You can use it to generate fake data to be inserted into the database. You can install it through composer by executing the following command in your working directory.</p>
+
+<p><code>
+composer require fzaninotto/faker
+</code></p>
+
+<p>Once that&rsquo;s done installing, you can include the autoload file so that it&rsquo;s loaded in the current file. You can then create a new instance of it and then use the generator that you want. In the code below I&rsquo;m using the <code>name</code>, <code>numberBetween</code>, <code>email</code>, <code>company</code> and <code>city</code> generators.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>$faker = Faker\Factory::create();</p>
+
+<p>$name = $faker->name;
+$age = $faker->numberBetween(10, 35);
+$email = $faker->email;</p>
+
+<p>$school = $faker->company;
+$city = $faker->city;
+?>
+```</p>
+
+<p>You can then create a new transaction by calling the <code>beginTransaction</code> method. Any queries that are executed after calling this wouldn&rsquo;t actually commit to the database until you call the <code>commit</code> method. In the example below, I&rsquo;m executing a query to insert a new user into the <code>users</code> table as well as the <code>other_details</code> table. If any of those 2 queries fails, it won&rsquo;t be committed to the database.</p>
+
+<p>```php
+&lt;?php
+$db->beginTransaction();</p>
+
+<p>$query = $db->prepare(&ldquo;INSERT INTO users SET name = :name, age = :age, email = :email&rdquo;);
+$query->execute(array(&lsquo;:name&rsquo; => $name, &lsquo;:age&rsquo; => $age, &lsquo;:email&rsquo; => $email));</p>
+
+<p>$query2 = $db->prepare(&ldquo;INSERT INTO other_details SET school = :school, course = :city&rdquo;);
+$query2->execute(array(&lsquo;:school&rsquo; => $school, &lsquo;:city&rsquo; => $city));</p>
+
+<p>$db->commit();
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to use the PDO extension in PHP. Note that it&rsquo;s not only the MySQL database that PDO supports. It also supports other databases such as CUBRID, PostgreSQL, SQLite and many others.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Database Migrations in PHP with Phinx]]></title>
