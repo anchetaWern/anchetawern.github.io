@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this article I&rsquo;ll be walking you through the basics of using the Twilio API in PHP. But before that, what is Twilio? Twilio is a cloud &hellip;">
+  <meta name="description" content="In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,163 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/">How to Implement Infinite Scroll in Laravel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-01T14:39:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2015</time>
+        
+         | <a href="/blog/2015/03/01/how-to-implement-scroll-in-laravel/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this quick tip I&rsquo;ll be showing you how to easily implement infinite scroll in laravel. In the back-end, we will be using laravel&rsquo;s pagination functionality. And in the front-end, we&rsquo;ll be using <a href="https://github.com/infinite-scroll/infinite-scroll">jQuery infinite scroll</a>. You can ahead and download the jquery.infinitescroll.min.js file from that page and save it on your project directory.</p>
+
+<p>First thing that you need to do is return the data that you want to infinitely scroll from the controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">getNewsPage</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nv">$date</span> <span class="o">=</span> <span class="nb">date</span><span class="p">(</span><span class="s1">&#39;Y-m-d&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$news</span> <span class="o">=</span> <span class="nx">News</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$date</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$page_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;news&#39;</span> <span class="o">=&gt;</span> <span class="nv">$news</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">View</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="nv">$page_data</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then from your view file (<code>news.blade.php</code>) just loop through the items that you wish to output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;news&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;items&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    @foreach($news as $item)
+</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;item&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    @endforeach
+</span><span class='line'>    
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure to include jquery and jquery.infinitescroll.min.js file before the closing body tag:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create the javascript file that will call the infinitescroll plugin and add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">loading_options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">finishedMsg</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;end-msg&#39;&gt;Congratulations! You&#39;ve reached the end of the internet&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">msgText</span><span class="o">:</span> <span class="s2">&quot;&lt;div class=&#39;center&#39;&gt;Loading news items...&lt;/div&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">img</span><span class="o">:</span> <span class="s2">&quot;/assets/img/ajax-loader.gif&quot;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#items&#39;</span><span class="p">).</span><span class="nx">infinitescroll</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">loading</span> <span class="o">:</span> <span class="nx">loading_options</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">navSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">nextSelector</span> <span class="o">:</span> <span class="s2">&quot;#news .pagination li.active + li a&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">itemSelector</span> <span class="o">:</span> <span class="s2">&quot;#items li.item&quot;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">})();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking it down. First we wrap everything in a self-executing anonymous function to make sure that the script that were writing won&rsquo;t have a way of messing up with the other scripts in our page, if any. Next, we setup options required by infinite scroll by means of a JavaScript object. Here&rsquo;s a brief description of each:</p>
+
+<ul>
+<li><code>finishedMsg</code> &ndash; the html or text that you want to show once the user has reached the last page.</li>
+<li><code>msgText</code> &ndash; the text that you want to show while the next page is being loaded from the back-end.</li>
+<li><code>img</code> &ndash; the image that you want to show while the next page is being loaded from the back-end. Usually this is a gif animation that indicates that something is happening.</li>
+</ul>
+
+
+<p>Next we call the infinitescroll plugin on the main news wrapper. This takes up an object as its argument. The object contains the following items:</p>
+
+<ul>
+<li><code>loading</code> &ndash; the loading options that we have setup earlier.</li>
+<li><code>navSelector</code> &ndash; the jquery selector that targets the pagination wrapper. Laravel gives it a class of <code>pagination</code> by default.</li>
+<li><code>nextSelector</code> &ndash; the element indicating the next page. Laravel adds the <code>active</code> class on the <code>li</code> representing the current page. So all we need to do is to traverse to the next one by using the <code>+</code> selector and then the anchor element.</li>
+<li><code>itemSelector</code> &ndash; an individual item.</li>
+</ul>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it for this quick tip. With the jquery infinite scroll plugin and laravel&rsquo;s pagination functionality, you can implement infinite scroll in your apps with ease.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1653,121 +1810,6 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/08/christmas-wishlist-2014/">Christmas Wishlist 2014</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-08T10:39:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/11/08/christmas-wishlist-2014/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>13-inch MacBook Pro with Retina display</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/macbookpro.jpg" alt="macbook pro" /></p>
-
-<p>I have always wanted a Macbook Pro since birth. But due to its priciness I never got myself to buy one.</p>
-
-<p>I&rsquo;d like to stick with the following hardware:</p>
-
-<ul>
-<li><strong>Processor</strong>: 3.0GHz Dual-core Intel Core i7</li>
-<li><strong>Memory</strong>: 8GB 1600MHz DDR3L SDRAM</li>
-<li><strong>Storage</strong>: 512GB PCIe-based Flash Storage</li>
-</ul>
-
-
-<h3>Google Nexus 5</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/google_nexus5.jpg" alt="Google Nexus 5" /></p>
-
-<p>Not really a Google fanboy, I&rsquo;m just more curious about a smartphone made by Google rather than an Apple&rsquo;s iPhone or Samsung&rsquo;s Galaxy.</p>
-
-<h3>PS Vita</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/ps_vita.jpg" alt="sony ps vita" /></p>
-
-<p>I&rsquo;ve always been a fan of game consoles from Sony and their games are really good. Here are just some of the titles that I&rsquo;ve enjoyed playing on their PSP game console:</p>
-
-<ul>
-<li>Patapon &ndash; that&rsquo;s Patapon 1, 2 and 3</li>
-<li>God Eater</li>
-<li>Final Fantasy VII: Crisis Core</li>
-<li>Harvest Moon &ndash; boy &amp; girl, innocent life and hero of the leaf valley</li>
-<li>Ratchet and Clank</li>
-<li>Naruto Ultimate Ninja Heroes &ndash; that&rsquo;s 1, 2 and 3</li>
-<li>GTA: Vice City</li>
-<li>Ratchet and Clank</li>
-<li>Secret Agent Clank</li>
-<li>Valhalla Knights</li>
-</ul>
-
-
-<h3>Nintendo 3ds</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/3ds.jpg" alt="Nintendo 3ds" /></p>
-
-<p>To be honest I only really want this game console because of Pokemon. Nintendo 3ds have revolutionize the Pokemon gameplay in this console. There&rsquo;s a bunch of new stuff, and the best thing is that its 3D. So the Pokemon games created for this console won&rsquo;t really look like the Pokemon games created for Nintendo DS or Gameboy.</p>
-
-<h3>Fitbit Flex</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/fitbit.jpg" alt="Fitbit" /></p>
-
-<p>Fitbit is an all-in-one tracker for the body. With it you can do the following:</p>
-
-<ul>
-<li>track steps, distance and calories burned</li>
-<li>monitor how long and well you sleep</li>
-<li>silent wake alarm</li>
-<li>logs food consumption, weight changes</li>
-</ul>
-
-
-<h3>Bose QuietComfort 25</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/bose.jpg" alt="Bose Noise Cancelling Headphones" /></p>
-
-<p>I&rsquo;ve always wanted a noise cancelling headphones that I can use while working. Based on my research Bose is the best thing out there.</p>
-
-<h3>Olympus ME-52W Noise Canceling Microphone</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/olympus_mic.jpg" alt="olympus microphone" /></p>
-
-<p>Screencasting has always been on my TODO list. As a developer I wanted to create a Youtube Channel where I record screencasts of things I&rsquo;ve learned. The only thing that&rsquo;s stopping me is the not-so-quality sound recorder that comes with my laptop.</p>
-
-<h3>Seagate Backup Plus 5TB Desktop External Hard Drive</h3>
-
-<p><img src="/images/posts/christmas_wishlist_2014/seagate.jpg" alt="seagate external hard drive" /></p>
-
-<p>Last thing on this list is this 5TB External Hard Drive from Seagate. I download a lot of stuff from the internet to prepare for events where there is no internet and I have nothing to do on my computer.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1785,6 +1827,10 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/25/introduction-to-shotgun/">Introduction to Shotgun</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/17/more-podcasts-i-listen-to/">More Podcasts I Listen To</a>
       </li>
     
@@ -1798,10 +1844,6 @@ Require the <code>autoload.php</code> file so that our dependencies will be auto
     
       <li class="post">
         <a href="/blog/2015/09/27/introduction-to-absentist/">Introduction to Absentist</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/20/database-migrations-in-php-with-phinx/">Database Migrations in PHP with Phinx</a>
       </li>
     
   </ul>
