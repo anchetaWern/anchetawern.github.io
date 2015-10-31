@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: datetime | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/datetime/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-10-31T18:39:09+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Working with Dates and Times in PHP with Carbon]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon/"/>
+    <updated>2015-10-31T17:32:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon</id>
+    <content type="html"><![CDATA[<p>When writing PHP applications there&rsquo;s often a need for working with dates and times. In this tutorial, I&rsquo;ll be walking you through Carbon, a simple PHP API extension for the DateTime class. It basically makes working with dates and times a lot more easier. I&rsquo;ve personally used this library on my <a href="https://github.com/anchetaWern/ahead">Ahead</a> project, a Laravel app for scheduling posts to social media sites like Facebook, Twitter and LinkedIn.</p>
+
+<h3>Installation</h3>
+
+<p>To install Carbon, you need to use <a href="https://getcomposer.org/">Composer</a>.</p>
+
+<p><code>
+composer require nesbot/carbon
+</code></p>
+
+<h3>Usage</h3>
+
+<p>Include the vendor autoload in your file and then use the <code>Carbon</code> class in the <code>Carbon</code> namespace.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Carbon\Carbon;
+?>
+```</p>
+
+<h4>Getting the Current Date and Time</h4>
+
+<p>You can get the current date and time using the <code>now</code> method. If you do not specify an argument, it uses the default timezone from your PHP config.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::now(); //2015-07-26 20:21:20
+?&gt;
+</code></p>
+
+<p>If you want to use a different timezone, you can pass a <a href="http://php.net/manual/en/timezones.php">valid timezone</a> as the argument.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::now('Asia/Manila'); //2015-07-26 20:21:20
+?&gt;
+</code></p>
+
+<p>Aside from the <code>now</code> method, there&rsquo;s also <code>today</code>, which returns the start of today&rsquo;s date, <code>yesterday</code>, which returns the start of the date yesterday, and <code>tomorrow</code>, which returns the start of the date tomorrow.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::today()-&gt;toDateTimeString(); //2015-07-26 00:00:00
+echo Carbon::yesterday()-&gt;toDateTimeString(); //2015-07-25 00:00:00
+echo Carbon::tomorrow()-&gt;toDateTimeString(); //2015-07-27 00:00:00
+?&gt;
+</code></p>
+
+<h4>Converting to String</h4>
+
+<p>By default, methods in Carbon returns a datetime object. Though its an object, you can directly output it using <code>echo</code> because of the <code>__toString</code> magic method. But if you want to convert it to a string, you can use the <code>toDateString</code> or <code>toDateTimeString</code> methods.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::now()-&gt;toDateString(); //2015-07-26
+echo Carbon::now()-&gt;toDateTimeString(); //2015-07-26 20:22:50
+?&gt;
+</code></p>
+
+<h4>Parsing Dates</h4>
+
+<p>You can also parse dates in all sorts of formats using the <code>parse</code> method.</p>
+
+<p>```php
+&lt;?php
+echo Carbon::parse(&lsquo;2015/03/30&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:00:00
+echo Carbon::parse(&lsquo;2015-03-30&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:00:00
+echo Carbon::parse(&lsquo;2015-03-30 00:10:25&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:10:25</p>
+
+<p>echo Carbon::parse(&lsquo;today&rsquo;)&ndash;>toDateTimeString(); //2015-07-26 00:00:00
+echo Carbon::parse(&lsquo;yesterday&rsquo;)&ndash;>toDateTimeString(); //2015-07-25 00:00:00
+echo Carbon::parse(&lsquo;tomorrow&rsquo;)&ndash;>toDateTimeString(); //2015-07-27 00:00:00
+echo Carbon::parse(&lsquo;2 days ago&rsquo;)&ndash;>toDateTimeString(); //2015-07-24 20:49:53
+echo Carbon::parse(&lsquo;+3 days&rsquo;)&ndash;>toDateTimeString(); //2015-07-29 20:49:53
+echo Carbon::parse(&lsquo;+2 weeks&rsquo;)&ndash;>toDateTimeString(); //2015-08-09 20:49:53
+echo Carbon::parse(&lsquo;+4 months&rsquo;)&ndash;>toDateTimeString(); //2015-11-26 20:49:53
+echo Carbon::parse(&lsquo;-1 year&rsquo;)&ndash;>toDateTimeString(); //2014-07-26 20:49:53
+echo Carbon::parse(&lsquo;next wednesday&rsquo;)&ndash;>toDateTimeString(); //2015-07-29 00:00:00
+echo Carbon::parse(&lsquo;last friday&rsquo;)&ndash;>toDateTimeString(); //2015-07-24 00:00:00
+?>
+```</p>
+
+<h4>Constructing Dates</h4>
+
+<p>You can also construct dates by using individual parts such as the year month and day.</p>
+
+<p>```php
+&lt;?php
+$year = &lsquo;2015&rsquo;;
+$month = &lsquo;04&rsquo;;
+$day = &lsquo;12&rsquo;;</p>
+
+<p>echo Carbon::createFromDate($year, $month, $day); //2015-04-12 20:55:59</p>
+
+<p>$hour = &lsquo;02&rsquo;;
+$minute = &lsquo;15&rsquo;:
+$second = &lsquo;30&rsquo;;</p>
+
+<p>echo Carbon::create($year, $month, $day, $hour, $minute, $second); //2015-04-12 02:15:30
+?>
+```</p>
+
+<p>Optionally, you can pass in any valid timezone as the last argument for the <code>create</code> and <code>createFromDate</code> methods.</p>
+
+<h4>Manipulating Dates</h4>
+
+<p>Manipulating dates can be done by using <code>add</code> (to add) or <code>sub</code> (to subtract) followed by the unit of time you want to add or subtract. For example, you want to add a specific number of days to the specific date, you use the <code>addDays</code> method. There&rsquo;s also the <code>modify</code> method which allows you to pass in the modification that you want. It takes the format of <code>+</code> or <code>-</code> followed by the unit value and the unit. So if you want to add a year to the current date, you use <code>+1 year</code>. Check out the examples below to have an idea what else you can do.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::now()-&gt;addDays(25); //2015-08-20 21:10:00
+echo Carbon::now()-&gt;addWeeks(3); //2015-08-16 21:10:00
+echo Carbon::now()-&gt;addHours(25); //2015-07-27 22:10:00
+echo Carbon::now()-&gt;subHours(2); //2015-07-26 19:10:00
+echo Carbon::now()-&gt;addHours(2)-&gt;addMinutes(12); //2015-07-26 23:22:00
+echo Carbon::now()-&gt;modify('+15 days'); //2015-08-10 21:10:00
+echo Carbon::now()-&gt;modify('-2 days'); //2015-07-24 21:10:00
+?&gt;
+</code></p>
+
+<p>Commonly in PHP apps are international. This means that you need to work with different timezones. Here&rsquo;s how to convert from one timezone to another.</p>
+
+<p><code>php
+&lt;?php
+echo Carbon::now()-&gt;setTimezone('America/Los_Angeles'); //2015-07-26 06:23:48
+?&gt;
+</code></p>
+
+<h4>Comparing Dates</h4>
+
+<p>You can use the following methods to compare dates in Carbon.</p>
+
+<ul>
+<li><code>min</code> &ndash; returns the smaller date.</li>
+<li><code>max</code> &ndash; returns the larger date.</li>
+<li><code>eq</code> &ndash; check if two dates are the same.</li>
+<li><code>gt</code> &ndash; check if the first date is greater than the second date.</li>
+<li><code>lt</code> &ndash; check if the first date is less than the second date.</li>
+<li><code>gte</code> &ndash; check if the first date is greater than or equal to the second date.</li>
+<li><code>lte</code> &ndash; check if the first date is lesser than or equal to the second date.</li>
+</ul>
+
+
+<p>Other helpful methods include <code>isWeekDay</code>, <code>isWeekend</code>, <code>isYesterday</code>, <code>isFuture</code> and <code>isPast</code>.</p>
+
+<h4>Laravel Integration</h4>
+
+<p>If you&rsquo;re on Laravel, you can just add an alias for the Carbon library in the <code>aliases</code> in the <code>app/config/app.php</code>.</p>
+
+<p><code>
+'Carbon' =&gt; 'Carbon\Carbon'
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with the Carbon library in PHP. Carbon is a really nice and easy way to work with dates in PHP. Be sure to check out the <a href="http://carbon.nesbot.com/docs/">official docs</a> to learn more about it.</p>
+]]></content>
+  </entry>
+  
+</feed>
