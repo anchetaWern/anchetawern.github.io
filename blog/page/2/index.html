@@ -9,8 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="You need to prioritize. There&rsquo;s only like 2 or 3 builder huts when you start playing the game.
-That&rsquo;s why it&rsquo;s important to &hellip;">
+  <meta name="description" content="Separation of concerns is a design principle in Computer Science for separating a program into sections, each with their own responsibility. MVC, an &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,558 @@ That&rsquo;s why it&rsquo;s important to &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/">Using the Twig Templating Engine in PHP</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-31T21:40:00+08:00" pubdate data-updated="true">Aug 31<span>st</span>, 2015</time>
+        
+         | <a href="/blog/2015/08/31/using-the-twig-templating-engine-in-php/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Separation of concerns is a design principle in Computer Science for separating a program into sections, each with their own responsibility. MVC, an architectural pattern used in most PHP frameworks allows developers to implement separation of concerns. One part of MVC is the View which handles the presentation layer of the application. In this tutorial I&rsquo;ll walk you through Twig, a templating engine for PHP. This allows us to separate the view from the business logic of the app.</p>
+
+<h3>Installation</h3>
+
+<p>Execute the following on your terminal to install Twig.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require twig/twig</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In your working directory, create a <code>template</code> folder for storing the Twig templates and a <code>cache</code> folder for storing the cached templates. Twig puts the compiled version of templates into this folder so that the next time it&rsquo;s requested and there&rsquo;s no change in the template, it serves the cached version instead. Be sure to change the file permissions of the <code>cache</code> folder so that Twig can write into it. I had to do the following to have it work.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo chmod -R 777 cache</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To use Twig, include the vendor autoload file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next create a new instance of the <code>Twig_Loader_Filesystem</code> class and supply the path to the <code>templates</code> directory as its argument. After that, create a new instance of the <code>Twig_Environment</code> class and pass in the loader and an array of options as its argument. In this case, only the <code>cache</code> item is specified. This allows you specify the path of the <code>cache</code> directory.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Loader_Filesystem</span><span class="p">(</span><span class="s1">&#39;templates&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$twig</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Environment</span><span class="p">(</span><span class="nv">$loader</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;cache&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;cache&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To load a template, use the <code>loadTemplate</code> method on the Twig instance that you created earlier. Then pass in the path to the template that you want to use. After that, you can now output the view by calling the <code>render</code> method on the template. This accepts the data that you want to pass in to the view.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">19</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>twig<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
+
+<p><img src="/images/posts/twig/twig-first.png" alt="twig hello world" /></p>
+
+<p>Note that Twig is pretty forgiving when it comes to data that you pass in to the template. For example, if you do not pass in the <code>age</code>, it wouldn&rsquo;t throw an error at you.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Outputting Raw HTML</h4>
+
+<p>Twig automatically escapes HTML so if you pass in HTML as data for your template, it is outputted as is.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;html_string&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&lt;h3&gt;hi Im an html inside a template&lt;/h3&gt;&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>    {{ html_string | raw }}
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Looping through Arrays</h4>
+
+<p>You can also load arrays for the data.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;users&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Yoh Asakura&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">14</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Naruto Uzumaki&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">25</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the way you output them in your template is by using the <code>for</code> tag. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% for user in users %}
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>        {% endfor %}
+</span><span class='line'>        
+</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use the <code>for</code> tag, assign an alias for each item in the array that you specified. In this case, the array is <code>users</code> and each item is represented by the <code>user</code> variable. Inside the <code>for</code> tag, you can then access each user field. After you have outputted all the user details, close it with the <code>endfor</code> tag.</p>
+
+<p><img src="/images/posts/twig/array.png" alt="for" /></p>
+
+<h4>Conditions</h4>
+
+<p>Twig allows you to use tags such as <code>if</code>, <code>else</code>, <code>elseif</code>, and <code>if not</code> for checking for simple conditions in your templates. Here&rsquo;s an example of using the <code>if</code> tag for checking if the age of the user is greater than or equal to 14.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% for user in users %}
+</span><span class='line'>            {% if user.age &gt;= 14 %}
+</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>            {% endif %}
+</span><span class='line'>        {% endfor %}
+</span><span class='line'>        
+</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/posts/twig/if.png" alt="if" /></p>
+
+<h4>Layouts</h4>
+
+<p>Layouts can be used in order to avoid repitition of re-occurring elements of the page such as the header and the footer. To use layouts, you need a base template (<code>base.html</code>). This is the template that contains all the re-occurring elements of the page. This is essentially the main template in which all the other templates (child templates) inherits from. Your main template is where you usually declare the content block. This is the block that&rsquo;s going to get replaced by the content that you supply on your child template.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;assets/css/style.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;title&gt;</span><span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        
+</span><span class='line'>        {% block content %}{% endblock %}
+</span><span class='line'>        
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'>{% extends &quot;base.html&quot; %}
+</span><span class='line'>{% block content %}
+</span><span class='line'>   <span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>{% endblock %}
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">background</span><span class="o">:</span> <span class="nb">orange</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, from your PHP file, all you need to do is render the child template.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;child.html&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;my page&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s how its going to look like:</p>
+
+<p><img src="/images/posts/twig/layouts.png" alt="layouts" /></p>
+
+<h4>Filters</h4>
+
+<p>Twig also comes with filters. Filters as the name suggests, allows you to filter the content that you pass into it.</p>
+
+<h5>Format</h5>
+
+<p>If you need to perform a find and replace on a string, you can use the <code>format</code> filter. Here&rsquo;s how you can use it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ami Damaru&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">110</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>
+</span><span class='line'>{{ &quot;Hi I&#39;m %s, I am %s years old&quot; | format(name, age) }}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you have seen above, to use the <code>format</code> filter, simply pipe it to the string that you want to perform find and replace on. Each string that you want to replace within the string should be <code>%s</code>. So in this case, the name and age is substituted for that value. It should result in the following output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Hi I&#39;m Ami Damaru, I am 110 years old
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>nl2br</h5>
+
+<p>The <code>nl2br</code> filter allows you to replace line breaks (<code>\n</code>) in your string with <code>&lt;br /&gt;</code> tags. This is useful if you want to output a string which uses line breaks instead of <code>&lt;br /&gt;</code> tags.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;string&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;The quick brown fox</span><span class="se">\n</span><span class="s2"> jumps over the heade</span><span class="se">\n</span><span class="s2"> of the lazy dog&quot;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    {{ string | nl2br }}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>date and date_modify</h5>
+
+<p>The <code>date</code> and <code>date_modify</code> filters allows you to modify the formatting of a date.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$date</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;date&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;2015-03-17&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span><span class='line'>    {{ date | date_modify(&quot;+1 week&quot;) | date(&#39;M d, Y&#39;) }}
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above will output.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Aug 03, 2015
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>upper and lower</h5>
+
+<p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>
+</span><span class='line'>{{ &#39;MAKE ME LOWER&#39; | lower }}
+</span><span class='line'>{{ &#39;make me higher&#39; | upper }}
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will be:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>make me lower MAKE ME HIGHER
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with Twig, a templating engine for PHP. For more information about Twig, check out the <a href="http://twig.sensiolabs.org/documentation">official docs</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1059,230 +1610,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/05/getting-started-with-amazon-s3/">Getting Started With Amazon S3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-06-05T05:28:00+08:00" pubdate data-updated="true">Jun 5<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/06/05/getting-started-with-amazon-s3/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Amazon S3 is Amazon&rsquo;s file storage service. It allows users to upload their files to their server, for later access or for sharing to other people. In this tutorial I&rsquo;m going to walk you through how to use amazon s3 within your PHP applications.</p>
-
-<p>First thing that you need to do is create a <code>composer.json</code> file and add the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>    "require": {
-</span><span class='line'>        "aws/aws-sdk-php": "2.7.*@dev"
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next execute <code>composer install</code> from your terminal to install the Amazon Web Service SDK.</p>
-
-<p>Once the installation is done you can now create a <code>tester.php</code> file which we will use for interacting with the Amazon AWS API. Add the following code to the file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">use</span> <span class="nx">Aws\S3\Exception\S3Exception</span><span class="p">;</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">Aws\Common\Aws</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What the code above does is include the autoload file so that we can use the AWS SDK from our file. Next we set to use the <code>Aws\S3\Exception\S3Exception</code> and <code>Aws\Common\Aws</code> namespace so can access the different classes that are available in those namespaces. One of which classes is the <code>Aws</code> class which we can use to set the configuration options for the Bucket where we are trying to connect to. All we have to do is call the <code>factory</code> method and pass in the path to the configuration file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$aws</span> <span class="o">=</span> <span class="nx">Aws</span><span class="o">::</span><span class="na">factory</span><span class="p">(</span><span class="s1">&#39;config.php&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The configuration file contains the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">return</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;includes&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;_aws&#39;</span><span class="p">),</span>
-</span><span class='line'>    <span class="s1">&#39;services&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;default_settings&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>            <span class="s1">&#39;params&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>                <span class="s1">&#39;credentials&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>                    <span class="s1">&#39;key&#39;</span>    <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_KEY&#39;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s1">&#39;secret&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_AWS_API_SECRET&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="p">),</span>
-</span><span class='line'>                <span class="s1">&#39;region&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR_BUCKET_REGION&#39;</span>
-</span><span class='line'>            <span class="p">)</span>
-</span><span class='line'>        <span class="p">)</span>
-</span><span class='line'>    <span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The configuration file basically just returns an array that contains the options that we need. First of those is the <code>includes</code>, which allows us to bootstrap the configuration file with AWS specific features. Next is the <code>services</code> where we specify the API credentials and region.</p>
-
-<h4>Uploading Files</h4>
-
-<p>Once that&rsquo;s done we can now upload files to the s3 bucket of your choice by using the <code>$aws</code> object and calling the <code>get</code> method. This method takes up the name of the AWS service you want use. In this case were using s3 so we put in <code>s3</code>. Next we call the <code>putObject</code> method on the <code>$s3</code> object and pass in the required parameters as an array. The required keys are <code>Bucket</code>, <code>Key</code>, <code>Body</code> and <code>ACL</code>. <code>Bucket</code> is the name of the bucket where you want to upload the file. <code>Key</code> is the path to the file. With s3 you don&rsquo;t have to worry if the directory where you are uploading the file already exists. No matter how deep it is, s3 automatically creates the directories for you. Next is the <code>Body</code> which takes up the results of the <code>fopen</code> method call. This method takes up the path to the file in your local computer and the operation you want to perform. In this case we just want to read the file contents so we specify <code>r</code>. Next is the <code>ACL</code> or the Access Control List of an object. Its basically like a file permission. Here we specified <code>public-read</code> which means that the file can be read publically. For more information about ACL, you can check out <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">this page</a>. We wrap all of those code inside a try catch so we can handle errors gracefully.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$s3</span> <span class="o">=</span> <span class="nv">$aws</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">putObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;Body&#39;</span> <span class="o">=&gt;</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;/path/to/file_to_uploads&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">),</span>
-</span><span class='line'>        <span class="s1">&#39;ACL&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;public-read&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">));</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span> <span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error uploading the file.&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Deleting Files</h3>
-
-<p>Next here&rsquo;s how to delete existing files from your s3 bucket. This uses the <code>deleteObject</code> method which takes up the name of the bucket and the path to the file as its argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">deleteObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="s1">&#39;Bucket&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;NAME_OF_BUCKET&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;Key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;/path/to/file/filename&#39;</span>
-</span><span class='line'>    <span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">S3Exception</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;There was an error deleting the file.&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Listing Buckets</h3>
-
-<p>Lastly here&rsquo;s how to get a list of buckets that are currently in your Amazon Account:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$s3</span><span class="o">-&gt;</span><span class="na">listBuckets</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;Buckets&#39;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$bucket</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$bucket</span><span class="p">[</span><span class="s1">&#39;CreationDate&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to work with Amazon S3 from within your PHP applications. Specifically, we&rsquo;ve taken a look at how to upload files, delete files and list buckets.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/guide/service-s3.html">Amazon Simple Storage Service PHP Guide</a></li>
-<li><a href="http://docs.aws.amazon.com/aws-sdk-php/v2/api/class-Aws.S3.S3Client.html">AWS S3 API Reference</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1300,6 +1627,10 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/03/introduction-to-grade-viewer/">Introduction to Grade Viewer</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon/">Working with Dates and Times in PHP with Carbon</a>
       </li>
     
@@ -1313,10 +1644,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
     
       <li class="post">
         <a href="/blog/2015/10/10/using-pdo-in-php/">Using PDO in PHP</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/03/quick-tip-introduction-to-phpsh/">Quick Tip: Introduction to phpsh</a>
       </li>
     
   </ul>
