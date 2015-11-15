@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: virtual-hosts | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/virtual-hosts/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-11-15T11:19:33+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Quick Tip: How to Setup Virtual Hosts in Ubuntu]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/"/>
+    <updated>2015-11-15T20:14:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu</id>
+    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll show you how you can setup virtual hosts for Apache in Ubuntu.</p>
+
+<p>The first thing that you need to do is clone the default Apache configuration. In the example below <code>myproject.dev</code> is the virtual host name that you want to use.</p>
+
+<p><code>
+sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/myproject.dev.conf
+</code></p>
+
+<p>Open the new configuration file and update the values for the <code>ServerName</code>, <code>ServerAlias</code>, and <code>DocumentRoot</code>. Where <code>ServerName</code> is the virtual host name and the <code>ServerAlias</code> is the www version. The <code>DocumentRoot</code> is the absolute path to the directory where your project is stored.</p>
+
+<p>```
+<VirtualHost *:80></p>
+
+<pre><code>    ServerName myproject.dev
+    ServerAlias www.myproject.dev
+
+    ServerAdmin wern@localhost
+    DocumentRoot /home/wern/www/antares-backend
+</code></pre>
+
+<p></VirtualHost>
+```</p>
+
+<p>Next, enable the new virtual host configuration.</p>
+
+<p><code>
+sudo a2ensite myproject.dev
+</code></p>
+
+<p>Lastly, add it to the hosts file.</p>
+
+<p><code>
+sudo nano /etc/hosts
+</code></p>
+
+<p><code>
+127.0.0.1       antaresapp.dev
+127.0.0.1       www.antaresapp.dev
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

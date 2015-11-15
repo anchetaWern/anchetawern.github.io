@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-11-03T20:34:16+08:00</updated>
+  <updated>2015-11-15T11:19:33+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Quick Tip: How to Setup Virtual Hosts in Ubuntu]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/"/>
+    <updated>2015-11-15T20:14:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu</id>
+    <content type="html"><![CDATA[<p>In this quick tip I&rsquo;ll show you how you can setup virtual hosts for Apache in Ubuntu.</p>
+
+<p>The first thing that you need to do is clone the default Apache configuration. In the example below <code>myproject.dev</code> is the virtual host name that you want to use.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/myproject.dev.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open the new configuration file and update the values for the <code>ServerName</code>, <code>ServerAlias</code>, and <code>DocumentRoot</code>. Where <code>ServerName</code> is the virtual host name and the <code>ServerAlias</code> is the www version. The <code>DocumentRoot</code> is the absolute path to the directory where your project is stored.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;VirtualHost *:80&gt;
+</span><span class='line'>        ServerName myproject.dev
+</span><span class='line'>        ServerAlias www.myproject.dev
+</span><span class='line'>
+</span><span class='line'>        ServerAdmin wern@localhost
+</span><span class='line'>        DocumentRoot /home/wern/www/antares-backend
+</span><span class='line'>&lt;/VirtualHost&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, enable the new virtual host configuration.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2ensite myproject.dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly, add it to the hosts file.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano /etc/hosts</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1       antaresapp.dev
+</span><span class='line'>127.0.0.1       www.antaresapp.dev</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to Grade Viewer]]></title>
@@ -3842,40 +3895,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
 
 
 <p>That&rsquo;s all I can think of for now. I really have a bad memory so even if I&rsquo;ve watched a really really good anime, it might not have made it in this list.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Quick Tip: How to Add Custom Pages in Wordpress]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/06/11/quick-tip-how-to-add-custom-pages-in-wordpress/"/>
-    <updated>2015-06-11T11:37:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/06/11/quick-tip-how-to-add-custom-pages-in-wordpress</id>
-    <content type="html"><![CDATA[<p>In this quick-tip I&rsquo;ll be showing you the easiest and quickest way to create custom pages under a specific theme in Wordpress. When I say custom, its a page where you can put anything you want using HTML, CSS, JavaScript and PHP Code. The page would also have access to the various APIs that Wordpress provides.</p>
-
-<p>To start, create a new file under your theme folder. In this case I&rsquo;ll be creating a <code>custom-page.php</code> file under the <code>wp-content/themes/twentyfifteen</code> directory of my Wordpress installation. Then add the following code in the file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cm">/*</span>
-</span><span class='line'><span class="cm">Template Name: My Awesome Custom Page</span>
-</span><span class='line'><span class="cm">*/</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;h1&gt;This is my awesome custom page&lt;/h1&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yes, that&rsquo;s all there is to it. Note that the <code>Template Name:</code> part is very important. You can assign any value that you want as long as its descriptive. This specific comment is used by Wordpress to recognize your file.</p>
-
-<p>To assign this page to a specific Wordpress page. You can add a new page from Wordpress admin page and select the page that we have created under the Template drop-down:</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/quicktip_wordpress_custom_page/custom-wp-page.png" alt="custom wordpress page" /></p>
-
-<p>Now when you access the page from your browser, you will get that awesome heading. From your custom page you can also use the methods available on all the Wordpress APIs and also the built-in theme functions such as the <code>get_header</code> and <code>get_footer</code>.</p>
 ]]></content>
   </entry>
   
