@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: company-logos | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/company-logos/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-11-28T09:35:33+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to Get the Logo of Any Company]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company/"/>
+    <updated>2015-11-28T12:17:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company</id>
+    <content type="html"><![CDATA[<p>In one of my previous projects called <a href="/projects/stockswitch/">StockSwitch</a>, I had the need to fetch and utilize the logo of companies that are included in the NYSE, NASDAQ, and AMEX. In this article, I&rsquo;ll be showing you how you can get the logo for any company so that you can use it in your projects.</p>
+
+<p>The best way to get the logo of any company is via Clearbit&rsquo;s logo API. All you have to do is replace the value of <code>{DOMAIN-NAME}</code> with the domain name used by the company that you want.</p>
+
+<p><code>
+https://logo.clearbit.com/{DOMAIN-NAME}
+</code></p>
+
+<p>For example, you want to utilize Google&rsquo;s logo in your project. Simply create a new image tag and link to <code>logo.clearbit.com</code> followed by the domain name.</p>
+
+<p><code>html
+&lt;img src="https://logo.clearbit.com/google.com"&gt;
+</code></p>
+
+<p>You can also pass in the following optional parameters.</p>
+
+<ul>
+<li>size &ndash; the size in pixels of the logo. The highest value I found to be valid is 800px. And the lowest is 5px.</li>
+<li>format &ndash; you can pass either <code>png</code> or <code>jpg</code>.</li>
+<li>greyscale &ndash; pass in a value of <code>true</code> if you want the logo to be in greyscale.</li>
+</ul>
+
+
+<p>For example, you want the image to be in 50px and the format is png.</p>
+
+<p><code>html
+&lt;img src="https://logo.clearbit.com/google.com?size=50&amp;format=png"&gt;
+</code></p>
+
+<p>You can also save it on your own server so you don&rsquo;t use Clearbit&rsquo;s resources every time the company logos are requested. Here&rsquo;s a sample code on how you might do it in php.</p>
+
+<p>```php
+&lt;?php
+$companies = array(</p>
+
+<pre><code>'facebook.com',
+'google.com',
+'oracle.com',
+'amazon.com',
+'ebay.com',
+'uber.com',
+'twitter.com',
+'github.com'
+</code></pre>
+
+<p>);</p>
+
+<p>foreach($companies as $company){</p>
+
+<pre><code>$url = "https://logo.clearbit.com/{$company}?size=150&amp;format=png";
+$contents = file_get_contents($url);
+file_put_contents('logos/' . $company . '.png' , $contents);
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>The code above gets the contents returned from the clearbit logo URL and then saves it to the <code>logos</code> directory in the server.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-11-22T08:02:41+08:00</updated>
+  <updated>2015-11-28T09:35:33+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to Get the Logo of Any Company]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company/"/>
+    <updated>2015-11-28T12:17:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company</id>
+    <content type="html"><![CDATA[<p>In one of my previous projects called <a href="http://wern-ancheta.com/projects/stockswitch/">StockSwitch</a>, I had the need to fetch and utilize the logo of companies that are included in the NYSE, NASDAQ, and AMEX. In this article, I&rsquo;ll be showing you how you can get the logo for any company so that you can use it in your projects.</p>
+
+<p>The best way to get the logo of any company is via Clearbit&rsquo;s logo API. All you have to do is replace the value of <code>{DOMAIN-NAME}</code> with the domain name used by the company that you want.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>https://logo.clearbit.com/{DOMAIN-NAME}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example, you want to utilize Google&rsquo;s logo in your project. Simply create a new image tag and link to <code>logo.clearbit.com</code> followed by the domain name.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;https://logo.clearbit.com/google.com&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also pass in the following optional parameters.</p>
+
+<ul>
+<li>size &ndash; the size in pixels of the logo. The highest value I found to be valid is 800px. And the lowest is 5px.</li>
+<li>format &ndash; you can pass either <code>png</code> or <code>jpg</code>.</li>
+<li>greyscale &ndash; pass in a value of <code>true</code> if you want the logo to be in greyscale.</li>
+</ul>
+
+
+<p>For example, you want the image to be in 50px and the format is png.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;https://logo.clearbit.com/google.com?size=50&amp;format=png&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also save it on your own server so you don&rsquo;t use Clearbit&rsquo;s resources every time the company logos are requested. Here&rsquo;s a sample code on how you might do it in php.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$companies</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;facebook.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;google.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;oracle.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;amazon.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;ebay.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;uber.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;twitter.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;github.com&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$companies</span> <span class="k">as</span> <span class="nv">$company</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;https://logo.clearbit.com/</span><span class="si">{</span><span class="nv">$company</span><span class="si">}</span><span class="s2">?size=150&amp;format=png&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$contents</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">file_put_contents</span><span class="p">(</span><span class="s1">&#39;logos/&#39;</span> <span class="o">.</span> <span class="nv">$company</span> <span class="o">.</span> <span class="s1">&#39;.png&#39;</span> <span class="p">,</span> <span class="nv">$contents</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above gets the contents returned from the clearbit logo URL and then saves it to the <code>logos</code> directory in the server.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Introduction to pokeapi-json]]></title>
@@ -3827,37 +3912,6 @@ for new authors. It doesn&rsquo;t matter if you&rsquo;re new to the industry or 
 <li><a href="https://medium.com/@hayley_mullen/beyond-youre-vs-your-a-grammar-cheat-sheet-even-the-pros-can-use-c2b90dae85ef">Beyond You&rsquo;re vs. Your: A Grammar Cheat Sheet Even the Pros Can Use</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Amazon Cloudfront]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/07/11/getting-started-with-amazon-cloudfront/"/>
-    <updated>2015-07-11T08:01:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/07/11/getting-started-with-amazon-cloudfront</id>
-    <content type="html"><![CDATA[<p>When developing websites, it&rsquo;s important to deliver front-end assets as fast as possible to the client. One tool that web developers use is the Content Delivery Network (CDN). Which is basically a way of distributing front-end assets (scripts, stylesheets and images) on servers across the globe so that the files will have to travel less distance. This works by having the nearest server deliver the file to the client. Nicholas Zakas has written a really good article on <a href="http://www.nczonline.net/blog/2011/11/29/how-content-delivery-networks-cdns-work/">how content delivery networks work</a>. You can check that out if you want to dive deeper.
-In this article we&rsquo;re going to take a look at Amazon Cloudfront, which is the content delivery network offered by Amazon Web Services.</p>
-
-<h3>Setting Up a New Distribution</h3>
-
-<p>Amazon Cloudfront utilizes the files from your S3 bucket.
-First thing that you need to do is to go to the Amazon Web Services console, select Cloudfront from the list of services, select create distribution, then click on the &lsquo;Get Started&rsquo; button under the Web section.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/cloudfront/step-one.png" alt="getting started" /></p>
-
-<p>Once you&rsquo;re redirected to the next page, you will be greeted by a form where you enter the details of your new distribution.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/cloudfront/step-two.png" alt="distribution details" /></p>
-
-<p>Each distribution uses a specific S3 bucket and you can pick that on Origin Domain Name. It would look something like <code>app-name.s3.amazonaws.com</code>. Once you have selected the Origin Domain Name, the Origin ID will automatically get filled up. You can click on the help icon on each field to get information on what they are. Knowing that, you can just leave the optional fields as blank and stick with the default values. Once you&rsquo;re done filling out the form, you can click on the &lsquo;Create Distribution&rsquo; button. After creation, it will be listed as the top item in your list of distributions. Your new distribution won&rsquo;t be immediately useable. You can see it from the status field in the table. Right after creation, its status would be &lsquo;In Progress&rsquo;. I&rsquo;m not really sure what goes on behind the scenes during this time, but I assume it&rsquo;s distributing all the files that is stored on the S3 bucket that you selected across different servers around the globe. Once your new distribution is ready, you can now use the domain name assigned to your distribution as the domain name when linking your files. Do note that files distributed using Cloudfront should be invalidated every time you make a change to them. So it&rsquo;s not recommended to use Cloudfront when you&rsquo;re still developing your app. As you frequently have to invalidate the files as you make changes to your code.</p>
-
-<h3>Invalidating Files</h3>
-
-<p>You will need to invalidate files when you make changes to a file in your S3 bucket. The changes won&rsquo;t take effect in the distribution that&rsquo;s why you need to invalidate. To do that, click the distribution on the list. Once in there, click the invalidations tab, click &lsquo;create invalidation&rsquo; and enter the path of the file you want to invalidate. The path is relative to the root of your bucket. So if your bucket is named <code>bookr</code> and your file is at <code>/uploads/users/image/image-001.jpg</code> then use that as the path. Do note that invalidating a file can take a while so use it sparingly.</p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial, you have learned how to use Amazon&rsquo;s Cloudfront as a solution for your CDN needs. It&rsquo;s really easy to get setup if you&rsquo;re already using S3 to serve your front-end assets.</p>
 ]]></content>
   </entry>
   
