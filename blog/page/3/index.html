@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="It&rsquo;s been more than a year since I started writing articles for Sitepoint. For those who don&rsquo;t know, Sitepoint is a provider of awesome &hellip;">
+  <meta name="description" content="Picking up from where we left off last time. Let&rsquo;s now try to add a video on our simple calling app with PeerJS. If you haven&rsquo;t read my &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,233 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/26/implementing-video-calls-with-peerjs/">Implementing Video Calls With PeerJS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T16:31:00+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/07/26/implementing-video-calls-with-peerjs/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Picking up from where we left off <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">last time</a>. Let&rsquo;s now try to add a video on our simple calling app with PeerJS. If you haven&rsquo;t read my previous tutorial, go ahead and read it as this article wouldn&rsquo;t make sense if you haven&rsquo;t yet.</p>
+
+<p>First, we still need to use the same scripts we used on the last tutorial.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdn.peerjs.com/0.3/peer.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But for our HTML, we need to replace the <code>audio</code> element with <code>video</code>. We also set the video to autoplay so that as soon as the stream becomes available, the video starts playing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;start-call&quot;</span><span class="nt">&gt;</span>start call<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;video</span> <span class="na">controls</span> <span class="na">autoplay</span><span class="nt">&gt;&lt;/video&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For our custom script, we still have the <code>getParameterByName</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\[]/</span><span class="p">,</span> <span class="s2">&quot;\\[&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\]]/</span><span class="p">,</span> <span class="s2">&quot;\\]&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">regex</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;[\\?&amp;]&quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;=([^&amp;#]*)&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">results</span> <span class="o">=</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">results</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\+/g</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As for the <code>getAudio</code> function that we previously used for getting the audio input from the users device. We now replace it with <code>getVideo</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getVideo</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">({</span><span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">video</span><span class="o">:</span> <span class="kc">true</span><span class="p">},</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the call is received, we now call the <code>getVideo</code> function instead of <code>getAudio</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveCall</span><span class="p">(</span><span class="nx">call</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;peer is calling...&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">call</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getVideo</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">answer</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;answering call started...&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the video&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once a stream is received, we also need to replace the element that we&rsquo;re selecting. So we now select the video element instead of audio.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">video</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">video</span><span class="p">.</span><span class="nx">onloadedmetadata</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code for getting the current user and the peer is also the same.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">from</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But for the creation of the peer, we now use the PeerServer Cloud service instead of our own since we already did that last time.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span><span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we listen for the open event on the peer just so we can check if the peer has actually been created.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;My peer ID is: &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We also listen to the call event so we can receive incoming calls.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;call&#39;</span><span class="p">,</span> <span class="nx">onReceiveCall</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the start call button click event, we use the <code>getVideo</code> function and proceed as usual.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#start-call&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;starting call...&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getVideo</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now calling &#39;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">);</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">call</span> <span class="o">=</span> <span class="nx">peer</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">to</span><span class="p">,</span> <span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the video&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! We have implemented video calling using peerJS. Do note that this will consume more bandwidth than audio calls so the performance might be affected depending on the network.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2649,377 +2876,6 @@ First thing that you need to do is to go to the Amazon Web Services console, sel
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/">Implementing Audio Calls With PeerJS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-03T06:37:00+08:00" pubdate data-updated="true">May 3<span>rd</span>, 2015</time>
-        
-         | <a href="/blog/2015/05/03/implementing-audio-calls-with-peerjs/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>These past few days I&rsquo;ve been playing around with WebRTC. For the uninitiated, WebRTC basically means Web Real Time Communication.
-Things like chat, audio or video calling comes to mind when you say real time. And that is what really WebRTC is. It gives real time super powers for the web.
-In this tutorial I&rsquo;ll be showing you how to implement audio calls with PeerJS. PeerJS is a JavaScript library that allows us to easily implement peer to peer communications with WebRTC.</p>
-
-<h3>Things We Need</h3>
-
-<p>Before we start, go ahead and download the things we&rsquo;ll need for this tutorial:</p>
-
-<ul>
-<li><p><strong>jQuery</strong> &ndash; I know right! who still uses jQuery these days? Raise your left foot. Kidding aside, yes we still need jQuery. In this tutorial we&rsquo;ll only be using it to handle click events. So if you&rsquo;re confident with your Vanilla JavaScript-Fu then feel free to skip it.</p></li>
-<li><p><strong>PeerJS</strong> &ndash; In case you missed it earlier, were gonna need PeerJS so that we can easily implement WebRTC.</p></li>
-<li><p><strong>RecordRTC.js</strong> &ndash; This library mainly provides recording functionalities (e.g taking screenshots and webcam photos, recording audio and video) but it also doubles as a shim provider. We won&rsquo;t really use the recording functionalities in this tutorial so were only using it to be able to request the use of the microphone in the device.</p></li>
-</ul>
-
-
-<h3>Overview of the App</h3>
-
-<p>Were going to build an app that would allow 2 users to call each other through the web via WebRTC. This app can use the PeerServer Cloud or you can implement your own PeerJS server. As for the outputting the audio coming from the microphones of each peer, we will use HTML5 Audio. So all we have to do is convert the audio stream to a format that HTML5 Audio can understand so that we can have each of the users listen to the audio coming from the other side.</p>
-
-<h3>Building the App</h3>
-
-<p>Now that have a basic overview of how the app will work, its time to actually build it.</p>
-
-<p>First, link all the things that we&rsquo;ll need:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;</span>test<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdn.peerjs.com/0.3/peer.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yes, you can also put those script tags right before the closing body tag if performance is your thing.</p>
-
-<p>Next is the HTML that the user will actually see:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">&quot;start-call&quot;</span><span class="nt">&gt;</span>start call<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;audio</span> <span class="na">controls</span><span class="nt">&gt;&lt;/audio&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yup! I didn&rsquo;t miss anything. That&rsquo;s all we need. A button to start the call to another peer and an HTML5 audio tag to output the audio on the other end.</p>
-
-<p>Now let&rsquo;s proceed with the JavaScript. First declare a method that will get the query parameters by name.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
-</span><span class='line'>    <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\[]/</span><span class="p">,</span> <span class="s2">&quot;\\[&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\]]/</span><span class="p">,</span> <span class="s2">&quot;\\]&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">regex</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;[\\?&amp;]&quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;=([^&amp;#]*)&quot;</span><span class="p">),</span>
-</span><span class='line'>        <span class="nx">results</span> <span class="o">=</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">results</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\+/g</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">));</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The way this app works is by using <code>from</code> and <code>to</code> as query parameters. Where <code>from</code> is the id that you want to give to the peer whose currently using the device and <code>to</code> is the id of the peer on the other side. So we use the method above to easily get those values. To emphasize further, here&rsquo;s how the URL that we will use to access the app will look like on our side (john):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//mysite.com/call-app.html?from=john&amp;to=jane</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And on the other side (jane), it would look like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//mysite.com/call-app.html?from=jane&amp;to=john</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We&rsquo;ve basically just interchanged the two peers so we know exactly where the request is coming from and where its going to.</p>
-
-<p>Next we declare the method that will ask a permission to the user for the page to use the microphone. This method takes up 2 parameters, the <code>successCallback</code> and the <code>errorCallback</code>. The <code>successCallback</code> is called when the page has been granted permission to use the microphone. And the <code>errorCallback</code> is called when the user declined.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getAudio</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">){</span>
-</span><span class='line'>    <span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">video</span><span class="o">:</span> <span class="kc">false</span>
-</span><span class='line'>    <span class="p">},</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">errorCallback</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next declare the method that will be called when a call is received from a peer. This method has the <code>call</code> object as its parameter. We use this <code>call</code> object to initiate an answer to the call. But first we need to ask permission to the user to use the microphone by calling the <code>getAudio</code> method. Once we get the permission, we can then answer the call by calling the <code>answer</code> method in the <code>call</code> object. This method takes up the <code>MediaStream</code> as its argument. If we didn&rsquo;t get the permission to use the microphone, we just log that an error occurred and then output the actual error. Finally, we listen to the <code>stream</code> event in the call and then we call the <code>onReceiveStream</code> method when the event happens. This <code>stream</code> event can be triggered in 2 ways. First is when a peer initiates a call to another peer. And the second is when the other peer actually answers the call.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveCall</span><span class="p">(</span><span class="nx">call</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;peer is calling...&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">call</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">getAudio</span><span class="p">(</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
-</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">answer</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;answering call started...&#39;</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the audio&#39;</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next is the <code>onReceiveStream</code> method. This method is called when a media stream is received from the other peer. This is where we convert the media stream to a URL which we use as the source for the audio tag. The stream is basically an object which contains the current audio data. And we convert it to a URL by using the <code>window.URL.createObjectURL</code> method. Once all the meta data is loaded, we then play the audio.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">onReceiveStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">audio</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;audio&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">audio</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">audio</span><span class="p">.</span><span class="nx">onloadedmetadata</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now playing the audio&#39;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">audio</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now that were done with all the method declarations, its time to actually call them. First we need to know where the request is coming from and who will it be sent to.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">from</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="nx">getParameterByName</span><span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we declare a new peer. This takes up the <code>id</code> of the peer as its first argument and the second argument is an object containing the PeerJS key. If you do not have a key yet, you can register for the <a href="http://peerjs.com/peerserver">PeerJS Cloud Service</a>. Its free for up to 50 concurrent connections. After that, we also need to set the ice server config. This ensures that we can get the peers to connect to each other without having to worry about external IP&rsquo;s assigned by routers, firewalls, proxies and other kinds of network security which can get in the way. You need to have at least one stun server and one turn server configuration added. You can get a list of freely available stun and turn servers <a href="https://gist.github.com/yetithefoot/7592580">here</a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span>
-</span><span class='line'>    <span class="nx">from</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;Your PeerJS API Key&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">config</span><span class="o">:</span> <span class="p">{</span><span class="s1">&#39;iceServers&#39;</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;stun:stun1.l.google.com:19302&#39;</span> <span class="p">},</span>
-</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;turn:numb.viagenie.ca&#39;</span><span class="p">,</span> <span class="nx">credential</span><span class="o">:</span> <span class="s1">&#39;muazkh&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;webrtc@live.com&#39;</span> <span class="p">}</span>
-</span><span class='line'>        <span class="p">]}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you want to use your own server and get through the 50 concurrent connections limit of the PeerServer cloud. You can install PeerJS Server on your existing Express app in node.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">peer</span> <span class="o">--</span><span class="nx">save</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then use it like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">express_peer_server</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;peer&#39;</span><span class="p">).</span><span class="nx">ExpressPeerServer</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">peer_options</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">debug</span><span class="o">:</span> <span class="kc">true</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/peerjs&#39;</span><span class="p">,</span> <span class="nx">express_peer_server</span><span class="p">(</span><span class="nx">server</span><span class="p">,</span> <span class="nx">peer_options</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And from the client side you can now use your shiny new PeerJS server:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">peer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Peer</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="s1">&#39;your-peerjs-server.com&#39;</span><span class="p">,</span> <span class="nx">port</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/peerjs&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">config</span><span class="o">:</span> <span class="p">{</span><span class="s1">&#39;iceServers&#39;</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;stun:stun1.l.google.com:19302&#39;</span> <span class="p">},</span>
-</span><span class='line'>            <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;turn:numb.viagenie.ca&#39;</span><span class="p">,</span> <span class="nx">credential</span><span class="o">:</span> <span class="s1">&#39;muazkh&#39;</span><span class="p">,</span> <span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;webrtc@live.com&#39;</span> <span class="p">}</span>
-</span><span class='line'>        <span class="p">]}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next is an optional code. We only use it to determine if the peer we created was actually created. Here we simply listen to the <code>open</code> event on the peer object. And once it happens, we just output the peer id.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;My peer ID is: &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we listen to the <code>call</code> event. This is triggered when a peer tries to make call to the current user.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">peer</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;call&#39;</span><span class="p">,</span> <span class="nx">onReceiveCall</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, here&rsquo;s the code we use when we initiate the call ourselves:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#start-call&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;starting call...&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">getAudio</span><span class="p">(</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;now calling &#39;</span> <span class="o">+</span> <span class="nx">to</span><span class="p">);</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">call</span> <span class="o">=</span> <span class="nx">peer</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">to</span><span class="p">,</span> <span class="nx">MediaStream</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">call</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="nx">onReceiveStream</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;an error occured while getting the audio&#39;</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What this does is listen to the <code>click</code> event on the <code>start-call</code> button. It then calls the <code>getAudio</code> method to ask the user for permission to use the microphone. If the user allows then the call is made to the peer using the <code>call</code> method. This takes up the id of the peer on the other side and the <code>MediaStream</code>. Next, we just listen for the <code>stream</code> event and then call the <code>onReceiveStream</code> method if it happens. Note that this stream would be the audio stream from the peer on the other side and not the audio stream of the current user. Otherwise we would also hear our own voice. The same is true with the stream that were getting from the <code>onReceiveCall</code> method.</p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial we&rsquo;ve learned how to implement audio calls with WebRTC and PeerJS. Be sure to check out the resources below if you want to learn more.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://www.html5rocks.com/en/tutorials/webrtc/basics/">Getting Started with WebRTC</a></li>
-<li><a href="http://peerjs.com/docs/#start">PeerJS Documentation</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -3037,6 +2893,10 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/12/05/tools-of-trade/">Tools of Trade</a>
       </li>
     
@@ -3050,10 +2910,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
     
       <li class="post">
         <a href="/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/">Quick Tip: How to Setup Virtual Hosts in Ubuntu</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/11/03/introduction-to-grade-viewer/">Introduction to Grade Viewer</a>
       </li>
     
   </ul>

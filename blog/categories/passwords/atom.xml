@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: passwords | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/passwords/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-12-11T15:30:32+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Securing Passwords in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/12/11/securing-passwords-in-php/"/>
+    <updated>2015-12-11T12:35:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/12/11/securing-passwords-in-php</id>
+    <content type="html"><![CDATA[<p>In this tutorial we&rsquo;re going to take a look at some of the libraries that allows us secure passwords in PHP.</p>
+
+<h3>Password Compat</h3>
+
+<p>The first library that we&rsquo;re going to look at is Password Compat. You can install it through <a href="https://getcomposer.org/">Composer</a> by using the following command.</p>
+
+<p><code>
+composer require ircmaxell/password-compat
+</code></p>
+
+<p>Once it&rsquo;s done installing, you can the include the vendor autoload file so you can use its functions.</p>
+
+<p><code>php
+&lt;?php
+require_once 'vendor/autoload.php';
+?&gt;
+</code></p>
+
+<p>The <code>password_hash</code> function is used to hash passwords. It accepts the password that you want to hash as its first argument and the algorithm to be used for password hashing as its second. In the example below, <code>PASSWORD_DEFAULT</code> is used. This allows you to use the most secure algorithm that&rsquo;s currently available to PHP. At the time of writing of this article, the most secure algorithm that&rsquo;s available to PHP is bcrypt. So that&rsquo;s the one that&rsquo;s being used when you specify <code>PASSWORD_DEFAULT</code> as the second argument.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$hash = password_hash($password, PASSWORD_DEFAULT);
+?&gt;
+</code></p>
+
+<p>There&rsquo;s also an optional third argument which allows you to change the CPU <code>cost</code> of hashing the password. By default the <code>cost</code> is 10. So if you have a less powerful server you can change it to something lower. The <code>cost</code> can have a value between 4 and 31.</p>
+
+<p><code>php
+&lt;?php
+$hash = password_hash($password, PASSWORD_DEFAULT, array('cost' =&gt; 7));
+?&gt;
+</code></p>
+
+<p>You can then store the hash in your database.</p>
+
+<p>To validate if a password matches the hash stored in the database, use the <code>password_verify</code> method. This accepts the password as the first argument and the hash as the second. So in your application you might have a query to select the user based on its email or username and then you use the hash that was returned for the second argument.</p>
+
+<p>```php
+&lt;?php
+if(password_verify($password, $hash)){</p>
+
+<pre><code>echo 'valid';   
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'invalid';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>PHPAss</h3>
+
+<p>PHPAss is one of the older password hashing libraries that are available for PHP. Nevertheless it doesn&rsquo;t make it less secure than any of the password securing methods in this article. It uses the blowfish algorithm to hash passwords.</p>
+
+<p>Execute the following to install PHPAss.</p>
+
+<p><code>
+composer require hautelook/phpass
+</code></p>
+
+<p>After including the vendor autoload file, set your current file to use the <code>PasswordHash</code> class in the <code>Hautelook</code> namespace.</p>
+
+<p><code>php
+&lt;?php
+use Hautelook\Phpass\PasswordHash;
+?&gt;
+</code></p>
+
+<p>Create a new password hasher instance. This accepts 2 required arguments. First is the base-2 logarithm of the iteration count used for password stretching. The second a boolean value for setting if the password will use portable hashes. The values that I&rsquo;ve set below are the default one&rsquo;s. Those will do for most use cases.</p>
+
+<p><code>php
+&lt;?php
+$passwordHasher = new PasswordHash(8, false);
+?&gt;
+</code></p>
+
+<p>You can then call the <code>HashPassword</code> method to actually hash the password. This hash should then be stored into the database.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$hash = $passwordHasher-&gt;HashPassword($password);
+?&gt;
+</code></p>
+
+<p>You can check if a password is valid by using the <code>CheckPassword</code> method. This accepts the password as its first argument and the hash that came from the database as the second.</p>
+
+<p>```php
+&lt;?php
+$passwordMatch = $passwordHasher->CheckPassword($password, $hash);
+if($passwordMatch){</p>
+
+<pre><code>echo 'valid';
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'invalid';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>PHP Password Lib</h3>
+
+<p>PHP Password Lib is one of those libraries that isn&rsquo;t really recommended for production use. As mentioned in their <a href="https://github.com/ircmaxell/PHP-PasswordLib">Github page</a> itself, it&rsquo;s currently in beta and should be used at your own risk.</p>
+
+<p>In order to install PHP Password Lib, you first have to add a <code>minimum-stability</code> option and set it to <code>dev</code>. Also set <code>prefer-stable</code> to <code>true</code> so that composer will default to installing the stable versions of the other libraries that you&rsquo;re installing via composer.</p>
+
+<p><code>
+"minimum-stability": "dev",
+"prefer-stable": true
+</code></p>
+
+<p>Can&rsquo;t really find the library in <a href="https://packagist.org">Packagist</a> so you need to add the following to your <code>composer.json</code> file directly.</p>
+
+<p><code>
+"PasswordLib/PasswordLib": "*"
+</code></p>
+
+<p>Once that&rsquo;s done, execute <code>composer update</code> to update the dependencies.</p>
+
+<p>To use the library, create a new instance of the <code>PasswordLib</code> class and then use it to call the <code>createPasswordHash</code> method to hash a password.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$lib = new PasswordLib\PasswordLib();
+$hash = $lib-&gt;createPasswordHash($password);
+?&gt;
+</code></p>
+
+<p>Just like the previous libraries it also comes with its own verify function.</p>
+
+<p>```php
+&lt;?php
+$is_valid = $lib->verifyPasswordHash($password, $hash);
+if($is_valid){</p>
+
+<pre><code>echo 'yep';
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'nope';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Aside from the generating and verifying hashes, it also allows you to generate random tokens. A sample use case would be when users request for their password to be reset. That&rsquo;s commonly done by sending an email to the user. That email contains a link with a query parameter on it which has a random string as its value. That string is the token. Which is used for fetching the password reset request that was saved in the database.</p>
+
+<p><code>php
+&lt;?php
+$token = $lib-&gt;getRandomToken(35);
+echo $token; // Mpe/H3oLamOqEV4uxTwu.fuhKpb5p/u4BMu
+?&gt;
+</code></p>
+
+<h3>zxcvbn-php</h3>
+
+<p>zxcvbn-php is a library for estimating password strength.</p>
+
+<p>You can install it by executing the following command.</p>
+
+<p><code>
+composer require bjeavons/zxcvbn-php
+</code></p>
+
+<p>To use the library, make use of the <code>ZxcvbnPhp\Zxcvbn</code> namespace.</p>
+
+<p><code>php
+&lt;?php
+use ZxcvbnPhp\Zxcvbn;
+?&gt;
+</code></p>
+
+<p>You can then determine the password score by calling the <code>passwordStrength</code> method.</p>
+
+<p><code>php
+&lt;?php
+$zxcvbn = new Zxcvbn();
+$password = 'mypassword';
+$strength = $zxcvbn-&gt;passwordStrength($password);
+echo $strength['score'];
+?&gt;
+</code></p>
+
+<p>Based on my testing, it returns 0 if the password is not secure or easy to crack. And return 4 if it is secure. I haven&rsquo;t found any values between those and there&rsquo;s nothing higher than 4 so I assume it can only return a score of either 4 or 0. The result contains other data as well. Things like the entropy, calc_time and crack_time.</p>
+
+<h3>GenPhrase</h3>
+
+<p>Lastly, we&rsquo;re going to take a look at GenPhrase. This library allows us to generate secure passphrases in PHP.</p>
+
+<p>To install GenPhrase, execute the following on your terminal.</p>
+
+<p><code>
+composer require genphrase/genphrase
+</code></p>
+
+<p>One note about the installation though. It&rsquo;s also mentioned in their <a href="https://github.com/timoh6/GenPhrase">official Github project page</a>. It mentioned that GenPhrase should be obtained only via secure connection using Github. This is because Composer is susceptible to man-in-the-middle attacks. If you&rsquo;re just testing, it&rsquo;s fine to install this library via composer. But if you&rsquo;re following this tutorial to implement this library on a production server then think again. You&rsquo;ve been warned.</p>
+
+<p>To use GenPhrase, create a new instance of the <code>Password</code> class under the <code>GenPhrase</code> namespace. Then call the <code>generate</code> method to generate the random passphrase.</p>
+
+<p><code>php
+&lt;?php
+$gen = new GenPhrase\Password();
+echo $gen-&gt;generate(); // Slum treble Boost rack
+?&gt;
+</code></p>
+
+<p>You can also pass the <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory">entropy</a>) as an argument. By default the value is 50. But you can have a value between 26 and 120.</p>
+
+<p><code>php
+&lt;?php
+echo $gen-&gt;generate(60); // soviet!Retain8skinny&amp;spoil
+?&gt;
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to secure passwords in PHP using the <a href="https://github.com/ircmaxell/password_compat">Password Compat</a>, <a href="https://github.com/hautelook/phpass">phpass</a>, <a href="https://github.com/ircmaxell/PHP-PasswordLib">PHP Password Lib</a>, <a href="https://github.com/bjeavons/zxcvbn-php">zxcvbn</a> and <a href="https://github.com/timoh6/GenPhrase">GenPhrase</a> libraries.</p>
+]]></content>
+  </entry>
+  
+</feed>

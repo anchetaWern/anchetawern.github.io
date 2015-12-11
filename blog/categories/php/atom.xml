@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-12-05T18:09:55+08:00</updated>
+  <updated>2015-12-11T15:30:32+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,243 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Securing Passwords in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/12/11/securing-passwords-in-php/"/>
+    <updated>2015-12-11T12:35:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/12/11/securing-passwords-in-php</id>
+    <content type="html"><![CDATA[<p>In this tutorial we&rsquo;re going to take a look at some of the libraries that allows us secure passwords in PHP.</p>
+
+<h3>Password Compat</h3>
+
+<p>The first library that we&rsquo;re going to look at is Password Compat. You can install it through <a href="https://getcomposer.org/">Composer</a> by using the following command.</p>
+
+<p><code>
+composer require ircmaxell/password-compat
+</code></p>
+
+<p>Once it&rsquo;s done installing, you can the include the vendor autoload file so you can use its functions.</p>
+
+<p><code>php
+&lt;?php
+require_once 'vendor/autoload.php';
+?&gt;
+</code></p>
+
+<p>The <code>password_hash</code> function is used to hash passwords. It accepts the password that you want to hash as its first argument and the algorithm to be used for password hashing as its second. In the example below, <code>PASSWORD_DEFAULT</code> is used. This allows you to use the most secure algorithm that&rsquo;s currently available to PHP. At the time of writing of this article, the most secure algorithm that&rsquo;s available to PHP is bcrypt. So that&rsquo;s the one that&rsquo;s being used when you specify <code>PASSWORD_DEFAULT</code> as the second argument.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$hash = password_hash($password, PASSWORD_DEFAULT);
+?&gt;
+</code></p>
+
+<p>There&rsquo;s also an optional third argument which allows you to change the CPU <code>cost</code> of hashing the password. By default the <code>cost</code> is 10. So if you have a less powerful server you can change it to something lower. The <code>cost</code> can have a value between 4 and 31.</p>
+
+<p><code>php
+&lt;?php
+$hash = password_hash($password, PASSWORD_DEFAULT, array('cost' =&gt; 7));
+?&gt;
+</code></p>
+
+<p>You can then store the hash in your database.</p>
+
+<p>To validate if a password matches the hash stored in the database, use the <code>password_verify</code> method. This accepts the password as the first argument and the hash as the second. So in your application you might have a query to select the user based on its email or username and then you use the hash that was returned for the second argument.</p>
+
+<p>```php
+&lt;?php
+if(password_verify($password, $hash)){</p>
+
+<pre><code>echo 'valid';   
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'invalid';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>PHPAss</h3>
+
+<p>PHPAss is one of the older password hashing libraries that are available for PHP. Nevertheless it doesn&rsquo;t make it less secure than any of the password securing methods in this article. It uses the blowfish algorithm to hash passwords.</p>
+
+<p>Execute the following to install PHPAss.</p>
+
+<p><code>
+composer require hautelook/phpass
+</code></p>
+
+<p>After including the vendor autoload file, set your current file to use the <code>PasswordHash</code> class in the <code>Hautelook</code> namespace.</p>
+
+<p><code>php
+&lt;?php
+use Hautelook\Phpass\PasswordHash;
+?&gt;
+</code></p>
+
+<p>Create a new password hasher instance. This accepts 2 required arguments. First is the base-2 logarithm of the iteration count used for password stretching. The second a boolean value for setting if the password will use portable hashes. The values that I&rsquo;ve set below are the default one&rsquo;s. Those will do for most use cases.</p>
+
+<p><code>php
+&lt;?php
+$passwordHasher = new PasswordHash(8, false);
+?&gt;
+</code></p>
+
+<p>You can then call the <code>HashPassword</code> method to actually hash the password. This hash should then be stored into the database.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$hash = $passwordHasher-&gt;HashPassword($password);
+?&gt;
+</code></p>
+
+<p>You can check if a password is valid by using the <code>CheckPassword</code> method. This accepts the password as its first argument and the hash that came from the database as the second.</p>
+
+<p>```php
+&lt;?php
+$passwordMatch = $passwordHasher->CheckPassword($password, $hash);
+if($passwordMatch){</p>
+
+<pre><code>echo 'valid';
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'invalid';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>PHP Password Lib</h3>
+
+<p>PHP Password Lib is one of those libraries that isn&rsquo;t really recommended for production use. As mentioned in their <a href="https://github.com/ircmaxell/PHP-PasswordLib">Github page</a> itself, it&rsquo;s currently in beta and should be used at your own risk.</p>
+
+<p>In order to install PHP Password Lib, you first have to add a <code>minimum-stability</code> option and set it to <code>dev</code>. Also set <code>prefer-stable</code> to <code>true</code> so that composer will default to installing the stable versions of the other libraries that you&rsquo;re installing via composer.</p>
+
+<p><code>
+"minimum-stability": "dev",
+"prefer-stable": true
+</code></p>
+
+<p>Can&rsquo;t really find the library in <a href="https://packagist.org">Packagist</a> so you need to add the following to your <code>composer.json</code> file directly.</p>
+
+<p><code>
+"PasswordLib/PasswordLib": "*"
+</code></p>
+
+<p>Once that&rsquo;s done, execute <code>composer update</code> to update the dependencies.</p>
+
+<p>To use the library, create a new instance of the <code>PasswordLib</code> class and then use it to call the <code>createPasswordHash</code> method to hash a password.</p>
+
+<p><code>php
+&lt;?php
+$password = 'mypassword';
+$lib = new PasswordLib\PasswordLib();
+$hash = $lib-&gt;createPasswordHash($password);
+?&gt;
+</code></p>
+
+<p>Just like the previous libraries it also comes with its own verify function.</p>
+
+<p>```php
+&lt;?php
+$is_valid = $lib->verifyPasswordHash($password, $hash);
+if($is_valid){</p>
+
+<pre><code>echo 'yep';
+</code></pre>
+
+<p>}else{</p>
+
+<pre><code>echo 'nope';
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<p>Aside from the generating and verifying hashes, it also allows you to generate random tokens. A sample use case would be when users request for their password to be reset. That&rsquo;s commonly done by sending an email to the user. That email contains a link with a query parameter on it which has a random string as its value. That string is the token. Which is used for fetching the password reset request that was saved in the database.</p>
+
+<p><code>php
+&lt;?php
+$token = $lib-&gt;getRandomToken(35);
+echo $token; // Mpe/H3oLamOqEV4uxTwu.fuhKpb5p/u4BMu
+?&gt;
+</code></p>
+
+<h3>zxcvbn-php</h3>
+
+<p>zxcvbn-php is a library for estimating password strength.</p>
+
+<p>You can install it by executing the following command.</p>
+
+<p><code>
+composer require bjeavons/zxcvbn-php
+</code></p>
+
+<p>To use the library, make use of the <code>ZxcvbnPhp\Zxcvbn</code> namespace.</p>
+
+<p><code>php
+&lt;?php
+use ZxcvbnPhp\Zxcvbn;
+?&gt;
+</code></p>
+
+<p>You can then determine the password score by calling the <code>passwordStrength</code> method.</p>
+
+<p><code>php
+&lt;?php
+$zxcvbn = new Zxcvbn();
+$password = 'mypassword';
+$strength = $zxcvbn-&gt;passwordStrength($password);
+echo $strength['score'];
+?&gt;
+</code></p>
+
+<p>Based on my testing, it returns 0 if the password is not secure or easy to crack. And return 4 if it is secure. I haven&rsquo;t found any values between those and there&rsquo;s nothing higher than 4 so I assume it can only return a score of either 4 or 0. The result contains other data as well. Things like the entropy, calc_time and crack_time.</p>
+
+<h3>GenPhrase</h3>
+
+<p>Lastly, we&rsquo;re going to take a look at GenPhrase. This library allows us to generate secure passphrases in PHP.</p>
+
+<p>To install GenPhrase, execute the following on your terminal.</p>
+
+<p><code>
+composer require genphrase/genphrase
+</code></p>
+
+<p>One note about the installation though. It&rsquo;s also mentioned in their <a href="https://github.com/timoh6/GenPhrase">official Github project page</a>. It mentioned that GenPhrase should be obtained only via secure connection using Github. This is because Composer is susceptible to man-in-the-middle attacks. If you&rsquo;re just testing, it&rsquo;s fine to install this library via composer. But if you&rsquo;re following this tutorial to implement this library on a production server then think again. You&rsquo;ve been warned.</p>
+
+<p>To use GenPhrase, create a new instance of the <code>Password</code> class under the <code>GenPhrase</code> namespace. Then call the <code>generate</code> method to generate the random passphrase.</p>
+
+<p><code>php
+&lt;?php
+$gen = new GenPhrase\Password();
+echo $gen-&gt;generate(); // Slum treble Boost rack
+?&gt;
+</code></p>
+
+<p>You can also pass the <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory">entropy</a>) as an argument. By default the value is 50. But you can have a value between 26 and 120.</p>
+
+<p><code>php
+&lt;?php
+echo $gen-&gt;generate(60); // soviet!Retain8skinny&amp;spoil
+?&gt;
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to secure passwords in PHP using the <a href="https://github.com/ircmaxell/password_compat">Password Compat</a>, <a href="https://github.com/hautelook/phpass">phpass</a>, <a href="https://github.com/ircmaxell/PHP-PasswordLib">PHP Password Lib</a>, <a href="https://github.com/bjeavons/zxcvbn-php">zxcvbn</a> and <a href="https://github.com/timoh6/GenPhrase">GenPhrase</a> libraries.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How to Get the Logo of Any Company]]></title>
@@ -299,7 +536,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 &lt;?php
 $name = &lsquo;yoh asakura&rsquo;;
 $age = 10;
-$email = &lsquo;<a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#121;&#x6f;&#104;&#x2d;&#97;&#115;&#x61;&#x6b;&#117;&#114;&#97;&#64;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#109;">&#121;&#x6f;&#104;&#45;&#x61;&#115;&#97;&#107;&#x75;&#x72;&#97;&#64;&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#99;&#x6f;&#109;</a>&rsquo;;</p>
+$email = &lsquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#x79;&#x6f;&#x68;&#x2d;&#97;&#115;&#x61;&#107;&#117;&#114;&#97;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#121;&#x6f;&#104;&#x2d;&#97;&#x73;&#x61;&#107;&#117;&#x72;&#x61;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;</a>&rsquo;;</p>
 
 <p>$db->query(&ldquo;INSERT INTO users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo;&rdquo;);
 ?>
@@ -314,7 +551,7 @@ $email = &lsquo;<a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#121;&#x6f;&#
 $id = 1;
 $name = &lsquo;ren tao&rsquo;;
 $age = 10;
-$email = &lsquo;<a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;&#58;&#114;&#101;&#110;&#45;&#x74;&#97;&#111;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;">&#x72;&#x65;&#x6e;&#x2d;&#x74;&#97;&#x6f;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#111;&#109;</a>&rsquo;;</p>
+$email = &lsquo;<a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x72;&#101;&#110;&#x2d;&#x74;&#97;&#111;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#x6f;&#109;">&#x72;&#x65;&#x6e;&#x2d;&#116;&#x61;&#x6f;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;</a>&rsquo;;</p>
 
 <p>$db->query(&ldquo;UPDATE users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo; WHERE id = &lsquo;$id&rsquo;&rdquo;);
 ?>
@@ -531,220 +768,6 @@ d array_filter
 <p><img src="/images/posts/phpsh/db.png" alt="db" /></p>
 
 <p>That&rsquo;s it for this quick-tip. I hope I&rsquo;ve encouraged you to use phpsh on your projects.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Database Migrations in PHP with Phinx]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx/"/>
-    <updated>2015-09-20T17:29:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/09/20/database-migrations-in-php-with-phinx</id>
-    <content type="html"><![CDATA[<p>Gone are the days where you use the export functionality of your database management tool and share the SQL file to your team mates. Most PHP frameworks today already comes with a database migration tool which you can use to construct and make changes to your database and easily share them through your version control system of choice. In this tutorial I&rsquo;ll be walking you through <a href="https://phinx.org/">Phinx</a>, a database migration tool for PHP.</p>
-
-<p>If you don&rsquo;t know what a database migration is, it&rsquo;s basically a way to version your database. Pretty much like what you do with version control systems like Git, SVN or Mercurial. It allows you to make changes to your database and easily rollback any of those changes later on if you make a mistake or if there are some changes that needs to be implemented. You can then share the changes you&rsquo;ve made to your team by committing it to your version control system and pushing it to the main repository of your project. Your team mates can then pull those changes into their own copy and run the migrations so that they have the same state of the database as you do.</p>
-
-<h3>Installation</h3>
-
-<p>You can install Phinx through Composer by executing the following commands on your terminal. If you have an existing project, you can navigate to your project directory and execute it from there.</p>
-
-<p><code>
-composer require robmorgan/phinx
-composer install --no-dev
-</code></p>
-
-<p>Next create a <code>migrations</code> folder. This is where the database migrations are going to be stored.</p>
-
-<p>Finally, execute the following command to initialize Phinx.</p>
-
-<p><code>
-php vendor/bin/phinx init
-</code></p>
-
-<h3>Configuration</h3>
-
-<p>When Phinx was initialized, you might have noticed that it created a <code>phinx.yml</code> file on the root of your project. This file is the Phinx configuration. This is where you can modify the database used by Phinx for production, development and testing environments. By default Phinx uses the development environment so go ahead and modify the details for that.</p>
-
-<p>```
-paths:</p>
-
-<pre><code>migrations: %%PHINX_CONFIG_DIR%%/migrations
-</code></pre>
-
-<p>environments:</p>
-
-<pre><code>default_migration_table: phinxlog
-default_database: development
-production:
-    adapter: mysql
-    host: localhost
-    name: production_db
-    user: root
-    pass: ''
-    port: 3306
-    charset: utf8
-
-development:
-    adapter: mysql
-    host: localhost
-    name: development_db
-    user: root
-    pass: ''
-    port: 3306
-    charset: utf8
-
-testing:
-    adapter: mysql
-    host: localhost
-    name: testing_db
-    user: root
-    pass: ''
-    port: 3306
-    charset: utf8
-</code></pre>
-
-<p>```</p>
-
-<h3>Usage</h3>
-
-<p>Using Phinx mainly composed of the following workflow:</p>
-
-<ol>
-<li>Create a migration</li>
-<li>Modify the migration class</li>
-<li>Run the migration</li>
-<li>If you need to make a change to a previous migration, roll it back, make the change to the migration class and run the migration again.</li>
-</ol>
-
-
-<h4>Creating Migrations</h4>
-
-<p>To create a new migration, you use the Phinx shell script. Below is a migration for creating a users table.</p>
-
-<p><code>
-php vendor/bin/phinx create CreateUsersTable
-</code></p>
-
-<p>This creates a new file in the <code>migrations</code> directory. For me it created a file named <code>20150727004941_create_users_table.php</code>. The filename is made up of the timestamp and the machine-friendly version of the name of the migration that you provided.</p>
-
-<p>It&rsquo;s best practice that you name your migrations based on what they do, so that you can easily look for them if you need to modify something. Each migration should only be doing one specific task so that you can easily roll them back without having to worry about side-effects. Creating a users table should add the fields that are necessary to that table. But if you&rsquo;re modifying a specific table, in most cases, you should only modify one field at a time. For example, you need to modify the data type from <code>INT</code> to <code>VARCHAR</code>. Only modify one field. But if it makes sense to change two or more fields in a single migration, then do so. For example, if you need to modify the length of the <code>username</code> and <code>password</code> fields so they can accomodate more data.</p>
-
-<p>Going back to the migration file. Open it up if you haven&rsquo;t yet. Here&rsquo;s how it looks like by default.</p>
-
-<p>```php
-&lt;?php</p>
-
-<p>use Phinx\Migration\AbstractMigration;</p>
-
-<p>class CreateUsersTable extends AbstractMigration
-{</p>
-
-<pre><code>/**
- * Change Method.
- *
- * Write your reversible migrations using this method.
- *
- * More information on writing migrations is available here:
- * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
- */
-public function change()
-{
-
-}
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>Phinx already creates a skeleton class for you s you only need to modify what&rsquo;s in the <code>change</code> function. This is where you need to add the code for modifying your database. In this case the change is to create a <code>users</code> table. Add the following inside the <code>change</code> function.</p>
-
-<p>```php
-&lt;?php
-  $table = $this->table(&lsquo;users&rsquo;);
-  $table->addColumn(&lsquo;username&rsquo;, &lsquo;string&rsquo;)</p>
-
-<pre><code>  -&gt;addColumn('email', 'string')
-  -&gt;addColumn('password', 'string')
-  -&gt;create();
-</code></pre>
-
-<p>?>
-```</p>
-
-<p>The table is declared using the <code>table</code> function. This accepts the name of the table as its argument. The fields are then added by calling the <code>addColumn</code> method in the table. This accepts 2 required arguments: the name of the field and the data type. Finally, the <code>create</code> function is called to actually create the table. Once that&rsquo;s done, save the file.</p>
-
-<p>Let&rsquo;s pretend we forgot to add the <code>photo</code> field, so create another migration to add that.</p>
-
-<p><code>
-php vendor/bin/phinx migrate AddPhotoFieldToUsersTable
-</code></p>
-
-<p>Add the following inside the <code>change</code> method.</p>
-
-<p>```php</p>
-
-<pre><code>$table = $this-&gt;table('users');
-$table-&gt;addColumn('photo', 'string', array('after' =&gt; 'username'))
-        -&gt;update();
-</code></pre>
-
-<p>```</p>
-
-<p>Nothing new here, the only thing that&rsquo;s changed is the method to be called to actually execute the change that you need to make. In this case instead of <code>create</code>, the <code>update</code> method is used. This is how Phinx will know that you are trying to update the <code>users</code> table by adding the <code>photo</code> field.</p>
-
-<h4>Running Migrations</h4>
-
-<p>You can run all the migrations that haven&rsquo;t been run yet by using the <code>migrate</code> command.</p>
-
-<p><code>
-php vendor/bin/phinx migrate
-</code></p>
-
-<p>It would output something similar to the following when the migration is run.</p>
-
-<p>```
-warning no environment specified, defaulting to: development
-using adapter mysql
-using database tester</p>
-
-<p> == 20150727004941 CreateUsersTable: migrating
- == 20150727004941 CreateUsersTable: migrated 0.3325s</p>
-
-<p> == 20150727013547 AddPhotoFieldToUsersTable: migrating
- == 20150727013547 AddPhotoFieldToUsersTable: migrated 0.5018s</p>
-
-<p>All Done. Took 0.6773s
-```</p>
-
-<p>You can now check if the table was actually created by opening your database management tool of choice. Also notice that there is a <code>phinxlog</code> table in your database. This is used by Phinx to keep track of which specific migrations were run and the start and end time for each. The migration is determined by its version, which is basically the first part of the file name for a specific migration file. On my testing, the version is <code>20150727004941</code>.</p>
-
-<h4>Rolling Back Changes</h4>
-
-<p>To rollback changes you can use the <code>rollback</code> command which does exactly the opposite of the <code>migrate</code> command. All it does is rollback everything that has changed on the last migrate.</p>
-
-<p><code>
-php vendor/bin/phinx rollback
-</code></p>
-
-<p>The command above outputs something similar to the following:</p>
-
-<p>```
-warning no environment specified, defaulting to: development
-using adapter mysql
-using database tester</p>
-
-<p> == 20150727013547 AddPhotoFieldToUsersTable: reverting
- == 20150727013547 AddPhotoFieldToUsersTable: reverted 0.4672s</p>
-
-<p> == 20150727004941 CreateUsersTable: reverting
- == 20150727004941 CreateUsersTable: reverted 0.1503s</p>
-
-<p>All Done. Took 0.6175s
-```</p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to create database migrations with Phinx. Be sure to check out the <a href="http://docs.phinx.org/en/latest/">official documentation</a> if you want to learn more.</p>
 ]]></content>
   </entry>
   
