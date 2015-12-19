@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-12-11T15:30:32+08:00</updated>
+  <updated>2015-12-19T08:00:49+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,260 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Information About Any Company with Clearbit's Company API]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/"/>
+    <updated>2015-12-19T13:41:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
+
+<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
+
+<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
+
+<p><code>
+composer require guzzlehttp/guzzle:~6.0
+</code></p>
+
+<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>$client = new GuzzleHttp\Client(array(&lsquo;base_uri&rsquo; => &lsquo;<a href="https://company.clearbit.com/">https://company.clearbit.com/</a>&rsquo;));
+?>
+```</p>
+
+<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
+
+<p>```php
+&lt;?php
+$response = $client->get(&lsquo;v1/companies/domain/google.com&rsquo;, array(</p>
+
+<pre><code>'auth' =&gt; array('YOUR-CLEARBIT-API-KEY', '')
+</code></pre>
+
+<p>));
+?>
+```</p>
+
+<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
+
+<p>```php
+&lt;?php
+$data = json_decode($response->getBody(), true);
+?></p>
+
+<pre>
+<?php print_r($data); ?>
+</pre>
+
+
+<p>```</p>
+
+<p>The output will look something like the following.</p>
+
+<p>```</p>
+
+<pre><code>Array
+</code></pre>
+
+<p>(</p>
+
+<pre><code>[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10
+[name] =&gt; Google
+[legalName] =&gt; Google Inc
+[domain] =&gt; google.com
+[domainAliases] =&gt; Array
+    (
+        [0] =&gt; covet.com
+        [1] =&gt; appspotchat.com
+        [2] =&gt; ggh-uae.com
+        [3] =&gt; remail.com
+        [4] =&gt; orkut.com
+        [5] =&gt; goolge.com
+        [6] =&gt; picasa.com
+        [7] =&gt; blogspot.ru
+        [8] =&gt; sparkbuy.com
+        [9] =&gt; pushlife.com
+        [10] =&gt; greenparrotpictures.com
+        [11] =&gt; phonetic-arts.com
+        [12] =&gt; omnisio.com
+        [13] =&gt; googlecloud.com
+        [14] =&gt; weardrobe.com
+        [15] =&gt; ojos-inc.com
+        [16] =&gt; akwan.com.br
+        [17] =&gt; appliedsemantics.com
+        [18] =&gt; gemail.com.br
+        [19] =&gt; wosix.com
+        [20] =&gt; firstinwireless.com
+        [21] =&gt; cloudmarket.me
+        [22] =&gt; riya.com
+        [23] =&gt; teronamanagement.com
+        [24] =&gt; sxz.co
+        [25] =&gt; womenfitnessinsider.com
+        [26] =&gt; webtocracy.org
+        [27] =&gt; webtocracy.com
+        [28] =&gt; webtocracy.net
+        [29] =&gt; superapple.org
+        [30] =&gt; storktechnology.com
+        [31] =&gt; sourful.com
+        [32] =&gt; snapchatdeals.com
+        [33] =&gt; quarterthree.com
+        [34] =&gt; puwak.com
+        [35] =&gt; nudevilla.com
+        [36] =&gt; nemzis.com
+        [37] =&gt; ryanstull.com
+        [38] =&gt; mckayfamily.org
+        [39] =&gt; marksearle.net
+        [40] =&gt; opentolink.com
+        [41] =&gt; lewispi.com
+        [42] =&gt; levkova.com
+        [43] =&gt; katenka.net
+        [44] =&gt; imize.net
+        [45] =&gt; google.us
+        [46] =&gt; com.google
+        [47] =&gt; gogle.com
+        [48] =&gt; oingo.com
+        [49] =&gt; googlesyndication.com
+        [50] =&gt; ggoogle.com
+        [51] =&gt; google.io
+        [52] =&gt; blogspot.ae
+        [53] =&gt; gogole.com
+        [54] =&gt; hijab.pw
+        [55] =&gt; industrial-perception.com
+        [56] =&gt; googlr.com
+        [57] =&gt; googleadservices.com
+        [58] =&gt; talkbin.com
+        [59] =&gt; picnik.com
+        [60] =&gt; postrank.com
+        [61] =&gt; appjet.com
+        [62] =&gt; google.co
+        [63] =&gt; zabrinalee.com
+        [64] =&gt; blu-ray.us
+        [65] =&gt; picasa.net
+        [66] =&gt; googleproductforums.com
+        [67] =&gt; googlelabs.com
+        [68] =&gt; googlee.com
+        [69] =&gt; gooogle.com
+        [70] =&gt; diychef.com
+        [71] =&gt; googl.com
+        [72] =&gt; gmail.co
+        [73] =&gt; blogger.ch
+        [74] =&gt; mozingo.me
+        [75] =&gt; orkut.org
+        [76] =&gt; lifescapeinc.com
+        [77] =&gt; firehunt.com
+        [78] =&gt; google.info
+        [79] =&gt; veremey.net
+        [80] =&gt; docverse.com
+    )
+
+[url] =&gt; http://google.com
+[site] =&gt; Array
+    (
+        [url] =&gt; http://google.com
+        [title] =&gt; Google
+        [h1] =&gt; 
+        [metaDescription] =&gt; Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.
+        [metaAuthor] =&gt; 
+    )
+
+[category] =&gt; Array
+    (
+        [sector] =&gt; Consumer Discretionary
+        [industryGroup] =&gt; Media
+        [industry] =&gt; Media
+        [subIndustry] =&gt; Publishing
+    )
+
+[tags] =&gt; Array
+    (
+    )
+
+[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
+[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+[geo] =&gt; Array
+    (
+        [streetNumber] =&gt; 1600
+        [streetName] =&gt; Amphitheatre Parkway
+        [subPremise] =&gt; 
+        [city] =&gt; Mountain View
+        [state] =&gt; California
+        [country] =&gt; United States
+        [postalCode] =&gt; 94043
+        [lat] =&gt; 37.4224206
+        [lng] =&gt; -122.0843021
+    )
+
+[logo] =&gt; https://logo.clearbit.com/google.com
+[facebook] =&gt; Array
+    (
+        [handle] =&gt; google
+        [likes] =&gt; 
+    )
+
+[linkedin] =&gt; Array
+    (
+        [handle] =&gt; company/google
+    )
+
+[twitter] =&gt; Array
+    (
+        [handle] =&gt; google
+        [id] =&gt; 20536157
+        [bio] =&gt; News and updates from Google
+        [followers] =&gt; 11873983
+        [following] =&gt; 448
+        [location] =&gt; Mountain View, CA
+        [site] =&gt; http://t.co/twxHxOtTvy
+        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png
+    )
+
+[angellist] =&gt; Array
+    (
+        [id] =&gt; 32203
+        [handle] =&gt; google
+        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
+        [followers] =&gt; 7097
+        [blogUrl] =&gt; http://googleblog.blogspot.com/
+    )
+
+[crunchbase] =&gt; Array
+    (
+        [handle] =&gt; google
+    )
+
+[emailProvider] =&gt; 
+[type] =&gt; public
+[ticker] =&gt; 
+[phone] =&gt; +1 650-253-0000
+[metrics] =&gt; Array
+    (
+        [alexaUsRank] =&gt; 1
+        [alexaGlobalRank] =&gt; 1
+        [googleRank] =&gt; 9
+        [employees] =&gt; 10000
+        [marketCap] =&gt; 
+        [raised] =&gt; 1700000000
+    )
+
+[tech] =&gt; Array
+    (
+        [0] =&gt; google_analytics
+        [1] =&gt; double_click
+        [2] =&gt; google_adwords
+        [3] =&gt; doubleclick
+        [4] =&gt; google_apps
+    )
+</code></pre>
+
+<p>)
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Securing Passwords in PHP]]></title>
@@ -536,7 +790,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 &lt;?php
 $name = &lsquo;yoh asakura&rsquo;;
 $age = 10;
-$email = &lsquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#x79;&#x6f;&#x68;&#x2d;&#97;&#115;&#x61;&#107;&#117;&#114;&#97;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#121;&#x6f;&#104;&#x2d;&#97;&#x73;&#x61;&#107;&#117;&#x72;&#x61;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;</a>&rsquo;;</p>
+$email = &lsquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x79;&#111;&#x68;&#x2d;&#97;&#x73;&#97;&#x6b;&#117;&#114;&#x61;&#64;&#x67;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#x6d;">&#x79;&#111;&#104;&#45;&#97;&#x73;&#x61;&#107;&#x75;&#x72;&#x61;&#64;&#103;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a>&rsquo;;</p>
 
 <p>$db->query(&ldquo;INSERT INTO users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo;&rdquo;);
 ?>
@@ -551,7 +805,7 @@ $email = &lsquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#x79;&#x6f;&#
 $id = 1;
 $name = &lsquo;ren tao&rsquo;;
 $age = 10;
-$email = &lsquo;<a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x72;&#101;&#110;&#x2d;&#x74;&#97;&#111;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#x6f;&#109;">&#x72;&#x65;&#x6e;&#x2d;&#116;&#x61;&#x6f;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;</a>&rsquo;;</p>
+$email = &lsquo;<a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#114;&#101;&#110;&#45;&#116;&#97;&#111;&#64;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;">&#x72;&#101;&#110;&#45;&#116;&#x61;&#111;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a>&rsquo;;</p>
 
 <p>$db->query(&ldquo;UPDATE users SET name = &lsquo;$name&rsquo;, age = &lsquo;$age&rsquo;, email = &lsquo;$email&rsquo; WHERE id = &lsquo;$id&rsquo;&rdquo;);
 ?>
@@ -685,89 +939,6 @@ $query2->execute(array(&lsquo;:school&rsquo; => $school, &lsquo;:city&rsquo; => 
 <h3>Conclusion</h3>
 
 <p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to use the PDO extension in PHP. Note that it&rsquo;s not only the MySQL database that PDO supports. It also supports other databases such as CUBRID, PostgreSQL, SQLite and many others.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Quick Tip: Introduction to phpsh]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/10/03/quick-tip-introduction-to-phpsh/"/>
-    <updated>2015-10-03T11:12:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/10/03/quick-tip-introduction-to-phpsh</id>
-    <content type="html"><![CDATA[<p>In this quick-tip I&rsquo;ll introduce you to a tool called <a href="http://www.phpsh.org/">phpsh</a>. This project has been created for quite some time now. It was created at Facebook but is no longer actively being developed. But this shouldn&rsquo;t stop you from using it. It&rsquo;s a really important tool to have especially when you want to quickly test a PHP script. PHPsh is an interactive shell for PHP. It&rsquo;s features include the following:</p>
-
-<ul>
-<li>readline history</li>
-<li>tab completion</li>
-<li>quick access to documentation</li>
-</ul>
-
-
-<p>You can download it directly from <a href="http://github.com/facebook/phpsh/zipball/master">this link</a>.</p>
-
-<p>Once you&rsquo;re done downloading phpsh, extract the zip file and navigate to the extracted folder. Then execute the following commands to install it in your system.</p>
-
-<p><code>
-python setup.py build
-sudo python setup.py install
-</code></p>
-
-<p>Once that&rsquo;s done, you can now open any terminal window and execute <code>phpsh</code> to start using it.</p>
-
-<p>To get documentation regarding a specific function, use the <code>d</code> command followed by the name of the function you want to look up. Here are a few examples.</p>
-
-<p><code>
-d echo
-d array_push
-d array_filter
-</code></p>
-
-<p>It will then output the documentation.</p>
-
-<p>```</p>
-
-<h1>echo</h1>
-
-<p>(PHP 4, PHP 5)</p>
-
-<p>echo &mdash; Output one or more strings</p>
-
-<h3>Description</h3>
-
-<p>void echo ( string $arg1 [, string $&hellip; ] )</p>
-
-<p>Outputs all parameters.</p>
-
-<p>echo() is not actually a function (it is a language construct), so you are not required to use parentheses with it. echo() (unlike some other language constructs) does not behave like a function, so it cannot always be used in the context of a function. Additionally, if you want to pass more than one parameter to echo(), the parameters must not be enclosed within parentheses.</p>
-
-<p>echo() also has a shortcut syntax, where you can immediately follow the opening tag with an equals sign. This short syntax only works with the <a href="#ini.short-open-tag">short_open_tag</a> configuration setting enabled.</p>
-
-<p><code>I have &lt;?=$foo?&gt; foo.</code></p>
-
-<h3>Parameters</h3>
-
-<p>arg1</p>
-
-<p>The parameter to output.</p>
-
-<p>&hellip;</p>
-
-<h3>Return Values</h3>
-
-<p>No value is returned.</p>
-
-<h3></h3>
-
-<p>```</p>
-
-<p>Aside from directly accessing the docs, you can also write and execute any PHP code that you wish to test. Here&rsquo;s a screenshot of me declaring an array and then looping through it.</p>
-
-<p><img src="/images/posts/phpsh/php-sh.png" alt="phpsh" /></p>
-
-<p>You can also connect to a database and perform operations on it.</p>
-
-<p><img src="/images/posts/phpsh/db.png" alt="db" /></p>
-
-<p>That&rsquo;s it for this quick-tip. I hope I&rsquo;ve encouraged you to use phpsh on your projects.</p>
 ]]></content>
   </entry>
   

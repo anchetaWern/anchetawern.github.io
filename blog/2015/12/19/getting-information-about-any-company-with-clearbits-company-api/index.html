@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Information About Any Company with Clearbit's Company API - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API. Start by signing up for an &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wern-ancheta.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Information About Any Company With Clearbit's Company API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-19T13:41:00+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
+
+<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
+
+<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://company.clearbit.com/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;v1/companies/domain/google.com&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will look something like the following.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10</span>
+</span><span class='line'><span class="x">[name] =&gt; Google</span>
+</span><span class='line'><span class="x">[legalName] =&gt; Google Inc</span>
+</span><span class='line'><span class="x">[domain] =&gt; google.com</span>
+</span><span class='line'><span class="x">[domainAliases] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; covet.com</span>
+</span><span class='line'><span class="x">        [1] =&gt; appspotchat.com</span>
+</span><span class='line'><span class="x">        [2] =&gt; ggh-uae.com</span>
+</span><span class='line'><span class="x">        [3] =&gt; remail.com</span>
+</span><span class='line'><span class="x">        [4] =&gt; orkut.com</span>
+</span><span class='line'><span class="x">        [5] =&gt; goolge.com</span>
+</span><span class='line'><span class="x">        [6] =&gt; picasa.com</span>
+</span><span class='line'><span class="x">        [7] =&gt; blogspot.ru</span>
+</span><span class='line'><span class="x">        [8] =&gt; sparkbuy.com</span>
+</span><span class='line'><span class="x">        [9] =&gt; pushlife.com</span>
+</span><span class='line'><span class="x">        [10] =&gt; greenparrotpictures.com</span>
+</span><span class='line'><span class="x">        [11] =&gt; phonetic-arts.com</span>
+</span><span class='line'><span class="x">        [12] =&gt; omnisio.com</span>
+</span><span class='line'><span class="x">        [13] =&gt; googlecloud.com</span>
+</span><span class='line'><span class="x">        [14] =&gt; weardrobe.com</span>
+</span><span class='line'><span class="x">        [15] =&gt; ojos-inc.com</span>
+</span><span class='line'><span class="x">        [16] =&gt; akwan.com.br</span>
+</span><span class='line'><span class="x">        [17] =&gt; appliedsemantics.com</span>
+</span><span class='line'><span class="x">        [18] =&gt; gemail.com.br</span>
+</span><span class='line'><span class="x">        [19] =&gt; wosix.com</span>
+</span><span class='line'><span class="x">        [20] =&gt; firstinwireless.com</span>
+</span><span class='line'><span class="x">        [21] =&gt; cloudmarket.me</span>
+</span><span class='line'><span class="x">        [22] =&gt; riya.com</span>
+</span><span class='line'><span class="x">        [23] =&gt; teronamanagement.com</span>
+</span><span class='line'><span class="x">        [24] =&gt; sxz.co</span>
+</span><span class='line'><span class="x">        [25] =&gt; womenfitnessinsider.com</span>
+</span><span class='line'><span class="x">        [26] =&gt; webtocracy.org</span>
+</span><span class='line'><span class="x">        [27] =&gt; webtocracy.com</span>
+</span><span class='line'><span class="x">        [28] =&gt; webtocracy.net</span>
+</span><span class='line'><span class="x">        [29] =&gt; superapple.org</span>
+</span><span class='line'><span class="x">        [30] =&gt; storktechnology.com</span>
+</span><span class='line'><span class="x">        [31] =&gt; sourful.com</span>
+</span><span class='line'><span class="x">        [32] =&gt; snapchatdeals.com</span>
+</span><span class='line'><span class="x">        [33] =&gt; quarterthree.com</span>
+</span><span class='line'><span class="x">        [34] =&gt; puwak.com</span>
+</span><span class='line'><span class="x">        [35] =&gt; nudevilla.com</span>
+</span><span class='line'><span class="x">        [36] =&gt; nemzis.com</span>
+</span><span class='line'><span class="x">        [37] =&gt; ryanstull.com</span>
+</span><span class='line'><span class="x">        [38] =&gt; mckayfamily.org</span>
+</span><span class='line'><span class="x">        [39] =&gt; marksearle.net</span>
+</span><span class='line'><span class="x">        [40] =&gt; opentolink.com</span>
+</span><span class='line'><span class="x">        [41] =&gt; lewispi.com</span>
+</span><span class='line'><span class="x">        [42] =&gt; levkova.com</span>
+</span><span class='line'><span class="x">        [43] =&gt; katenka.net</span>
+</span><span class='line'><span class="x">        [44] =&gt; imize.net</span>
+</span><span class='line'><span class="x">        [45] =&gt; google.us</span>
+</span><span class='line'><span class="x">        [46] =&gt; com.google</span>
+</span><span class='line'><span class="x">        [47] =&gt; gogle.com</span>
+</span><span class='line'><span class="x">        [48] =&gt; oingo.com</span>
+</span><span class='line'><span class="x">        [49] =&gt; googlesyndication.com</span>
+</span><span class='line'><span class="x">        [50] =&gt; ggoogle.com</span>
+</span><span class='line'><span class="x">        [51] =&gt; google.io</span>
+</span><span class='line'><span class="x">        [52] =&gt; blogspot.ae</span>
+</span><span class='line'><span class="x">        [53] =&gt; gogole.com</span>
+</span><span class='line'><span class="x">        [54] =&gt; hijab.pw</span>
+</span><span class='line'><span class="x">        [55] =&gt; industrial-perception.com</span>
+</span><span class='line'><span class="x">        [56] =&gt; googlr.com</span>
+</span><span class='line'><span class="x">        [57] =&gt; googleadservices.com</span>
+</span><span class='line'><span class="x">        [58] =&gt; talkbin.com</span>
+</span><span class='line'><span class="x">        [59] =&gt; picnik.com</span>
+</span><span class='line'><span class="x">        [60] =&gt; postrank.com</span>
+</span><span class='line'><span class="x">        [61] =&gt; appjet.com</span>
+</span><span class='line'><span class="x">        [62] =&gt; google.co</span>
+</span><span class='line'><span class="x">        [63] =&gt; zabrinalee.com</span>
+</span><span class='line'><span class="x">        [64] =&gt; blu-ray.us</span>
+</span><span class='line'><span class="x">        [65] =&gt; picasa.net</span>
+</span><span class='line'><span class="x">        [66] =&gt; googleproductforums.com</span>
+</span><span class='line'><span class="x">        [67] =&gt; googlelabs.com</span>
+</span><span class='line'><span class="x">        [68] =&gt; googlee.com</span>
+</span><span class='line'><span class="x">        [69] =&gt; gooogle.com</span>
+</span><span class='line'><span class="x">        [70] =&gt; diychef.com</span>
+</span><span class='line'><span class="x">        [71] =&gt; googl.com</span>
+</span><span class='line'><span class="x">        [72] =&gt; gmail.co</span>
+</span><span class='line'><span class="x">        [73] =&gt; blogger.ch</span>
+</span><span class='line'><span class="x">        [74] =&gt; mozingo.me</span>
+</span><span class='line'><span class="x">        [75] =&gt; orkut.org</span>
+</span><span class='line'><span class="x">        [76] =&gt; lifescapeinc.com</span>
+</span><span class='line'><span class="x">        [77] =&gt; firehunt.com</span>
+</span><span class='line'><span class="x">        [78] =&gt; google.info</span>
+</span><span class='line'><span class="x">        [79] =&gt; veremey.net</span>
+</span><span class='line'><span class="x">        [80] =&gt; docverse.com</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">[site] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">        [title] =&gt; Google</span>
+</span><span class='line'><span class="x">        [h1] =&gt; </span>
+</span><span class='line'><span class="x">        [metaDescription] =&gt; Search the world&#39;s information, including webpages, images, videos and more. Google has many special features to help you find exactly what you&#39;re looking for.</span>
+</span><span class='line'><span class="x">        [metaAuthor] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[category] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [sector] =&gt; Consumer Discretionary</span>
+</span><span class='line'><span class="x">        [industryGroup] =&gt; Media</span>
+</span><span class='line'><span class="x">        [industry] =&gt; Media</span>
+</span><span class='line'><span class="x">        [subIndustry] =&gt; Publishing</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tags] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</span>
+</span><span class='line'><span class="x">[geo] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [streetNumber] =&gt; 1600</span>
+</span><span class='line'><span class="x">        [streetName] =&gt; Amphitheatre Parkway</span>
+</span><span class='line'><span class="x">        [subPremise] =&gt; </span>
+</span><span class='line'><span class="x">        [city] =&gt; Mountain View</span>
+</span><span class='line'><span class="x">        [state] =&gt; California</span>
+</span><span class='line'><span class="x">        [country] =&gt; United States</span>
+</span><span class='line'><span class="x">        [postalCode] =&gt; 94043</span>
+</span><span class='line'><span class="x">        [lat] =&gt; 37.4224206</span>
+</span><span class='line'><span class="x">        [lng] =&gt; -122.0843021</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[logo] =&gt; https://logo.clearbit.com/google.com</span>
+</span><span class='line'><span class="x">[facebook] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [likes] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[linkedin] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; company/google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[twitter] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [id] =&gt; 20536157</span>
+</span><span class='line'><span class="x">        [bio] =&gt; News and updates from Google</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 11873983</span>
+</span><span class='line'><span class="x">        [following] =&gt; 448</span>
+</span><span class='line'><span class="x">        [location] =&gt; Mountain View, CA</span>
+</span><span class='line'><span class="x">        [site] =&gt; http://t.co/twxHxOtTvy</span>
+</span><span class='line'><span class="x">        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[angellist] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [id] =&gt; 32203</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 7097</span>
+</span><span class='line'><span class="x">        [blogUrl] =&gt; http://googleblog.blogspot.com/</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[crunchbase] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[emailProvider] =&gt; </span>
+</span><span class='line'><span class="x">[type] =&gt; public</span>
+</span><span class='line'><span class="x">[ticker] =&gt; </span>
+</span><span class='line'><span class="x">[phone] =&gt; +1 650-253-0000</span>
+</span><span class='line'><span class="x">[metrics] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [alexaUsRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [alexaGlobalRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [googleRank] =&gt; 9</span>
+</span><span class='line'><span class="x">        [employees] =&gt; 10000</span>
+</span><span class='line'><span class="x">        [marketCap] =&gt; </span>
+</span><span class='line'><span class="x">        [raised] =&gt; 1700000000</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tech] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; google_analytics</span>
+</span><span class='line'><span class="x">        [1] =&gt; double_click</span>
+</span><span class='line'><span class="x">        [2] =&gt; google_adwords</span>
+</span><span class='line'><span class="x">        [3] =&gt; doubleclick</span>
+</span><span class='line'><span class="x">        [4] =&gt; google_apps</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-19T13:41:00+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/clearbit/'>clearbit</a>, <a class='category' href='/blog/categories/company-api/'>company-api</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/" data-via="wern_ancheta" data-counturl="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/11/securing-passwords-in-php/" title="Previous Post: Securing Passwords in PHP">&laquo; Securing Passwords in PHP</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company with Clearbit's Company API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/05/tools-of-trade/">Tools of Trade</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/28/how-to-get-the-logo-of-any-company/">How to Get the Logo of Any Company</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/21/introduction-to-pokeapi-json/">Introduction to pokeapi-json</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/';
+        var disqus_url = 'http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial we&rsquo;re going to take a look at some of the libraries that allows us secure passwords in PHP. Password Compat The first library &hellip;">
+  <meta name="description" content="In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API. Start by signing up for an &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,484 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company With Clearbit&#8217;s Company API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-19T13:41:00+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
+
+<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
+
+<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://company.clearbit.com/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;v1/companies/domain/google.com&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will look something like the following.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10</span>
+</span><span class='line'><span class="x">[name] =&gt; Google</span>
+</span><span class='line'><span class="x">[legalName] =&gt; Google Inc</span>
+</span><span class='line'><span class="x">[domain] =&gt; google.com</span>
+</span><span class='line'><span class="x">[domainAliases] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; covet.com</span>
+</span><span class='line'><span class="x">        [1] =&gt; appspotchat.com</span>
+</span><span class='line'><span class="x">        [2] =&gt; ggh-uae.com</span>
+</span><span class='line'><span class="x">        [3] =&gt; remail.com</span>
+</span><span class='line'><span class="x">        [4] =&gt; orkut.com</span>
+</span><span class='line'><span class="x">        [5] =&gt; goolge.com</span>
+</span><span class='line'><span class="x">        [6] =&gt; picasa.com</span>
+</span><span class='line'><span class="x">        [7] =&gt; blogspot.ru</span>
+</span><span class='line'><span class="x">        [8] =&gt; sparkbuy.com</span>
+</span><span class='line'><span class="x">        [9] =&gt; pushlife.com</span>
+</span><span class='line'><span class="x">        [10] =&gt; greenparrotpictures.com</span>
+</span><span class='line'><span class="x">        [11] =&gt; phonetic-arts.com</span>
+</span><span class='line'><span class="x">        [12] =&gt; omnisio.com</span>
+</span><span class='line'><span class="x">        [13] =&gt; googlecloud.com</span>
+</span><span class='line'><span class="x">        [14] =&gt; weardrobe.com</span>
+</span><span class='line'><span class="x">        [15] =&gt; ojos-inc.com</span>
+</span><span class='line'><span class="x">        [16] =&gt; akwan.com.br</span>
+</span><span class='line'><span class="x">        [17] =&gt; appliedsemantics.com</span>
+</span><span class='line'><span class="x">        [18] =&gt; gemail.com.br</span>
+</span><span class='line'><span class="x">        [19] =&gt; wosix.com</span>
+</span><span class='line'><span class="x">        [20] =&gt; firstinwireless.com</span>
+</span><span class='line'><span class="x">        [21] =&gt; cloudmarket.me</span>
+</span><span class='line'><span class="x">        [22] =&gt; riya.com</span>
+</span><span class='line'><span class="x">        [23] =&gt; teronamanagement.com</span>
+</span><span class='line'><span class="x">        [24] =&gt; sxz.co</span>
+</span><span class='line'><span class="x">        [25] =&gt; womenfitnessinsider.com</span>
+</span><span class='line'><span class="x">        [26] =&gt; webtocracy.org</span>
+</span><span class='line'><span class="x">        [27] =&gt; webtocracy.com</span>
+</span><span class='line'><span class="x">        [28] =&gt; webtocracy.net</span>
+</span><span class='line'><span class="x">        [29] =&gt; superapple.org</span>
+</span><span class='line'><span class="x">        [30] =&gt; storktechnology.com</span>
+</span><span class='line'><span class="x">        [31] =&gt; sourful.com</span>
+</span><span class='line'><span class="x">        [32] =&gt; snapchatdeals.com</span>
+</span><span class='line'><span class="x">        [33] =&gt; quarterthree.com</span>
+</span><span class='line'><span class="x">        [34] =&gt; puwak.com</span>
+</span><span class='line'><span class="x">        [35] =&gt; nudevilla.com</span>
+</span><span class='line'><span class="x">        [36] =&gt; nemzis.com</span>
+</span><span class='line'><span class="x">        [37] =&gt; ryanstull.com</span>
+</span><span class='line'><span class="x">        [38] =&gt; mckayfamily.org</span>
+</span><span class='line'><span class="x">        [39] =&gt; marksearle.net</span>
+</span><span class='line'><span class="x">        [40] =&gt; opentolink.com</span>
+</span><span class='line'><span class="x">        [41] =&gt; lewispi.com</span>
+</span><span class='line'><span class="x">        [42] =&gt; levkova.com</span>
+</span><span class='line'><span class="x">        [43] =&gt; katenka.net</span>
+</span><span class='line'><span class="x">        [44] =&gt; imize.net</span>
+</span><span class='line'><span class="x">        [45] =&gt; google.us</span>
+</span><span class='line'><span class="x">        [46] =&gt; com.google</span>
+</span><span class='line'><span class="x">        [47] =&gt; gogle.com</span>
+</span><span class='line'><span class="x">        [48] =&gt; oingo.com</span>
+</span><span class='line'><span class="x">        [49] =&gt; googlesyndication.com</span>
+</span><span class='line'><span class="x">        [50] =&gt; ggoogle.com</span>
+</span><span class='line'><span class="x">        [51] =&gt; google.io</span>
+</span><span class='line'><span class="x">        [52] =&gt; blogspot.ae</span>
+</span><span class='line'><span class="x">        [53] =&gt; gogole.com</span>
+</span><span class='line'><span class="x">        [54] =&gt; hijab.pw</span>
+</span><span class='line'><span class="x">        [55] =&gt; industrial-perception.com</span>
+</span><span class='line'><span class="x">        [56] =&gt; googlr.com</span>
+</span><span class='line'><span class="x">        [57] =&gt; googleadservices.com</span>
+</span><span class='line'><span class="x">        [58] =&gt; talkbin.com</span>
+</span><span class='line'><span class="x">        [59] =&gt; picnik.com</span>
+</span><span class='line'><span class="x">        [60] =&gt; postrank.com</span>
+</span><span class='line'><span class="x">        [61] =&gt; appjet.com</span>
+</span><span class='line'><span class="x">        [62] =&gt; google.co</span>
+</span><span class='line'><span class="x">        [63] =&gt; zabrinalee.com</span>
+</span><span class='line'><span class="x">        [64] =&gt; blu-ray.us</span>
+</span><span class='line'><span class="x">        [65] =&gt; picasa.net</span>
+</span><span class='line'><span class="x">        [66] =&gt; googleproductforums.com</span>
+</span><span class='line'><span class="x">        [67] =&gt; googlelabs.com</span>
+</span><span class='line'><span class="x">        [68] =&gt; googlee.com</span>
+</span><span class='line'><span class="x">        [69] =&gt; gooogle.com</span>
+</span><span class='line'><span class="x">        [70] =&gt; diychef.com</span>
+</span><span class='line'><span class="x">        [71] =&gt; googl.com</span>
+</span><span class='line'><span class="x">        [72] =&gt; gmail.co</span>
+</span><span class='line'><span class="x">        [73] =&gt; blogger.ch</span>
+</span><span class='line'><span class="x">        [74] =&gt; mozingo.me</span>
+</span><span class='line'><span class="x">        [75] =&gt; orkut.org</span>
+</span><span class='line'><span class="x">        [76] =&gt; lifescapeinc.com</span>
+</span><span class='line'><span class="x">        [77] =&gt; firehunt.com</span>
+</span><span class='line'><span class="x">        [78] =&gt; google.info</span>
+</span><span class='line'><span class="x">        [79] =&gt; veremey.net</span>
+</span><span class='line'><span class="x">        [80] =&gt; docverse.com</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">[site] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">        [title] =&gt; Google</span>
+</span><span class='line'><span class="x">        [h1] =&gt; </span>
+</span><span class='line'><span class="x">        [metaDescription] =&gt; Search the world&#39;s information, including webpages, images, videos and more. Google has many special features to help you find exactly what you&#39;re looking for.</span>
+</span><span class='line'><span class="x">        [metaAuthor] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[category] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [sector] =&gt; Consumer Discretionary</span>
+</span><span class='line'><span class="x">        [industryGroup] =&gt; Media</span>
+</span><span class='line'><span class="x">        [industry] =&gt; Media</span>
+</span><span class='line'><span class="x">        [subIndustry] =&gt; Publishing</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tags] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</span>
+</span><span class='line'><span class="x">[geo] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [streetNumber] =&gt; 1600</span>
+</span><span class='line'><span class="x">        [streetName] =&gt; Amphitheatre Parkway</span>
+</span><span class='line'><span class="x">        [subPremise] =&gt; </span>
+</span><span class='line'><span class="x">        [city] =&gt; Mountain View</span>
+</span><span class='line'><span class="x">        [state] =&gt; California</span>
+</span><span class='line'><span class="x">        [country] =&gt; United States</span>
+</span><span class='line'><span class="x">        [postalCode] =&gt; 94043</span>
+</span><span class='line'><span class="x">        [lat] =&gt; 37.4224206</span>
+</span><span class='line'><span class="x">        [lng] =&gt; -122.0843021</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[logo] =&gt; https://logo.clearbit.com/google.com</span>
+</span><span class='line'><span class="x">[facebook] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [likes] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[linkedin] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; company/google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[twitter] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [id] =&gt; 20536157</span>
+</span><span class='line'><span class="x">        [bio] =&gt; News and updates from Google</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 11873983</span>
+</span><span class='line'><span class="x">        [following] =&gt; 448</span>
+</span><span class='line'><span class="x">        [location] =&gt; Mountain View, CA</span>
+</span><span class='line'><span class="x">        [site] =&gt; http://t.co/twxHxOtTvy</span>
+</span><span class='line'><span class="x">        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[angellist] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [id] =&gt; 32203</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 7097</span>
+</span><span class='line'><span class="x">        [blogUrl] =&gt; http://googleblog.blogspot.com/</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[crunchbase] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[emailProvider] =&gt; </span>
+</span><span class='line'><span class="x">[type] =&gt; public</span>
+</span><span class='line'><span class="x">[ticker] =&gt; </span>
+</span><span class='line'><span class="x">[phone] =&gt; +1 650-253-0000</span>
+</span><span class='line'><span class="x">[metrics] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [alexaUsRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [alexaGlobalRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [googleRank] =&gt; 9</span>
+</span><span class='line'><span class="x">        [employees] =&gt; 10000</span>
+</span><span class='line'><span class="x">        [marketCap] =&gt; </span>
+</span><span class='line'><span class="x">        [raised] =&gt; 1700000000</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tech] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; google_analytics</span>
+</span><span class='line'><span class="x">        [1] =&gt; double_click</span>
+</span><span class='line'><span class="x">        [2] =&gt; google_adwords</span>
+</span><span class='line'><span class="x">        [3] =&gt; doubleclick</span>
+</span><span class='line'><span class="x">        [4] =&gt; google_apps</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1354,317 +1832,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/10/using-pdo-in-php/">Using PDO in PHP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-10-10T20:20:00+08:00" pubdate data-updated="true">Oct 10<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/10/10/using-pdo-in-php/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial I&rsquo;m going to walk you through how to use the PDO extension in PHP to connect to a MySQL database.</p>
-
-<h3>Connecting to the Database</h3>
-
-<p>The PDO extension is installed by default on modern versions of PHP so you don&rsquo;t have to worry about not having it on the machine. You should be upgrading to a recent version any way to take advantage of the security patches and other updates.</p>
-
-<p>To connect to the database, you have to supply a data source name (DSN) as the first argument when creating a new instance of the PDO class. And then pass in the username and password of the user you want to login to the database as the second and third argument. You need to wrap the code in a <code>try..catch</code> block because it will return an error if there&rsquo;s a problem connecting to the database. Next, set the error mode to return an exception if there&rsquo;s an error executing a specific database query. And finally, set the emulation of prepared statements to <code>false</code>. This allows you to use the native parametrized query feature of the database instead of emulating it in the PHP side.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$dsn</span> <span class="o">=</span> <span class="s1">&#39;mysql:dbname=DATABASE-NAME;host=DB-HOST&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$username</span> <span class="o">=</span> <span class="s1">&#39;DATABASE-USER&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;USER-PASSWORD&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">try</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="p">,</span> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_EXCEPTION</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_EMULATE_PREPARES</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;could not connect to the database&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Inserting Data</h3>
-
-<p>Open up phpmyadmin or any database management tool that you&rsquo;re using and create a new database. Then execute the following query to create a <code>users</code> table. We will be using this table for executing queries in the database. If you&rsquo;re following along, don&rsquo;t forget to update the data source name to match the name of the database.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">users</span><span class="o">`</span> <span class="p">(</span>
-</span><span class='line'><span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">name</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">age</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">email</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span>
-</span><span class='line'><span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">22</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">latin1</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s created, you can now try inserting a new user row in the <code>users</code> table. Just pass in the typical INSERT query as an argument to the <code>query</code> method using the new PDO instance that you created earlier.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="s1">&#39;yoh asakura&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$age</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="s1">&#39;yoh-asakura@gmail.com&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;INSERT INTO users SET name = &#39;</span><span class="si">$name</span><span class="s2">&#39;, age = &#39;</span><span class="si">$age</span><span class="s2">&#39;, email = &#39;</span><span class="si">$email</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Updating Data</h3>
-
-<p>If you want to update a specific user, you still use the <code>query</code> method. The only difference is the query that you are passing in. This time you have to pass in an <code>UPDATE</code> query to set the new values and then use the <code>WHERE</code> clause to specify which specific row you want to update. In this case it&rsquo;s the first row in the <code>users</code> table.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="s1">&#39;ren tao&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$age</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="s1">&#39;ren-tao@gmail.com&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;UPDATE users SET name = &#39;</span><span class="si">$name</span><span class="s2">&#39;, age = &#39;</span><span class="si">$age</span><span class="s2">&#39;, email = &#39;</span><span class="si">$email</span><span class="s2">&#39; WHERE id = &#39;</span><span class="si">$id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Deleting Data</h3>
-
-<p>If you want to delete a specific row, use the <code>DELETE</code> query and a <code>WHERE</code> clause to specify which rows you want to delete.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;DELETE  FROM users WHERE id = &#39;</span><span class="si">$id</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Selecting Data</h3>
-
-<p>Selecting data still uses the same <code>query</code> method. Only this time you have to pass in a <code>SELECT</code> query. Then you can loop through the results and access the column that you want to output just like you would when accessing an item in an associative array.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT name FROM users&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$results</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you think objects look better, you can use the <code>setAttribute</code> method to modify the default fetch mode.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_DEFAULT_FETCH_MODE</span><span class="p">,</span> <span class="nx">PDO</span><span class="o">::</span><span class="na">FETCH_OBJ</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Prepared Statements</h3>
-
-<p>Prepared statements makes your queries more secure. Why? Because data is treated as data when you use prepared statements. This means that SQL statements such as <code>OR DROP TABLE users</code> wouldn&rsquo;t work if the user inputs an SQL statement instead of the expected data.
-This is implemented in PDO by calling the <code>prepare</code> method and then passing in the query that you wish to execute. But instead of supplying the data directly, you replace it with placeholders. In this case the placeholder is <code>:name</code>.
-You then call the <code>execute</code> method to actually execute the query. This method accepts an associative array containing the placeholder as the key and the actual value that you want to pass in as its value. Finally, you call the <code>FetchAll</code> method to fetch all the results that was returned.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$query</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="s2">&quot;SELECT name FROM users WHERE name LIKE :name&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;:name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Mr.%&#39;</span>
-</span><span class='line'><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$results</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">FetchAll</span><span class="p">();</span>
-</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$results</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$row</span><span class="o">-&gt;</span><span class="na">name</span> <span class="o">.</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For queries that&rsquo;s only expected to return a single row, you can use the <code>fetch</code> method instead.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$query</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="s1">&#39;SELECT name FROM users WHERE id = :id&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;:id&#39;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">();</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Transactions</h3>
-
-<p>Transactions in databases is a sequence of database operations that are treated as a single unit. You can use it to ensure that all the queries that you want to execute are all completed successfully. If one fails, nothing is actually committed to the database.</p>
-
-<p>To test transactions, open up your database management tool of choice and execute the following. This will create the <code>other_details</code> table which stores the other details of a user.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">other_details</span><span class="o">`</span> <span class="p">(</span>
-</span><span class='line'><span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">school</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">city</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span>
-</span><span class='line'><span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">22</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">latin1</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the example below, I&rsquo;m using a library called <a href="https://github.com/fzaninotto/Faker">Faker</a>. You can use it to generate fake data to be inserted into the database. You can install it through composer by executing the following command in your working directory.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="n">composer</span> <span class="n">require</span> <span class="n">fzaninotto</span><span class="o">/</span><span class="n">faker</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done installing, you can include the autoload file so that it&rsquo;s loaded in the current file. You can then create a new instance of it and then use the generator that you want. In the code below I&rsquo;m using the <code>name</code>, <code>numberBetween</code>, <code>email</code>, <code>company</code> and <code>city</code> generators.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$faker</span> <span class="o">=</span> <span class="nx">Faker\Factory</span><span class="o">::</span><span class="na">create</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$faker</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$faker</span><span class="o">-&gt;</span><span class="na">numberBetween</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">35</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$faker</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$school</span> <span class="o">=</span> <span class="nv">$faker</span><span class="o">-&gt;</span><span class="na">company</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$city</span> <span class="o">=</span> <span class="nv">$faker</span><span class="o">-&gt;</span><span class="na">city</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then create a new transaction by calling the <code>beginTransaction</code> method. Any queries that are executed after calling this wouldn&rsquo;t actually commit to the database until you call the <code>commit</code> method. In the example below, I&rsquo;m executing a query to insert a new user into the <code>users</code> table as well as the <code>other_details</code> table. If any of those 2 queries fails, it won&rsquo;t be committed to the database.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">beginTransaction</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$query</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="s2">&quot;INSERT INTO users SET name = :name, age = :age, email = :email&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;:name&#39;</span> <span class="o">=&gt;</span> <span class="nv">$name</span><span class="p">,</span> <span class="s1">&#39;:age&#39;</span> <span class="o">=&gt;</span> <span class="nv">$age</span><span class="p">,</span> <span class="s1">&#39;:email&#39;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$query2</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="s2">&quot;INSERT INTO other_details SET school = :school, course = :city&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$query2</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;:school&#39;</span> <span class="o">=&gt;</span> <span class="nv">$school</span><span class="p">,</span> <span class="s1">&#39;:city&#39;</span> <span class="o">=&gt;</span> <span class="nv">$city</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">commit</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to use the PDO extension in PHP. Note that it&rsquo;s not only the MySQL database that PDO supports. It also supports other databases such as CUBRID, PostgreSQL, SQLite and many others.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1680,6 +1847,10 @@ You then call the <code>execute</code> method to actually execute the query. Thi
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company with Clearbit&#8217;s Company API</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a>
       </li>
     
@@ -1693,10 +1864,6 @@ You then call the <code>execute</code> method to actually execute the query. Thi
     
       <li class="post">
         <a href="/blog/2015/11/21/introduction-to-pokeapi-json/">Introduction to pokeapi-json</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/">Quick Tip: How to Setup Virtual Hosts in Ubuntu</a>
       </li>
     
   </ul>

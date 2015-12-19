@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: company-api | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/company-api/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2015-12-19T08:00:49+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Information About Any Company with Clearbit's Company API]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/"/>
+    <updated>2015-12-19T13:41:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
+
+<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
+
+<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
+
+<p><code>
+composer require guzzlehttp/guzzle:~6.0
+</code></p>
+
+<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>$client = new GuzzleHttp\Client(array(&lsquo;base_uri&rsquo; => &lsquo;<a href="https://company.clearbit.com/">https://company.clearbit.com/</a>&rsquo;));
+?>
+```</p>
+
+<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
+
+<p>```php
+&lt;?php
+$response = $client->get(&lsquo;v1/companies/domain/google.com&rsquo;, array(</p>
+
+<pre><code>'auth' =&gt; array('YOUR-CLEARBIT-API-KEY', '')
+</code></pre>
+
+<p>));
+?>
+```</p>
+
+<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
+
+<p>```php
+&lt;?php
+$data = json_decode($response->getBody(), true);
+?></p>
+
+<pre>
+<?php print_r($data); ?>
+</pre>
+
+
+<p>```</p>
+
+<p>The output will look something like the following.</p>
+
+<p>```</p>
+
+<pre><code>Array
+</code></pre>
+
+<p>(</p>
+
+<pre><code>[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10
+[name] =&gt; Google
+[legalName] =&gt; Google Inc
+[domain] =&gt; google.com
+[domainAliases] =&gt; Array
+    (
+        [0] =&gt; covet.com
+        [1] =&gt; appspotchat.com
+        [2] =&gt; ggh-uae.com
+        [3] =&gt; remail.com
+        [4] =&gt; orkut.com
+        [5] =&gt; goolge.com
+        [6] =&gt; picasa.com
+        [7] =&gt; blogspot.ru
+        [8] =&gt; sparkbuy.com
+        [9] =&gt; pushlife.com
+        [10] =&gt; greenparrotpictures.com
+        [11] =&gt; phonetic-arts.com
+        [12] =&gt; omnisio.com
+        [13] =&gt; googlecloud.com
+        [14] =&gt; weardrobe.com
+        [15] =&gt; ojos-inc.com
+        [16] =&gt; akwan.com.br
+        [17] =&gt; appliedsemantics.com
+        [18] =&gt; gemail.com.br
+        [19] =&gt; wosix.com
+        [20] =&gt; firstinwireless.com
+        [21] =&gt; cloudmarket.me
+        [22] =&gt; riya.com
+        [23] =&gt; teronamanagement.com
+        [24] =&gt; sxz.co
+        [25] =&gt; womenfitnessinsider.com
+        [26] =&gt; webtocracy.org
+        [27] =&gt; webtocracy.com
+        [28] =&gt; webtocracy.net
+        [29] =&gt; superapple.org
+        [30] =&gt; storktechnology.com
+        [31] =&gt; sourful.com
+        [32] =&gt; snapchatdeals.com
+        [33] =&gt; quarterthree.com
+        [34] =&gt; puwak.com
+        [35] =&gt; nudevilla.com
+        [36] =&gt; nemzis.com
+        [37] =&gt; ryanstull.com
+        [38] =&gt; mckayfamily.org
+        [39] =&gt; marksearle.net
+        [40] =&gt; opentolink.com
+        [41] =&gt; lewispi.com
+        [42] =&gt; levkova.com
+        [43] =&gt; katenka.net
+        [44] =&gt; imize.net
+        [45] =&gt; google.us
+        [46] =&gt; com.google
+        [47] =&gt; gogle.com
+        [48] =&gt; oingo.com
+        [49] =&gt; googlesyndication.com
+        [50] =&gt; ggoogle.com
+        [51] =&gt; google.io
+        [52] =&gt; blogspot.ae
+        [53] =&gt; gogole.com
+        [54] =&gt; hijab.pw
+        [55] =&gt; industrial-perception.com
+        [56] =&gt; googlr.com
+        [57] =&gt; googleadservices.com
+        [58] =&gt; talkbin.com
+        [59] =&gt; picnik.com
+        [60] =&gt; postrank.com
+        [61] =&gt; appjet.com
+        [62] =&gt; google.co
+        [63] =&gt; zabrinalee.com
+        [64] =&gt; blu-ray.us
+        [65] =&gt; picasa.net
+        [66] =&gt; googleproductforums.com
+        [67] =&gt; googlelabs.com
+        [68] =&gt; googlee.com
+        [69] =&gt; gooogle.com
+        [70] =&gt; diychef.com
+        [71] =&gt; googl.com
+        [72] =&gt; gmail.co
+        [73] =&gt; blogger.ch
+        [74] =&gt; mozingo.me
+        [75] =&gt; orkut.org
+        [76] =&gt; lifescapeinc.com
+        [77] =&gt; firehunt.com
+        [78] =&gt; google.info
+        [79] =&gt; veremey.net
+        [80] =&gt; docverse.com
+    )
+
+[url] =&gt; http://google.com
+[site] =&gt; Array
+    (
+        [url] =&gt; http://google.com
+        [title] =&gt; Google
+        [h1] =&gt; 
+        [metaDescription] =&gt; Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.
+        [metaAuthor] =&gt; 
+    )
+
+[category] =&gt; Array
+    (
+        [sector] =&gt; Consumer Discretionary
+        [industryGroup] =&gt; Media
+        [industry] =&gt; Media
+        [subIndustry] =&gt; Publishing
+    )
+
+[tags] =&gt; Array
+    (
+    )
+
+[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
+[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+[geo] =&gt; Array
+    (
+        [streetNumber] =&gt; 1600
+        [streetName] =&gt; Amphitheatre Parkway
+        [subPremise] =&gt; 
+        [city] =&gt; Mountain View
+        [state] =&gt; California
+        [country] =&gt; United States
+        [postalCode] =&gt; 94043
+        [lat] =&gt; 37.4224206
+        [lng] =&gt; -122.0843021
+    )
+
+[logo] =&gt; https://logo.clearbit.com/google.com
+[facebook] =&gt; Array
+    (
+        [handle] =&gt; google
+        [likes] =&gt; 
+    )
+
+[linkedin] =&gt; Array
+    (
+        [handle] =&gt; company/google
+    )
+
+[twitter] =&gt; Array
+    (
+        [handle] =&gt; google
+        [id] =&gt; 20536157
+        [bio] =&gt; News and updates from Google
+        [followers] =&gt; 11873983
+        [following] =&gt; 448
+        [location] =&gt; Mountain View, CA
+        [site] =&gt; http://t.co/twxHxOtTvy
+        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png
+    )
+
+[angellist] =&gt; Array
+    (
+        [id] =&gt; 32203
+        [handle] =&gt; google
+        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
+        [followers] =&gt; 7097
+        [blogUrl] =&gt; http://googleblog.blogspot.com/
+    )
+
+[crunchbase] =&gt; Array
+    (
+        [handle] =&gt; google
+    )
+
+[emailProvider] =&gt; 
+[type] =&gt; public
+[ticker] =&gt; 
+[phone] =&gt; +1 650-253-0000
+[metrics] =&gt; Array
+    (
+        [alexaUsRank] =&gt; 1
+        [alexaGlobalRank] =&gt; 1
+        [googleRank] =&gt; 9
+        [employees] =&gt; 10000
+        [marketCap] =&gt; 
+        [raised] =&gt; 1700000000
+    )
+
+[tech] =&gt; Array
+    (
+        [0] =&gt; google_analytics
+        [1] =&gt; double_click
+        [2] =&gt; google_adwords
+        [3] =&gt; doubleclick
+        [4] =&gt; google_apps
+    )
+</code></pre>
+
+<p>)
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

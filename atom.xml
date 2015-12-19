@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2015-12-11T15:30:32+08:00</updated>
+  <updated>2015-12-19T08:00:49+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,455 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Information About Any Company with Clearbit's Company API]]></title>
+    <link href="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/"/>
+    <updated>2015-12-19T13:41:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
+
+<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
+
+<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://company.clearbit.com/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;v1/companies/domain/google.com&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output will look something like the following.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10</span>
+</span><span class='line'><span class="x">[name] =&gt; Google</span>
+</span><span class='line'><span class="x">[legalName] =&gt; Google Inc</span>
+</span><span class='line'><span class="x">[domain] =&gt; google.com</span>
+</span><span class='line'><span class="x">[domainAliases] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; covet.com</span>
+</span><span class='line'><span class="x">        [1] =&gt; appspotchat.com</span>
+</span><span class='line'><span class="x">        [2] =&gt; ggh-uae.com</span>
+</span><span class='line'><span class="x">        [3] =&gt; remail.com</span>
+</span><span class='line'><span class="x">        [4] =&gt; orkut.com</span>
+</span><span class='line'><span class="x">        [5] =&gt; goolge.com</span>
+</span><span class='line'><span class="x">        [6] =&gt; picasa.com</span>
+</span><span class='line'><span class="x">        [7] =&gt; blogspot.ru</span>
+</span><span class='line'><span class="x">        [8] =&gt; sparkbuy.com</span>
+</span><span class='line'><span class="x">        [9] =&gt; pushlife.com</span>
+</span><span class='line'><span class="x">        [10] =&gt; greenparrotpictures.com</span>
+</span><span class='line'><span class="x">        [11] =&gt; phonetic-arts.com</span>
+</span><span class='line'><span class="x">        [12] =&gt; omnisio.com</span>
+</span><span class='line'><span class="x">        [13] =&gt; googlecloud.com</span>
+</span><span class='line'><span class="x">        [14] =&gt; weardrobe.com</span>
+</span><span class='line'><span class="x">        [15] =&gt; ojos-inc.com</span>
+</span><span class='line'><span class="x">        [16] =&gt; akwan.com.br</span>
+</span><span class='line'><span class="x">        [17] =&gt; appliedsemantics.com</span>
+</span><span class='line'><span class="x">        [18] =&gt; gemail.com.br</span>
+</span><span class='line'><span class="x">        [19] =&gt; wosix.com</span>
+</span><span class='line'><span class="x">        [20] =&gt; firstinwireless.com</span>
+</span><span class='line'><span class="x">        [21] =&gt; cloudmarket.me</span>
+</span><span class='line'><span class="x">        [22] =&gt; riya.com</span>
+</span><span class='line'><span class="x">        [23] =&gt; teronamanagement.com</span>
+</span><span class='line'><span class="x">        [24] =&gt; sxz.co</span>
+</span><span class='line'><span class="x">        [25] =&gt; womenfitnessinsider.com</span>
+</span><span class='line'><span class="x">        [26] =&gt; webtocracy.org</span>
+</span><span class='line'><span class="x">        [27] =&gt; webtocracy.com</span>
+</span><span class='line'><span class="x">        [28] =&gt; webtocracy.net</span>
+</span><span class='line'><span class="x">        [29] =&gt; superapple.org</span>
+</span><span class='line'><span class="x">        [30] =&gt; storktechnology.com</span>
+</span><span class='line'><span class="x">        [31] =&gt; sourful.com</span>
+</span><span class='line'><span class="x">        [32] =&gt; snapchatdeals.com</span>
+</span><span class='line'><span class="x">        [33] =&gt; quarterthree.com</span>
+</span><span class='line'><span class="x">        [34] =&gt; puwak.com</span>
+</span><span class='line'><span class="x">        [35] =&gt; nudevilla.com</span>
+</span><span class='line'><span class="x">        [36] =&gt; nemzis.com</span>
+</span><span class='line'><span class="x">        [37] =&gt; ryanstull.com</span>
+</span><span class='line'><span class="x">        [38] =&gt; mckayfamily.org</span>
+</span><span class='line'><span class="x">        [39] =&gt; marksearle.net</span>
+</span><span class='line'><span class="x">        [40] =&gt; opentolink.com</span>
+</span><span class='line'><span class="x">        [41] =&gt; lewispi.com</span>
+</span><span class='line'><span class="x">        [42] =&gt; levkova.com</span>
+</span><span class='line'><span class="x">        [43] =&gt; katenka.net</span>
+</span><span class='line'><span class="x">        [44] =&gt; imize.net</span>
+</span><span class='line'><span class="x">        [45] =&gt; google.us</span>
+</span><span class='line'><span class="x">        [46] =&gt; com.google</span>
+</span><span class='line'><span class="x">        [47] =&gt; gogle.com</span>
+</span><span class='line'><span class="x">        [48] =&gt; oingo.com</span>
+</span><span class='line'><span class="x">        [49] =&gt; googlesyndication.com</span>
+</span><span class='line'><span class="x">        [50] =&gt; ggoogle.com</span>
+</span><span class='line'><span class="x">        [51] =&gt; google.io</span>
+</span><span class='line'><span class="x">        [52] =&gt; blogspot.ae</span>
+</span><span class='line'><span class="x">        [53] =&gt; gogole.com</span>
+</span><span class='line'><span class="x">        [54] =&gt; hijab.pw</span>
+</span><span class='line'><span class="x">        [55] =&gt; industrial-perception.com</span>
+</span><span class='line'><span class="x">        [56] =&gt; googlr.com</span>
+</span><span class='line'><span class="x">        [57] =&gt; googleadservices.com</span>
+</span><span class='line'><span class="x">        [58] =&gt; talkbin.com</span>
+</span><span class='line'><span class="x">        [59] =&gt; picnik.com</span>
+</span><span class='line'><span class="x">        [60] =&gt; postrank.com</span>
+</span><span class='line'><span class="x">        [61] =&gt; appjet.com</span>
+</span><span class='line'><span class="x">        [62] =&gt; google.co</span>
+</span><span class='line'><span class="x">        [63] =&gt; zabrinalee.com</span>
+</span><span class='line'><span class="x">        [64] =&gt; blu-ray.us</span>
+</span><span class='line'><span class="x">        [65] =&gt; picasa.net</span>
+</span><span class='line'><span class="x">        [66] =&gt; googleproductforums.com</span>
+</span><span class='line'><span class="x">        [67] =&gt; googlelabs.com</span>
+</span><span class='line'><span class="x">        [68] =&gt; googlee.com</span>
+</span><span class='line'><span class="x">        [69] =&gt; gooogle.com</span>
+</span><span class='line'><span class="x">        [70] =&gt; diychef.com</span>
+</span><span class='line'><span class="x">        [71] =&gt; googl.com</span>
+</span><span class='line'><span class="x">        [72] =&gt; gmail.co</span>
+</span><span class='line'><span class="x">        [73] =&gt; blogger.ch</span>
+</span><span class='line'><span class="x">        [74] =&gt; mozingo.me</span>
+</span><span class='line'><span class="x">        [75] =&gt; orkut.org</span>
+</span><span class='line'><span class="x">        [76] =&gt; lifescapeinc.com</span>
+</span><span class='line'><span class="x">        [77] =&gt; firehunt.com</span>
+</span><span class='line'><span class="x">        [78] =&gt; google.info</span>
+</span><span class='line'><span class="x">        [79] =&gt; veremey.net</span>
+</span><span class='line'><span class="x">        [80] =&gt; docverse.com</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">[site] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [url] =&gt; http://google.com</span>
+</span><span class='line'><span class="x">        [title] =&gt; Google</span>
+</span><span class='line'><span class="x">        [h1] =&gt; </span>
+</span><span class='line'><span class="x">        [metaDescription] =&gt; Search the world&#39;s information, including webpages, images, videos and more. Google has many special features to help you find exactly what you&#39;re looking for.</span>
+</span><span class='line'><span class="x">        [metaAuthor] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[category] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [sector] =&gt; Consumer Discretionary</span>
+</span><span class='line'><span class="x">        [industryGroup] =&gt; Media</span>
+</span><span class='line'><span class="x">        [industry] =&gt; Media</span>
+</span><span class='line'><span class="x">        [subIndustry] =&gt; Publishing</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tags] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</span>
+</span><span class='line'><span class="x">[geo] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [streetNumber] =&gt; 1600</span>
+</span><span class='line'><span class="x">        [streetName] =&gt; Amphitheatre Parkway</span>
+</span><span class='line'><span class="x">        [subPremise] =&gt; </span>
+</span><span class='line'><span class="x">        [city] =&gt; Mountain View</span>
+</span><span class='line'><span class="x">        [state] =&gt; California</span>
+</span><span class='line'><span class="x">        [country] =&gt; United States</span>
+</span><span class='line'><span class="x">        [postalCode] =&gt; 94043</span>
+</span><span class='line'><span class="x">        [lat] =&gt; 37.4224206</span>
+</span><span class='line'><span class="x">        [lng] =&gt; -122.0843021</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[logo] =&gt; https://logo.clearbit.com/google.com</span>
+</span><span class='line'><span class="x">[facebook] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [likes] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[linkedin] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; company/google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[twitter] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [id] =&gt; 20536157</span>
+</span><span class='line'><span class="x">        [bio] =&gt; News and updates from Google</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 11873983</span>
+</span><span class='line'><span class="x">        [following] =&gt; 448</span>
+</span><span class='line'><span class="x">        [location] =&gt; Mountain View, CA</span>
+</span><span class='line'><span class="x">        [site] =&gt; http://t.co/twxHxOtTvy</span>
+</span><span class='line'><span class="x">        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[angellist] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [id] =&gt; 32203</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 7097</span>
+</span><span class='line'><span class="x">        [blogUrl] =&gt; http://googleblog.blogspot.com/</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[crunchbase] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; google</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[emailProvider] =&gt; </span>
+</span><span class='line'><span class="x">[type] =&gt; public</span>
+</span><span class='line'><span class="x">[ticker] =&gt; </span>
+</span><span class='line'><span class="x">[phone] =&gt; +1 650-253-0000</span>
+</span><span class='line'><span class="x">[metrics] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [alexaUsRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [alexaGlobalRank] =&gt; 1</span>
+</span><span class='line'><span class="x">        [googleRank] =&gt; 9</span>
+</span><span class='line'><span class="x">        [employees] =&gt; 10000</span>
+</span><span class='line'><span class="x">        [marketCap] =&gt; </span>
+</span><span class='line'><span class="x">        [raised] =&gt; 1700000000</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[tech] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [0] =&gt; google_analytics</span>
+</span><span class='line'><span class="x">        [1] =&gt; double_click</span>
+</span><span class='line'><span class="x">        [2] =&gt; google_adwords</span>
+</span><span class='line'><span class="x">        [3] =&gt; doubleclick</span>
+</span><span class='line'><span class="x">        [4] =&gt; google_apps</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Securing Passwords in PHP]]></title>
@@ -4039,71 +4488,6 @@ Just like in life you have to prioritize. You can&rsquo;t just aimlessly be doin
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g ionic</span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Staticizer]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/08/02/introduction-to-staticizer/"/>
-    <updated>2015-08-02T19:33:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/08/02/introduction-to-staticizer</id>
-    <content type="html"><![CDATA[<p>Welcome to yet another promotional post on another side-project of mine. This time it&rsquo;s Staticizer, a static site generator.</p>
-
-<h3>Yet Another Static Site Generator?</h3>
-
-<p>No. This isn&rsquo;t unlike any static site generator out there. I created this project to create a static version for my <a href="https://github.com/anchetaWern/antares">antares project</a>. So you can use this to create a static version of an existing project. All it really does is request a URL in your local machine and create an HTML file out of it. This works best for websites that has only a few pages.</p>
-
-<h3>How to Use</h3>
-
-<p>First you have to update the <code>index.php</code> file and write your own code for fetching the pages in the website you want to convert to a static one.</p>
-
-<p>Next, update the <code>config.php</code> file and change the values for the <code>BASE_URL</code>, <code>STATIC_PATH</code> and <code>JSON_PATH</code>. The <code>BASE_URL</code> is the base URL of the website you want to convert. The <code>STATIC_PATH</code> is the base directory where you want to save the generated HTML files. The <code>JSON_PATH</code> is the path to the json files inside the <code>STATIC_PATH</code> that you specified. This is optional. Only use this if you are serving json files on the original website.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;BASE_URL&#39;</span><span class="p">,</span> <span class="s1">&#39;http://antaresapp.dev/&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;STATIC_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s1">&#39;JSON_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that you have to manually copy front-end assets (css, script, images) in the <code>STATIC_PATH</code>.</p>
-
-<h4>Deployment</h4>
-
-<p>This works best with Github pages. Just create a new Github account that directly matches the name of the website. As an example, I created a Github account and named it antaresapp. I then created a new repository named <a href="https://github.com/antaresapp/antaresapp.github.io">antaresapp.github.io</a>. This will serve as the repository that the Github page will use. Remember that you can only create a single Github page for every Github account.</p>
-
-<p>On your static path, initialize a new Git repo and add the Github page repository as a remote.</p>
-
-<p>Lastly, you can use this project by executing the following commands from your terminal.</p>
-
-<p>To update the database:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php update.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To generate the static HTML files and JSON files:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php generate.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To push the changes to the Github repo:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">php push.php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you want to know more about the project, you can check it out <a href="https://github.com/anchetaWern/staticizer">here</a>.</p>
 ]]></content>
   </entry>
   
