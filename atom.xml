@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-01-04T22:37:01+08:00</updated>
+  <updated>2016-01-09T07:33:54+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,894 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Linting]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting/"/>
+    <updated>2016-01-09T16:25:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting</id>
+    <content type="html"><![CDATA[<p>Yo! It&rsquo;s been a while but I&rsquo;ve decided to continue this series on A Whirlwind Tour of Web Developer Tools. For those who don&rsquo;t know, I started this series a year ago but then I got so busy with work and I became an author at Sitepoint. So you can only count the number of in-depth tutorials with your fingers. But I quit my job and now I have a lot of free-time. That is why I no longer have any excuse not to continue what I started.</p>
+
+<p>Ok enough with the life update. Now let&rsquo;s move on to the main topic of this article. This is part eight of the series on Web Developer Tools where I&rsquo;m going to walk you through linting. Linting is the process of running a program that will check the quality of code in order to avoid any potential errors. Take for example the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">main</span><span class="p">(){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">x</span> <span class="o">==</span> <span class="nx">y</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="s1">&#39;Hello&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>By looking at the code, you can immediately see that <code>x</code> and <code>y</code> hasn&rsquo;t been defined. The semicolon is also missing from the first <code>return</code> statement. But if add this function to a JavaScript file, you will see that it doesn&rsquo;t actually cause any errors until you add the code that will call the function. Only then will you realize that <code>x</code> and <code>y</code> hasn&rsquo;t been defined. But JavaScript doesn&rsquo;t actually complain if you miss a semicolon or two so the first <code>return</code> statement won&rsquo;t probably cause any errors. This is because of the automatic semicolon insertion in JavaScript. I know the example that I gave is a bit contrived but you get the point. As developers we sometimes miss the obvious things such as defining a variable or putting a semicolon. That is why there are tools to help us avoid making these kinds of mistakes. Linters are one of those. In the world of web development there are a bunch of tools which can be classified as linters. I&rsquo;m going to walk you through some of those in this tutorial.</p>
+
+<h3>Markup Validation Service</h3>
+
+<p>The <a href="https://validator.w3.org/">markup validation service</a> by the World Wide Web Consortium allows developers to check the validity of the HTML code that they&rsquo;ve written. It uses the doctype defined at the very top of the document as a basis for which specific rules to use for checking the code. You can supply a URL, upload a file or directly input the HTML code that you want to check. Here&rsquo;s an example:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/w3c-validator.png" alt="w3c validator" /></p>
+
+<p>As you can see from the screenshot, it gives you three types of feedback: info, warning and error. Info gives you general information about the page. Warnings are messages telling you that you can do better. Or something could be improved. In the example above it says that the document uses unicode private use areas. Which is basically another way of saying that undefined unicode characters shouldn&rsquo;t be used in publicly available documents. Lastly there&rsquo;s the error. These are messages that tells you to fix something because it might cause problems to the users of your website. In the example above, it&rsquo;s saying that an <code>alt</code> attribute should always be defined, except in specific conditions. And then it points out to the SVG logo of the website which should probably have an <code>alt</code> assigned to it. This is important because some users might be partially disabled (color-blind, partially blind, etc.) might be using a screenreader to interact with your website. And the value that you have placed in the <code>alt</code> attribute is read out by the screenreader. If there&rsquo;s nothing there then the user won&rsquo;t be able to know what he&rsquo;s currently focusing at.</p>
+
+<h3>HTMLHint</h3>
+
+<p><a href="http://htmlhint.com/">HTMLHint</a> is a linter for HTML code. Unlike the markup validation service, this allows you to specify what specific validation rules are to be used to check your HTML code. For example you can specify that all tags should be in lowercase. Or that in every file, an ID can only be used once. Here&rsquo;s an example:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/htmlhint.png" alt="htmlhint" /></p>
+
+<p>HTMLHint gives you feedback on which specific line has problems in it. And if you hover over the line number, you will see what the specific error is. In the example above you can see that the errors are:</p>
+
+<ul>
+<li>the id <code>a_unique_id</code> has been used twice. It doesn&rsquo;t matter that the elements used are different as long as an ID is used more than once, it triggers the error on the lines in which the ID is used for the second time.</li>
+<li>the <code>div</code> with the ID of <code>a_unique_id</code> hasn&rsquo;t been closed. Note that this doesn&rsquo;t get triggered on the line where the tag hasn&rsquo;t been closed. Instead it gets triggered on the nearest closing tag which doesn&rsquo;t have a pair.</li>
+</ul>
+
+
+<p>At the bottom part of the website, you can check or uncheck rules depending on what you&rsquo;d like to apply. There are are a number of rules you can choose from and the naming is pretty self-explanatory so I won&rsquo;t be delving into that.</p>
+
+<h3>CSSLint</h3>
+
+<p><a href="http://csslint.net/">CSSLint</a> as the name suggests, is a linter for CSS code. Just like HTMLHint it allows you to specify which validation rules you&rsquo;d like to apply for the checking of your CSS code. With CSSLint there are mostly warning rules but you can trigger errors as well. Such as when a specific rule is empty, or when using unknown CSS properties, or disallowing duplicate one&rsquo;s. Warning rules on the other hand requires you to add fallback colors if you&rsquo;re using <code>hsl</code>, <code>rgba</code>, <code>rgb</code>, or <code>hsla</code> to specify colors. Older browsers might not support those methods of specifying colors so you&rsquo;ll have to provide a fallback in hexadecimal format. Another example is disallowing units for 0 values. This is mostly for performance benefits. Here&rsquo;s an example CSS code that I&rsquo;ve checked with CSSLint:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">font-family</span><span class="o">:</span> <span class="n">Helvetica</span> <span class="n">Neue</span><span class="o">,</span> <span class="n">Helvetica</span><span class="o">,</span> <span class="n">Arial</span><span class="o">,</span> <span class="k">sans-serif</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#settings-button</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">h1</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding-left</span><span class="o">:</span> <span class="m">40px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span> <span class="m">40px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background</span><span class="o">:</span> <span class="m">#64CF49</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#sidebar</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">20</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#67B6DA</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">position</span><span class="o">:</span> <span class="k">fixed</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items-container</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">80</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-left</span><span class="o">:</span> <span class="m">20</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#F7F7F7</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">list-style</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#sidebar</span> <span class="nt">h3</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">border-bottom</span><span class="o">:</span> <span class="m">3px</span> <span class="k">solid</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding-left</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#types</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span> <span class="m">30px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nf">#types</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">font-size</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#types</span> <span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#575757</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#3A3A3A</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span><span class="nd">:hover</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#DFDFDF</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.item-info</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">font-size</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#8A8A8A</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-top</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then it showed me the following feedback:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/csslint.png" alt="csslint" /></p>
+
+<p>As you can see I&rsquo;ve used a lot of ID&rsquo;s in this css file so CSSLint is complaining that I shouldn&rsquo;t use ID&rsquo;s. This is mainly because CSSLint have this idea that ID&rsquo;s are completely unique and therefore there&rsquo;s no room for reuse. CSSLint advocates the use of OOCSS (Object-oriented CSS) whose main principle is the reusability of code by means of using objects.</p>
+
+<p>Another warning is the use of overqualified selectors:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">ul</span><span class="nf">#types</span><span class="p">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s saying that just using <code>#types</code> would suffice.</p>
+
+<p>The last type of warning is the heading should not be qualified warning:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nf">#sidebar</span> <span class="nt">h3</span> <span class="p">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is because headings are considered as top-level styles. This means that you shouldn&rsquo;t define their styles under a specific element. Because their appearance should be consistent throughout the entire website. Note that this is not saying that headings cannot be nested under a specific element. You can do that but when you&rsquo;re declaring their styles it should be just on its own so that you can ensure that they look the same throughout the whole website.</p>
+
+<h3>JSHint</h3>
+
+<p><a href="http://jshint.com/">JSHint</a> helps to detect errors and potential problems in your JavaScript code. It checks for undefined variables, the use of <code>eval</code> (we all know that <code>eval</code> is evil right?), unused variables and <a href="http://jshint.com/docs/options/">many others</a>. In the JSHint website you can configure which rules to apply by clicking on the <em>configure</em> link. Here&rsquo;s an example of how it works:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/jshint.png" alt="jshint" /></p>
+
+<p>As you can see it provides you with some code metrics. It tells you how many functions has been defined, how many variables are not defined and how many are not used.</p>
+
+<p>It also tells you the cyclomatic complexity of the largest functions. In case you&rsquo;re wondering, <a href="https://en.wikipedia.org/wiki/Cyclomatic_complexity">cyclomatic complexity</a> is just a fancy term for the complexity of a specific program. You can see that the cyclomatic complexity of the largest function that I&rsquo;ve defined is 2. And the median (average) complexity of all the functions in the file is 1.5. People generally say that a cyclomatic complexity of 0 to 5 is fine. But if you get around 6 or more then you should consider refactoring your code.</p>
+
+<p>Another warning that you can see in the example is the missing &ldquo;use strict&rdquo; statement. This is a way of telling the browser to use strict mode. I haven&rsquo;t really dived into strict mode yet but the main idea is that adding this literal expression at the very top of each JavaScript file and at the very top of each function makes the browser complain more about your code. Take for example the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">x</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span><span class="p">;</span> <span class="c1">//browser: sweet!</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Without invoking strict mode, the browser would happily execute this piece of code for you. But with strict mode it will complain that you haven&rsquo;t defined <code>x</code> yet.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">x</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span><span class="p">;</span> <span class="c1">//browser: Uncaught ReferenceError: x is not defined</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Command Line Tool</h3>
+
+<p>HTMLHint, CSSLint, and JSHint can all be used through the command line. We&rsquo;re going to take a look at how to do that in this section.</p>
+
+<p>The first thing that you need to do is to install node.js and npm. But we&rsquo;re not going to go through that here because I previously mentioned it in my article on <a href="http://wern-ancheta.com/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">package managers</a>. Go ahead and check that out if you don&rsquo;t already have node.js and npm installed.</p>
+
+<p>Once you&rsquo;ve installed node.js and npm, you can now install htmlhint, csslint, and jshint using npm:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">npm</span> <span class="nx">install</span> <span class="o">-</span><span class="nx">g</span> <span class="nx">htmlhint</span> <span class="nx">csslint</span> <span class="nx">jshint</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can now immediately use them right after the installation is complete:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">htmlhint</span> <span class="nx">index</span><span class="p">.</span><span class="nx">html</span>
+</span><span class='line'><span class="nx">csslint</span> <span class="nx">style</span><span class="p">.</span><span class="nx">css</span>
+</span><span class='line'><span class="nx">jshint</span> <span class="nx">main</span><span class="p">.</span><span class="nx">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that each of these tools already comes with default options. So if you were to execute each of the commands above, you will most likely get a warning or an error if your code is already complex enough. But you can also specify which rules to apply by creating a configuration file inside of your project directory.</p>
+
+<p>For HTMLHint the configuration file that you have to create is <code>.htmlhintrc</code> and it looks something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;tagname-lowercase&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;attr-lowercase&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;tag-pair&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;doctype-first&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;tag-self-close&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;attr-no-duplication&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;attr-value-double-quotes&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;attr-value-not-empty&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;title-require&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;id-unique&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;inline-style-disabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;inline-script-disabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;doctype-html5&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;alt-require&quot;</span><span class="p">:</span> <span class="kc">false</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can find the rules that you can specify in <a href="https://github.com/yaniswang/HTMLHint/wiki/Rules">this page</a>.</p>
+
+<p>Here&rsquo;s the HTMLHint cli-tool in action:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/htmlhint-cli.png" alt="htmlhint-cli" /></p>
+
+<p>And here&rsquo;s the file that I checked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>Document<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;p</span> <span class="na">id=</span><span class="s">&quot;boom&quot;</span><span class="nt">&gt;&lt;/p&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;span</span> <span class="na">id=</span><span class="s">&quot;boom&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;STRONG&gt;&lt;/STRONG&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;strong&gt;&lt;/strong&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;span&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;i</span> <span class="na">data</span> <span class="na">href=</span><span class="s">fldsfl</span> <span class="na">BOOM=</span><span class="s">&quot;bam!&quot;</span> <span class="na">style=</span><span class="s">&quot;color:red;&quot;</span><span class="nt">&gt;&lt;b&gt;</span>dds<span class="nt">&lt;/b&gt;&lt;/i&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For CSSLint it&rsquo;s <code>.csslintrc</code> and it looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;adjoining-classes&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;box-sizing&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;box-model&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;compatible-vendor-prefixes&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;floats&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;font-sizes&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;gradients&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;important&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;known-properties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;outline-none&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;qualified-headings&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;regex-selectors&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;shorthand&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;text-indent&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;unique-headings&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;universal-selector&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;unqualified-attributes&quot;</span><span class="p">:</span> <span class="kc">false</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that I&rsquo;ve pick up that configuration straight from <a href="https://github.com/twbs/bootstrap/blob/master/less/.csslintrc">bootstrap&rsquo;s</a> <code>.csslintrc</code> file. You can find the rules for CSSLint in <a href="https://github.com/CSSLint/csslint/wiki/Rules">this page</a>.</p>
+
+<p>Here&rsquo;s CSSLint&rsquo;s cli-tool in action:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/csslint-cli.png" alt="csslint-cli" /></p>
+
+<p>Here&rsquo;s the stylesheet that was checked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">font-family</span><span class="o">:</span> <span class="n">Helvetica</span> <span class="n">Neue</span><span class="o">,</span> <span class="n">Helvetica</span><span class="o">,</span> <span class="n">Arial</span><span class="o">,</span> <span class="k">sans-serif</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#settings-button</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">h1</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding-left</span><span class="o">:</span> <span class="m">40px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span> <span class="m">40px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background</span><span class="o">:</span> <span class="m">#64CF49</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#sidebar</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">20</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#67B6DA</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">position</span><span class="o">:</span> <span class="k">fixed</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items-container</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">80</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-left</span><span class="o">:</span> <span class="m">20</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#F7F7F7</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">list-style</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#sidebar</span> <span class="nt">h3</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">border-bottom</span><span class="o">:</span> <span class="m">3px</span> <span class="k">solid</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">padding-left</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#types</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span> <span class="m">30px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nf">#types</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">font-size</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#types</span> <span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#575757</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">0</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#3A3A3A</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#items</span> <span class="nt">li</span><span class="nd">:hover</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">background-color</span><span class="o">:</span> <span class="m">#DFDFDF</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.item-info</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">font-size</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">color</span><span class="o">:</span> <span class="m">#8A8A8A</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">margin-top</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lastly there&rsquo;s jshint. Here&rsquo;s a sample <code>.jshintrc</code> file which I&rsquo;ve taken from <a href="https://github.com/CSSLint/csslint/blob/master/.jshintrc">CSSLint</a>. CSSLint is basically written in JavaScript that&rsquo;s why it has its own <code>.jshintrc</code> file to help the developers in checking their code.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;camelcase&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;curly&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;eqeqeq&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;es3&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;forin&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;immed&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;indent&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;latedef&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;newcap&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;noarg&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;noempty&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;nonbsp&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;quotmark&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;undef&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;unused&quot;</span><span class="p">:</span> <span class="kc">true</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can find a list of options <a href="http://jshint.com/docs/options/">here</a>.</p>
+
+<p>And here is JSHint&rsquo;s cli tool in action:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/jshint-cli.png" alt="jshint-cli" /></p>
+
+<p>With this script file being checked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">x</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">beam</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">u</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Build Tool Integration</h3>
+
+<p>Ok so we have a slight improvement over just copying and pasting the code that we want to check in the HTMLHint, CSSLint, and JSHint website. But wouldn&rsquo;t it be great if we don&rsquo;t need to execute the command every time we need to check? And in real-world projects you would most likely have multiple css, JavaScript and HTML files. So executing the commands for each of those files would be too troublesome and time-consuming. That is where build tools comes in. Luckily I&rsquo;ve already done an article specifically about <a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">build tools</a> so if you&rsquo;re new to it then be sure to check that out. Then you can go back to this article once you have an idea how to use a build tool.</p>
+
+<p>Ok so you&rsquo;re back. Hopefully you&rsquo;ve learned all about Grunt and Gulp. In this article we&rsquo;ll be using Gulp and the Gulp plugins for HTMLHint, CSSLint and JSHint. You can install those with the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">gulp</span> <span class="nx">gulp</span><span class="o">-</span><span class="nx">htmlhint</span> <span class="nx">gulp</span><span class="o">-</span><span class="nx">csslint</span> <span class="nx">gulp</span><span class="o">-</span><span class="nx">jshint</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Optionally you can also install the formatters to make the reports more beautiful.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">htmlhint</span><span class="o">-</span><span class="nx">stylish</span> <span class="nx">jshint</span><span class="o">-</span><span class="nx">stylish</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that there&rsquo;s also a package called <a href="https://www.npmjs.com/package/csslint-stylish">csslint-stylish</a> but it currently doesn&rsquo;t work with Gulp. If you&rsquo;re reading this article at a later time be sure to check out that page and see if it already works for Gulp.</p>
+
+<p>The next step is to create a <code>gulpfile.js</code> file in the root of your project directory and then add the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">gulp</span>   <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;gulp&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">htmlhint</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;gulp-htmlhint&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">csslint</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;gulp-csslint&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">jshint</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;gulp-jshint&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;lint_html&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s2">&quot;*.html&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">htmlhint</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">htmlhint</span><span class="p">.</span><span class="nx">reporter</span><span class="p">(</span><span class="s2">&quot;htmlhint-stylish&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;lint_css&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;*.css&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">csslint</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">csslint</span><span class="p">.</span><span class="nx">reporter</span><span class="p">());</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;lint_js&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;*.js&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">jshint</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">jshint</span><span class="p">.</span><span class="nx">reporter</span><span class="p">(</span><span class="s2">&quot;jshint-stylish&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;watch&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">&#39;*.html&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;lint_html&#39;</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">&#39;*.css&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;lint_css&#39;</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">&#39;*.js&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;lint_js&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Like I said earlier, I won&rsquo;t go deep into this because I&rsquo;ve already written a whole article on <a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">Build Tools</a>. Basically what this file does is to declare all the task that we want to perform with Gulp. We have four tasks in total, one for each linter and one for watching files in a specific directory. The only task that we need to execute is the last one:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">gulp</span> <span class="nx">watch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is to watch all the HTML files and then execute the HTML Linter. The same is true with the other file types. The linter for each specific file type is executed once you save a file. So if you press <code>ctrl + s</code> on your keyboard, the task is immediately executed. What you can do is you can either switch windows (<code>alt + tab</code>) or put the command line window and your text-editor side by side so you get instant feedback on your code.</p>
+
+<h3>Text-editor Integration</h3>
+
+<p>For the final part we&rsquo;re going to look at how to integrate the linting tools in the text-editor. I&rsquo;m a Sublime Text user so I&rsquo;ll be using it for the examples. But if you&rsquo;re using another text-editor or IDE be sure to check out if these tools are also available.</p>
+
+<p>The first thing that you need to do is to install the SublimeLinter plugin with Sublime <a href="https://packagecontrol.io/">Package Control</a>.</p>
+
+<p>Once installed, determine where HTMLHint, CSSLint, and JSHint are installed in your computer. In Ubuntu you can do something like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">which</span> <span class="nx">htmlhint</span>
+</span><span class='line'><span class="nx">which</span> <span class="nx">csslint</span>
+</span><span class='line'><span class="nx">which</span> <span class="nx">jshint</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That will return the path to the executable file. For me it was <code>/home/wern/.nvm/v4.0.0/bin/csslint</code> for csslint. Note that <code>csslint</code> in that path is the executable file itself. So the path that you actually want is <code>/home/wern/.nvm/v4.0.0/bin</code>. It returned the same path for HTMLHint and JSHint for me so I only need that one path. Once you&rsquo;ve found it, go ahead and copy that path.</p>
+
+<p>Next open Sublime Text, click on the <em>preferences</em> menu > <em>package settings</em> > <em>SublimeLinter</em> > <em>Settings &ndash; User</em>. This opens the user configuration file for SublimeLinter. Add the following into it and then save.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open the file again by going through the same steps above. This time Sublime Text has already added the default configurations in there. What you need to do now is to look for the <code>paths</code> object and under your current operating system at the path to where the HTMLHint, CSSLint and JSHint executables are. Because I&rsquo;m using Ubuntu I had to put it inside <code>linux</code> object.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="s2">&quot;paths&quot;</span><span class="err">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;linux&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s2">&quot;/home/wern/.nvm/v4.0.0/bin&quot;</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>    <span class="nt">&quot;osx&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span class='line'>    <span class="nt">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[]</span>
+</span><span class='line'><span class="p">}</span><span class="err">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;re done, save the file then restart Sublime Text (close it and open again).</p>
+
+<p>Open the Sublime Text console by pressing <code>ctrl + `</code> then look for something similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">SublimeLinter:</span> <span class="err">htmlhint</span> <span class="err">activated:</span> <span class="err">/home/wern/.nvm/v</span><span class="mf">4.0</span><span class="err">.</span><span class="mi">0</span><span class="err">/bin/htmlhint</span>
+</span><span class='line'><span class="err">SublimeLinter:</span> <span class="err">jshint</span> <span class="err">activated:</span> <span class="err">/home/wern/.nvm/v</span><span class="mf">4.0</span><span class="err">.</span><span class="mi">0</span><span class="err">/bin/jshint</span>
+</span><span class='line'><span class="err">SublimeLinter:</span> <span class="err">csslint</span> <span class="err">activated:</span> <span class="err">/home/wern/.nvm/v</span><span class="mf">4.0</span><span class="err">.</span><span class="mi">0</span><span class="err">/bin/csslint</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This tells you that SublimeLinter has successfully picked up the paths to where the linters are installed. If you&rsquo;re seeing that then you&rsquo;re good to go, if not then be sure to check if the path that you&rsquo;ve supplied really contains the executable code for each of those linters.</p>
+
+<p>Here are some screenshot that shows the linters in action:</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/htmlhint-text.png" alt="htmlhint text editor" /></p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/csslint-text.png" alt="csslint text editor" /></p>
+
+<p><img src="http://wern-ancheta.com/images/posts/devtools_linters/jshint-text.png" alt="jshint text editor" /></p>
+
+<p>The yellow dots indicates warnings, while the red dots indicate errors. If you move your cursor over to the line where a dot is, you can see the actual message on the status bar (bottom left corner of the screen). Pretty sweet right?</p>
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it! In this article you&rsquo;ve learned how to use some of the tools that you could use to help you with determining potential problems in your HTML, CSS and JavaScript code. You&rsquo;ve also learned how to integrate this into your workflow by making use of the command-line tool or the text-editor integration.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://github.com/yaniswang/HTMLHint/wiki">HTMLHint Wiki</a></li>
+<li><a href="https://github.com/CSSLint/csslint/wiki">CSSLint Wiki</a></li>
+<li><a href="https://github.com/jshint/jshint/wiki/Documentation">JSHint Wiki</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Developers New Years Resolution]]></title>
@@ -4346,31 +5234,6 @@ The common platforms that you may want to install are android, ios and browser. 
 <h3>Conclusion</h3>
 
 <p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with Twig, a templating engine for PHP. For more information about Twig, check out the <a href="http://twig.sensiolabs.org/documentation">official docs</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What Playing Clash of Clans Can Teach You About Life]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/"/>
-    <updated>2015-08-23T12:33:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life</id>
-    <content type="html"><![CDATA[<ol>
-<li><p><strong>You need to prioritize</strong>. There&rsquo;s only like 2 or 3 builder huts when you start playing the game.
-That&rsquo;s why it&rsquo;s important to prioritize which things you upgrade. This is because upgrading takes time. And cancelling an upgrade will only return you half of the original resources you spent on the upgrade.
-This usually means there&rsquo;s no turning back after you&rsquo;ve clicked on that upgrade button.
-Just like in life you have to prioritize. You can&rsquo;t just aimlessly be doing everything that seems interesting.</p></li>
-<li><p><strong>You need the right strategy for every raid that you do</strong>. Not every base is the same. There are those whose traps are laid outside the walls. This usually means that it will be triggered the moment your troops lay their first step to loot the resources. There are traps that are laid right before key defenses such as the mortar or air defense. Just like in life you need to carefully plan out your every move, especially the most important one&rsquo;s such as career decisions.</p></li>
-<li><p><strong>You can&rsquo;t protect everything</strong>. Put your town hall outside in order to protect what&rsquo;s really important. Some players might disagree to this and say that if you have designed your base well then that&rsquo;s the ultimate defense that keeps other players from attacking your village. Some players might also be prioritizing trophies instead of loots and that&rsquo;s why they keep their town halls at the very center of their village. Those are all valid arguments. Some players might value trophies more than the loots. But come to think of it. There&rsquo;s over 6 million people who have it installed on Android. I don&rsquo;t know about iOS but 6 million people is a lot. This means that no matter how strong you think your village is. There&rsquo;s always someone who can 3-star it effortlessly and take away a ton of loot. So it&rsquo;s important to realize that you can&rsquo;t protect everything. You have to prioritize what you really want to protect and design your village in such a way that what you want to protect is protected in the best possible way. Just like in life you can&rsquo;t get everything that you want. It&rsquo;s important to love what you currently have.</p></li>
-<li><p><strong>There&rsquo;s always someone out there whose stronger than you</strong>. There&rsquo;s no need to feel bad whenever some other 3-starred your village. Just like in life you don&rsquo;t need to feel bad about yourself whenever you see someone who is effortlessly better than you at the thing you&rsquo;re good at. What&rsquo;s important is that you work hard to get better each day.</p></li>
-<li><p><strong>Revenge is for the weak</strong>. I don&rsquo;t know for other players but I pretty much don&rsquo;t care about other players attacking my village. It doesn&rsquo;t really matter whether they 3-starred me or they took a whole bunch of loot. They&rsquo;re just playing the game just like me. It&rsquo;s natural for your village to get attacked. It&rsquo;s natural for other players to take some resources out of your village. Just like it&rsquo;s natural for you take others as well. But maybe it&rsquo;s just me. I heard you would get a lot more trophies if you revenge on someone. But trophies aren&rsquo;t really important to me. I pretty much gave up on trying to go higher when I reached the crystal league. I tried going higher in order to get the gems as the reward but it&rsquo;s just hard to look for town halls that are unprotected.</p></li>
-<li><p><strong>Time is money but you can also use money to buy time</strong>. When I gave up on reaching the master league in order to get the gem reward for reaching it. And eventually buy the 5th builder with it. I just bought some gems with some real money in order to buy the 5th builder. I don&rsquo;t really regret it since I just saved myself a lot of time trying to find unprotected town halls and get a measely amount of trophy. This is an example of buying time with money. With the 5th builder upgrades would be faster. And I no longer need to aim to get the gem reward for entering the master, champion, titan or legend leagues.</p></li>
-<li><p><strong>Patience</strong>. Upgrades takes time, creating troops and spells takes time. Gold mines, elixir collectors, heck dark elixir drills takes time. Heroes takes time to sleep. Cool-down for requesting clan castle troops takes time. Searching for a good village to raid takes time. Patience is really a virtue. Especially so when it comes to playing clash of clans. Where every move you do takes time.</p></li>
-<li><p><strong>Collaboration</strong>. It&rsquo;s important to collaborate with your clan mates during a war. You can&rsquo;t always have a mirror that directly matches yours. Often times your mirror is far stronger than you are. Sometimes the town hall doesn&rsquo;t even match. That&rsquo;s why it&rsquo;s important to collaborate with your clan mates so that you can adjust accordingly. Just like in life it&rsquo;s important to collaborate with your fellow employees, with your community and with your family.</p></li>
-<li><p><strong>Progress will come naturally if you just stick to it</strong>. When I first started I really envied my friends on facebook because their villages looks so strong and tough and mine looks really week. But 6 months later I saw that my village is pretty much already on par with them or even stronger. I&rsquo;m not addicted to the game though. I really only play on my free time. But I always stick to it every day. And that is why I can see that I&rsquo;ve come a long way since I first started. This is similar to anything that you want to achieve in life. As a developer I always see to it that I learn something new each day. Or have a better understanding of what I previously learned. Just stick to doing something each day and progress will come naturally.</p></li>
-<li><p><strong>Even heroes needs sleep</strong>. So do you. Sleep is needed in order to recharge your mind and body. The brain needs sleep in order to consolidate the things you&rsquo;ve learned during the day. So even if you think you&rsquo;re a superhero who only needs 3 hours of sleep in order to get by. You&rsquo;re not. You can&rsquo;t really hack your way out of sleep. That&rsquo;s what makes us human. We need rest in order to recharge.</p></li>
-<li><p><strong>Donate and you will be rewarded</strong>. In clash of clans there is this donation system wherein a clan member can ask for troops to be put in the clan castle. Those troops will serve as guards for your village. If you always donate troops whenever someone asks for it, you will be remembered and your clan mates would love to donate troops to you as well. The same is true in life as well. Always donate to the less fortunate people and you will be rewarded.</p></li>
-</ol>
-
 ]]></content>
   </entry>
   

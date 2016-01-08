@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linting | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/linting/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2016-01-09T07:33:54+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Linting]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting/"/>
+    <updated>2016-01-09T16:25:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting</id>
+    <content type="html"><![CDATA[<p>Yo! It&rsquo;s been a while but I&rsquo;ve decided to continue this series on A Whirlwind Tour of Web Developer Tools. For those who don&rsquo;t know, I started this series a year ago but then I got so busy with work and I became an author at Sitepoint. So you can only count the number of in-depth tutorials with your fingers. But I quit my job and now I have a lot of free-time. That is why I no longer have any excuse not to continue what I started.</p>
+
+<p>Ok enough with the life update. Now let&rsquo;s move on to the main topic of this article. This is part eight of the series on Web Developer Tools where I&rsquo;m going to walk you through linting. Linting is the process of running a program that will check the quality of code in order to avoid any potential errors. Take for example the following code:</p>
+
+<p>```javascript
+function main(){
+  if(x == y){</p>
+
+<pre><code>return 'Hello, World!'
+</code></pre>
+
+<p>  }
+  return &lsquo;Hello&rsquo;;
+}
+```</p>
+
+<p>By looking at the code, you can immediately see that <code>x</code> and <code>y</code> hasn&rsquo;t been defined. The semicolon is also missing from the first <code>return</code> statement. But if add this function to a JavaScript file, you will see that it doesn&rsquo;t actually cause any errors until you add the code that will call the function. Only then will you realize that <code>x</code> and <code>y</code> hasn&rsquo;t been defined. But JavaScript doesn&rsquo;t actually complain if you miss a semicolon or two so the first <code>return</code> statement won&rsquo;t probably cause any errors. This is because of the automatic semicolon insertion in JavaScript. I know the example that I gave is a bit contrived but you get the point. As developers we sometimes miss the obvious things such as defining a variable or putting a semicolon. That is why there are tools to help us avoid making these kinds of mistakes. Linters are one of those. In the world of web development there are a bunch of tools which can be classified as linters. I&rsquo;m going to walk you through some of those in this tutorial.</p>
+
+<h3>Markup Validation Service</h3>
+
+<p>The <a href="https://validator.w3.org/">markup validation service</a> by the World Wide Web Consortium allows developers to check the validity of the HTML code that they&rsquo;ve written. It uses the doctype defined at the very top of the document as a basis for which specific rules to use for checking the code. You can supply a URL, upload a file or directly input the HTML code that you want to check. Here&rsquo;s an example:</p>
+
+<p><img src="/images/posts/devtools_linters/w3c-validator.png" alt="w3c validator" /></p>
+
+<p>As you can see from the screenshot, it gives you three types of feedback: info, warning and error. Info gives you general information about the page. Warnings are messages telling you that you can do better. Or something could be improved. In the example above it says that the document uses unicode private use areas. Which is basically another way of saying that undefined unicode characters shouldn&rsquo;t be used in publicly available documents. Lastly there&rsquo;s the error. These are messages that tells you to fix something because it might cause problems to the users of your website. In the example above, it&rsquo;s saying that an <code>alt</code> attribute should always be defined, except in specific conditions. And then it points out to the SVG logo of the website which should probably have an <code>alt</code> assigned to it. This is important because some users might be partially disabled (color-blind, partially blind, etc.) might be using a screenreader to interact with your website. And the value that you have placed in the <code>alt</code> attribute is read out by the screenreader. If there&rsquo;s nothing there then the user won&rsquo;t be able to know what he&rsquo;s currently focusing at.</p>
+
+<h3>HTMLHint</h3>
+
+<p><a href="http://htmlhint.com/">HTMLHint</a> is a linter for HTML code. Unlike the markup validation service, this allows you to specify what specific validation rules are to be used to check your HTML code. For example you can specify that all tags should be in lowercase. Or that in every file, an ID can only be used once. Here&rsquo;s an example:</p>
+
+<p><img src="/images/posts/devtools_linters/htmlhint.png" alt="htmlhint" /></p>
+
+<p>HTMLHint gives you feedback on which specific line has problems in it. And if you hover over the line number, you will see what the specific error is. In the example above you can see that the errors are:</p>
+
+<ul>
+<li>the id <code>a_unique_id</code> has been used twice. It doesn&rsquo;t matter that the elements used are different as long as an ID is used more than once, it triggers the error on the lines in which the ID is used for the second time.</li>
+<li>the <code>div</code> with the ID of <code>a_unique_id</code> hasn&rsquo;t been closed. Note that this doesn&rsquo;t get triggered on the line where the tag hasn&rsquo;t been closed. Instead it gets triggered on the nearest closing tag which doesn&rsquo;t have a pair.</li>
+</ul>
+
+
+<p>At the bottom part of the website, you can check or uncheck rules depending on what you&rsquo;d like to apply. There are are a number of rules you can choose from and the naming is pretty self-explanatory so I won&rsquo;t be delving into that.</p>
+
+<h3>CSSLint</h3>
+
+<p><a href="http://csslint.net/">CSSLint</a> as the name suggests, is a linter for CSS code. Just like HTMLHint it allows you to specify which validation rules you&rsquo;d like to apply for the checking of your CSS code. With CSSLint there are mostly warning rules but you can trigger errors as well. Such as when a specific rule is empty, or when using unknown CSS properties, or disallowing duplicate one&rsquo;s. Warning rules on the other hand requires you to add fallback colors if you&rsquo;re using <code>hsl</code>, <code>rgba</code>, <code>rgb</code>, or <code>hsla</code> to specify colors. Older browsers might not support those methods of specifying colors so you&rsquo;ll have to provide a fallback in hexadecimal format. Another example is disallowing units for 0 values. This is mostly for performance benefits. Here&rsquo;s an example CSS code that I&rsquo;ve checked with CSSLint:</p>
+
+<p>```css
+body {</p>
+
+<pre><code>font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+padding: 0;
+margin: 0;
+height: 100%;
+width: 100%;
+</code></pre>
+
+<p>}</p>
+
+<h1>settings-button {</h1>
+
+<pre><code>float: right;
+margin-top: 20px;
+margin-right: 20px;
+</code></pre>
+
+<p>}</p>
+
+<p>h1 {</p>
+
+<pre><code>padding-left: 40px;
+display: inline-block;
+</code></pre>
+
+<p>}</p>
+
+<h1>message {</h1>
+
+<pre><code>padding: 20px 40px;
+background: #64CF49;
+</code></pre>
+
+<p>}</p>
+
+<h1>sidebar {</h1>
+
+<pre><code>width: 20%;
+float: left;
+background-color: #67B6DA;
+position: fixed;
+height: 100%;
+</code></pre>
+
+<p>}</p>
+
+<h1>items-container {</h1>
+
+<pre><code>width: 80%;
+float: left;
+position: relative;
+margin-left: 20%;
+background-color: #F7F7F7;
+</code></pre>
+
+<p>}</p>
+
+<p>ul li {</p>
+
+<pre><code>list-style: none;
+</code></pre>
+
+<p>}</p>
+
+<h1>sidebar h3 {</h1>
+
+<pre><code>border-bottom: 3px solid;
+padding: 0;
+padding-left: 30px;
+</code></pre>
+
+<p>}</p>
+
+<h1>types li {</h1>
+
+<pre><code>padding: 10px 30px;
+</code></pre>
+
+<p>}</p>
+
+<p>ul#types {</p>
+
+<pre><code>padding: 0;
+font-size: 15px;
+</code></pre>
+
+<p>}</p>
+
+<h1>types li a {</h1>
+
+<pre><code>text-decoration: none;
+color: #575757;
+</code></pre>
+
+<p>}</p>
+
+<h1>items {</h1>
+
+<pre><code>padding: 0 20px;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li a {</h1>
+
+<pre><code>text-decoration: none;
+color: #3A3A3A;
+display: inline-block;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li {</h1>
+
+<pre><code>padding: 20px;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li:hover {</h1>
+
+<pre><code>background-color: #DFDFDF;
+</code></pre>
+
+<p>}</p>
+
+<p>.item-info {</p>
+
+<pre><code>display: inline-block;
+width: 100%;
+font-size: 15px;
+color: #8A8A8A;
+margin-top: 5px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And then it showed me the following feedback:</p>
+
+<p><img src="/images/posts/devtools_linters/csslint.png" alt="csslint" /></p>
+
+<p>As you can see I&rsquo;ve used a lot of ID&rsquo;s in this css file so CSSLint is complaining that I shouldn&rsquo;t use ID&rsquo;s. This is mainly because CSSLint have this idea that ID&rsquo;s are completely unique and therefore there&rsquo;s no room for reuse. CSSLint advocates the use of OOCSS (Object-oriented CSS) whose main principle is the reusability of code by means of using objects.</p>
+
+<p>Another warning is the use of overqualified selectors:</p>
+
+<p>```css
+ul#types{</p>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>It&rsquo;s saying that just using <code>#types</code> would suffice.</p>
+
+<p>The last type of warning is the heading should not be qualified warning:</p>
+
+<p>```css</p>
+
+<h1>sidebar h3 {</h1>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This is because headings are considered as top-level styles. This means that you shouldn&rsquo;t define their styles under a specific element. Because their appearance should be consistent throughout the entire website. Note that this is not saying that headings cannot be nested under a specific element. You can do that but when you&rsquo;re declaring their styles it should be just on its own so that you can ensure that they look the same throughout the whole website.</p>
+
+<h3>JSHint</h3>
+
+<p><a href="http://jshint.com/">JSHint</a> helps to detect errors and potential problems in your JavaScript code. It checks for undefined variables, the use of <code>eval</code> (we all know that <code>eval</code> is evil right?), unused variables and <a href="http://jshint.com/docs/options/">many others</a>. In the JSHint website you can configure which rules to apply by clicking on the <em>configure</em> link. Here&rsquo;s an example of how it works:</p>
+
+<p><img src="/images/posts/devtools_linters/jshint.png" alt="jshint" /></p>
+
+<p>As you can see it provides you with some code metrics. It tells you how many functions has been defined, how many variables are not defined and how many are not used.</p>
+
+<p>It also tells you the cyclomatic complexity of the largest functions. In case you&rsquo;re wondering, <a href="https://en.wikipedia.org/wiki/Cyclomatic_complexity">cyclomatic complexity</a> is just a fancy term for the complexity of a specific program. You can see that the cyclomatic complexity of the largest function that I&rsquo;ve defined is 2. And the median (average) complexity of all the functions in the file is 1.5. People generally say that a cyclomatic complexity of 0 to 5 is fine. But if you get around 6 or more then you should consider refactoring your code.</p>
+
+<p>Another warning that you can see in the example is the missing &ldquo;use strict&rdquo; statement. This is a way of telling the browser to use strict mode. I haven&rsquo;t really dived into strict mode yet but the main idea is that adding this literal expression at the very top of each JavaScript file and at the very top of each function makes the browser complain more about your code. Take for example the following code:</p>
+
+<p><code>javascript
+x = "y"; //browser: sweet!
+console.log(x);
+</code></p>
+
+<p>Without invoking strict mode, the browser would happily execute this piece of code for you. But with strict mode it will complain that you haven&rsquo;t defined <code>x</code> yet.</p>
+
+<p><code>javascript
+"use strict";
+x = "y"; //browser: Uncaught ReferenceError: x is not defined
+console.log(x);
+</code></p>
+
+<h3>Command Line Tool</h3>
+
+<p>HTMLHint, CSSLint, and JSHint can all be used through the command line. We&rsquo;re going to take a look at how to do that in this section.</p>
+
+<p>The first thing that you need to do is to install node.js and npm. But we&rsquo;re not going to go through that here because I previously mentioned it in my article on <a href="http://wern-ancheta.com/blog/2014/03/30/a-whirlwind-tour-of-web-developer-tools-package-managers/">package managers</a>. Go ahead and check that out if you don&rsquo;t already have node.js and npm installed.</p>
+
+<p>Once you&rsquo;ve installed node.js and npm, you can now install htmlhint, csslint, and jshint using npm:</p>
+
+<p><code>
+npm install -g htmlhint csslint jshint
+</code></p>
+
+<p>You can now immediately use them right after the installation is complete:</p>
+
+<p><code>
+htmlhint index.html
+csslint style.css
+jshint main.js
+</code></p>
+
+<p>Note that each of these tools already comes with default options. So if you were to execute each of the commands above, you will most likely get a warning or an error if your code is already complex enough. But you can also specify which rules to apply by creating a configuration file inside of your project directory.</p>
+
+<p>For HTMLHint the configuration file that you have to create is <code>.htmlhintrc</code> and it looks something like this:</p>
+
+<p>```json
+{</p>
+
+<pre><code>"tagname-lowercase": true,
+"attr-lowercase": true,
+"tag-pair": true,
+"doctype-first": true,
+"tag-self-close": true,
+"attr-no-duplication": true,
+"attr-value-double-quotes": true,
+"attr-value-not-empty": false,
+"title-require": true,
+"id-unique": true,
+"inline-style-disabled": true, 
+"inline-script-disabled": true,
+"doctype-html5": true,
+"alt-require": false
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You can find the rules that you can specify in <a href="https://github.com/yaniswang/HTMLHint/wiki/Rules">this page</a>.</p>
+
+<p>Here&rsquo;s the HTMLHint cli-tool in action:</p>
+
+<p><img src="/images/posts/devtools_linters/htmlhint-cli.png" alt="htmlhint-cli" /></p>
+
+<p>And here&rsquo;s the file that I checked:</p>
+
+<p>```html
+&lt;!DOCTYPE html>
+<html lang="en">
+<head></p>
+
+<pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Document&lt;/title&gt;
+</code></pre>
+
+<p></head>
+<body></p>
+
+<pre><code>&lt;div&gt;
+    &lt;p id="boom"&gt;&lt;/p&gt;
+    &lt;span id="boom"&gt;&lt;/span&gt;
+    &lt;STRONG&gt;&lt;/STRONG&gt;
+    &lt;strong&gt;&lt;/strong&gt;
+    &lt;span&gt;
+    &lt;i data href=fldsfl BOOM="bam!" style="color:red;"&gt;&lt;b&gt;dds&lt;/b&gt;&lt;/i&gt;
+    &lt;div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p></body>
+</html>
+```</p>
+
+<p>For CSSLint it&rsquo;s <code>.csslintrc</code> and it looks like this:</p>
+
+<p><code>json
+{
+  "adjoining-classes": false,
+  "box-sizing": false,
+  "box-model": false,
+  "compatible-vendor-prefixes": false,
+  "floats": false,
+  "font-sizes": false,
+  "gradients": false,
+  "important": false,
+  "known-properties": false,
+  "outline-none": false,
+  "qualified-headings": false,
+  "regex-selectors": false,
+  "shorthand": false,
+  "text-indent": false,
+  "unique-headings": false,
+  "universal-selector": false,
+  "unqualified-attributes": false
+}
+</code></p>
+
+<p>Note that I&rsquo;ve pick up that configuration straight from <a href="https://github.com/twbs/bootstrap/blob/master/less/.csslintrc">bootstrap&rsquo;s</a> <code>.csslintrc</code> file. You can find the rules for CSSLint in <a href="https://github.com/CSSLint/csslint/wiki/Rules">this page</a>.</p>
+
+<p>Here&rsquo;s CSSLint&rsquo;s cli-tool in action:</p>
+
+<p><img src="/images/posts/devtools_linters/csslint-cli.png" alt="csslint-cli" /></p>
+
+<p>Here&rsquo;s the stylesheet that was checked:</p>
+
+<p>```css
+body {</p>
+
+<pre><code>font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+padding: 0;
+margin: 0;
+height: 100%;
+width: 100%;
+</code></pre>
+
+<p>}</p>
+
+<h1>settings-button {</h1>
+
+<pre><code>float: right;
+margin-top: 20px;
+margin-right: 20px;
+</code></pre>
+
+<p>}</p>
+
+<p>h1 {</p>
+
+<pre><code>padding-left: 40px;
+display: inline-block;
+</code></pre>
+
+<p>}</p>
+
+<h1>message {</h1>
+
+<pre><code>padding: 20px 40px;
+background: #64CF49;
+</code></pre>
+
+<p>}</p>
+
+<h1>sidebar {</h1>
+
+<pre><code>width: 20%;
+float: left;
+background-color: #67B6DA;
+position: fixed;
+height: 100%;
+</code></pre>
+
+<p>}</p>
+
+<h1>items-container {</h1>
+
+<pre><code>width: 80%;
+float: left;
+position: relative;
+margin-left: 20%;
+background-color: #F7F7F7;
+</code></pre>
+
+<p>}</p>
+
+<p>ul li {</p>
+
+<pre><code>list-style: none;
+</code></pre>
+
+<p>}</p>
+
+<h1>sidebar h3 {</h1>
+
+<pre><code>border-bottom: 3px solid;
+padding: 0;
+padding-left: 30px;
+</code></pre>
+
+<p>}</p>
+
+<h1>types li {</h1>
+
+<pre><code>padding: 10px 30px;
+</code></pre>
+
+<p>}</p>
+
+<p>ul#types {</p>
+
+<pre><code>padding: 0;
+font-size: 15px;
+</code></pre>
+
+<p>}</p>
+
+<h1>types li a {</h1>
+
+<pre><code>text-decoration: none;
+color: #575757;
+</code></pre>
+
+<p>}</p>
+
+<h1>items {</h1>
+
+<pre><code>padding: 0 20px;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li a {</h1>
+
+<pre><code>text-decoration: none;
+color: #3A3A3A;
+display: inline-block;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li {</h1>
+
+<pre><code>padding: 20px;
+</code></pre>
+
+<p>}</p>
+
+<h1>items li:hover {</h1>
+
+<pre><code>background-color: #DFDFDF;
+</code></pre>
+
+<p>}</p>
+
+<p>.item-info {</p>
+
+<pre><code>display: inline-block;
+width: 100%;
+font-size: 15px;
+color: #8A8A8A;
+margin-top: 5px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Lastly there&rsquo;s jshint. Here&rsquo;s a sample <code>.jshintrc</code> file which I&rsquo;ve taken from <a href="https://github.com/CSSLint/csslint/blob/master/.jshintrc">CSSLint</a>. CSSLint is basically written in JavaScript that&rsquo;s why it has its own <code>.jshintrc</code> file to help the developers in checking their code.</p>
+
+<p>```json
+{</p>
+
+<pre><code>"camelcase": true,
+"curly": true,
+"eqeqeq": true,
+"es3": true,
+"forin": true,
+"immed": true,
+"indent": 4,
+"latedef": true,
+"newcap": true,
+"noarg": true,
+"noempty": true,
+"nonbsp": true,
+"quotmark": "double",
+"strict": true,
+"undef": true,
+"unused": true
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You can find a list of options <a href="http://jshint.com/docs/options/">here</a>.</p>
+
+<p>And here is JSHint&rsquo;s cli tool in action:</p>
+
+<p><img src="/images/posts/devtools_linters/jshint-cli.png" alt="jshint-cli" /></p>
+
+<p>With this script file being checked:</p>
+
+<p>```javascript
+&ldquo;use strict&rdquo;;
+x = &ldquo;y&rdquo;;
+console.log(x);</p>
+
+<p>function beam(){</p>
+
+<pre><code>return x + u;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Build Tool Integration</h3>
+
+<p>Ok so we have a slight improvement over just copying and pasting the code that we want to check in the HTMLHint, CSSLint, and JSHint website. But wouldn&rsquo;t it be great if we don&rsquo;t need to execute the command every time we need to check? And in real-world projects you would most likely have multiple css, JavaScript and HTML files. So executing the commands for each of those files would be too troublesome and time-consuming. That is where build tools comes in. Luckily I&rsquo;ve already done an article specifically about <a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">build tools</a> so if you&rsquo;re new to it then be sure to check that out. Then you can go back to this article once you have an idea how to use a build tool.</p>
+
+<p>Ok so you&rsquo;re back. Hopefully you&rsquo;ve learned all about Grunt and Gulp. In this article we&rsquo;ll be using Gulp and the Gulp plugins for HTMLHint, CSSLint and JSHint. You can install those with the following command:</p>
+
+<p><code>
+npm install gulp gulp-htmlhint gulp-csslint gulp-jshint
+</code></p>
+
+<p>Optionally you can also install the formatters to make the reports more beautiful.</p>
+
+<p><code>
+npm install htmlhint-stylish jshint-stylish
+</code></p>
+
+<p>Note that there&rsquo;s also a package called <a href="https://www.npmjs.com/package/csslint-stylish">csslint-stylish</a> but it currently doesn&rsquo;t work with Gulp. If you&rsquo;re reading this article at a later time be sure to check out that page and see if it already works for Gulp.</p>
+
+<p>The next step is to create a <code>gulpfile.js</code> file in the root of your project directory and then add the following code:</p>
+
+<p>```javascript
+var gulp   = require(&lsquo;gulp&rsquo;);</p>
+
+<p>var htmlhint = require(&ldquo;gulp-htmlhint&rdquo;);
+var csslint = require(&lsquo;gulp-csslint&rsquo;);
+var jshint = require(&lsquo;gulp-jshint&rsquo;);</p>
+
+<p>gulp.task(&lsquo;lint_html&rsquo;, function(){</p>
+
+<pre><code>gulp.src("*.html")
+    .pipe(htmlhint())
+    .pipe(htmlhint.reporter("htmlhint-stylish"));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;lint_css&rsquo;, function(){
+  gulp.src(&lsquo;*.css&rsquo;)</p>
+
+<pre><code>.pipe(csslint())
+.pipe(csslint.reporter());
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;lint_js&rsquo;, function(){</p>
+
+<pre><code>gulp.src('*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter("jshint-stylish"));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;watch&rsquo;, function() {</p>
+
+<pre><code>gulp.watch('*.html', ['lint_html']);
+gulp.watch('*.css', ['lint_css']);
+gulp.watch('*.js', ['lint_js']);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Like I said earlier, I won&rsquo;t go deep into this because I&rsquo;ve already written a whole article on <a href="http://wern-ancheta.com/blog/2014/04/27/a-whirlwind-tour-of-web-developer-tools-build-tools/">Build Tools</a>. Basically what this file does is to declare all the task that we want to perform with Gulp. We have four tasks in total, one for each linter and one for watching files in a specific directory. The only task that we need to execute is the last one:</p>
+
+<p><code>
+gulp watch
+</code></p>
+
+<p>What this does is to watch all the HTML files and then execute the HTML Linter. The same is true with the other file types. The linter for each specific file type is executed once you save a file. So if you press <code>ctrl + s</code> on your keyboard, the task is immediately executed. What you can do is you can either switch windows (<code>alt + tab</code>) or put the command line window and your text-editor side by side so you get instant feedback on your code.</p>
+
+<h3>Text-editor Integration</h3>
+
+<p>For the final part we&rsquo;re going to look at how to integrate the linting tools in the text-editor. I&rsquo;m a Sublime Text user so I&rsquo;ll be using it for the examples. But if you&rsquo;re using another text-editor or IDE be sure to check out if these tools are also available.</p>
+
+<p>The first thing that you need to do is to install the SublimeLinter plugin with Sublime <a href="https://packagecontrol.io/">Package Control</a>.</p>
+
+<p>Once installed, determine where HTMLHint, CSSLint, and JSHint are installed in your computer. In Ubuntu you can do something like:</p>
+
+<p><code>
+which htmlhint
+which csslint
+which jshint
+</code></p>
+
+<p>That will return the path to the executable file. For me it was <code>/home/wern/.nvm/v4.0.0/bin/csslint</code> for csslint. Note that <code>csslint</code> in that path is the executable file itself. So the path that you actually want is <code>/home/wern/.nvm/v4.0.0/bin</code>. It returned the same path for HTMLHint and JSHint for me so I only need that one path. Once you&rsquo;ve found it, go ahead and copy that path.</p>
+
+<p>Next open Sublime Text, click on the <em>preferences</em> menu > <em>package settings</em> > <em>SublimeLinter</em> > <em>Settings &ndash; User</em>. This opens the user configuration file for SublimeLinter. Add the following into it and then save.</p>
+
+<p><code>json
+{}
+</code></p>
+
+<p>Open the file again by going through the same steps above. This time Sublime Text has already added the default configurations in there. What you need to do now is to look for the <code>paths</code> object and under your current operating system at the path to where the HTMLHint, CSSLint and JSHint executables are. Because I&rsquo;m using Ubuntu I had to put it inside <code>linux</code> object.</p>
+
+<p>```json
+&ldquo;paths&rdquo;: {</p>
+
+<pre><code>"linux": [
+    "/home/wern/.nvm/v4.0.0/bin"
+],
+"osx": [],
+"windows": []
+</code></pre>
+
+<p>},
+```</p>
+
+<p>Once you&rsquo;re done, save the file then restart Sublime Text (close it and open again).</p>
+
+<p>Open the Sublime Text console by pressing <code>ctrl + `</code> then look for something similar to the following:</p>
+
+<p><code>
+SublimeLinter: htmlhint activated: /home/wern/.nvm/v4.0.0/bin/htmlhint
+SublimeLinter: jshint activated: /home/wern/.nvm/v4.0.0/bin/jshint
+SublimeLinter: csslint activated: /home/wern/.nvm/v4.0.0/bin/csslint
+</code></p>
+
+<p>This tells you that SublimeLinter has successfully picked up the paths to where the linters are installed. If you&rsquo;re seeing that then you&rsquo;re good to go, if not then be sure to check if the path that you&rsquo;ve supplied really contains the executable code for each of those linters.</p>
+
+<p>Here are some screenshot that shows the linters in action:</p>
+
+<p><img src="/images/posts/devtools_linters/htmlhint-text.png" alt="htmlhint text editor" /></p>
+
+<p><img src="/images/posts/devtools_linters/csslint-text.png" alt="csslint text editor" /></p>
+
+<p><img src="/images/posts/devtools_linters/jshint-text.png" alt="jshint text editor" /></p>
+
+<p>The yellow dots indicates warnings, while the red dots indicate errors. If you move your cursor over to the line where a dot is, you can see the actual message on the status bar (bottom left corner of the screen). Pretty sweet right?</p>
+
+<h2>Conclusion</h2>
+
+<p>That&rsquo;s it! In this article you&rsquo;ve learned how to use some of the tools that you could use to help you with determining potential problems in your HTML, CSS and JavaScript code. You&rsquo;ve also learned how to integrate this into your workflow by making use of the command-line tool or the text-editor integration.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://github.com/yaniswang/HTMLHint/wiki">HTMLHint Wiki</a></li>
+<li><a href="https://github.com/CSSLint/csslint/wiki">CSSLint Wiki</a></li>
+<li><a href="https://github.com/jshint/jshint/wiki/Documentation">JSHint Wiki</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

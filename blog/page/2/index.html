@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="One of my pain points as a teacher is checking student activities. That includes seat works, assignments and quizzes. Checking takes a lot of time. &hellip;">
+  <meta name="description" content="When writing PHP applications there&rsquo;s often a need for working with dates and times. In this tutorial, I&rsquo;ll be walking you through Carbon &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,263 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon/">Working With Dates and Times in PHP With Carbon</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-31T17:32:00+08:00" pubdate data-updated="true">Oct 31<span>st</span>, 2015</time>
+        
+         | <a href="/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When writing PHP applications there&rsquo;s often a need for working with dates and times. In this tutorial, I&rsquo;ll be walking you through Carbon, a simple PHP API extension for the DateTime class. It basically makes working with dates and times a lot more easier. I&rsquo;ve personally used this library on my <a href="https://github.com/anchetaWern/ahead">Ahead</a> project, a Laravel app for scheduling posts to social media sites like Facebook, Twitter and LinkedIn.</p>
+
+<h3>Installation</h3>
+
+<p>To install Carbon, you need to use <a href="https://getcomposer.org/">Composer</a>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require nesbot/carbon</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>Include the vendor autoload in your file and then use the <code>Carbon</code> class in the <code>Carbon</code> namespace.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Carbon\Carbon</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting the Current Date and Time</h4>
+
+<p>You can get the current date and time using the <code>now</code> method. If you do not specify an argument, it uses the default timezone from your PHP config.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">();</span> <span class="c1">//2015-07-26 20:21:20</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to use a different timezone, you can pass a <a href="http://php.net/manual/en/timezones.php">valid timezone</a> as the argument.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">(</span><span class="s1">&#39;Asia/Manila&#39;</span><span class="p">);</span> <span class="c1">//2015-07-26 20:21:20</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Aside from the <code>now</code> method, there&rsquo;s also <code>today</code>, which returns the start of today&rsquo;s date, <code>yesterday</code>, which returns the start of the date yesterday, and <code>tomorrow</code>, which returns the start of the date tomorrow.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">today</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-26 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">yesterday</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-25 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">tomorrow</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-27 00:00:00</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Converting to String</h4>
+
+<p>By default, methods in Carbon returns a datetime object. Though its an object, you can directly output it using <code>echo</code> because of the <code>__toString</code> magic method. But if you want to convert it to a string, you can use the <code>toDateString</code> or <code>toDateTimeString</code> methods.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toDateString</span><span class="p">();</span> <span class="c1">//2015-07-26</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-26 20:22:50</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Parsing Dates</h4>
+
+<p>You can also parse dates in all sorts of formats using the <code>parse</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;2015/03/30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-03-30 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;2015-03-30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-03-30 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;2015-03-30 00:10:25&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-03-30 00:10:25</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;today&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-26 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;yesterday&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-25 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;tomorrow&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-27 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;2 days ago&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-24 20:49:53</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;+3 days&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-29 20:49:53</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;+2 weeks&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-08-09 20:49:53</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;+4 months&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-11-26 20:49:53</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;-1 year&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2014-07-26 20:49:53</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;next wednesday&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-29 00:00:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;last friday&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toDateTimeString</span><span class="p">();</span> <span class="c1">//2015-07-24 00:00:00</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Constructing Dates</h4>
+
+<p>You can also construct dates by using individual parts such as the year month and day.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$year</span> <span class="o">=</span> <span class="s1">&#39;2015&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$month</span> <span class="o">=</span> <span class="s1">&#39;04&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$day</span> <span class="o">=</span> <span class="s1">&#39;12&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">createFromDate</span><span class="p">(</span><span class="nv">$year</span><span class="p">,</span> <span class="nv">$month</span><span class="p">,</span> <span class="nv">$day</span><span class="p">);</span> <span class="c1">//2015-04-12 20:55:59</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$hour</span> <span class="o">=</span> <span class="s1">&#39;02&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$minute</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span><span class="o">:</span>
+</span><span class='line'><span class="nv">$second</span> <span class="o">=</span> <span class="s1">&#39;30&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="nv">$year</span><span class="p">,</span> <span class="nv">$month</span><span class="p">,</span> <span class="nv">$day</span><span class="p">,</span> <span class="nv">$hour</span><span class="p">,</span> <span class="nv">$minute</span><span class="p">,</span> <span class="nv">$second</span><span class="p">);</span> <span class="c1">//2015-04-12 02:15:30</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Optionally, you can pass in any valid timezone as the last argument for the <code>create</code> and <code>createFromDate</code> methods.</p>
+
+<h4>Manipulating Dates</h4>
+
+<p>Manipulating dates can be done by using <code>add</code> (to add) or <code>sub</code> (to subtract) followed by the unit of time you want to add or subtract. For example, you want to add a specific number of days to the specific date, you use the <code>addDays</code> method. There&rsquo;s also the <code>modify</code> method which allows you to pass in the modification that you want. It takes the format of <code>+</code> or <code>-</code> followed by the unit value and the unit. So if you want to add a year to the current date, you use <code>+1 year</code>. Check out the examples below to have an idea what else you can do.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">addDays</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span> <span class="c1">//2015-08-20 21:10:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">addWeeks</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span> <span class="c1">//2015-08-16 21:10:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">addHours</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span> <span class="c1">//2015-07-27 22:10:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">subHours</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">//2015-07-26 19:10:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">addHours</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">addMinutes</span><span class="p">(</span><span class="mi">12</span><span class="p">);</span> <span class="c1">//2015-07-26 23:22:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">modify</span><span class="p">(</span><span class="s1">&#39;+15 days&#39;</span><span class="p">);</span> <span class="c1">//2015-08-10 21:10:00</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">modify</span><span class="p">(</span><span class="s1">&#39;-2 days&#39;</span><span class="p">);</span> <span class="c1">//2015-07-24 21:10:00</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Commonly in PHP apps are international. This means that you need to work with different timezones. Here&rsquo;s how to convert from one timezone to another.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nx">Carbon</span><span class="o">::</span><span class="na">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setTimezone</span><span class="p">(</span><span class="s1">&#39;America/Los_Angeles&#39;</span><span class="p">);</span> <span class="c1">//2015-07-26 06:23:48</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Comparing Dates</h4>
+
+<p>You can use the following methods to compare dates in Carbon.</p>
+
+<ul>
+<li><code>min</code> &ndash; returns the smaller date.</li>
+<li><code>max</code> &ndash; returns the larger date.</li>
+<li><code>eq</code> &ndash; check if two dates are the same.</li>
+<li><code>gt</code> &ndash; check if the first date is greater than the second date.</li>
+<li><code>lt</code> &ndash; check if the first date is less than the second date.</li>
+<li><code>gte</code> &ndash; check if the first date is greater than or equal to the second date.</li>
+<li><code>lte</code> &ndash; check if the first date is lesser than or equal to the second date.</li>
+</ul>
+
+
+<p>Other helpful methods include <code>isWeekDay</code>, <code>isWeekend</code>, <code>isYesterday</code>, <code>isFuture</code> and <code>isPast</code>.</p>
+
+<h4>Laravel Integration</h4>
+
+<p>If you&rsquo;re on Laravel, you can just add an alias for the Carbon library in the <code>aliases</code> in the <code>app/config/app.php</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">&#39;Carbon&#39; =&gt; &#39;Carbon\Carbon&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with the Carbon library in PHP. Carbon is a really nice and easy way to work with dates in PHP. Be sure to check out the <a href="http://carbon.nesbot.com/docs/">official docs</a> to learn more about it.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3211,60 +3468,6 @@ The common platforms that you may want to install are android, ios and browser. 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/">What Playing Clash of Clans Can Teach You About Life</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-23T12:33:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2015</time>
-        
-         | <a href="/blog/2015/08/23/what-playing-clash-of-clans-can-teach-you-about-life/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li><p><strong>You need to prioritize</strong>. There&rsquo;s only like 2 or 3 builder huts when you start playing the game.
-That&rsquo;s why it&rsquo;s important to prioritize which things you upgrade. This is because upgrading takes time. And cancelling an upgrade will only return you half of the original resources you spent on the upgrade.
-This usually means there&rsquo;s no turning back after you&rsquo;ve clicked on that upgrade button.
-Just like in life you have to prioritize. You can&rsquo;t just aimlessly be doing everything that seems interesting.</p></li>
-<li><p><strong>You need the right strategy for every raid that you do</strong>. Not every base is the same. There are those whose traps are laid outside the walls. This usually means that it will be triggered the moment your troops lay their first step to loot the resources. There are traps that are laid right before key defenses such as the mortar or air defense. Just like in life you need to carefully plan out your every move, especially the most important one&rsquo;s such as career decisions.</p></li>
-<li><p><strong>You can&rsquo;t protect everything</strong>. Put your town hall outside in order to protect what&rsquo;s really important. Some players might disagree to this and say that if you have designed your base well then that&rsquo;s the ultimate defense that keeps other players from attacking your village. Some players might also be prioritizing trophies instead of loots and that&rsquo;s why they keep their town halls at the very center of their village. Those are all valid arguments. Some players might value trophies more than the loots. But come to think of it. There&rsquo;s over 6 million people who have it installed on Android. I don&rsquo;t know about iOS but 6 million people is a lot. This means that no matter how strong you think your village is. There&rsquo;s always someone who can 3-star it effortlessly and take away a ton of loot. So it&rsquo;s important to realize that you can&rsquo;t protect everything. You have to prioritize what you really want to protect and design your village in such a way that what you want to protect is protected in the best possible way. Just like in life you can&rsquo;t get everything that you want. It&rsquo;s important to love what you currently have.</p></li>
-<li><p><strong>There&rsquo;s always someone out there whose stronger than you</strong>. There&rsquo;s no need to feel bad whenever some other 3-starred your village. Just like in life you don&rsquo;t need to feel bad about yourself whenever you see someone who is effortlessly better than you at the thing you&rsquo;re good at. What&rsquo;s important is that you work hard to get better each day.</p></li>
-<li><p><strong>Revenge is for the weak</strong>. I don&rsquo;t know for other players but I pretty much don&rsquo;t care about other players attacking my village. It doesn&rsquo;t really matter whether they 3-starred me or they took a whole bunch of loot. They&rsquo;re just playing the game just like me. It&rsquo;s natural for your village to get attacked. It&rsquo;s natural for other players to take some resources out of your village. Just like it&rsquo;s natural for you take others as well. But maybe it&rsquo;s just me. I heard you would get a lot more trophies if you revenge on someone. But trophies aren&rsquo;t really important to me. I pretty much gave up on trying to go higher when I reached the crystal league. I tried going higher in order to get the gems as the reward but it&rsquo;s just hard to look for town halls that are unprotected.</p></li>
-<li><p><strong>Time is money but you can also use money to buy time</strong>. When I gave up on reaching the master league in order to get the gem reward for reaching it. And eventually buy the 5th builder with it. I just bought some gems with some real money in order to buy the 5th builder. I don&rsquo;t really regret it since I just saved myself a lot of time trying to find unprotected town halls and get a measely amount of trophy. This is an example of buying time with money. With the 5th builder upgrades would be faster. And I no longer need to aim to get the gem reward for entering the master, champion, titan or legend leagues.</p></li>
-<li><p><strong>Patience</strong>. Upgrades takes time, creating troops and spells takes time. Gold mines, elixir collectors, heck dark elixir drills takes time. Heroes takes time to sleep. Cool-down for requesting clan castle troops takes time. Searching for a good village to raid takes time. Patience is really a virtue. Especially so when it comes to playing clash of clans. Where every move you do takes time.</p></li>
-<li><p><strong>Collaboration</strong>. It&rsquo;s important to collaborate with your clan mates during a war. You can&rsquo;t always have a mirror that directly matches yours. Often times your mirror is far stronger than you are. Sometimes the town hall doesn&rsquo;t even match. That&rsquo;s why it&rsquo;s important to collaborate with your clan mates so that you can adjust accordingly. Just like in life it&rsquo;s important to collaborate with your fellow employees, with your community and with your family.</p></li>
-<li><p><strong>Progress will come naturally if you just stick to it</strong>. When I first started I really envied my friends on facebook because their villages looks so strong and tough and mine looks really week. But 6 months later I saw that my village is pretty much already on par with them or even stronger. I&rsquo;m not addicted to the game though. I really only play on my free time. But I always stick to it every day. And that is why I can see that I&rsquo;ve come a long way since I first started. This is similar to anything that you want to achieve in life. As a developer I always see to it that I learn something new each day. Or have a better understanding of what I previously learned. Just stick to doing something each day and progress will come naturally.</p></li>
-<li><p><strong>Even heroes needs sleep</strong>. So do you. Sleep is needed in order to recharge your mind and body. The brain needs sleep in order to consolidate the things you&rsquo;ve learned during the day. So even if you think you&rsquo;re a superhero who only needs 3 hours of sleep in order to get by. You&rsquo;re not. You can&rsquo;t really hack your way out of sleep. That&rsquo;s what makes us human. We need rest in order to recharge.</p></li>
-<li><p><strong>Donate and you will be rewarded</strong>. In clash of clans there is this donation system wherein a clan member can ask for troops to be put in the clan castle. Those troops will serve as guards for your village. If you always donate troops whenever someone asks for it, you will be remembered and your clan mates would love to donate troops to you as well. The same is true in life as well. Always donate to the less fortunate people and you will be rewarded.</p></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -3282,6 +3485,10 @@ Just like in life you have to prioritize. You can&rsquo;t just aimlessly be doin
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting/">A Whirlwind Tour of Web Developer Tools: Linting</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/01/04/a-developers-new-years-resolution/">A Developers New Years Resolution</a>
       </li>
     
@@ -3295,10 +3502,6 @@ Just like in life you have to prioritize. You can&rsquo;t just aimlessly be doin
     
       <li class="post">
         <a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/05/tools-of-trade/">Tools of Trade</a>
       </li>
     
   </ul>
