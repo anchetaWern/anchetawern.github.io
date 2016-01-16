@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-01-15T07:41:43+08:00</updated>
+  <updated>2016-01-16T08:59:47+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,415 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Stalking the Programmer Way with Clearbit's Person API]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/"/>
+    <updated>2016-01-15T13:41:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the Clearbit Person API.</p>
+
+<p>In order to use the Person API, you first have to <a href="https://clearbit.com/">create your Clearbit account</a>. After creating your account, you&rsquo;ll be assigned with an API key which you can use for making requests to their API.</p>
+
+<p>If you&rsquo;re on Ruby, Node or Python you can search for the Clearbit client for each of those platforms from their <a href="https://github.com/clearbit">Github page</a>. Just search for &lsquo;clearbit-&rsquo; followed by the platform. So if you&rsquo;re on Ruby, then you search for &lsquo;clearbit-ruby&rsquo;. You can then install the client on your machine and follow the examples provided in the <a href="https://clearbit.com/docs#person-api">official documentation</a>.</p>
+
+<p>At the time of writing of this article, there&rsquo;s still no client available for PHP. But you can use <a href="http://guzzle.readthedocs.org/en/latest/">Guzzle</a> to easily make requests to their API. You can install Guzzle via Composer by executing the following command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can include the vendor autoload file in your test file and then create a new instance of the Guzzle client. Use <code>http://person.clearbit.com/v1/</code> as the base for all your requests.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://person.clearbit.com/v1/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To request the data of a specific person, you can pass their email after the <code>people/email</code> endpoint. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;people/email/ancheta.wern@gmail.com&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">)));</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$res</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Clearbit uses basic authentication. The API key acts as the username so the password should be left blank.</p>
+
+<p>It would then return the following output.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[id] =&gt; c29c2e9f-d082-4525-8dd3-1291835bf834</span>
+</span><span class='line'><span class="x">[name] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [fullName] =&gt; Wern Ancheta</span>
+</span><span class='line'><span class="x">        [givenName] =&gt; Wern</span>
+</span><span class='line'><span class="x">        [familyName] =&gt; Ancheta</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[email] =&gt; ancheta.wern@gmail.com</span>
+</span><span class='line'><span class="x">[gender] =&gt; </span>
+</span><span class='line'><span class="x">[location] =&gt; Philippines</span>
+</span><span class='line'><span class="x">[geo] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [city] =&gt; </span>
+</span><span class='line'><span class="x">        [state] =&gt; </span>
+</span><span class='line'><span class="x">        [country] =&gt; PH</span>
+</span><span class='line'><span class="x">        [lat] =&gt; 12.879721</span>
+</span><span class='line'><span class="x">        [lng] =&gt; 121.774017</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast</span>
+</span><span class='line'><span class="x">[site] =&gt; http://wern-ancheta.com</span>
+</span><span class='line'><span class="x">[avatar] =&gt; https://d1ts43dypk8bqh.cloudfront.net/v1/avatars/c29c2e9f-d082-4525-8dd3-1291835bf834</span>
+</span><span class='line'><span class="x">[employment] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [name] =&gt; </span>
+</span><span class='line'><span class="x">        [title] =&gt; </span>
+</span><span class='line'><span class="x">        [domain] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[facebook] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; vern.ancheta</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[github] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [id] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">        [company] =&gt; </span>
+</span><span class='line'><span class="x">        [blog] =&gt; </span>
+</span><span class='line'><span class="x">        [followers] =&gt; </span>
+</span><span class='line'><span class="x">        [following] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[twitter] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; Wern_Ancheta</span>
+</span><span class='line'><span class="x">        [id] =&gt; 283769265</span>
+</span><span class='line'><span class="x">        [bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 330</span>
+</span><span class='line'><span class="x">        [following] =&gt; 961</span>
+</span><span class='line'><span class="x">        [statuses] =&gt; 7402</span>
+</span><span class='line'><span class="x">        [favorites] =&gt; 356</span>
+</span><span class='line'><span class="x">        [location] =&gt; Philippines</span>
+</span><span class='line'><span class="x">        [site] =&gt; http://wern-ancheta.com</span>
+</span><span class='line'><span class="x">        [avatar] =&gt; https://pbs.twimg.com/profile_images/2585189311/7q7dmz2h78lv32f8tw78.jpeg</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[linkedin] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[googleplus] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[angellist] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [id] =&gt; </span>
+</span><span class='line'><span class="x">        [bio] =&gt; </span>
+</span><span class='line'><span class="x">        [blog] =&gt; </span>
+</span><span class='line'><span class="x">        [site] =&gt; </span>
+</span><span class='line'><span class="x">        [followers] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[klout] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [score] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[foursquare] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[aboutme] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [bio] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[gravatar] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; zenonn</span>
+</span><span class='line'><span class="x">        [urls] =&gt; Array</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://kyokasuigetsu25.wordpress.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Data Integrated Entity Blog</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://wernancheta.wordpress.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Wern Ancheta Web Development Blog</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [2] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://wernancheta.carbonmade.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Wern Ancheta Portfolio</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">        [avatar] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75</span>
+</span><span class='line'><span class="x">        [avatars] =&gt; Array</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [url] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75</span>
+</span><span class='line'><span class="x">                        [type] =&gt; thumbnail</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [url] =&gt; http://0.gravatar.com/userimage/29616243/2e8d74c1260a1c180328ea6317ebb8e0</span>
+</span><span class='line'><span class="x">                        [type] =&gt; </span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[fuzzy] =&gt; </span>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, it&rsquo;s not very complete. It has left out my Github, LinkedIn, GooglePlus and FourSquare profiles. It doesn&rsquo;t have one for Instagram as well. Nevertheless, this API proves to be a good resource if you want to get data about a specific person.</p>
+
+<p>If you want to update your own data, extract the ID that clearbit has assigned to your profile and then use it on your request. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://person.clearbit.com/v1/&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;people/YOUR-CLEARBIT-ID/flag&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="k">array</span><span class="p">(</span><span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>            <span class="p">),</span>
+</span><span class='line'>            <span class="s1">&#39;form_params&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;foursquare&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wern_ancheta&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;googleplus&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;+WernAncheta&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;github&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;anchetaWern&#39;</span>
+</span><span class='line'>                <span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;gender&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;male&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;linkedin&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wernr&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;gravatar&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;vernancheta&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">)</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getStatusCode</span><span class="p">();</span> <span class="c1">//200</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that your data won&rsquo;t be immediately update. This is good since the update must be reviewed by an actual human so that not just anyone can mess with your data.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Whirlwind Tour of Web Developer Tools: Linting]]></title>
@@ -4711,529 +5120,6 @@ The common platforms that you may want to install are android, ios and browser. 
 <li><a href="http://plugins.cordova.io/#/">Cordova Plugin Repository</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using the Twig Templating Engine in PHP]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php/"/>
-    <updated>2015-08-31T21:40:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/08/31/using-the-twig-templating-engine-in-php</id>
-    <content type="html"><![CDATA[<p>Separation of concerns is a design principle in Computer Science for separating a program into sections, each with their own responsibility. MVC, an architectural pattern used in most PHP frameworks allows developers to implement separation of concerns. One part of MVC is the View which handles the presentation layer of the application. In this tutorial I&rsquo;ll walk you through Twig, a templating engine for PHP. This allows us to separate the view from the business logic of the app.</p>
-
-<h3>Installation</h3>
-
-<p>Execute the following on your terminal to install Twig.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer require twig/twig</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In your working directory, create a <code>template</code> folder for storing the Twig templates and a <code>cache</code> folder for storing the cached templates. Twig puts the compiled version of templates into this folder so that the next time it&rsquo;s requested and there&rsquo;s no change in the template, it serves the cached version instead. Be sure to change the file permissions of the <code>cache</code> folder so that Twig can write into it. I had to do the following to have it work.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo chmod -R 777 cache</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Usage</h3>
-
-<p>To use Twig, include the vendor autoload file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next create a new instance of the <code>Twig_Loader_Filesystem</code> class and supply the path to the <code>templates</code> directory as its argument. After that, create a new instance of the <code>Twig_Environment</code> class and pass in the loader and an array of options as its argument. In this case, only the <code>cache</code> item is specified. This allows you specify the path of the <code>cache</code> directory.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Loader_Filesystem</span><span class="p">(</span><span class="s1">&#39;templates&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$twig</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Twig_Environment</span><span class="p">(</span><span class="nv">$loader</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;cache&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;cache&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To load a template, use the <code>loadTemplate</code> method on the Twig instance that you created earlier. Then pass in the path to the template that you want to use. After that, you can now output the view by calling the <code>render</code> method on the template. This accepts the data that you want to pass in to the view.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">19</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the <code>templates</code> directory, create the <code>index.html</code> file that you were referring to in the <code>loadTemplate</code> method and then add the following code.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;</span>twig<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From the above code, you can see that the way the individual items in the array that you passed in the <code>render</code> method is by wrapping the name of the item in double curly braces. Here&rsquo;s how it&rsquo;s going to look like when access from the browser.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/twig/twig-first.png" alt="twig hello world" /></p>
-
-<p>Note that Twig is pretty forgiving when it comes to data that you pass in to the template. For example, if you do not pass in the <code>age</code>, it wouldn&rsquo;t throw an error at you.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Outputting Raw HTML</h4>
-
-<p>Twig automatically escapes HTML so if you pass in HTML as data for your template, it is outputted as is.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;html_string&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&lt;h3&gt;hi Im an html inside a template&lt;/h3&gt;&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you want to get the HTML interpreted by the browser, you have to use the <code>raw</code> filter.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Hi {{ name }}!<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;h2&gt;</span>You are {{ age }} years old<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>    {{ html_string | raw }}
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Looping through Arrays</h4>
-
-<p>You can also load arrays for the data.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;users&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Yoh Asakura&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span>
-</span><span class='line'>        <span class="p">),</span>
-</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ash Ketchum&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">14</span>
-</span><span class='line'>        <span class="p">),</span>
-</span><span class='line'>        <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>            <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Naruto Uzumaki&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">25</span>
-</span><span class='line'>        <span class="p">)</span>
-</span><span class='line'>    <span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And the way you output them in your template is by using the <code>for</code> tag. Here&rsquo;s an example.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>        {% for user in users %}
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>        {% endfor %}
-</span><span class='line'>        
-</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To use the <code>for</code> tag, assign an alias for each item in the array that you specified. In this case, the array is <code>users</code> and each item is represented by the <code>user</code> variable. Inside the <code>for</code> tag, you can then access each user field. After you have outputted all the user details, close it with the <code>endfor</code> tag.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/twig/array.png" alt="for" /></p>
-
-<h4>Conditions</h4>
-
-<p>Twig allows you to use tags such as <code>if</code>, <code>else</code>, <code>elseif</code>, and <code>if not</code> for checking for simple conditions in your templates. Here&rsquo;s an example of using the <code>if</code> tag for checking if the age of the user is greater than or equal to 14.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Users<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;thead&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Name<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;th&gt;</span>Age<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/thead&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>        {% for user in users %}
-</span><span class='line'>            {% if user.age &gt;= 14 %}
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.name }}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;td&gt;</span>{{ user.age }}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            {% endif %}
-</span><span class='line'>        {% endfor %}
-</span><span class='line'>        
-</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://wern-ancheta.com/images/posts/twig/if.png" alt="if" /></p>
-
-<h4>Layouts</h4>
-
-<p>Layouts can be used in order to avoid repitition of re-occurring elements of the page such as the header and the footer. To use layouts, you need a base template (<code>base.html</code>). This is the template that contains all the re-occurring elements of the page. This is essentially the main template in which all the other templates (child templates) inherits from. Your main template is where you usually declare the content block. This is the block that&rsquo;s going to get replaced by the content that you supply on your child template.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;assets/css/style.css&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;title&gt;</span><span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>        {% block content %}{% endblock %}
-</span><span class='line'>        
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From your child template (<code>child.html</code>), use the <code>extends</code> tag to let Twig know which template you want to inherit from. Below it, you use the same block that you used in your main template. In this case the name of the block is <code>content</code>. Inside the block, you put in the contents that you want to get rendered.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'>{% extends &quot;base.html&quot; %}
-</span><span class='line'>{% block content %}
-</span><span class='line'>   <span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>{% endblock %}
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Notice that in the main template there&rsquo;s also a stylesheet. You need to create it on the <code>assets/css</code> directory. Here&rsquo;s the contents of the <code>style.css</code> file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">background</span><span class="o">:</span> <span class="nb">orange</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, from your PHP file, all you need to do is render the child template.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$template</span> <span class="o">=</span> <span class="nv">$twig</span><span class="o">-&gt;</span><span class="na">loadTemplate</span><span class="p">(</span><span class="s1">&#39;child.html&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;my page&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s how its going to look like:</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/twig/layouts.png" alt="layouts" /></p>
-
-<h4>Filters</h4>
-
-<p>Twig also comes with filters. Filters as the name suggests, allows you to filter the content that you pass into it.</p>
-
-<h5>Format</h5>
-
-<p>If you need to perform a find and replace on a string, you can use the <code>format</code> filter. Here&rsquo;s how you can use it.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Ami Damaru&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">110</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>{{ &quot;Hi I&#39;m %s, I am %s years old&quot; | format(name, age) }}
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you have seen above, to use the <code>format</code> filter, simply pipe it to the string that you want to perform find and replace on. Each string that you want to replace within the string should be <code>%s</code>. So in this case, the name and age is substituted for that value. It should result in the following output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>Hi I&#39;m Ami Damaru, I am 110 years old
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>nl2br</h5>
-
-<p>The <code>nl2br</code> filter allows you to replace line breaks (<code>\n</code>) in your string with <code>&lt;br /&gt;</code> tags. This is useful if you want to output a string which uses line breaks instead of <code>&lt;br /&gt;</code> tags.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;string&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;The quick brown fox</span><span class="se">\n</span><span class="s2"> jumps over the heade</span><span class="se">\n</span><span class="s2"> of the lazy dog&quot;</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    {{ string | nl2br }}
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>date and date_modify</h5>
-
-<p>The <code>date</code> and <code>date_modify</code> filters allows you to modify the formatting of a date.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$date</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s1">&#39;date&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;2015-03-17&#39;</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$template</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span><span class='line'>    {{ date | date_modify(&quot;+1 week&quot;) | date(&#39;M d, Y&#39;) }}
-</span><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The code above will output.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>Aug 03, 2015
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>upper and lower</h5>
-
-<p><code>upper</code> and <code>lower</code> filters allows you to change the individual letters in a string into uppercase or lowercase.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'>{{ &#39;MAKE ME LOWER&#39; | lower }}
-</span><span class='line'>{{ &#39;make me higher&#39; | upper }}
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The output will be:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>make me lower MAKE ME HIGHER
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with Twig, a templating engine for PHP. For more information about Twig, check out the <a href="http://twig.sensiolabs.org/documentation">official docs</a>.</p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Yo! It&rsquo;s been a while but I&rsquo;ve decided to continue this series on A Whirlwind Tour of Web Developer Tools. For those who don&rsquo;t know &hellip;">
+  <meta name="description" content="In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,444 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way With Clearbit&#8217;s Person API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-15T13:41:00+08:00" pubdate data-updated="true">Jan 15<span>th</span>, 2016</time>
+        
+         | <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the Clearbit Person API.</p>
+
+<p>In order to use the Person API, you first have to <a href="https://clearbit.com/">create your Clearbit account</a>. After creating your account, you&rsquo;ll be assigned with an API key which you can use for making requests to their API.</p>
+
+<p>If you&rsquo;re on Ruby, Node or Python you can search for the Clearbit client for each of those platforms from their <a href="https://github.com/clearbit">Github page</a>. Just search for &lsquo;clearbit-&rsquo; followed by the platform. So if you&rsquo;re on Ruby, then you search for &lsquo;clearbit-ruby&rsquo;. You can then install the client on your machine and follow the examples provided in the <a href="https://clearbit.com/docs#person-api">official documentation</a>.</p>
+
+<p>At the time of writing of this article, there&rsquo;s still no client available for PHP. But you can use <a href="http://guzzle.readthedocs.org/en/latest/">Guzzle</a> to easily make requests to their API. You can install Guzzle via Composer by executing the following command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, you can include the vendor autoload file in your test file and then create a new instance of the Guzzle client. Use <code>http://person.clearbit.com/v1/</code> as the base for all your requests.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://person.clearbit.com/v1/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To request the data of a specific person, you can pass their email after the <code>people/email</code> endpoint. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;people/email/ancheta.wern@gmail.com&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>        <span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">)));</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$res</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Clearbit uses basic authentication. The API key acts as the username so the password should be left blank.</p>
+
+<p>It would then return the following output.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">[id] =&gt; c29c2e9f-d082-4525-8dd3-1291835bf834</span>
+</span><span class='line'><span class="x">[name] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [fullName] =&gt; Wern Ancheta</span>
+</span><span class='line'><span class="x">        [givenName] =&gt; Wern</span>
+</span><span class='line'><span class="x">        [familyName] =&gt; Ancheta</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[email] =&gt; ancheta.wern@gmail.com</span>
+</span><span class='line'><span class="x">[gender] =&gt; </span>
+</span><span class='line'><span class="x">[location] =&gt; Philippines</span>
+</span><span class='line'><span class="x">[geo] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [city] =&gt; </span>
+</span><span class='line'><span class="x">        [state] =&gt; </span>
+</span><span class='line'><span class="x">        [country] =&gt; PH</span>
+</span><span class='line'><span class="x">        [lat] =&gt; 12.879721</span>
+</span><span class='line'><span class="x">        [lng] =&gt; 121.774017</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast</span>
+</span><span class='line'><span class="x">[site] =&gt; http://wern-ancheta.com</span>
+</span><span class='line'><span class="x">[avatar] =&gt; https://d1ts43dypk8bqh.cloudfront.net/v1/avatars/c29c2e9f-d082-4525-8dd3-1291835bf834</span>
+</span><span class='line'><span class="x">[employment] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [name] =&gt; </span>
+</span><span class='line'><span class="x">        [title] =&gt; </span>
+</span><span class='line'><span class="x">        [domain] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[facebook] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; vern.ancheta</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[github] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [id] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">        [company] =&gt; </span>
+</span><span class='line'><span class="x">        [blog] =&gt; </span>
+</span><span class='line'><span class="x">        [followers] =&gt; </span>
+</span><span class='line'><span class="x">        [following] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[twitter] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; Wern_Ancheta</span>
+</span><span class='line'><span class="x">        [id] =&gt; 283769265</span>
+</span><span class='line'><span class="x">        [bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast</span>
+</span><span class='line'><span class="x">        [followers] =&gt; 330</span>
+</span><span class='line'><span class="x">        [following] =&gt; 961</span>
+</span><span class='line'><span class="x">        [statuses] =&gt; 7402</span>
+</span><span class='line'><span class="x">        [favorites] =&gt; 356</span>
+</span><span class='line'><span class="x">        [location] =&gt; Philippines</span>
+</span><span class='line'><span class="x">        [site] =&gt; http://wern-ancheta.com</span>
+</span><span class='line'><span class="x">        [avatar] =&gt; https://pbs.twimg.com/profile_images/2585189311/7q7dmz2h78lv32f8tw78.jpeg</span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[linkedin] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[googleplus] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[angellist] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [id] =&gt; </span>
+</span><span class='line'><span class="x">        [bio] =&gt; </span>
+</span><span class='line'><span class="x">        [blog] =&gt; </span>
+</span><span class='line'><span class="x">        [site] =&gt; </span>
+</span><span class='line'><span class="x">        [followers] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[klout] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [score] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[foursquare] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[aboutme] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; </span>
+</span><span class='line'><span class="x">        [bio] =&gt; </span>
+</span><span class='line'><span class="x">        [avatar] =&gt; </span>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[gravatar] =&gt; Array</span>
+</span><span class='line'><span class="x">    (</span>
+</span><span class='line'><span class="x">        [handle] =&gt; zenonn</span>
+</span><span class='line'><span class="x">        [urls] =&gt; Array</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://kyokasuigetsu25.wordpress.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Data Integrated Entity Blog</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://wernancheta.wordpress.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Wern Ancheta Web Development Blog</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [2] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [value] =&gt; http://wernancheta.carbonmade.com</span>
+</span><span class='line'><span class="x">                        [title] =&gt; Wern Ancheta Portfolio</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">        [avatar] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75</span>
+</span><span class='line'><span class="x">        [avatars] =&gt; Array</span>
+</span><span class='line'><span class="x">            (</span>
+</span><span class='line'><span class="x">                [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [url] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75</span>
+</span><span class='line'><span class="x">                        [type] =&gt; thumbnail</span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">                [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                    (</span>
+</span><span class='line'><span class="x">                        [url] =&gt; http://0.gravatar.com/userimage/29616243/2e8d74c1260a1c180328ea6317ebb8e0</span>
+</span><span class='line'><span class="x">                        [type] =&gt; </span>
+</span><span class='line'><span class="x">                    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">[fuzzy] =&gt; </span>
+</span><span class='line'><span class="x">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, it&rsquo;s not very complete. It has left out my Github, LinkedIn, GooglePlus and FourSquare profiles. It doesn&rsquo;t have one for Instagram as well. Nevertheless, this API proves to be a good resource if you want to get data about a specific person.</p>
+
+<p>If you want to update your own data, extract the ID that clearbit has assigned to your profile and then use it on your request. Here&rsquo;s an example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GuzzleHttp\Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://person.clearbit.com/v1/&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;people/YOUR-CLEARBIT-ID/flag&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="k">array</span><span class="p">(</span><span class="s1">&#39;auth&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;YOUR-CLEARBIT-API-KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>            <span class="p">),</span>
+</span><span class='line'>            <span class="s1">&#39;form_params&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="s1">&#39;foursquare&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wern_ancheta&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;googleplus&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;+WernAncheta&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;github&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;anchetaWern&#39;</span>
+</span><span class='line'>                <span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;gender&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;male&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s1">&#39;linkedin&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wernr&#39;</span><span class="p">),</span>
+</span><span class='line'>                <span class="s1">&#39;gravatar&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;handle&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;vernancheta&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">)</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">(),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getStatusCode</span><span class="p">();</span> <span class="c1">//200</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that your data won&rsquo;t be immediately update. This is good since the update must be reviewed by an actual human so that not just anyone can mess with your data.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2416,70 +2854,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/03/introduction-to-grade-viewer/">Introduction to Grade Viewer</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-11-03T13:50:00+08:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2015</time>
-        
-         | <a href="/blog/2015/11/03/introduction-to-grade-viewer/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As a teacher I want to show my students what grades they&rsquo;re getting. And the common tool for recording their scores is a spreadsheet. This would automatically compute their grade based on the scores they got from each of the activities. If you have already worked with a spreadsheet before, you might already know that its hard to present it to another person. Because you have to scroll horizontally in order to view every thing. And since the total score for an activity is located at the top row, so you also have to scroll to the top whenever they want to see the total score.  To put it simply, the eye of the viewer has to move a lot. Not to mention, they will see the grades of their classmates as well. So directly showing the grades in the spreadsheet is really a no go.</p>
-
-<p>Luckily I can actually program things. That&rsquo;s why I built <a href="https://github.com/anchetaWern/gradeviewer">Grade Viewer</a>. This allows me to upload an excel spreadsheet, then specify the range that I want to target.</p>
-
-<p><img src="/images/posts/gradeviewer/new-subject.png" alt="new subject" /></p>
-
-<p>Then I enter the activities done for each component (lecture and laboratory) of the subject.</p>
-
-<p><img src="/images/posts/gradeviewer/activities.png" alt="activities" /></p>
-
-<p>Once that&rsquo;s done (provided I have specified every thing correctly) I can now go to the dashboard and click on the <em>view grades</em> link.</p>
-
-<p><img src="/images/posts/gradeviewer/dashboard.png" alt="dashboard" /></p>
-
-<p>This will list out all the subjects that I&rsquo;ve currently added. From here I can click on the <em>update</em> link to update the excel file and the settings. Or the <em>view</em> link to view the grades.</p>
-
-<p><img src="/images/posts/gradeviewer/subjects.png" alt="subjects" /></p>
-
-<p>Here&rsquo;s what the page for viewing grades looks like:</p>
-
-<p><img src="/images/posts/gradeviewer/grades.png" alt="grades" /></p>
-
-<p>It has a search feature but it can also navigate with previous and next links. Just below the name of the student is their grade for lecture and laboratory.  And below it is the break down. From here, the student can just ask any questions regarding their grades.</p>
-
-<h3>Future Plans</h3>
-
-<p>Nothing really. The project is in a pretty sweet spot right now when it comes to functionality. But just like many of my side projects, the underlying code has a lot of room for improvement.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2495,6 +2869,10 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way with Clearbit&#8217;s Person API</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting/">A Whirlwind Tour of Web Developer Tools: Linting</a>
       </li>
     
@@ -2508,10 +2886,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
     
       <li class="post">
         <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company with Clearbit&#8217;s Company API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a>
       </li>
     
   </ul>

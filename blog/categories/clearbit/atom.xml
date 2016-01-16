@@ -4,7 +4,7 @@
   <title><![CDATA[Category: clearbit | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/clearbit/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-01-15T07:41:43+08:00</updated>
+  <updated>2016-01-16T08:59:47+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,248 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Stalking the Programmer Way with Clearbit's Person API]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/"/>
+    <updated>2016-01-15T13:41:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api</id>
+    <content type="html"><![CDATA[<p>In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the Clearbit Person API.</p>
+
+<p>In order to use the Person API, you first have to <a href="https://clearbit.com/">create your Clearbit account</a>. After creating your account, you&rsquo;ll be assigned with an API key which you can use for making requests to their API.</p>
+
+<p>If you&rsquo;re on Ruby, Node or Python you can search for the Clearbit client for each of those platforms from their <a href="https://github.com/clearbit">Github page</a>. Just search for &lsquo;clearbit-&rsquo; followed by the platform. So if you&rsquo;re on Ruby, then you search for &lsquo;clearbit-ruby&rsquo;. You can then install the client on your machine and follow the examples provided in the <a href="https://clearbit.com/docs#person-api">official documentation</a>.</p>
+
+<p>At the time of writing of this article, there&rsquo;s still no client available for PHP. But you can use <a href="http://guzzle.readthedocs.org/en/latest/">Guzzle</a> to easily make requests to their API. You can install Guzzle via Composer by executing the following command.</p>
+
+<p><code>
+composer require guzzlehttp/guzzle:~6.0
+</code></p>
+
+<p>Once that&rsquo;s done, you can include the vendor autoload file in your test file and then create a new instance of the Guzzle client. Use <code>http://person.clearbit.com/v1/</code> as the base for all your requests.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>$client = new GuzzleHttp\Client(array(&lsquo;base_uri&rsquo; => &lsquo;<a href="http://person.clearbit.com/v1/">http://person.clearbit.com/v1/</a>&rsquo;));
+?>
+```</p>
+
+<p>To request the data of a specific person, you can pass their email after the <code>people/email</code> endpoint. Here&rsquo;s an example.</p>
+
+<p>```php
+&lt;?php
+$response = $client->get(&lsquo;people/email/<a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;&#x3a;&#x61;&#x6e;&#99;&#104;&#x65;&#116;&#x61;&#x2e;&#119;&#101;&#x72;&#110;&#x40;&#x67;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#x6d;">&#97;&#110;&#x63;&#x68;&#x65;&#x74;&#97;&#x2e;&#119;&#x65;&#114;&#x6e;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#x2e;&#99;&#111;&#109;</a>&rsquo;, array(&lsquo;auth&rsquo; => array(</p>
+
+<pre><code>    'YOUR-CLEARBIT-API-KEY', ''
+)));
+</code></pre>
+
+<p>$res = json_decode($response->getBody(), true);
+?></p>
+
+<pre>
+    <?php print_r($res); ?>
+</pre>
+
+
+<p>```</p>
+
+<p>Clearbit uses basic authentication. The API key acts as the username so the password should be left blank.</p>
+
+<p>It would then return the following output.</p>
+
+<p>```</p>
+
+<pre><code>Array
+</code></pre>
+
+<p>(</p>
+
+<pre><code>[id] =&gt; c29c2e9f-d082-4525-8dd3-1291835bf834
+[name] =&gt; Array
+    (
+        [fullName] =&gt; Wern Ancheta
+        [givenName] =&gt; Wern
+        [familyName] =&gt; Ancheta
+    )
+
+[email] =&gt; ancheta.wern@gmail.com
+[gender] =&gt; 
+[location] =&gt; Philippines
+[geo] =&gt; Array
+    (
+        [city] =&gt; 
+        [state] =&gt; 
+        [country] =&gt; PH
+        [lat] =&gt; 12.879721
+        [lng] =&gt; 121.774017
+    )
+
+[bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast
+[site] =&gt; http://wern-ancheta.com
+[avatar] =&gt; https://d1ts43dypk8bqh.cloudfront.net/v1/avatars/c29c2e9f-d082-4525-8dd3-1291835bf834
+[employment] =&gt; Array
+    (
+        [name] =&gt; 
+        [title] =&gt; 
+        [domain] =&gt; 
+    )
+
+[facebook] =&gt; Array
+    (
+        [handle] =&gt; vern.ancheta
+    )
+
+[github] =&gt; Array
+    (
+        [handle] =&gt; 
+        [id] =&gt; 
+        [avatar] =&gt; 
+        [company] =&gt; 
+        [blog] =&gt; 
+        [followers] =&gt; 
+        [following] =&gt; 
+    )
+
+[twitter] =&gt; Array
+    (
+        [handle] =&gt; Wern_Ancheta
+        [id] =&gt; 283769265
+        [bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast
+        [followers] =&gt; 330
+        [following] =&gt; 961
+        [statuses] =&gt; 7402
+        [favorites] =&gt; 356
+        [location] =&gt; Philippines
+        [site] =&gt; http://wern-ancheta.com
+        [avatar] =&gt; https://pbs.twimg.com/profile_images/2585189311/7q7dmz2h78lv32f8tw78.jpeg
+    )
+
+[linkedin] =&gt; Array
+    (
+        [handle] =&gt; 
+    )
+
+[googleplus] =&gt; Array
+    (
+        [handle] =&gt; 
+    )
+
+[angellist] =&gt; Array
+    (
+        [handle] =&gt; 
+        [id] =&gt; 
+        [bio] =&gt; 
+        [blog] =&gt; 
+        [site] =&gt; 
+        [followers] =&gt; 
+        [avatar] =&gt; 
+    )
+
+[klout] =&gt; Array
+    (
+        [handle] =&gt; 
+        [score] =&gt; 
+    )
+
+[foursquare] =&gt; Array
+    (
+        [handle] =&gt; 
+    )
+
+[aboutme] =&gt; Array
+    (
+        [handle] =&gt; 
+        [bio] =&gt; 
+        [avatar] =&gt; 
+    )
+
+[gravatar] =&gt; Array
+    (
+        [handle] =&gt; zenonn
+        [urls] =&gt; Array
+            (
+                [0] =&gt; Array
+                    (
+                        [value] =&gt; http://kyokasuigetsu25.wordpress.com
+                        [title] =&gt; Data Integrated Entity Blog
+                    )
+
+                [1] =&gt; Array
+                    (
+                        [value] =&gt; http://wernancheta.wordpress.com
+                        [title] =&gt; Wern Ancheta Web Development Blog
+                    )
+
+                [2] =&gt; Array
+                    (
+                        [value] =&gt; http://wernancheta.carbonmade.com
+                        [title] =&gt; Wern Ancheta Portfolio
+                    )
+
+            )
+
+        [avatar] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75
+        [avatars] =&gt; Array
+            (
+                [0] =&gt; Array
+                    (
+                        [url] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75
+                        [type] =&gt; thumbnail
+                    )
+
+                [1] =&gt; Array
+                    (
+                        [url] =&gt; http://0.gravatar.com/userimage/29616243/2e8d74c1260a1c180328ea6317ebb8e0
+                        [type] =&gt; 
+                    )
+
+            )
+
+    )
+
+[fuzzy] =&gt; 
+</code></pre>
+
+<p>)
+```</p>
+
+<p>As you can see, it&rsquo;s not very complete. It has left out my Github, LinkedIn, GooglePlus and FourSquare profiles. It doesn&rsquo;t have one for Instagram as well. Nevertheless, this API proves to be a good resource if you want to get data about a specific person.</p>
+
+<p>If you want to update your own data, extract the ID that clearbit has assigned to your profile and then use it on your request. Here&rsquo;s an example.</p>
+
+<p>```php
+&lt;?php
+$client = new GuzzleHttp\Client([&lsquo;base_uri&rsquo; => &lsquo;<a href="http://person.clearbit.com/v1/">http://person.clearbit.com/v1/</a>&rsquo;]);
+$response = $client->post(&lsquo;people/YOUR-CLEARBIT-ID/flag&rsquo;,</p>
+
+<pre><code>        array('auth' =&gt; array(
+            'YOUR-CLEARBIT-API-KEY', ''
+        ), 
+        'form_params' =&gt; array(
+            'foursquare' =&gt; array('handle' =&gt; 'wern_ancheta'),
+            'googleplus' =&gt; array('handle' =&gt; '+WernAncheta'),
+            'github' =&gt; array(
+                'handle' =&gt; 'anchetaWern'
+            ),
+            'gender' =&gt; 'male',
+            'linkedin' =&gt; array('handle' =&gt; 'wernr'),
+            'gravatar' =&gt; array('handle' =&gt; 'vernancheta')
+        )
+    )
+</code></pre>
+
+<p>);
+$res = json_decode($response->getBody(), true);
+echo $response->getStatusCode(); //200
+?>
+```</p>
+
+<p>Note that your data won&rsquo;t be immediately update. This is good since the update must be reviewed by an actual human so that not just anyone can mess with your data.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Information About Any Company with Clearbit's Company API]]></title>
@@ -264,248 +506,6 @@ $data = json_decode($response->getBody(), true);
 
 <p>)
 ```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Stalking the Programmer Way with Clearbit's Person API]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/01/15/stalking-the-programmer-way-with-clearbits-person-api/"/>
-    <updated>2015-01-15T13:41:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/01/15/stalking-the-programmer-way-with-clearbits-person-api</id>
-    <content type="html"><![CDATA[<p>In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the Clearbit Person API.</p>
-
-<p>In order to use the Person API, you first have to <a href="https://clearbit.com/">create your Clearbit account</a>. After creating your account, you&rsquo;ll be assigned with an API key which you can use for making requests to their API.</p>
-
-<p>If you&rsquo;re on Ruby, Node or Python you can search for the Clearbit client for each of those platforms from their <a href="https://github.com/clearbit">Github page</a>. Just search for &lsquo;clearbit-&rsquo; followed by the platform. So if you&rsquo;re on Ruby, then you search for &lsquo;clearbit-ruby&rsquo;. You can then install the client on your machine and follow the examples provided in the <a href="https://clearbit.com/docs#person-api">official documentation</a>.</p>
-
-<p>At the time of writing of this article, there&rsquo;s still no client available for PHP. But you can use <a href="http://guzzle.readthedocs.org/en/latest/">Guzzle</a> to easily make requests to their API. You can install Guzzle via Composer by executing the following command.</p>
-
-<p><code>
-composer require guzzlehttp/guzzle:~6.0
-</code></p>
-
-<p>Once that&rsquo;s done, you can include the vendor autoload file in your test file and then create a new instance of the Guzzle client. Use <code>http://person.clearbit.com/v1/</code> as the base for all your requests.</p>
-
-<p>```php
-&lt;?php
-require_once &lsquo;vendor/autoload.php&rsquo;;</p>
-
-<p>$client = new GuzzleHttp\Client(array(&lsquo;base_uri&rsquo; => &lsquo;<a href="http://person.clearbit.com/v1/">http://person.clearbit.com/v1/</a>&rsquo;));
-?>
-```</p>
-
-<p>To request the data of a specific person, you can pass their email after the <code>people/email</code> endpoint. Here&rsquo;s an example.</p>
-
-<p>```php
-&lt;?php
-$response = $client->get(&lsquo;people/email/<a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#x61;&#110;&#99;&#104;&#101;&#116;&#97;&#x2e;&#119;&#101;&#114;&#110;&#64;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#x6d;">&#97;&#110;&#x63;&#x68;&#101;&#x74;&#97;&#x2e;&#x77;&#101;&#x72;&#x6e;&#64;&#x67;&#109;&#97;&#x69;&#108;&#46;&#x63;&#111;&#109;</a>&rsquo;, array(&lsquo;auth&rsquo; => array(</p>
-
-<pre><code>    'YOUR-CLEARBIT-API-KEY', ''
-)));
-</code></pre>
-
-<p>$res = json_decode($response->getBody(), true);
-?></p>
-
-<pre>
-    <?php print_r($res); ?>
-</pre>
-
-
-<p>```</p>
-
-<p>Clearbit uses basic authentication. The API key acts as the username so the password should be left blank.</p>
-
-<p>It would then return the following output.</p>
-
-<p>```</p>
-
-<pre><code>Array
-</code></pre>
-
-<p>(</p>
-
-<pre><code>[id] =&gt; c29c2e9f-d082-4525-8dd3-1291835bf834
-[name] =&gt; Array
-    (
-        [fullName] =&gt; Wern Ancheta
-        [givenName] =&gt; Wern
-        [familyName] =&gt; Ancheta
-    )
-
-[email] =&gt; ancheta.wern@gmail.com
-[gender] =&gt; 
-[location] =&gt; Philippines
-[geo] =&gt; Array
-    (
-        [city] =&gt; 
-        [state] =&gt; 
-        [country] =&gt; PH
-        [lat] =&gt; 12.879721
-        [lng] =&gt; 121.774017
-    )
-
-[bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast
-[site] =&gt; http://wern-ancheta.com
-[avatar] =&gt; https://d1ts43dypk8bqh.cloudfront.net/v1/avatars/c29c2e9f-d082-4525-8dd3-1291835bf834
-[employment] =&gt; Array
-    (
-        [name] =&gt; 
-        [title] =&gt; 
-        [domain] =&gt; 
-    )
-
-[facebook] =&gt; Array
-    (
-        [handle] =&gt; vern.ancheta
-    )
-
-[github] =&gt; Array
-    (
-        [handle] =&gt; 
-        [id] =&gt; 
-        [avatar] =&gt; 
-        [company] =&gt; 
-        [blog] =&gt; 
-        [followers] =&gt; 
-        [following] =&gt; 
-    )
-
-[twitter] =&gt; Array
-    (
-        [handle] =&gt; Wern_Ancheta
-        [id] =&gt; 283769265
-        [bio] =&gt; JavaScripter, PHP Junkie, Anime Fanatic, Pokemon Master, Supernatural Enthusiast
-        [followers] =&gt; 330
-        [following] =&gt; 961
-        [statuses] =&gt; 7402
-        [favorites] =&gt; 356
-        [location] =&gt; Philippines
-        [site] =&gt; http://wern-ancheta.com
-        [avatar] =&gt; https://pbs.twimg.com/profile_images/2585189311/7q7dmz2h78lv32f8tw78.jpeg
-    )
-
-[linkedin] =&gt; Array
-    (
-        [handle] =&gt; 
-    )
-
-[googleplus] =&gt; Array
-    (
-        [handle] =&gt; 
-    )
-
-[angellist] =&gt; Array
-    (
-        [handle] =&gt; 
-        [id] =&gt; 
-        [bio] =&gt; 
-        [blog] =&gt; 
-        [site] =&gt; 
-        [followers] =&gt; 
-        [avatar] =&gt; 
-    )
-
-[klout] =&gt; Array
-    (
-        [handle] =&gt; 
-        [score] =&gt; 
-    )
-
-[foursquare] =&gt; Array
-    (
-        [handle] =&gt; 
-    )
-
-[aboutme] =&gt; Array
-    (
-        [handle] =&gt; 
-        [bio] =&gt; 
-        [avatar] =&gt; 
-    )
-
-[gravatar] =&gt; Array
-    (
-        [handle] =&gt; zenonn
-        [urls] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [value] =&gt; http://kyokasuigetsu25.wordpress.com
-                        [title] =&gt; Data Integrated Entity Blog
-                    )
-
-                [1] =&gt; Array
-                    (
-                        [value] =&gt; http://wernancheta.wordpress.com
-                        [title] =&gt; Wern Ancheta Web Development Blog
-                    )
-
-                [2] =&gt; Array
-                    (
-                        [value] =&gt; http://wernancheta.carbonmade.com
-                        [title] =&gt; Wern Ancheta Portfolio
-                    )
-
-            )
-
-        [avatar] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75
-        [avatars] =&gt; Array
-            (
-                [0] =&gt; Array
-                    (
-                        [url] =&gt; http://2.gravatar.com/avatar/717bcde740783a83a168468df0dbbb75
-                        [type] =&gt; thumbnail
-                    )
-
-                [1] =&gt; Array
-                    (
-                        [url] =&gt; http://0.gravatar.com/userimage/29616243/2e8d74c1260a1c180328ea6317ebb8e0
-                        [type] =&gt; 
-                    )
-
-            )
-
-    )
-
-[fuzzy] =&gt; 
-</code></pre>
-
-<p>)
-```</p>
-
-<p>As you can see, it&rsquo;s not very complete. It has left out my Github, LinkedIn, GooglePlus and FourSquare profiles. It doesn&rsquo;t have one for Instagram as well. Nevertheless, this API proves to be a good resource if you want to get data about a specific person.</p>
-
-<p>If you want to update your own data, extract the ID that clearbit has assigned to your profile and then use it on your request. Here&rsquo;s an example.</p>
-
-<p>```php
-&lt;?php
-$client = new GuzzleHttp\Client([&lsquo;base_uri&rsquo; => &lsquo;<a href="http://person.clearbit.com/v1/">http://person.clearbit.com/v1/</a>&rsquo;]);
-$response = $client->post(&lsquo;people/YOUR-CLEARBIT-ID/flag&rsquo;,</p>
-
-<pre><code>        array('auth' =&gt; array(
-            'YOUR-CLEARBIT-API-KEY', ''
-        ), 
-        'form_params' =&gt; array(
-            'foursquare' =&gt; array('handle' =&gt; 'wern_ancheta'),
-            'googleplus' =&gt; array('handle' =&gt; '+WernAncheta'),
-            'github' =&gt; array(
-                'handle' =&gt; 'anchetaWern'
-            ),
-            'gender' =&gt; 'male',
-            'linkedin' =&gt; array('handle' =&gt; 'wernr'),
-            'gravatar' =&gt; array('handle' =&gt; 'vernancheta')
-        )
-    )
-</code></pre>
-
-<p>);
-$res = json_decode($response->getBody(), true);
-echo $response->getStatusCode(); //200
-?>
-```</p>
-
-<p>Note that your data won&rsquo;t be immediately update. This is good since the update must be reviewed by an actual human so that not just anyone can mess with your data.</p>
 ]]></content>
   </entry>
   
