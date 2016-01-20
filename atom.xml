@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-01-16T08:59:47+08:00</updated>
+  <updated>2016-01-20T08:20:04+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,352 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Making HTTP Requests with Guzzle]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/01/20/making-http-requests-with-guzzle/"/>
+    <updated>2016-01-20T07:18:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/01/20/making-http-requests-with-guzzle</id>
+    <content type="html"><![CDATA[<p>Most PHP applications today includes the ability to integrate with different web services such as Facebook, Twitter, Google, and other API&rsquo;s. Thus the need for a library to ease the process of making HTTP requests to other servers. Most API&rsquo;s already comes with their own clients for selected programming languages. These clients makes the interaction with their API&rsquo;s easier. But oher services doesn&rsquo;t offere any clients at all. This is where Guzzle comes in, a PHP library that allows you to easily make HTTP requests. In this tutorial, I&rsquo;ll be walking you through this library.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Guzzle through <a href="https://getcomposer.org/">Composer</a> by executing the following command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>You can start using Guzzle by including the vendor autoload file then use the <code>Client</code> class in the <code>GuzzleHttp</code> namespace.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">GuzzleHttp\Client</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From there, you can create a new client. This accepts an array of arguments. The most important one is the <code>base_uri</code>, which is the base URL that will be used for each of the requests that you will make with this client. In the example below, the base URI is that of the <a href="http://pokeapi.co/">Pokemon API</a>, an API which allows you to get any data about Pokemon.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://pokeapi.co/api/v1/&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To make an actual request to an endpoint, you can use the <code>get</code> method to make a <code>GET</code> HTTP request. To extract the response body, you have to call the <code>getBody</code> method in the response that was returned. Most API&rsquo;s today returns a JSON string as their response. The Pokemon API is no exception. So you need to use the <code>json_decode</code> method and pass in the data. You can pass in <code>true</code> as the second argument to convert it to an array.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;pokedex/1&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s the output that you get when accessing the file from the browser. From this data, we know that the <code>pokedex/1</code> endpoint returns all the pokemon that are currently existing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [created] =&gt; 2013-11-09T15:14:48.957604</span>
+</span><span class='line'><span class="x">    [modified] =&gt; 2013-11-09T15:14:48.957565</span>
+</span><span class='line'><span class="x">    [name] =&gt; national</span>
+</span><span class='line'><span class="x">    [pokemon] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; rattata</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/19/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; charmander</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/4/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [2] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; charmeleon</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/5/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [3] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; wartortle</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/8/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [4] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; blastoise</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/9/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [5] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; caterpie</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/10/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [6] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; metapod</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/11/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [7] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; butterfree</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/12/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [8] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; spearow</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/21/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [9] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; kakuna</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/14/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [10] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; beedrill</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/15/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'><span class="x">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that it&rsquo;s not only <code>get</code> method that you can do with Guzzle. Each HTTP methods have their equivalent method in Guzzle. So <code>post</code>, <code>put</code> and <code>delete</code> are all valid method names.</p>
+
+<p>Before moving on, here&rsquo;s another example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;pokemon/150&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$moves</span> <span class="o">=</span> <span class="nb">array_filter</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;moves&#39;</span><span class="p">],</span> <span class="k">function</span><span class="p">(</span><span class="nv">$move</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$move</span><span class="p">[</span><span class="s1">&#39;learn_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;level up&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$description_response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nb">str_replace</span><span class="p">(</span><span class="s1">&#39;/api/v1/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;descriptions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resource_uri&#39;</span><span class="p">]));</span>
+</span><span class='line'><span class="nv">$description_data</span> <span class="o">=</span> <span class="nv">$description_response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$description_data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$description_data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;div&gt;</span>
+</span><span class='line'><span class="x">    &lt;img src=&quot;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="s1">&#39;http://pokeapi.co/media/img/&#39;</span> <span class="o">.</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;pkdx_id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;.png&#39;</span> <span class="cp">?&gt;</span><span class="x">&quot; alt=&quot;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="cp">?&gt;</span><span class="x">&quot;&gt;</span>
+</span><span class='line'><span class="x">    &lt;h4&gt;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="cp">?&gt;</span><span class="x">&lt;/h4&gt;</span>
+</span><span class='line'><span class="x">    &lt;p&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$description_data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    &lt;/p&gt;</span>
+</span><span class='line'><span class="x">    &lt;div&gt;</span>
+</span><span class='line'><span class="x">        &lt;strong&gt;Moves&lt;/strong&gt;</span>
+</span><span class='line'><span class="x">        &lt;ul&gt;            </span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span>
+</span><span class='line'>        <span class="k">foreach</span><span class="p">(</span><span class="nv">$moves</span> <span class="k">as</span> <span class="nv">$move</span><span class="p">){</span>
+</span><span class='line'>        <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;li&gt;</span>
+</span><span class='line'><span class="x">            </span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$move</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;/li&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;/ul&gt;</span>
+</span><span class='line'><span class="x">    &lt;/div&gt;</span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above, 2 <code>GET</code> request were used to get all the data that is needed for the final output. First, the <code>pokemon</code> endpoint is used to get the details of a specific pokemon. Second is the request for getting the description of the pokemon. In order to extract the moves, the <code>array_filter</code> function is used. The condition is to select only moves that have been learned through level up. In order to get the endpoint for getting the description, the <code>str_replace</code> function is used to replace a part of the base uri in the resource uri that was returned. Since the resource uri already has the <code>/api/v1/</code> in the beginning. Guzzle would end up making a request to the following URL if that string isn&rsquo;t replace with an empty one.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://pokeapi.co/api/v1//api/v1/description/150</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output is going to look like this.</p>
+
+<p><img src="http://wern-ancheta.com/images/posts/guzzle/mewtwo.png" alt="mewtwo" /></p>
+
+<p>Finally let&rsquo;s take a look at how to do a <code>POST</code> request with Guzzle. For that let&rsquo;s try to submit a post to Facebook using Facebook API. To do that, declare a new client using the <code>https://graph.facebook.com/</code> as the <code>base_uri</code>. Posting to facebook requires the <code>access_token</code>, <code>message</code> and an optional <code>link</code>. Call the <code>post</code> method and pass in <code>me/feed</code> as the first argument. This is the endpoint for posting to facebook. The second argumment is an array containing the data that you want to submit. In Guzzle, the data should be contained within the <code>query</code> item. You can then call <code>getBody</code> on the response to get the response body. This should return the ID of the post that was created.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$post_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;access_token&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR-FACEBOOK-ACCESS-TOKEN&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;message&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;testing&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;link&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://wern-ancheta.com/&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;me/feed&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;query&#39;</span> <span class="o">=&gt;</span> <span class="nv">$post_data</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$response_body</span> <span class="o">=</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$response_body</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response_body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In This tutorial, you&rsquo;ve learned how to make HTTP requests with the Guzzle library. There&rsquo;s so much more you can do with Guzzle, so be sure to check out their <a href="http://guzzle.readthedocs.org/en/latest/">official docs</a> if you want to learn more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Stalking the Programmer Way with Clearbit's Person API]]></title>
@@ -3840,1286 +4186,6 @@ You then call the <code>execute</code> method to actually execute the query. Thi
 <h3>Conclusion</h3>
 
 <p>In this tutorial, you&rsquo;ve learned how to ease filesystem work with the Flysystem library. You have barely scratch the surface with what&rsquo;s possible with Flysystem. Be sure to check out their <a href="http://flysystem.thephpleague.com/">official website</a> to learn more.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Started with Ionic]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/09/05/getting-started-with-ionic/"/>
-    <updated>2015-09-05T08:01:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/09/05/getting-started-with-ionic</id>
-    <content type="html"><![CDATA[<p>Hybrid Mobile App Development has been gaining traction lately. With the advent of tools such as Cordova, Sencha Touch and Titanium. There&rsquo;s no more stopping web developers from creating their own mobile apps with web technologies. Yes I just said web technologies, that&rsquo;s HTML, CSS, JavaScript and a little bit of talking to a server and you can already create a fancy mobile app. And because of this, lots of mobile frameworks has popped out. There&rsquo;s Ionic, Onsen UI, Junior, Mobile Angular UI, and Kendo UI to name a few. Of those I&rsquo;ve only ever tried jQuery Mobile and Ionic. At first I tried jQuery Mobile since I was already using jQuery for a long time. But it didn&rsquo;t take me long to realize that it wasn&rsquo;t for me nor the project that I was working on at that time. It just didn&rsquo;t have what I need. jQuery Mobile is just a set of UI components that I could use in a mobile app. It didn&rsquo;t have the foundation in which I could build upon. What I needed was a framework that would allow me to just start writing the app without having to worry about laying out the structure myself. This is where Ionic came in. It didn&rsquo;t take me long to find it since it&rsquo;s the first result that came up when I googled &lsquo;mobile hybrid app framework&rsquo;. Ionic utilizes Angular for its UI interactions, gestures and animations. And the best part is you can also use it to structure your app, because Angular itself is a JavaScript framework.
-Ok this intro is getting long. Let&rsquo;s proceed with the fun stuff.</p>
-
-<h3>Setup</h3>
-
-<h4>Node</h4>
-
-<p>In order to start working with Ionic, you first have to install <a href="https://nodejs.org/download/">Node</a>. Go ahead and download the installer for your platform if you don&rsquo;t already have it. If you&rsquo;re an Ubuntu user, you can install Node using NVM (Node Version Manager). To install NVM, execute the following commands in order:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install build-essential libssl-dev
-</span><span class='line'>
-</span><span class='line'>curl https://raw.githubusercontent.com/creationix/nvm/v0.16.1/install.sh | sh
-</span><span class='line'>
-</span><span class='line'>source ~/.profile</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The first command, installs the build tools and SSL development libraries. The second downloads the NVM installer, and the third sources the <code>~/.profile</code> file so that your current command-line session knows about the changes. This basically allows you to use the NVM command without having to logout.</p>
-
-<p>Next, you can now list the available Node versions:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>nvm ls-remote</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will list out a whole bunch of Node versions that are available. But usually you would want to install the current version, which is the last item on the list. At the time of writing of this article, the current version is <code>v0.12.7</code>. So you can go ahead and install that using the <code>nvm install</code> command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>nvm install v0.12.7</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now when you check the Node version installed on your machine, you would see <code>v0.12.7</code>.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>node -v</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next you need to set this version as the default, otherwise you&rsquo;ll have to execute <code>nvm use v0.12.7</code> every time you need to use Node.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>nvm alias default v0.12.7
-</span><span class='line'>nvm use default</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Cordova and Ionic</h4>
-
-<p>Now we&rsquo;re ready to install Cordova and Ionic:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>npm install -g cordova ionic</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done installing, you can create a new project using the <code>ionic start</code> command. There are currently 3 available starter templates you can use: blank, tabs, and sidemenu. In this tutorial we&rsquo;re going to use the tabs.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ionic start demoApp tabs</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Ionic Directory Structure</h4>
-
-<p>The command above will create a <code>demoApp</code> directory which contains the following:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>hooks
-</span><span class='line'>plugins
-</span><span class='line'>scss
-</span><span class='line'>www
-</span><span class='line'>bower.json
-</span><span class='line'>config.xml
-</span><span class='line'>gulpfile.js
-</span><span class='line'>ionic.project
-</span><span class='line'>package.json</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>hooks</code> directory is where you will put the scripts for customizing Cordova commands. I&rsquo;ve never had the need to use this feature so I can&rsquo;t share anything about it. But if you&rsquo;re just getting started, you wouldn&rsquo;t normally need to touch this directory.</p>
-
-<p>The <code>platforms</code> directory is where the different platforms in which your app will be compiled to is stored. Note that its not there by default, you have to install a platform first.</p>
-
-<p>The <code>plugins</code> directory is where Cordova plugins gets installed.</p>
-
-<p>The <code>scss</code> directory is where the main Ionic sass file (ionic.app.scss) is stored. It contains the primary variables for customizing the colors used in your app.</p>
-
-<p>The <code>www</code> directory is where you would usually work. This contains the HTML, JavaScript and CSS files. I won&rsquo;t walk you through each of the contents of the <code>www</code> directory as they&rsquo;re pretty self-explanatory.</p>
-
-<p>The <code>bower.json</code> file contains the front-end dependencies of your app. By default it depends on Ionic. All bower dependencies are installed on the <code>www/lib</code> directory by default. You can install new one&rsquo;s by using the <code>bower install</code> command and then link them on the <code>index.html</code> file in the <code>www</code> directory. When you install new libraries using bower, use the <code>--save</code> or <code>--saveDev</code> option so that it will save the package name on the <code>bower.json</code> file. The <code>--save</code> option is used to specify that the library you&rsquo;re installing is a front-end asset. For example, jQuery or Bootstrap. While the <code>--saveDev</code> option is used for development only. Things like jshint or jasmine.</p>
-
-<p>The <code>config.xml</code> file is where you can change the name, description and author of your app. You can also set your preference for device orientation (either portrait or landscape), features and URL&rsquo;s which your app is allowed to access.</p>
-
-<p>The <code>gulpfile.js</code> file is the Gulp config file used by Ionic. Normally you wouldn&rsquo;t need to touch this. What you need to understand is that this is used by Ionic to execute tasks such as compiling sass files to CSS or watching a specific directory for changes.</p>
-
-<p>The <code>ionic.project</code> file is where you can update the name and app_id of your app. You won&rsquo;t really need to touch this.</p>
-
-<p>Lastly, the <code>package.json</code> file. This contains the dependencies of the Ionic framework. You won&rsquo;t really need to touch this.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;demoapp&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;demoApp: An Ionic project&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;gulp&quot;</span><span class="p">:</span> <span class="s2">&quot;^3.5.6&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;gulp-sass&quot;</span><span class="p">:</span> <span class="s2">&quot;^1.3.3&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;gulp-concat&quot;</span><span class="p">:</span> <span class="s2">&quot;^2.2.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;gulp-minify-css&quot;</span><span class="p">:</span> <span class="s2">&quot;^0.3.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;gulp-rename&quot;</span><span class="p">:</span> <span class="s2">&quot;^1.2.0&quot;</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nt">&quot;devDependencies&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;bower&quot;</span><span class="p">:</span> <span class="s2">&quot;^1.3.3&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;gulp-util&quot;</span><span class="p">:</span> <span class="s2">&quot;^2.2.14&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;shelljs&quot;</span><span class="p">:</span> <span class="s2">&quot;^0.3.0&quot;</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nt">&quot;cordovaPlugins&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>    <span class="s2">&quot;cordova-plugin-device&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;cordova-plugin-console&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;cordova-plugin-whitelist&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;cordova-plugin-splashscreen&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;com.ionic.keyboard&quot;</span>
-</span><span class='line'>  <span class="p">],</span>
-</span><span class='line'>  <span class="nt">&quot;cordovaPlatforms&quot;</span><span class="p">:</span> <span class="p">[]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Platforms</h4>
-
-<p>With Cordova there&rsquo;s only a select few platforms that it supports. So it&rsquo;s not completely write once, compile to all kind of thing. There are different sets of problems to solve for each platform in which you plan to release your app.
-The common platforms that you may want to install are android, ios and browser. For a list of all the platforms supported by Cordova, you can check out the <a href="https://cordova.apache.org/docs/en/4.0.0/guide_platforms_index.md.html#Platform%20Guides">Cordova Platform Guides</a>. Each platform has a different dependency. Usually it&rsquo;s the SDK or the recommended developer tool for that platform. For Android, it&rsquo;s the Android SDK, for iOS it&rsquo;s Xcode, for Windows it&rsquo;s Visual Studio. I&rsquo;m only going to walk you through the Android platform in this tutorial.</p>
-
-<p>You can download the Android SDK installer from <a href="https://developer.android.com/sdk/index.html#Other">this page</a>. Under the SDK Tools Only section, download the package for your platform. I&rsquo;m on Ubuntu so I will download the one for Linux. Once the download is done, extract the files using the <code>tar</code> command or you can also right click on the file and select the archive manager of your choice.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">tar</span> <span class="err">-xvzf</span> <span class="err">android-sdk_r</span><span class="mf">24.3</span><span class="err">.</span><span class="mi">3</span><span class="err">-linux.tgz</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After extraction, it would yield an <code>android-sdk-linux</code> folder which contains the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">add-ons</span>
-</span><span class='line'><span class="err">platforms</span>
-</span><span class='line'><span class="err">tools</span>
-</span><span class='line'><span class="err">SDK</span> <span class="err">Readme.txt</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From that directory, navigate to the <code>tools</code> directory and execute the <code>android</code> command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">./tools/android</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will open up the Android SDK Manager which you can use to install the tools that you need to develop Android apps. At this point you might wonder why we need to install the same things that Android developers need to install. Well, that&rsquo;s because we&rsquo;re still subjected to the same rules even if we write our apps using HTML, CSS, and JavaScript. Since apps created with Cordova and Ionic are just utilizing the Android WebView. Which is basically just a browser without a frame. That&rsquo;s where the HTML, CSS and JavaScript are used. And Cordova just acts as a middleman between the WebView and the native Android functionalities. So if you need to use the camera for your app, Cordova uses the Android API to call for the camera. And once you&rsquo;re done taking a picture it&rsquo;s also the one responsible for returning the data back to your app. This means that Cordova just abstracts away the parts which we usually need to work on as native app developers so we can write our code in JavaScript instead of Java.</p>
-
-<p>Back to where we left. Let&rsquo;s now install the tools we need to get Cordova do its job. Check the following items on the Android SDK Manager and click on Install. This might take a while depending on your download speed.</p>
-
-<p><strong>Tools</strong>
-&ndash; Android SDK Tools</p>
-
-<p><strong>Android 5.1.1 (API 22)</strong>
-&ndash; SDK Platform</p>
-
-<p><strong>Android 5.0.1 (API 21)</strong>
-&ndash; SDK Platform
-&ndash; Google APIs</p>
-
-<p><strong>Android 4.4W.2 (API 20)</strong>
-&ndash; SDK Platform</p>
-
-<p><strong>Android 4.4.2 (API 19)</strong>
-&ndash; SDK Platform
-&ndash; Google APIs (ARM System Image)</p>
-
-<p><strong>Extras</strong>
-&ndash; Android Support Repository
-&ndash; Android Support Library
-&ndash; Google Repository</p>
-
-<p>Once that&rsquo;s done installing, add the path in which the Android SDK is installed to your environment. In Ubuntu and OSX, you can add the following on your <code>.bashrc</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">export</span> <span class="err">ANDROID_HOME=/path/to/android-sdk-linux/sdk</span>
-</span><span class='line'><span class="err">PATH=$PATH:/path/to/android-sdk-linux/sdk/tools</span>
-</span><span class='line'><span class="err">export</span> <span class="err">PATH</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In Windows, there&rsquo;s something called the Environment Variables. I&rsquo;ve written about it in my old blog: <a href="https://kyokasuigetsu25.wordpress.com/2010/10/29/how-to-set-environment-variables/">How to set environment variables</a>.</p>
-
-<p>Once that&rsquo;s done, you can now install the Android platform, you can use the <code>ionic platform add</code> command followed by the name of the platform you want to install.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">ionic</span> <span class="err">platform</span> <span class="err">add</span> <span class="err">android</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Using Sass</h3>
-
-<p>You can use sass with ionic by executing the following command while inside your project directory:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">ionic</span> <span class="err">setup</span> <span class="err">sass</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What this does is install the packages and tasks needed to compile sass. Then remove the following from your <code>index.html</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;lib/ionic/css/ionic.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;css/style.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It also adds the link to the <code>ionic.app.css</code> file which is basically just the compiled version of the <code>ionic.app.scss</code> file found in the <code>scss</code> directory.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;css/ionic.app.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, it adds the following in your <code>ionic.project</code> file. This tells ionic to start the sass and watch command when gulp starts. It also specifies the watch patterns, so that every time you make a change to a file that matches the pattern, the sass command gets executed and compiles the sass files to css.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'>  <span class="s2">&quot;gulpStartupTasks&quot;</span><span class="err">:</span> <span class="p">[</span>
-</span><span class='line'>    <span class="s2">&quot;sass&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;watch&quot;</span>
-</span><span class='line'>  <span class="p">]</span><span class="err">,</span>
-</span><span class='line'>  <span class="s2">&quot;watchPatterns&quot;</span><span class="err">:</span> <span class="p">[</span>
-</span><span class='line'>    <span class="s2">&quot;www/**/*&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;!www/lib/**/*&quot;</span>
-</span><span class='line'>  <span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you want to change the default colors used by Ionic, this is where you can do that. Be sure to uncomment the variables just like what we have below.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*</span>
-</span><span class='line'><span class="c">To customize the look and feel of Ionic, you can override the variables</span>
-</span><span class='line'><span class="c">in ionic&#39;s _variables.scss file.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">For example, you might change some of the default colors:</span>
-</span><span class='line'><span class="c">*/</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">$</span><span class="nt">light</span><span class="o">:</span>                           <span class="nf">#fff</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">stable</span><span class="o">:</span>                          <span class="nf">#f8f8f8</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">positive</span><span class="o">:</span>                        <span class="nf">#387ef5</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">calm</span><span class="o">:</span>                            <span class="nf">#11c1f3</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">balanced</span><span class="o">:</span>                        <span class="nf">#33cd5f</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">energized</span><span class="o">:</span>                       <span class="nf">#ffc900</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">assertive</span><span class="o">:</span>                       <span class="nf">#ef473a</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">royal</span><span class="o">:</span>                           <span class="nf">#886aea</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'><span class="err">$</span><span class="nt">dark</span><span class="o">:</span>                            <span class="nf">#444</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">//</span> <span class="nt">The</span> <span class="nt">path</span> <span class="nt">for</span> <span class="nt">our</span> <span class="nt">ionicons</span> <span class="nt">font</span> <span class="nt">files</span><span class="o">,</span> <span class="nt">relative</span> <span class="nt">to</span> <span class="nt">the</span> <span class="nt">built</span> <span class="nt">CSS</span> <span class="nt">in</span> <span class="nt">www</span><span class="o">/</span><span class="nt">css</span>
-</span><span class='line'><span class="err">$</span><span class="nt">ionicons-font-path</span><span class="o">:</span> <span class="s2">&quot;../lib/ionic/fonts&quot;</span> <span class="o">!</span><span class="nt">default</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">//</span> <span class="nt">Include</span> <span class="nt">all</span> <span class="nt">of</span> <span class="nt">Ionic</span>
-</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;www/lib/ionic/scss/ionic&quot;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now anytime you make a change to the file while running <code>ionic serve</code>, it will compile it to the <code>ionic.app.css</code> found at the <code>www/css</code> directory.</p>
-
-<h3>Developing an App</h3>
-
-<p>You can start developing your app by executing <code>ionic serve</code> from the root directory of your project. This will launch a new browser tab containing the app. If you&rsquo;re using Chrome, you can click on the phone icon on the left of the elements tab when you open the developer tools. This would show your app inside a smaller screen depending on the device that you specify. You can change the device by clicking on the drawer icon which looks like this: <code>&gt;__</code>. And then click on the emulation tab then select the device from the model dropdown. You might need to refresh the page after doing this so that it will render correctly.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/ionic/app-window.png" alt="app window" /></p>
-
-<p>Now open the <code>index.html</code> file in the root directory of your project. This is where every thing is hooked up. If you have ever developed a single-page app before, this would be familiar to you. Basically how a single-page app works is that every script that you need is linked in the <code>index.html</code> file. You might be thinking this is a bad practice since it will take too long for the page to load. Well it&rsquo;s not since the front-end assets are included in the app locally. It wouldn&rsquo;t need to download it over the internet so it&rsquo;s fast even if we have a lot of files linked in there.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;&lt;/title&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">&lt;!-- compiled css output --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;css/ionic.app.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">&lt;!-- ionic/angularjs js --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;lib/ionic/js/ionic.bundle.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">&lt;!-- cordova script (this will be a 404 during development) --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;cordova.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">&lt;!-- your app&#39;s js --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/controllers.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/services.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body</span> <span class="na">ng-app=</span><span class="s">&quot;starter&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="c">&lt;!--</span>
-</span><span class='line'><span class="c">      The nav bar that will be updated as we navigate between views.</span>
-</span><span class='line'><span class="c">    --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-bar</span> <span class="na">class=</span><span class="s">&quot;bar-stable&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;ion</span><span class="na">-nav-back-button</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="err">&lt;</span>/ion-nav-back-button&gt;
-</span><span class='line'>    <span class="err">&lt;</span>/ion-nav-bar&gt;
-</span><span class='line'>    <span class="c">&lt;!--</span>
-</span><span class='line'><span class="c">      The views will be rendered in the &lt;ion-nav-view&gt; directive below</span>
-</span><span class='line'><span class="c">      Templates are in the /templates folder (but you could also</span>
-</span><span class='line'><span class="c">      have templates inline in this html file if you&#39;d like).</span>
-</span><span class='line'><span class="c">    --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-view</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-nav-view&gt;
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok let&rsquo;s break this file down. First we set the charset to utf-8 and viewport so that the initial and maximum scale is 1, we also set the <code>user-scalable</code> option to <code>no</code>. This basically means the user wouldn&rsquo;t be able to resize or zoom the app.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we have the title. This means nothing since we&rsquo;re on an app not a website. So users wouldn&rsquo;t be able to see this. You can leave it as blank.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;title&gt;&lt;/title&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And we also have the main ionic css file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="c">&lt;!-- compiled css output --&gt;</span>
-</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;css/ionic.app.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Angular is bundled together with the Ionic JavaScript.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- ionic/angularjs js --&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;lib/ionic/js/ionic.bundle.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We also need to link the <code>cordova.js</code> file so we can use Cordova within our app. This would allow us to use Cordova plugins as well via <code>cordova.plugins</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- cordova script (this will be a 404 during development) --&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;cordova.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we have our custom JavaScript files. This is where we put code that makes the app do things for us. Note that the <code>js/app.js</code> file is the main JavaScript file. It is where we link every thing together. This is where we intialize a new module in which we could hook up different parts of our app. If we need to use a new service, this is where we hook it up. If we want to add a new state, this is where we add it. If we need to call a specific function every time the app starts, this is where we do it. Next we have the <code>js/controllers.js</code> file, in the default controller created by Ionic, all the controllers are added in a single file. This is fine for really small apps but for medium to large size apps it&rsquo;s recommended to have a single controller for each entity in your app. For example, you might have a user controller where you put all the code that has something to do with the user. Things like updating user settings. The controller is where you usually put code that responds to a specific event such as clicking a button or pulling to refresh. Lastly, we have the <code>js/services.js</code> file. A service is responsible for adding a specific functionality to your app. You would want to create a service for making requests to your server, or storing data in local storage. It&rsquo;s recommended that you search for existing solutions first before writing your own services. So you won&rsquo;t waste time re-implementing the same thing.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/controllers.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/services.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we have the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;body</span> <span class="na">ng-app=</span><span class="s">&quot;starter&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="c">&lt;!--</span>
-</span><span class='line'><span class="c">      The nav bar that will be updated as we navigate between views.</span>
-</span><span class='line'><span class="c">    --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-bar</span> <span class="na">class=</span><span class="s">&quot;bar-stable&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;ion</span><span class="na">-nav-back-button</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="err">&lt;</span>/ion-nav-back-button&gt;
-</span><span class='line'>    <span class="err">&lt;</span>/ion-nav-bar&gt;
-</span><span class='line'>    <span class="c">&lt;!--</span>
-</span><span class='line'><span class="c">      The views will be rendered in the &lt;ion-nav-view&gt; directive below</span>
-</span><span class='line'><span class="c">      Templates are in the /templates folder (but you could also</span>
-</span><span class='line'><span class="c">      have templates inline in this html file if you&#39;d like).</span>
-</span><span class='line'><span class="c">    --&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-view</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-nav-view&gt;
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In a typical Angular app we set the <code>ng-app</code> attribute to the name of the module. Ionic has used <code>starter</code> as the name of the module by default. You can change that on your <code>app.js</code> file. Here the name of the module is starter.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;starter&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ionic&#39;</span><span class="p">,</span> <span class="s1">&#39;starter.controllers&#39;</span><span class="p">,</span> <span class="s1">&#39;starter.services&#39;</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can change it to the following if you want. Here the name of the module is changed to <code>my_awesome_app</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ionic&#39;</span><span class="p">,</span> <span class="s1">&#39;my_awesome_app.controllers&#39;</span><span class="p">,</span> <span class="s1">&#39;my_awesome_app.services&#39;</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you did change the name of the module. You also need to change the value of the <code>ng-app</code> attribute:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;body</span> <span class="na">ng-app=</span><span class="s">&quot;my_awesome_app&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As well as your controllers and services:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.controllers&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.services&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Going back to the <code>app.js</code> file. This is the code responsible for setting the name of the module and the services and controllers it depends on. By default it depends on the ionic service, and your custom controllers and services.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ionic&#39;</span><span class="p">,</span> <span class="s1">&#39;my_awesome_app.controllers&#39;</span><span class="p">,</span> <span class="s1">&#39;my_awesome_app.services&#39;</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can think of <code>my_awesome_app.controllers</code> and <code>my_awesome_app.services</code> as a submodule of the <code>my_awesome_app</code> module. We declared those two modules in the <code>js/controllers.js</code> and <code>js/services.js</code> file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.controllers&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.services&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You might be wondering what&rsquo;s the need for these sub-modules? Well, their main purpose is to have a different parent module for each controller and service. So every controller would depend on the <code>my_awesome_app.controllers</code> module and all services would depend on the <code>my_awesome_app.services</code> module. We do this because simply depending on the main module wouldn&rsquo;t work:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we have the <code>run</code> function. This is where Ionic executes functions which needs to be executed every time the app is opened. All function calls should be wrapped in the <code>$ionicPlatform.ready</code> event to make sure all the plugins and other features that we need are loaded. Inside the event, we check if the Cordova keyboard plugin is accessible. If it is then we hide the keyboard accessory bar. Finally we use the lightContent statusbar (light text for dark backgrounds) by calling the <code>styleLightContent</code> method provided by the <code>StatusBar</code> plugin.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$ionicPlatform</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$ionicPlatform</span><span class="p">.</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard</span>
-</span><span class='line'>    <span class="c1">// for form inputs)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">cordova</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">cordova</span><span class="p">.</span><span class="nx">plugins</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">cordova</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">Keyboard</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">cordova</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">Keyboard</span><span class="p">.</span><span class="nx">hideKeyboardAccessoryBar</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">StatusBar</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="c1">// org.apache.cordova.statusbar required</span>
-</span><span class='line'>      <span class="nx">StatusBar</span><span class="p">.</span><span class="nx">styleLightContent</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we set the app configuration by calling the <code>config</code> method in the Angular module. You can use this to set the routes of your app.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$stateProvider</span><span class="p">,</span> <span class="nx">$urlRouterProvider</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Ionic uses AngularUI Router which uses the concept of states</span>
-</span><span class='line'>  <span class="c1">// Learn more here: https://github.com/angular-ui/ui-router</span>
-</span><span class='line'>  <span class="c1">// Set up the various states which the app can be in.</span>
-</span><span class='line'>  <span class="c1">// Each state&#39;s controller can be found in controllers.js</span>
-</span><span class='line'>  <span class="nx">$stateProvider</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// setup an abstract state for the tabs directive</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;/tab&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="kr">abstract</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">templateUrl</span><span class="o">:</span> <span class="s2">&quot;templates/tabs.html&quot;</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Each tab has its own nav history stack:</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.dash&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/dash&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s1">&#39;tab-dash&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-dash.html&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;DashCtrl&#39;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.chats&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/chats&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;tab-chats&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-chats.html&#39;</span><span class="p">,</span>
-</span><span class='line'>          <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;ChatsCtrl&#39;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.chat-detail&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/chats/:chatId&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;tab-chats&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/chat-detail.html&#39;</span><span class="p">,</span>
-</span><span class='line'>          <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;ChatDetailCtrl&#39;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.account&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/account&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s1">&#39;tab-account&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-account.html&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;AccountCtrl&#39;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// if none of the above states are matched, use this as the fallback</span>
-</span><span class='line'>  <span class="nx">$urlRouterProvider</span><span class="p">.</span><span class="nx">otherwise</span><span class="p">(</span><span class="s1">&#39;/tab/dash&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, we use the <code>$stateProvider</code> to set different states. A state is equivalent to a route in your app. You can call the <code>state</code> method to create a new route, this accepts the name of the state as its first argument and the config as its second.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="c1">// setup an abstract state for the tabs directive</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;/tab&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="kr">abstract</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">templateUrl</span><span class="o">:</span> <span class="s2">&quot;templates/tabs.html&quot;</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A state can be abstract or not. You usually declare a state as an abstract one if it has a child state. In the above example the tab state is an abstract one. This means you don&rsquo;t access it directly from your browser. Instead, you access its child states. In this case the child states are <code>dash</code>, <code>chats</code>, <code>chat-detail</code> and <code>account</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.dash&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/dash&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s1">&#39;tab-dash&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-dash.html&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;DashCtrl&#39;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'> <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.chats&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/chats&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;tab-chats&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-chats.html&#39;</span><span class="p">,</span>
-</span><span class='line'>          <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;ChatsCtrl&#39;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.chat-detail&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/chats/:chatId&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;tab-chats&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/chat-detail.html&#39;</span><span class="p">,</span>
-</span><span class='line'>          <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;ChatDetailCtrl&#39;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">.</span><span class="nx">state</span><span class="p">(</span><span class="s1">&#39;tab.account&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/account&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s1">&#39;tab-account&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-account.html&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;AccountCtrl&#39;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>An abstract state takes the following options:</p>
-
-<ul>
-<li><strong>url</strong> &ndash; the URL that you will use to access the state. For an abstract state, this would be the parent URL that each child state will use.</li>
-<li><strong>abstract</strong> &ndash; a boolean value that is set to <code>true</code> to specify that the state is an abstract one.</li>
-<li><strong>templateUrl</strong> &ndash; the path to where the template is located locally.</li>
-</ul>
-
-
-<p>A child state would accept the same options, the only difference is that you have to set the <code>views</code> option and the add a single property with the name of the view. Then that property would have the <code>templateUrl</code> property and <code>controller</code> which is basically the name of the controller that the state uses. The <code>controller</code> property is optional, you can set this on the template if you want. But you have to note that you can&rsquo;t specify the controller name on both the template and the <code>app.js</code> file. Otherwise methods that run every time the controller is executed is called twice. Here is a sample child state. As you can see the <code>url</code> is set to <code>/chats</code> but you would need to specify the URL of the abstract state first. So accessing it in the brower would be <code>tab/chats</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/chats&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="s1">&#39;tab-chats&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;templates/tab-chats.html&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">controller</span><span class="o">:</span> <span class="s1">&#39;ChatsCtrl&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we specify the views with the <code>view</code> property. As I&rsquo;ve said earlier, this accepts the name of the view as its property. This is tied with the name of the view in the <code>ion-tabs</code> directive. You can find it in the <code>templates/tabs.html</code> file. The view <code>name</code> property in the <code>ion-nav-view</code> directive should be the same as the name of view in your state declaration.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!--</span>
-</span><span class='line'><span class="c">Create tabs with an icon and label, using the tabs-positive style.</span>
-</span><span class='line'><span class="c">Each tab&#39;s child &lt;ion-nav-view&gt; directive will have its own</span>
-</span><span class='line'><span class="c">navigation history that also transitions its views in and out.</span>
-</span><span class='line'><span class="c">--&gt;</span>
-</span><span class='line'><span class="nt">&lt;ion</span><span class="na">-tabs</span> <span class="na">class=</span><span class="s">&quot;tabs-icon-top tabs-color-active-positive&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c">&lt;!-- Dashboard Tab --&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-tab</span> <span class="na">title=</span><span class="s">&quot;Status&quot;</span> <span class="na">icon-off=</span><span class="s">&quot;ion-ios-pulse&quot;</span> <span class="na">icon-on=</span><span class="s">&quot;ion-ios-pulse-strong&quot;</span> <span class="na">href=</span><span class="s">&quot;#/tab/dash&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-view</span> <span class="na">name=</span><span class="s">&quot;tab-dash&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-nav-view&gt;
-</span><span class='line'>  <span class="err">&lt;</span>/ion-tab&gt;
-</span><span class='line'>
-</span><span class='line'>  <span class="c">&lt;!-- Chats Tab --&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-tab</span> <span class="na">title=</span><span class="s">&quot;Chats&quot;</span> <span class="na">icon-off=</span><span class="s">&quot;ion-ios-chatboxes-outline&quot;</span> <span class="na">icon-on=</span><span class="s">&quot;ion-ios-chatboxes&quot;</span> <span class="na">href=</span><span class="s">&quot;#/tab/chats&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-view</span> <span class="na">name=</span><span class="s">&quot;tab-chats&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-nav-view&gt;
-</span><span class='line'>  <span class="err">&lt;</span>/ion-tab&gt;
-</span><span class='line'>
-</span><span class='line'>  <span class="c">&lt;!-- Account Tab --&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-tab</span> <span class="na">title=</span><span class="s">&quot;Account&quot;</span> <span class="na">icon-off=</span><span class="s">&quot;ion-ios-gear-outline&quot;</span> <span class="na">icon-on=</span><span class="s">&quot;ion-ios-gear&quot;</span> <span class="na">href=</span><span class="s">&quot;#/tab/account&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-nav-view</span> <span class="na">name=</span><span class="s">&quot;tab-account&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-nav-view&gt;
-</span><span class='line'>  <span class="err">&lt;</span>/ion-tab&gt;
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="err">&lt;</span>/ion-tabs&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now open up the <code>controllers.js</code> file. On the first line we&rsquo;re declaring a new module called <code>my_awesome_app.controllers</code>. If you remember from earlier, this is one of the modules that we specified as a dependency for the main module in the <code>app.js</code> file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.controllers&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we create a new controller by using the <code>controller</code> method. This accepts the name of the controller as its first argument and the function to execute when the controller is accessed as its second. For the <code>DashCtrl</code>, we have an empty function body as we do not need to execute anything.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DashCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the <code>ChatCtrl</code>, we get a list of chat messages using the <code>Chats</code> services. We&rsquo;ll go through that in a moment, but for now understand that to use a service you need to declare it as a parameter in the function body of the controller. This way you can access it from inside the function and call the different methods that are accessible from that service. Also notice that we have also declared a <code>$scope</code> variable as a parameter. This allows us to pass in data to the current scope. We do this so we can access the data in the view. Back to the <code>Chats</code> service, we are calling the <code>all</code> method in the <code>Chats</code> service. This returns an array of messages. We then assign whatever it returns to the <code>chats</code> property in the <code>$scope</code>. Note that you can name it anything you want. Next we&rsquo;re also assigning a <code>remove</code> method to the <code>$scope</code>. What this does is remove a specific chat message.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;ChatsCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">Chats</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="c1">// With the new view caching in Ionic, Controllers are only called</span>
-</span><span class='line'>  <span class="c1">// when they are recreated or on app start, instead of every page change.</span>
-</span><span class='line'>  <span class="c1">// To listen for when this page is active (for example, to refresh data),</span>
-</span><span class='line'>  <span class="c1">// listen for the $ionicView.enter event:</span>
-</span><span class='line'>  <span class="c1">//</span>
-</span><span class='line'>  <span class="c1">//$scope.$on(&#39;$ionicView.enter&#39;, function(e) {</span>
-</span><span class='line'>  <span class="c1">//});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">chats</span> <span class="o">=</span> <span class="nx">Chats</span><span class="p">.</span><span class="nx">all</span><span class="p">();</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">remove</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">chat</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">Chats</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">chat</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s the view utilizing the <code>ChatsCtrl</code>. It&rsquo;s in the <code>templates/tab-chats.html</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-view</span> <span class="na">view-title=</span><span class="s">&quot;Chats&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-content</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-list</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;ion</span><span class="na">-item</span> <span class="na">class=</span><span class="s">&quot;item-remove-animate item-avatar item-icon-right&quot;</span> <span class="na">ng-repeat=</span><span class="s">&quot;chat in chats&quot;</span> <span class="na">type=</span><span class="s">&quot;item-text-wrap&quot;</span> <span class="na">href=</span><span class="s">&quot;#/tab/chats/&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;img</span> <span class="na">ng-src=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h2&gt;</span><span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;p&gt;</span><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;icon ion-chevron-right icon-accessory&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nt">&lt;ion</span><span class="na">-option-button</span> <span class="na">class=</span><span class="s">&quot;button-assertive&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;remove(chat)&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          Delete
-</span><span class='line'>        <span class="err">&lt;</span>/ion-option-button&gt;
-</span><span class='line'>      <span class="err">&lt;</span>/ion-item&gt;
-</span><span class='line'>    <span class="err">&lt;</span>/ion-list&gt;
-</span><span class='line'>  <span class="err">&lt;</span>/ion-content&gt;
-</span><span class='line'><span class="err">&lt;</span>/ion-view&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>ChatDetailCtrl</code> is the controller responsible for showing the details of a specific chat message. Here we&rsquo;re using a new parameter in the function body called <code>$stateParams</code>. This allows us to get the value of a specific route parameter. Route parameters are passed in the URL of the app. If you go back to the <code>app.js</code> file, you can see from the <code>tab.chat-detail</code> state&rsquo;s URL is <code>/chats/:chatId</code>. The <code>:chatId</code> here is the route parameter. Every route parameter in Angular always starts in a colon followed by the name. So in the <code>ChatDetailCtrl</code> we are merely getting the value passed in this route parameter and then using it as an argument for the <code>get</code> method in the <code>Chats</code> service. This method basically fetches a specific chat message from the array of chats. We then just assign the value to the <code>chat</code> variable in the <code>$scope</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;ChatDetailCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$stateParams</span><span class="p">,</span> <span class="nx">Chats</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">chat</span> <span class="o">=</span> <span class="nx">Chats</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">$stateParams</span><span class="p">.</span><span class="nx">chatId</span><span class="p">);</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can see this being used in the <code>templates/chat-detail.html</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-view</span> <span class="na">view-title=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-content</span> <span class="na">class=</span><span class="s">&quot;padding&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;img</span> <span class="na">ng-src=</span><span class="s">&quot;&quot;</span> <span class="na">style=</span><span class="s">&quot;width: 64px; height: 64px&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;p&gt;</span>
-</span><span class='line'>      
-</span><span class='line'>    <span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>/ion-content&gt;
-</span><span class='line'><span class="err">&lt;</span>/ion-view&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we have the <code>AccountCtrl</code>. Nothing fancy here. All we&rsquo;re doing is passing in an object to the scope.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;AccountCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">settings</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">enableFriends</span><span class="o">:</span> <span class="kc">true</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We can see this being used from the view in <code>templates/tab-account.html</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-view</span> <span class="na">view-title=</span><span class="s">&quot;Account&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;ion</span><span class="na">-content</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-list</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;ion</span><span class="na">-toggle</span>  <span class="na">ng-model=</span><span class="s">&quot;settings.enableFriends&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        Enable Friends
-</span><span class='line'>    <span class="err">&lt;</span>/ion-toggle&gt;
-</span><span class='line'>    <span class="err">&lt;</span>/ion-list&gt;
-</span><span class='line'>  <span class="err">&lt;</span>/ion-content&gt;
-</span><span class='line'><span class="err">&lt;</span>/ion-view&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From the above HTML, the <code>enableFriends</code> property is used as the model for the <code>ion-toggle</code> directive which basically just outputs a switch UI. In this case the switch should be turned on since the value of the <code>enableFriends</code> property is <code>true</code>.</p>
-
-<p>Now we take a look at the service file at <code>js/services.js</code>. Same with the controllers, we declare a new module called <code>my_awesome_app.services</code>. From there we call the <code>factory</code> method in order to create a service. We call this service <code>Chats</code>. Inside the function body, we have an array of objects containing the details for each chat message. After that, we expose the methods that we want the controllers that will use this service to use by returning them. Here we have 3 methods, the <code>all</code> method which just returns all the chat messages. The <code>remove</code> method which removes a specific chat message from the array of chat messages. And last is the <code>get</code> method, which returns a specific chat message based on the id.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;my_awesome_app.services&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;Chats&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="c1">// Might use a resource here that returns a JSON array</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Some fake testing data</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">chats</span> <span class="o">=</span> <span class="p">[{</span>
-</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Ben Sparrow&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">lastText</span><span class="o">:</span> <span class="s1">&#39;You on your way?&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">face</span><span class="o">:</span> <span class="s1">&#39;https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png&#39;</span>
-</span><span class='line'>  <span class="p">},</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Max Lynx&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">lastText</span><span class="o">:</span> <span class="s1">&#39;Hey, it\&#39;s me&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">face</span><span class="o">:</span> <span class="s1">&#39;https://avatars3.githubusercontent.com/u/11214?v=3&amp;s=460&#39;</span>
-</span><span class='line'>  <span class="p">},{</span>
-</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Adam Bradleyson&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">lastText</span><span class="o">:</span> <span class="s1">&#39;I should buy a boat&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">face</span><span class="o">:</span> <span class="s1">&#39;https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg&#39;</span>
-</span><span class='line'>  <span class="p">},</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Perry Governor&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">lastText</span><span class="o">:</span> <span class="s1">&#39;Look at my mukluks!&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">face</span><span class="o">:</span> <span class="s1">&#39;https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png&#39;</span>
-</span><span class='line'>  <span class="p">},</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Mike Harrington&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">lastText</span><span class="o">:</span> <span class="s1">&#39;This is wicked good ice cream.&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">face</span><span class="o">:</span> <span class="s1">&#39;https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png&#39;</span>
-</span><span class='line'>  <span class="p">}];</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">all</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">chats</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">chat</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">chats</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">chats</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">chat</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">chatId</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">chats</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">chats</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">id</span> <span class="o">===</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">chatId</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nx">chats</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Plugins</h3>
-
-<p>Plugins allows you to add native functionalities to your app. Things like the camera, calendar, contacts, or flashlight can be controlled using JavaScript through the use of plugins.</p>
-
-<p>You can install plugins by using the <code>ionic plugin add</code> command. Here&rsquo;s an example of how we might add the camera plugin:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ionic</span> <span class="nx">plugin</span> <span class="nx">add</span> <span class="nx">cordova</span><span class="o">-</span><span class="nx">plugin</span><span class="o">-</span><span class="nx">camera</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you decide later on that you no longer need a plugin, you can use the <code>ionic plugin rm</code> command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ionic</span> <span class="nx">plugin</span> <span class="nx">rm</span> <span class="nx">cordova</span><span class="o">-</span><span class="nx">plugin</span><span class="o">-</span><span class="nx">camera</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Every plugin already has the necessary instructions which will setup everything that is needed in order for it to work when installed. Things like putting the necessary permissions in the <code>AndroidManifest.xml</code> file so that you can use specific features of the device.</p>
-
-<p>I won&rsquo;t dive in much into plugins, what&rsquo;s important is that you know they are available and you can use Google to look for them. There&rsquo;s the <a href="http://plugins.cordova.io/#/">Cordova Plugin Repository</a> and Github if you want to look for a plugin that can solve your specific problem.</p>
-
-<h3>Changing the App Icon and Splash Screens</h3>
-
-<p>To change the icon of the app, simply put an <code>icon.png</code>, <code>icon.psd</code>, or <code>icon.ai</code> on the <code>resources</code> directory in the root of your app. For the splash it&rsquo;s <code>splash.png</code>, <code>splash.psd</code>, or <code>splash.ai</code>. The recommended icon size is 500x500 and the splash image is 1200x1200. Once you&rsquo;ve added the files, execute <code>ionic resources</code> from the terminal to generate your icons and splash screens.</p>
-
-<h3>Compiling to Android</h3>
-
-<p>You can create an apk file using the <code>ionic build android</code> command. This will create the <code>android-debug.apk</code> file under the <code>platforms/android/build/outputs/apk</code> directory. Note that this is the debug version of the app. You can use this for testing on your mobile device. But you cannot submit it to the Google Play Store. To do that you&rsquo;ll have to build a release version for your apk by adding the <code>--release</code> option when using the <code>cordova build</code>. Note that we&rsquo;re using <code>cordova</code> instead of <code>ionic</code>. Ionic simply wraps the Cordova commands so you can use them interchangeably.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">cordova</span> <span class="nx">build</span> <span class="o">--</span><span class="nx">release</span> <span class="nx">android</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, generate a keystore for the app by using <code>keytool</code>. Breaking down the command below, we&rsquo;re setting the following options:</p>
-
-<ul>
-<li><strong>genkey</strong> &ndash; not actually an option, but a command to generate the key.</li>
-<li><strong>keystore</strong> &ndash; the file name you want to give to the keystore</li>
-<li><strong>alias</strong> &ndash; the alias of the key.</li>
-<li><strong>keyalg</strong> &ndash; the algorithm to be used to generate the key.</li>
-<li><strong>keysize</strong> &ndash; the size of the key in bytes.</li>
-<li><strong>validity</strong> &ndash; the number of days in which this keystore will be valid.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">keytool</span> <span class="o">-</span><span class="nx">genkey</span> <span class="o">-</span><span class="nx">v</span> <span class="o">-</span><span class="nx">keystore</span> <span class="nx">demoApp</span><span class="p">.</span><span class="nx">keystore</span> <span class="o">-</span><span class="nx">alias</span> <span class="nx">demoApp</span> <span class="o">-</span><span class="nx">keyalg</span> <span class="nx">RSA</span> <span class="o">-</span><span class="nx">keysize</span> <span class="mi">2048</span> <span class="o">-</span><span class="nx">validity</span> <span class="mi">10000</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Executing the command above will ask you for the keystore password and some questions. Just provide an answer to each question since the information that you supply will be used to generate the keystore. Here&rsquo;s how it looks like in my machine:</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/ionic/keytool.png" alt="keytool" /></p>
-
-<p>If you cannot use keytool, then maybe you don&rsquo;t have Java installed yet. You can install it by executing the following commands in order.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="k">default</span><span class="o">-</span><span class="nx">jre</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="k">default</span><span class="o">-</span><span class="nx">jdk</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="nx">openjdk</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="nx">jre</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="nx">openjdk</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="nx">jdk</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we&rsquo;re ready to sign the apk file with the keystore that we generated. To do that, first copy the <code>demoApp.keystore</code> to the <code>platforms/android/build/outputs/apk</code> directory, open a terminal on that directory then execute the following command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">jarsigner</span> <span class="o">-</span><span class="nx">verbose</span> <span class="o">-</span><span class="nx">sigalg</span> <span class="nx">SHA1withRSA</span> <span class="o">-</span><span class="nx">digestalg</span> <span class="nx">SHA1</span> <span class="o">-</span><span class="nx">keystore</span> <span class="nx">demoApp</span><span class="p">.</span><span class="nx">keystore</span> <span class="nx">android</span><span class="o">-</span><span class="nx">release</span><span class="o">-</span><span class="nx">unsigned</span><span class="p">.</span><span class="nx">apk</span> <span class="nx">demoApp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will ask you for the password that you entered earlier when you created the keystore.</p>
-
-<p>Finally, to generate the apk that you can submit in the Google Play Store, use <code>zipalign</code>. This accepts the name of the unsigned apk file and the name of the signed apk which it will generate.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">zipalign</span> <span class="o">-</span><span class="nx">v</span> <span class="mi">4</span> <span class="nx">android</span><span class="o">-</span><span class="nx">release</span><span class="o">-</span><span class="nx">unsigned</span><span class="p">.</span><span class="nx">apk</span> <span class="nx">demoApp</span><span class="p">.</span><span class="nx">apk</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you need the key you can execute the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">keytool</span> <span class="o">-</span><span class="nx">exportcert</span> <span class="o">-</span><span class="nx">alias</span> <span class="nx">demoApp</span> <span class="o">-</span><span class="nx">keystore</span> <span class="nx">demoApp</span><span class="p">.</span><span class="nx">keystore</span> <span class="o">|</span> <span class="nx">openssl</span> <span class="nx">sha1</span> <span class="o">-</span><span class="nx">binary</span> <span class="o">|</span> <span class="nx">openssl</span> <span class="nx">base64</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned the basics of working with the Ionic framework. We have only scratched the surface in this tutorial, be sure to check out the resources below to learn more.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="http://ionicframework.com/docs/">Ionic Docs</a></li>
-<li><a href="http://learn.ionicframework.com/formulas/">Ionic Formulas</a></li>
-<li><a href="http://cordova.apache.org/docs/en/5.0.0/">Cordova Docs</a></li>
-<li><a href="http://ngcordova.com/">Ng-Cordova</a></li>
-<li><a href="http://plugins.cordova.io/#/">Cordova Plugin Repository</a></li>
-</ul>
-
 ]]></content>
   </entry>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial, I&rsquo;ll be showing you can programatically find out information about any person using their email. You can do that by using the &hellip;">
+  <meta name="description" content="Most PHP applications today includes the ability to integrate with different web services such as Facebook, Twitter, Google, and other API&rsquo;s. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,381 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/20/making-http-requests-with-guzzle/">Making HTTP Requests With Guzzle</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-20T07:18:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
+        
+         | <a href="/blog/2016/01/20/making-http-requests-with-guzzle/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Most PHP applications today includes the ability to integrate with different web services such as Facebook, Twitter, Google, and other API&rsquo;s. Thus the need for a library to ease the process of making HTTP requests to other servers. Most API&rsquo;s already comes with their own clients for selected programming languages. These clients makes the interaction with their API&rsquo;s easier. But oher services doesn&rsquo;t offere any clients at all. This is where Guzzle comes in, a PHP library that allows you to easily make HTTP requests. In this tutorial, I&rsquo;ll be walking you through this library.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Guzzle through <a href="https://getcomposer.org/">Composer</a> by executing the following command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require guzzlehttp/guzzle:~6.0</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>You can start using Guzzle by including the vendor autoload file then use the <code>Client</code> class in the <code>GuzzleHttp</code> namespace.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">GuzzleHttp\Client</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From there, you can create a new client. This accepts an array of arguments. The most important one is the <code>base_uri</code>, which is the base URL that will be used for each of the requests that you will make with this client. In the example below, the base URI is that of the <a href="http://pokeapi.co/">Pokemon API</a>, an API which allows you to get any data about Pokemon.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://pokeapi.co/api/v1/&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To make an actual request to an endpoint, you can use the <code>get</code> method to make a <code>GET</code> HTTP request. To extract the response body, you have to call the <code>getBody</code> method in the response that was returned. Most API&rsquo;s today returns a JSON string as their response. The Pokemon API is no exception. So you need to use the <code>json_decode</code> method and pass in the data. You can pass in <code>true</code> as the second argument to convert it to an array.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;pokedex/1&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;pre&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s the output that you get when accessing the file from the browser. From this data, we know that the <code>pokedex/1</code> endpoint returns all the pokemon that are currently existing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">Array</span>
+</span><span class='line'><span class="x">(</span>
+</span><span class='line'><span class="x">    [created] =&gt; 2013-11-09T15:14:48.957604</span>
+</span><span class='line'><span class="x">    [modified] =&gt; 2013-11-09T15:14:48.957565</span>
+</span><span class='line'><span class="x">    [name] =&gt; national</span>
+</span><span class='line'><span class="x">    [pokemon] =&gt; Array</span>
+</span><span class='line'><span class="x">        (</span>
+</span><span class='line'><span class="x">            [0] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; rattata</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/19/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [1] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; charmander</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/4/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [2] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; charmeleon</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/5/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [3] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; wartortle</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/8/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [4] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; blastoise</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/9/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [5] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; caterpie</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/10/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [6] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; metapod</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/11/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [7] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; butterfree</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/12/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [8] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; spearow</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/21/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [9] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; kakuna</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/14/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">            [10] =&gt; Array</span>
+</span><span class='line'><span class="x">                (</span>
+</span><span class='line'><span class="x">                    [name] =&gt; beedrill</span>
+</span><span class='line'><span class="x">                    [resource_uri] =&gt; api/v1/pokemon/15/</span>
+</span><span class='line'><span class="x">                )</span>
+</span><span class='line'><span class="x">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that it&rsquo;s not only <code>get</code> method that you can do with Guzzle. Each HTTP methods have their equivalent method in Guzzle. So <code>post</code>, <code>put</code> and <code>delete</code> are all valid method names.</p>
+
+<p>Before moving on, here&rsquo;s another example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;pokemon/150&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$moves</span> <span class="o">=</span> <span class="nb">array_filter</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;moves&#39;</span><span class="p">],</span> <span class="k">function</span><span class="p">(</span><span class="nv">$move</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$move</span><span class="p">[</span><span class="s1">&#39;learn_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;level up&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$description_response</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nb">str_replace</span><span class="p">(</span><span class="s1">&#39;/api/v1/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;descriptions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;resource_uri&#39;</span><span class="p">]));</span>
+</span><span class='line'><span class="nv">$description_data</span> <span class="o">=</span> <span class="nv">$description_response</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$description_data</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$description_data</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;div&gt;</span>
+</span><span class='line'><span class="x">    &lt;img src=&quot;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="s1">&#39;http://pokeapi.co/media/img/&#39;</span> <span class="o">.</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;pkdx_id&#39;</span><span class="p">]</span> <span class="o">.</span> <span class="s1">&#39;.png&#39;</span> <span class="cp">?&gt;</span><span class="x">&quot; alt=&quot;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="cp">?&gt;</span><span class="x">&quot;&gt;</span>
+</span><span class='line'><span class="x">    &lt;h4&gt;</span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="cp">?&gt;</span><span class="x">&lt;/h4&gt;</span>
+</span><span class='line'><span class="x">    &lt;p&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$description_data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    &lt;/p&gt;</span>
+</span><span class='line'><span class="x">    &lt;div&gt;</span>
+</span><span class='line'><span class="x">        &lt;strong&gt;Moves&lt;/strong&gt;</span>
+</span><span class='line'><span class="x">        &lt;ul&gt;            </span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span>
+</span><span class='line'>        <span class="k">foreach</span><span class="p">(</span><span class="nv">$moves</span> <span class="k">as</span> <span class="nv">$move</span><span class="p">){</span>
+</span><span class='line'>        <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;li&gt;</span>
+</span><span class='line'><span class="x">            </span><span class="cp">&lt;?</span><span class="o">=</span> <span class="nv">$move</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;/li&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;/ul&gt;</span>
+</span><span class='line'><span class="x">    &lt;/div&gt;</span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above, 2 <code>GET</code> request were used to get all the data that is needed for the final output. First, the <code>pokemon</code> endpoint is used to get the details of a specific pokemon. Second is the request for getting the description of the pokemon. In order to extract the moves, the <code>array_filter</code> function is used. The condition is to select only moves that have been learned through level up. In order to get the endpoint for getting the description, the <code>str_replace</code> function is used to replace a part of the base uri in the resource uri that was returned. Since the resource uri already has the <code>/api/v1/</code> in the beginning. Guzzle would end up making a request to the following URL if that string isn&rsquo;t replace with an empty one.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">http://pokeapi.co/api/v1//api/v1/description/150</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output is going to look like this.</p>
+
+<p><img src="/images/posts/guzzle/mewtwo.png" alt="mewtwo" /></p>
+
+<p>Finally let&rsquo;s take a look at how to do a <code>POST</code> request with Guzzle. For that let&rsquo;s try to submit a post to Facebook using Facebook API. To do that, declare a new client using the <code>https://graph.facebook.com/</code> as the <code>base_uri</code>. Posting to facebook requires the <code>access_token</code>, <code>message</code> and an optional <code>link</code>. Call the <code>post</code> method and pass in <code>me/feed</code> as the first argument. This is the endpoint for posting to facebook. The second argumment is an array containing the data that you want to submit. In Guzzle, the data should be contained within the <code>query</code> item. You can then call <code>getBody</code> on the response to get the response body. This should return the ID of the post that was created.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">([</span><span class="s1">&#39;base_uri&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$post_data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;access_token&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;YOUR-FACEBOOK-ACCESS-TOKEN&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;message&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;testing&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;link&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://wern-ancheta.com/&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;me/feed&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;query&#39;</span> <span class="o">=&gt;</span> <span class="nv">$post_data</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$response_body</span> <span class="o">=</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$response_body</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response_body</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In This tutorial, you&rsquo;ve learned how to make HTTP requests with the Guzzle library. There&rsquo;s so much more you can do with Guzzle, so be sure to check out their <a href="http://guzzle.readthedocs.org/en/latest/">official docs</a> if you want to learn more.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2772,88 +3147,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/">Quick Tip: How to Setup Virtual Hosts in Ubuntu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-11-15T20:14:00+08:00" pubdate data-updated="true">Nov 15<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/11/15/quick-tip-how-to-setup-virtual-hosts-in-ubuntu/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this quick tip I&rsquo;ll show you how you can setup virtual hosts for Apache in Ubuntu.</p>
-
-<p>The first thing that you need to do is clone the default Apache configuration. In the example below <code>myproject.dev</code> is the virtual host name that you want to use.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/myproject.dev.conf</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Open the new configuration file and update the values for the <code>ServerName</code>, <code>ServerAlias</code>, and <code>DocumentRoot</code>. Where <code>ServerName</code> is the virtual host name and the <code>ServerAlias</code> is the www version. The <code>DocumentRoot</code> is the absolute path to the directory where your project is stored.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;VirtualHost *:80&gt;
-</span><span class='line'>        ServerName myproject.dev
-</span><span class='line'>        ServerAlias www.myproject.dev
-</span><span class='line'>
-</span><span class='line'>        ServerAdmin wern@localhost
-</span><span class='line'>        DocumentRoot /home/wern/www/antares-backend
-</span><span class='line'>&lt;/VirtualHost&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next, enable the new virtual host configuration.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2ensite myproject.dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lastly, add it to the hosts file.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo nano /etc/hosts</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1       antaresapp.dev
-</span><span class='line'>127.0.0.1       www.antaresapp.dev</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2869,6 +3162,10 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/20/making-http-requests-with-guzzle/">Making HTTP Requests with Guzzle</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way with Clearbit&#8217;s Person API</a>
       </li>
     
@@ -2882,10 +3179,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
     
       <li class="post">
         <a href="/blog/2015/12/29/2015-year-end-review/">Year-end Review</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company with Clearbit&#8217;s Company API</a>
       </li>
     
   </ul>

@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Amazon S3 is Amazon&rsquo;s file storage service. It allows users to upload their files to their server, for later access or for sharing to other &hellip;">
+  <meta name="description" content="In this quick-tip I&rsquo;ll be showing you the easiest and quickest way to create custom pages under a specific theme in Wordpress. When I say &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,69 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/11/quick-tip-how-to-add-custom-pages-in-wordpress/">Quick Tip: How to Add Custom Pages in Wordpress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-11T11:37:00+08:00" pubdate data-updated="true">Jun 11<span>th</span>, 2015</time>
+        
+         | <a href="/blog/2015/06/11/quick-tip-how-to-add-custom-pages-in-wordpress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this quick-tip I&rsquo;ll be showing you the easiest and quickest way to create custom pages under a specific theme in Wordpress. When I say custom, its a page where you can put anything you want using HTML, CSS, JavaScript and PHP Code. The page would also have access to the various APIs that Wordpress provides.</p>
+
+<p>To start, create a new file under your theme folder. In this case I&rsquo;ll be creating a <code>custom-page.php</code> file under the <code>wp-content/themes/twentyfifteen</code> directory of my Wordpress installation. Then add the following code in the file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">Template Name: My Awesome Custom Page</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;h1&gt;This is my awesome custom page&lt;/h1&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yes, that&rsquo;s all there is to it. Note that the <code>Template Name:</code> part is very important. You can assign any value that you want as long as its descriptive. This specific comment is used by Wordpress to recognize your file.</p>
+
+<p>To assign this page to a specific Wordpress page. You can add a new page from Wordpress admin page and select the page that we have created under the Template drop-down:</p>
+
+<p><img src="/images/posts/quicktip_wordpress_custom_page/custom-wp-page.png" alt="custom wordpress page" /></p>
+
+<p>Now when you access the page from your browser, you will get that awesome heading. From your custom page you can also use the methods available on all the Wordpress APIs and also the built-in theme functions such as the <code>get_header</code> and <code>get_footer</code>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3865,402 +3928,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/22/getting-started-with-stripe-api/">Getting Started With Stripe API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-22T11:08:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
-        
-         | <a href="/blog/2015/03/22/getting-started-with-stripe-api/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial I&rsquo;ll walk you through the Stripe&rsquo;s API. Let&rsquo;s start by defining what Stripe is. From the Stripe website itself:</p>
-
-<blockquote><p>Stripe is a developer-friendly way to accept payments online and in mobile apps.<br/>We process billions of dollars a year for thousands of companies of all sizes.</p></blockquote>
-
-
-<p></p>
-
-<p>Now we know that Stripe is a payment processor, similar to Paypal.</p>
-
-<p>With Stripe, you can accept payments in three ways:</p>
-
-<ul>
-<li>Embedded Form</li>
-<li>Custom Form</li>
-<li>Mobile App Integration</li>
-</ul>
-
-
-<p>In this tutorial I&rsquo;ll only be walking you through the first two: embedded form and custom form.</p>
-
-<h3>Embedded Form</h3>
-
-<p>If you do not want to bother with creating your own checkout forms, an embedded form is the way to go. An embedded form is basically Stripe&rsquo;s checkout widget. All you have to do is include their script on your website, specifically inside a form element. And the front-end side is already handled for you.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script</span>
-</span><span class='line'><span class="nt">    </span><span class="na">src=</span><span class="s">&quot;https://checkout.stripe.com/checkout.js&quot;</span> <span class="na">class=</span><span class="s">&quot;stripe-button&quot;</span>
-</span><span class='line'>    <span class="na">data-key=</span><span class="s">&quot;pk_test_xxxxxxxxxxxxxxxxxxx&quot;</span>
-</span><span class='line'>    <span class="na">data-amount=</span><span class="s">&quot;1000&quot;</span>
-</span><span class='line'>    <span class="na">data-name=</span><span class="s">&quot;Web Development&quot;</span>
-</span><span class='line'>    <span class="na">data-description=</span><span class="s">&quot;Develop a website&quot;</span>
-</span><span class='line'>    <span class="na">data-image=</span><span class="s">&quot;http://mywebsite.com/img/logo.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down. For the script to work, you need to supply a value to the following attributes:</p>
-
-<ul>
-<li><code>src</code> &ndash; Stripe&rsquo;s checkout script. This should be <code>https://checkout.stripe.com/checkout.js</code></li>
-<li><code>data-key</code> &ndash; your stripe publishable key. You can find it by clicking on your username, then select &lsquo;account settings&rsquo;, then click on the &lsquo;api keys&rsquo; tab. From there you can use either your test publishable key or your live publishable key. The test key is used for testing. This allows you to supply a fake credit card number and pay for a fake product or service. After successful payment, you can see your fake client from the <a href="https://dashboard.stripe.com/customers">customers</a> page on your Stripe dashboard. Don&rsquo;t forget to switch to <a href="https://dashboard.stripe.com/test/customers">test</a>.</li>
-<li><code>data-amount</code> &ndash; the amount you want to charge in cents. Just multiply what you want to charge by 100. So for example you want to charge $10, you need to supply 1000 instead.</li>
-<li><code>data-name</code> &ndash; the name of your product or service.</li>
-<li><code>data-description</code> &ndash; the description of your product or service.</li>
-<li><code>data-image</code> &ndash; your logo. This should be an absolute url.</li>
-</ul>
-
-
-<p>Next we need to install Stripe&rsquo;s library via <a href="https://getcomposer.org/">composer</a>. Add the following code on your <code>composer.json</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>{
-</span><span class='line'>  &quot;require&quot;: {
-</span><span class='line'>    &quot;stripe/stripe-php&quot;: &quot;2.*&quot;
-</span><span class='line'>  }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, execute <code>composer install</code> from your terminal. This will fetch the library from the repository.</p>
-
-<p>Next create the <code>checkout.php</code> file and add the following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeEmail&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Breaking it down, first we included the <code>vendor/autoload.php</code> file so that we can use the Stripe library on our script. Next we initialize the library by setting the Stripe secret key. Next we get the data supplied by Stripe for us from the front-end. The <code>stripeToken</code> is the unique token generated by Stripe, this represents the transaction that the client made on the front-end. That is, paying $10 for our service. Next is the <code>stripeEmail</code>, this is basically just the email supplied by the client. Next we wrap the stripe charge call in a try catch statement. This allows us to capture any error returned by the API and show it to the client. Calling the stripe charge method requires 4 arguments:</p>
-
-<ul>
-<li><code>amount</code> &ndash; the amount that you want to charge in cents.</li>
-<li><code>currency</code> &ndash; the currency code representing the currency that we want to use.</li>
-<li><code>source</code> &ndash; the token that stripe generated on the front-end.</li>
-<li><code>description</code> &ndash; a text that we want to assign to the charge. This is usually the clients email. But you can add more details such as the name of the service if you&rsquo;re offering more than one product or service.</li>
-</ul>
-
-
-<p>If the API call is successful, this method returns a whole bunch of data. Such as the amount paid, and the description. In most cases you&rsquo;ll basically only want the id of the transaction. You can get this by accessing the <code>id</code> property:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$charge_id = $charge-&gt;id;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then save this on your database as a reference. But of course you can always see this on <a href="https://dashboard.stripe.com/test/payments">your payments page</a>.</p>
-
-<h3>Custom Forms</h3>
-
-<p>If you need to ask additional information from your clients. Or you just want to use your own form. You can use custom forms. This allows you to write your own markup, supply your own fields and style them the way you want it with css. Here&rsquo;s an example of how a custom checkout form might look like:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;checkout.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span> <span class="na">id=</span><span class="s">&quot;payment-form&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;errors&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>Email<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;email&quot;</span> <span class="na">id=</span><span class="s">&quot;email&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Name<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;name&quot;</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>Card Number<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;20&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;number&quot;</span> <span class="na">id=</span><span class="s">&quot;card-number&quot;</span> <span class="na">name=</span><span class="s">&quot;card-number&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>Security Code<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">size=</span><span class="s">&quot;4&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;cvc&quot;</span> <span class="na">id=</span><span class="s">&quot;cvc&quot;</span> <span class="na">name=</span><span class="s">&quot;cvc&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;label&gt;</span>Expiration (MM/YYYY)<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-month&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-month&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;span&gt;</span> / <span class="nt">&lt;/span&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-stripe=</span><span class="s">&quot;exp-year&quot;</span> <span class="na">name=</span><span class="s">&quot;exp-year&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>Pay<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This form works with the Stripe checkout script by adding the <code>data-stripe</code> attribute to the following fields. Just supply the value on the right-hand side as the value for the <code>data-stripe</code> attribute depending on the field:</p>
-
-<ul>
-<li>card number &ndash; <code>card-number</code></li>
-<li>security code or cvc &ndash; <code>cvc</code></li>
-<li>card expiration month &ndash; <code>exp-month</code></li>
-<li>card expiration year &ndash; <code>exp-year</code></li>
-</ul>
-
-
-<p>Next we need to include the stripe checkout script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;https://js.stripe.com/v2/&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then set the publishable key. This allows stripe to identify which stripe account the request came from:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script&gt;</span>
-</span><span class='line'><span class="nx">Stripe</span><span class="p">.</span><span class="nx">setPublishableKey</span><span class="p">(</span><span class="s1">&#39;pk_test_xxxxxxxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we need to define the method that will process the response that we get from Stripe when the client submits the payment form. This takes up 2 parameters: status and response. The status is the <a href="https://stripe.com/docs/api#errors">status code</a>. The response contains the actual Stripe response. This is an object containing information about the transaction. One of those is the <code>id</code> which is basically the token that we need to pass in to the back-end. All we have to do is to append it to the payment form so it gets submitted with the rest of the fields. If there is an error with the request, an error property becomes available in the response object. This contains the error message, we just show it to the user by supplying it as a value to the <code>errors</code> div. After that, we enable the submit button so the client can fix the errors and submit the form again:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">processStripeResponse</span><span class="p">(</span><span class="nx">status</span><span class="p">,</span> <span class="nx">response</span><span class="p">){</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">){</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;.errors&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input type=&quot;hidden&quot; name=&quot;stripeToken&quot; /&gt;&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">token</span><span class="p">));</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Next we define the event handler for when the payment form is submitted. This calls the <code>createToken</code> method which requires the payment form and the response handler as its arguments. Don&rsquo;t forget to return <code>false</code> so the form doesn&rsquo;t get submitted. The response handler will be the one which will trigger the submit if the response doesn&rsquo;t have any errors:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">form</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">Stripe</span><span class="p">.</span><span class="nx">card</span><span class="p">.</span><span class="nx">createToken</span><span class="p">(</span><span class="nx">form</span><span class="p">,</span> <span class="nx">processStripeResponse</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the back-end we can just use the previous code and use the custom fields that we added. Note that the <code>stripeToken</code> field stays the same. We don&rsquo;t need to pass the card number, security code and expiration date:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">\Stripe\Stripe</span><span class="o">::</span><span class="na">setApiKey</span><span class="p">(</span><span class="s1">&#39;sk_test_xxxxxxxxxxxxxx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;stripeToken&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$email</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nv">$charge</span> <span class="o">=</span> <span class="nx">\Stripe\Charge</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s2">&quot;amount&quot;</span> <span class="o">=&gt;</span> <span class="mi">1000</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;currency&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;source&quot;</span> <span class="o">=&gt;</span> <span class="nv">$token</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;description&quot;</span> <span class="o">=&gt;</span> <span class="nv">$email</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$charge</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">\Stripe\Error\Card</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! You&rsquo;ve learned how to interact with the Stripe API in order to easily process payments.</p>
-
-<h3>Resources</h3>
-
-<ul>
-<li><a href="https://stripe.com/docs">Stripe Docs</a></li>
-<li><a href="https://stripe.com/docs/api?lang=php">Stripe API</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -4278,6 +3945,10 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/20/making-http-requests-with-guzzle/">Making HTTP Requests with Guzzle</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way with Clearbit&#8217;s Person API</a>
       </li>
     
@@ -4291,10 +3962,6 @@ In this tutorial I&rsquo;ll be showing you how to implement audio calls with Pee
     
       <li class="post">
         <a href="/blog/2015/12/29/2015-year-end-review/">Year-end Review</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/">Getting Information About Any Company with Clearbit&#8217;s Company API</a>
       </li>
     
   </ul>
