@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: data-validation | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/data-validation/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2016-02-13T14:25:28+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Validating Data with Respect Validation]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation/"/>
+    <updated>2016-02-13T07:44:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation</id>
+    <content type="html"><![CDATA[<p>Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good thing there&rsquo;s not a shortage of data validation libraries available for PHP. And most frameworks (if not all) have it as part of their core functionalities. In this tutorial, I&rsquo;ll be walking you through using the Respect Validation library for PHP. It&rsquo;s one of the most complete validation libraries that I&rsquo;ve seen. It can validate a whole range of data types such as numbers, strings, arrays, objects, date, banking data, phone numbers, emails and others.</p>
+
+<h3>Installation</h3>
+
+<p>You can install the library through Composer.</p>
+
+<p><code>
+composer require respect/validation
+</code></p>
+
+<p>Once that&rsquo;s done, include the vendor autoload file and give an alias to the Validation class. This allows you to use the alias instead of the actual class name.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Respect\Validation\Validator as v;
+?>
+```</p>
+
+<h3>Validating Data</h3>
+
+<p>Now let&rsquo;s take a look at some of the most common validators that you might want to use. All of the validators returns a boolean value, so if the data is valid it returns <code>true</code>, and if it&rsquo;s not then it returns <code>false</code>. To validate a data, you first call the validator. Some validators allows you to specify the format in which the data should be and some does not. In cases that it allows you, simply pass in the format as the argument for that validator. Next, call the <code>validate</code> method and pass in the data that you want to validate.</p>
+
+<h4>Dates</h4>
+
+<p>To validate dates, you use the <code>date</code> validator. This accepts the date format as its argument. If you do not specify one, the default date format of <code>Y-m-d</code> is used.</p>
+
+<p><code>php
+&lt;?php
+$is_datevalid = v::date()-&gt;validate('2015-02-30'); //true
+$is_datevalid = v::date('m-d-Y')-&gt;validate('2015-02-30'); //false
+?&gt;
+</code></p>
+
+<p>If you haven&rsquo;t noticed yet, one thing to note about date validation, is that it returns <code>true</code> even for a day that shouldn&rsquo;t exist in a specific month. In the example above, the month february shouldn&rsquo;t have a 30th day. If you use 32 or 33 for the day, it works fine since most of months have only 31 days.</p>
+
+<h4>Country Code</h4>
+
+<p>Validating country codes can be done by using the <code>countryCode</code> validator. On my testing, its only able to validate 2-character ISO country codes.</p>
+
+<p><code>php
+&lt;?php
+$is_validcountrycode = v::countryCode()-&gt;validate('PH'); //true
+$is_validcountrycode = v::countryCode()-&gt;validate('PHL'); //false
+?&gt;
+</code></p>
+
+<h4>Between</h4>
+
+<p>The <code>between</code> validator allows you to validate if a specific value is between 2 values. It can validate strings, numbers and dates.</p>
+
+<p>```php
+&lt;?php
+$is_between = v::string()&ndash;>between(&lsquo;a&rsquo;, &lsquo;z&rsquo;)&ndash;>validate(&rsquo;d'); //true
+$is_between = v::string()&ndash;>between(&lsquo;a&rsquo;, &lsquo;c&rsquo;)&ndash;>validate(&rsquo;d'); //false</p>
+
+<p>$is_between = v::int()&ndash;>between(50, 90)&ndash;>validate(20); //false
+$is_between = v::int()&ndash;>between(30, 60)&ndash;>validate(31); //true</p>
+
+<p>$is_between = v::date()&ndash;>between(&lsquo;2015-03-25&rsquo;, &lsquo;2015-04-30&rsquo;)&ndash;>validate(&lsquo;2015-03-28&rsquo;); //true
+$is_between = v::date()&ndash;>between(&lsquo;2015-07-12&rsquo;, &lsquo;2015-10-30&rsquo;)&ndash;>validate(&lsquo;2015-03-01&rsquo;); //false
+?>
+```</p>
+
+<h4>Length</h4>
+
+<p>To validate if a string or array matches a specific length between a minimum and a maximum value, you can use the <code>length</code> validator. You can specify either of the minimum and maximum values if you don&rsquo;t want to be specific.</p>
+
+<p>```php
+&lt;?php
+$is_length = v::string()&ndash;>length(10, 20)&ndash;>validate(&lsquo;my-username&rsquo;); //true
+$is_length = v::string()&ndash;>length(10, 20)&ndash;>validate(&lsquo;my&rsquo;); //false</p>
+
+<p>$is_length = v::arr()&ndash;>length(5, null)&ndash;>validate(array(&lsquo;abc&rsquo;, &lsquo;def&rsquo;, &lsquo;ghi&rsquo;)); //false
+$is_length = v::arr()&ndash;>length(null, 3)&ndash;>validate(array(&lsquo;abc&rsquo;, &lsquo;def&rsquo;, &lsquo;ghi&rsquo;)); //true
+?>
+```</p>
+
+<h4>Min and Max</h4>
+
+<p>The <code>min</code> and <code>max</code> validators allows you to check if an integer or date value is within the minimum or maximum value that you specify.</p>
+
+<p>```php
+&lt;?php
+$is_min = v::int()&ndash;>min(100)&ndash;>validate(25); //false
+$is_min = v::int()&ndash;>min(1)&ndash;>validate(2); //true</p>
+
+<p>$is_max = v::date()&ndash;>max(&lsquo;2015-07-27&rsquo;)&ndash;>validate(&lsquo;2015-03-12&rsquo;); //true
+$is_max = v::date()&ndash;>max(&lsquo;2015-06-13&rsquo;)&ndash;>validate(&lsquo;2015-08-29&rsquo;); //false
+?>
+```</p>
+
+<h4>Numbers</h4>
+
+<p>You can validate number values using the <code>numeric</code>, <code>digit</code>, and <code>int</code> validators. <code>numeric</code> is the generic number validator, it can accept integer, double or float values and even negative numbers. <code>digit</code> accepts whitespaces between integer values but it doesn&rsquo;t accept float or double values. <code>int</code> accepts only integer values.</p>
+
+<p>```php
+&lt;?php
+$is_numeric = v::numeric()&ndash;>validate(&lsquo;55&rsquo;); //true
+$is_numeric = v::numeric()&ndash;>validate(&lsquo;99.9&rsquo;); //true</p>
+
+<p>$is_numeric = v::digit()&ndash;>validate(&lsquo;45 3 330&rsquo;); //true
+$is_numeric = v::digit()&ndash;>validate(&lsquo;7.9&rsquo;); //false</p>
+
+<p>$is_int = v::int()&ndash;>validate(&lsquo;8.2&rsquo;); //false
+$is_int = v::int()&ndash;>validate(&lsquo;709&rsquo;); //true
+?>
+```</p>
+
+<h4>Domain</h4>
+
+<p>Domain names can be validated using the <code>domain</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_domain = v::domain()-&gt;validate('github.com'); //true
+$is_domain = v::domain()-&gt;validate('google.com.ph'); //true
+?&gt;
+</code></p>
+
+<h4>Bank</h4>
+
+<p>Bank information can also be validated. Currently, you can only validate bank accounts and bank identifier codes for Germany. And you have to install the bav Composer package to do that:</p>
+
+<p><code>
+composer require malkusch/bav
+</code></p>
+
+<p>Here are a few examples:</p>
+
+<p>```php
+&lt;?php
+$is_bankaccount = v::bankAccount(&ldquo;de&rdquo;, &ldquo;70169464&rdquo;)&ndash;>validate(&ldquo;1112&rdquo;); //true
+$is_bankaccount = v::bankAccount(&ldquo;de&rdquo;, &ldquo;70169464&rdquo;)&ndash;>validate(&ldquo;1234&rdquo;); //false</p>
+
+<p>$is_bankaccount = v::bic(&ldquo;de&rdquo;)&ndash;>validate(&ldquo;VZVDDED1XXX&rdquo;); //true
+$is_bankaccount = v::bic(&ldquo;de&rdquo;)&ndash;>validate(&ldquo;VZVDDED1&rdquo;); //true
+?>
+```</p>
+
+<h4>Alpha</h4>
+
+<p>If you want to restrict a string to only have letters, you can use the <code>apha</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_alpha = v::alpha()-&gt;validate('abc 123'); //false
+$is_alpha = v::alpha()-&gt;validate('abc def'); //true
+?&gt;
+</code></p>
+
+<h4>Alnum</h4>
+
+<p>You can validate alphanumeric characters (numbers and letters) using the <code>alnum</code> validator. You can group it</p>
+
+<p><code>php
+&lt;?php
+$is_alnum = v::alnum()-&gt;validate('batman 123'); //true
+$is_alnum = v::alnum()-&gt;lowercase()-&gt;validate('batman 123'); //true
+$is_alnum = v::alnum()-&gt;uppercase()-&gt;validate('batman 123'); //false
+$is_alnum = v::alnum()-&gt;notEmpty()-&gt;validate('batman 123'); //true
+?&gt;
+</code></p>
+
+<h4>Email</h4>
+
+<p>Email addresses are validated using the <code>email</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_email = v::email()-&gt;validate('not'); //false
+$is_email = v::email()-&gt;validate('email@gmail.com'); //true
+?&gt;
+</code></p>
+
+<h4>Phone</h4>
+
+<p>Phone numbers that have 7, 10 or 11 digits in them can be validated.</p>
+
+<p><code>php
+&lt;?php
+$is_phone = v::phone()-&gt;validate('(072) 242 8084'); //true
+$is_phone = v::phone()-&gt;validate('+639111111111'); //true
+?&gt;
+</code></p>
+
+<h4>Required</h4>
+
+<p>To set a specific data as required, you use the <code>notEmpty</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_required = v::isNotEmpty()-&gt;validate(''); //false
+$is_required = v::isNotEmpty()-&gt;validate('im not empty'); //true
+?&gt;
+</code></p>
+
+<h4>Chaining</h4>
+
+<p>As you have seen earlier, you can combine different validators together. Here are a few examples:</p>
+
+<p><code>php
+&lt;?php
+$is_alnum = v::alnum()-&gt;notEmpty()-&gt;validate('superman 456'); //true
+$is_alnum = v::email()-&gt;notEmpty()-&gt;lowercase()-&gt;validate('superman456@gmail.com'); //true
+?&gt;
+</code></p>
+
+<h4>Validating an Array of Data</h4>
+
+<p>To validate an array of data or a form, you need to setup the rules for each field and add them in an array. You then loop through each item in the array and validate them one by one. In the example below, the <code>check</code> method is used instead of the <code>validate</code> method. This is because the <code>validate</code> method only returns a boolean value and not the actual error message. While the <code>check</code> method returns an exception which you can then get by calling the <code>getMainMessage</code> method in the exception that was returned. Lastly, use <code>break</code> to break the execution of the <code>foreach</code> loop.</p>
+
+<p>```php
+&lt;?php
+$rules = array(</p>
+
+<pre><code>'username' =&gt; v::string()-&gt;lowercase()-&gt;length(10, 20)-&gt;notEmpty()-&gt;setName('username'),
+'email' =&gt; v::email()-&gt;notEmpty()-&gt;setName('email'),
+'phone_number' =&gt; v::phone()-&gt;notEmpty()-&gt;setName('phone number')
+</code></pre>
+
+<p>);</p>
+
+<p>$data = array(</p>
+
+<pre><code>'username' =&gt; 'wernancheta', 
+'email' =&gt; 'myemail@gmail.com',
+'phone_number' =&gt; '111'
+</code></pre>
+
+<p>);</p>
+
+<p>foreach($data as $key => $value){</p>
+
+<pre><code>try{
+    $rules[$key]-&gt;check($value);
+} catch (\InvalidArgumentException $e) {
+    echo $e-&gt;getMainMessage();  
+    break;  
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use the Respect Validation library for PHP. Be sure to check out the <a href="http://respect.li/Validation">official docs</a> if you want to learn more. If you&rsquo;re using Laravel, you might want to check out this article on Sitepoint: <a href="http://www.sitepoint.com/validating-your-data-with-respect-validation/">Validating your data with Respect Validation</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

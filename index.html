@@ -9,8 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="It&rsquo;s not very often that I reflect on why I love things. Why I Love Web Development is not a question
-I often ask myself. In this essay I&rsquo &hellip;">
+  <meta name="description" content="Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,395 @@ I often ask myself. In this essay I&rsquo &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/13/validating-data-with-respect-validation/">Validating Data With Respect Validation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-13T07:44:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2016</time>
+        
+         | <a href="/blog/2016/02/13/validating-data-with-respect-validation/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good thing there&rsquo;s not a shortage of data validation libraries available for PHP. And most frameworks (if not all) have it as part of their core functionalities. In this tutorial, I&rsquo;ll be walking you through using the Respect Validation library for PHP. It&rsquo;s one of the most complete validation libraries that I&rsquo;ve seen. It can validate a whole range of data types such as numbers, strings, arrays, objects, date, banking data, phone numbers, emails and others.</p>
+
+<h3>Installation</h3>
+
+<p>You can install the library through Composer.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require respect/validation</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, include the vendor autoload file and give an alias to the Validation class. This allows you to use the alias instead of the actual class name.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Respect\Validation\Validator</span> <span class="k">as</span> <span class="nx">v</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Validating Data</h3>
+
+<p>Now let&rsquo;s take a look at some of the most common validators that you might want to use. All of the validators returns a boolean value, so if the data is valid it returns <code>true</code>, and if it&rsquo;s not then it returns <code>false</code>. To validate a data, you first call the validator. Some validators allows you to specify the format in which the data should be and some does not. In cases that it allows you, simply pass in the format as the argument for that validator. Next, call the <code>validate</code> method and pass in the data that you want to validate.</p>
+
+<h4>Dates</h4>
+
+<p>To validate dates, you use the <code>date</code> validator. This accepts the date format as its argument. If you do not specify one, the default date format of <code>Y-m-d</code> is used.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_datevalid</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-02-30&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_datevalid</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">(</span><span class="s1">&#39;m-d-Y&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-02-30&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you haven&rsquo;t noticed yet, one thing to note about date validation, is that it returns <code>true</code> even for a day that shouldn&rsquo;t exist in a specific month. In the example above, the month february shouldn&rsquo;t have a 30th day. If you use 32 or 33 for the day, it works fine since most of months have only 31 days.</p>
+
+<h4>Country Code</h4>
+
+<p>Validating country codes can be done by using the <code>countryCode</code> validator. On my testing, its only able to validate 2-character ISO country codes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_validcountrycode</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">countryCode</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;PH&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_validcountrycode</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">countryCode</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;PHL&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Between</h4>
+
+<p>The <code>between</code> validator allows you to validate if a specific value is between 2 values. It can validate strings, numbers and dates.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">31</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;2015-03-25&#39;</span><span class="p">,</span> <span class="s1">&#39;2015-04-30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-28&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;2015-07-12&#39;</span><span class="p">,</span> <span class="s1">&#39;2015-10-30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-01&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Length</h4>
+
+<p>To validate if a string or array matches a specific length between a minimum and a maximum value, you can use the <code>length</code> validator. You can specify either of the minimum and maximum values if you don&rsquo;t want to be specific.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;my-username&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;my&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">arr</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">null</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">,</span> <span class="s1">&#39;ghi&#39;</span><span class="p">));</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">arr</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">,</span> <span class="s1">&#39;ghi&#39;</span><span class="p">));</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Min and Max</h4>
+
+<p>The <code>min</code> and <code>max</code> validators allows you to check if an integer or date value is within the minimum or maximum value that you specify.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_min</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span> <span class="c1">//false </span>
+</span><span class='line'><span class="nv">$is_min</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_max</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">max</span><span class="p">(</span><span class="s1">&#39;2015-07-27&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-12&#39;</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'><span class="nv">$is_max</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">max</span><span class="p">(</span><span class="s1">&#39;2015-06-13&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-08-29&#39;</span><span class="p">);</span> <span class="c1">//false </span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Numbers</h4>
+
+<p>You can validate number values using the <code>numeric</code>, <code>digit</code>, and <code>int</code> validators. <code>numeric</code> is the generic number validator, it can accept integer, double or float values and even negative numbers. <code>digit</code> accepts whitespaces between integer values but it doesn&rsquo;t accept float or double values. <code>int</code> accepts only integer values.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">numeric</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;55&#39;</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">numeric</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;99.9&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">digit</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;45 3 330&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">digit</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;7.9&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_int</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;8.2&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_int</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;709&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Domain</h4>
+
+<p>Domain names can be validated using the <code>domain</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_domain</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">domain</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;github.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_domain</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">domain</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;google.com.ph&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Bank</h4>
+
+<p>Bank information can also be validated. Currently, you can only validate bank accounts and bank identifier codes for Germany. And you have to install the bav Composer package to do that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">composer require malkusch/bav</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are a few examples:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bankAccount</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;70169464&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;1112&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bankAccount</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;70169464&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bic</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;VZVDDED1XXX&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bic</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;VZVDDED1&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Alpha</h4>
+
+<p>If you want to restrict a string to only have letters, you can use the <code>apha</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alpha</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alpha</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;abc 123&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_alpha</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alpha</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;abc def&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Alnum</h4>
+
+<p>You can validate alphanumeric characters (numbers and letters) using the <code>alnum</code> validator. You can group it</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">uppercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Email</h4>
+
+<p>Email addresses are validated using the <code>email</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_email</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;not&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_email</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;email@gmail.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Phone</h4>
+
+<p>Phone numbers that have 7, 10 or 11 digits in them can be validated.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_phone</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;(072) 242 8084&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_phone</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;+639111111111&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Required</h4>
+
+<p>To set a specific data as required, you use the <code>notEmpty</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_required</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">isNotEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_required</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">isNotEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;im not empty&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Chaining</h4>
+
+<p>As you have seen earlier, you can combine different validators together. Here are a few examples:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;superman 456&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;superman456@gmail.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Validating an Array of Data</h4>
+
+<p>To validate an array of data or a form, you need to setup the rules for each field and add them in an array. You then loop through each item in the array and validate them one by one. In the example below, the <code>check</code> method is used instead of the <code>validate</code> method. This is because the <code>validate</code> method only returns a boolean value and not the actual error message. While the <code>check</code> method returns an exception which you can then get by calling the <code>getMainMessage</code> method in the exception that was returned. Lastly, use <code>break</code> to break the execution of the <code>foreach</code> loop.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$rules</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;email&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;phone_number&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;phone number&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wernancheta&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;email&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;myemail@gmail.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;phone_number&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;111&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$data</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span><span class="p">{</span>
+</span><span class='line'>        <span class="nv">$rules</span><span class="p">[</span><span class="nv">$key</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">check</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">\InvalidArgumentException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMainMessage</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use the Respect Validation library for PHP. Be sure to check out the <a href="http://respect.li/Validation">official docs</a> if you want to learn more. If you&rsquo;re using Laravel, you might want to check out this article on Sitepoint: <a href="http://www.sitepoint.com/validating-your-data-with-respect-validation/">Validating your data with Respect Validation</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3166,193 +3554,6 @@ And lastly use a continuous integration server such as Jenkins to automatically 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/05/tools-of-trade/">Tools of Trade</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-05T07:19:00+08:00" pubdate data-updated="true">Dec 5<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/12/05/tools-of-trade/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Every developer has their own set of &ldquo;go to tools&rdquo; when it comes to developing applications. Such as the stack, programming tools and libraries that would make specific tasks easier to implement.
-In this article I&rsquo;m going to share some of the tools and resources that I usually use in my day to day web development practice.</p>
-
-<h3>LAMP</h3>
-
-<p>Since I&rsquo;m running Ubuntu on my machine, I use the LAMP (Linux, Apache, MySQL, PHP) stack for all of my projects. Linux being the Operating System, Apache as the web server, MySQL for the database and PHP for the programming language.</p>
-
-<h3>Composer</h3>
-
-<p><a href="https://getcomposer.org/">Composer</a> is a package manager for PHP. It handles the installation of various PHP libraries which can be found at <a href="https://packagist.org/">Packagist.org</a>.</p>
-
-<h3>Laravel</h3>
-
-<p>For medium-sized projects (takes about 2-5 months to build), I use the <a href="http://laravel.com/">Laravel</a> framework. And for small-sized (takes about 2 days to 3 weeks to build), I use the <a href="http://lumen.laravel.com/">Lumen</a> framework which is basically a lightweight version of Laravel. I chose it because of the sheer elegance of code that can be written when using the framework. It also comes with a lot features that I need in most of my projects. Such as database migrations, seeding, routing, templating and easy integration with third-party libraries.</p>
-
-<h3>jQuery</h3>
-
-<p>They say jQuery is for sissies, but I don&rsquo;t really mind. As long as the tool works, it doesn&rsquo;t really matter. jQuery is basically the all in one solution for all my JavaScript needs. It makes it easy to select and manipulate the elements in the page, listen to events and make AJAX requests. I haven&rsquo;t done a web project where I didn&rsquo;t need jQuery.</p>
-
-<h3>Sublime Text</h3>
-
-<p>My text-editor of choice, though I admit that I&rsquo;m still using an unregistered copy. So I still see the purchase pop-up every now and then. Though I have plans to buy a license in the future. But as they say &ldquo;someday I&rsquo;ll buy a sublime text license but today isn&rsquo;t that day&rdquo;. What I liked with <a href="http://www.sublimetext.com/">Sublime Text</a> is that it makes writing code faster. You can also install plugins which integrates with other programs such as JSHint or Git.</p>
-
-<h3>Git</h3>
-
-<p>Most developers today are using <a href="http://git-scm.com/">Git</a>, probably because of Github. But that doesn&rsquo;t really matter. Git is an awesome software by itself, even without Github. For the uninitiated, Git is a version control software which allows you to make snapshots of your project so that you can easily revert later or share your changes to your team. Github on the other hand, is a web based Git repository hosting service with lots of other nice features. Go check it out yourself. But the key takeaway is that Github makes collaboration much easier with the set of tools that it provides.</p>
-
-<h3>Cordova</h3>
-
-<p>Ocassionally I get mobile app development projects. This is where <a href="https://cordova.apache.org/">Cordova</a> comes in handy. It basically makes it easier to develop apps for any of the platforms (Android, iOS, Windows, etc.) that it supports by making use of web technologies (HTML, CSS, JavaScript). Access to native device APIs are also provided by making use of plugins.</p>
-
-<h3>Bootstrap</h3>
-
-<p>I admit, I&rsquo;m not a designer and my CSS skills could certainly improve. Making things pretty isn&rsquo;t really my forte. That&rsquo;s why front-end frameworks such as <a href="http://getbootstrap.com/">Bootstrap</a> really helps. It keeps my mind off making things pretty so I can just concentrate on the functionality.</p>
-
-<h3>Chrome/Chromium</h3>
-
-<p>The main browser that I use for testing the web applications that I build. The developer tools is what really makes it shine. It&rsquo;s interface is really intuitive and easy to use. Almost every aspect of your web application can be inspected and tested by using their developer tools.</p>
-
-<h3>Skype</h3>
-
-<p>Since I&rsquo;m mostly working remotely, there&rsquo;s a need for exchanging messages and making calls. Skype helps me with that. It&rsquo;s also cross-platform, so I can install it no matter what machine I&rsquo;m using. Recently they also released <a href="https://web.skype.com/en/">Skype for web</a> which makes things even more easier.</p>
-
-<h3>Bitbucket</h3>
-
-<p><a href="https://bitbucket.org/">Bitbucket</a> is another Git repository hosting service. Well there&rsquo;s already Github, but the thing is you can only have public repositories on Github. Bitbucket on the other hand allows you to have private repositories for free. That&rsquo;s pretty much the only reason why I used Bitbucket. I need my projects to be private so I use it instead of Github.</p>
-
-<h3>Node.js</h3>
-
-<p>If a project calls for real-time functionality such as chat applications, nothing beats <a href="https://nodejs.org/en/">Node.js</a>. It provides an event-driven architecture and a non-blocking I/O API. This allows real-time applications to be built with ease.</p>
-
-<h3>Socket.io</h3>
-
-<p><a href="http://socket.io/">Socket.io</a> is a library that makes it easy to build real-time applications. It&rsquo;s often used in tandem with Node.js.</p>
-
-<h3>Virtualbox</h3>
-
-<p>If a project requires me to test on a different platform and browser such as Internet Explorer or Safari on Windows. I usually use <a href="https://www.virtualbox.org/">Virtualbox</a>. I guess I don&rsquo;t really have much of a choice. Other than Virtualbox, I&rsquo;m not really aware of any other software that can virtualize an OS.</p>
-
-<h3>AWS</h3>
-
-<p><a href="http://aws.amazon.com/">Amazon Web Services</a> as the name suggests is a collection of Web Services offered by Amazon. I only use ec2 (elastic compute cloud), s3 (simple storage service) and cloudfront (CDN) though. The cool thing about their web services is that they&rsquo;re tightly integrated with each other. Which means that you can easily use s3 within an ec2 instance without having to do much of the setup. They also provide an API which can be used to programatically upload files to their servers.</p>
-
-<h3>DigitalOcean</h3>
-
-<p>Recently I also started using <a href="https://www.digitalocean.com/">Digitalocean</a> for my personal projects. Mainly because its very affordable (only $5 a month for the lowest tier) and easy to resize (I can upgrade or downgrade any time).</p>
-
-<h3>Carbon</h3>
-
-<p>Carbon is a PHP library for working with dates.</p>
-
-<h3>Moment</h3>
-
-<p>Basically the Carbon equivalent for JavaScript. The nice thing is that you can use it on both the client-side and server-side (node.js).</p>
-
-<h3>Intervention Image</h3>
-
-<p>When there&rsquo;s a need for image processing in a PHP application, I always grab <a href="http://image.intervention.io/">intervention image</a> through Composer. Resizing, cropping, blurring, change orientation, optimizing, name it and intervention image has it. But what hit the jackpot is that it works nicely with Laravel without having to do much setup.</p>
-
-<h3>Twig</h3>
-
-<p>Blade is the default templating engine used by Laravel so I use that without having second thoughts. But whenever I work outside Laravel, I have to use something like <a href="http://twig.sensiolabs.org/">Twig</a> to handle my templating needs.</p>
-
-<h3>Handlebars</h3>
-
-<p>My templating engine of choice when I&rsquo;m using JavaScript.</p>
-
-<h3>Mandrill</h3>
-
-<p>Whenever I need to send out emails from an application, <a href="https://www.mandrill.com/">Mandrill</a> is the tool of choice. Its a no-brainer since Laravel makes it easy to send emails using services such as Mandrill.</p>
-
-<h3>Faker</h3>
-
-<p>As programmers we all love automating things. <a href="https://github.com/fzaninotto/Faker">Faker</a> does exactly that. It generates fake data for you so you don&rsquo;t have to enter it manually through the application that you&rsquo;re building.</p>
-
-<h3>Dropzone</h3>
-
-<p><a href="http://www.dropzonejs.com/">Dropzone</a> is my file upload libary of choice. It&rsquo;s easy to get started using it. But it also makes it easy for developers to customize.</p>
-
-<h3>Stripe</h3>
-
-<p>Whenever a project needs to accept payments from its users, <a href="https://stripe.com/">Stripe</a> is my service of choice. I&rsquo;m not really confident enough that I&rsquo;d be able to implement a payment system which is safe from every hacker. Just the thought of saving the hash of credit card numbers on a database sends shivers to my spine. Stripe takes that fear away. I know the guys at Stripe know their stuff.</p>
-
-<h3>Paypal</h3>
-
-<p>For simple payment needs, <a href="https://www.paypal.com/">Paypal</a> is the tool. And BTW, this is also how I receive payments. It integrates with almost every bank on the planet so you can easily withdraw your money using your bank of choice.</p>
-
-<h3>Twilio</h3>
-
-<p>Whenever there&rsquo;s a need for voice enabled apps or SMS verification, nothing beats <a href="https://www.twilio.com/">Twilio</a>.</p>
-
-<h3>Guzzle</h3>
-
-<p>&ldquo;No man is an island&rdquo;, the same is true with web applications. More often than not, you&rsquo;ll find the need to integrate with third party services. That&rsquo;s where <a href="http://docs.guzzlephp.org/en/latest/">Guzzle</a> comes in, it&rsquo;s a PHP library for making http requests. If the API that you&rsquo;re working on doesn&rsquo;t already come with a library for making requests, then Guzzle is for you.</p>
-
-<h3>thujohn/pdf-l4</h3>
-
-<p>For applications that require printing of reports. <a href="https://github.com/thujohn/pdf-l4">Thujohn&rsquo;s pdf-l4</a> library does it.</p>
-
-<h3>Datatables</h3>
-
-<p>If an application requires searching or paginating through a table of data, <a href="https://www.datatables.net/">datatables</a> does the trick. What&rsquo;s great is that there&rsquo;s also a <a href="https://github.com/Chumper/Datatable">datatable</a> library for Laravel 4 which makes it easy to integrate to a Laravel project.</p>
-
-<h3>Beanstalk</h3>
-
-<p><a href="http://kr.github.io/beanstalkd/">Beanstalk</a> is a queue system. You basically use it for running time-consuming tasks such as sending out emails or processing images. There&rsquo;s also a library called <a href="https://github.com/pda/pheanstalk">Pheanstalk</a> which makes it easy to work with Beanstalk for queueing tasks.</p>
-
-<h3>Elasticsearch</h3>
-
-<p>I use <a href="https://www.elastic.co/">Elasticsearch</a> if there&rsquo;s a need for fast searches. Elasticsearch if a full-text search server that is based on <a href="https://lucene.apache.org/core/">Apache Lucene</a>. It works with</p>
-
-<h3>schickling/laravel-backup</h3>
-
-<p>Any decent developer would implement a database backup and restore functionality for each of the applications that they build. For Laravel developers, the <a href="https://github.com/schickling/laravel-backup">laravel-backup</a> library is one choice. It allows you to easily backup your database on a folder in the server or in an Amazon s3 bucket.</p>
-
-<h3>Cron</h3>
-
-<p>We all know Cron. It&rsquo;s the thing that we use whenever we need to execute something at specific intervals.</p>
-
-<h3>Express</h3>
-
-<p>Express is a framework for Node.js. From their website itself: &ldquo;Express: Fast, unopinionated, minimalist web framework for Node.js&rdquo;. It handles routing and serving of static files. That&rsquo;s all it really does but you can easily install third-party libraries for talking to the database or handling views and you wouldn&rsquo;t have any problem. Its unopinionated so you can do whatever the fuck you want and it won&rsquo;t complain.</p>
-
-<h3>Picnic CSS</h3>
-
-<p>Recently for some of my personal projects, I used <a href="http://www.picnicss.com/">picnic css</a>. Think of it as a lightweight bootstrap. It makes your UI beautiful without all the cruft that usually comes with bootstrap. It&rsquo;s also modularized into a set of plugins. So you can just include the plugins that you need.</p>
-
-<h3>Conclusion</h3>
-
-<p>In this article you&rsquo;ve learned about some of the tools that I usually use in my projects. What about you? What are your &ldquo;go to&rdquo; tools when it comes to developing applications?</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -3368,6 +3569,10 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/02/13/validating-data-with-respect-validation/">Validating Data with Respect Validation</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/03/why-i-love-web-development/">Why I Love Web Development</a>
       </li>
     
@@ -3381,10 +3586,6 @@ In this article I&rsquo;m going to share some of the tools and resources that I 
     
       <li class="post">
         <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way with Clearbit&#8217;s Person API</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/09/a-whirlwind-tour-of-web-developer-tools-linting/">A Whirlwind Tour of Web Developer Tools: Linting</a>
       </li>
     
   </ul>

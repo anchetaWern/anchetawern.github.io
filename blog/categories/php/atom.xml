@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-02-03T16:49:38+08:00</updated>
+  <updated>2016-02-13T14:25:28+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,264 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Validating Data with Respect Validation]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation/"/>
+    <updated>2016-02-13T07:44:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation</id>
+    <content type="html"><![CDATA[<p>Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good thing there&rsquo;s not a shortage of data validation libraries available for PHP. And most frameworks (if not all) have it as part of their core functionalities. In this tutorial, I&rsquo;ll be walking you through using the Respect Validation library for PHP. It&rsquo;s one of the most complete validation libraries that I&rsquo;ve seen. It can validate a whole range of data types such as numbers, strings, arrays, objects, date, banking data, phone numbers, emails and others.</p>
+
+<h3>Installation</h3>
+
+<p>You can install the library through Composer.</p>
+
+<p><code>
+composer require respect/validation
+</code></p>
+
+<p>Once that&rsquo;s done, include the vendor autoload file and give an alias to the Validation class. This allows you to use the alias instead of the actual class name.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Respect\Validation\Validator as v;
+?>
+```</p>
+
+<h3>Validating Data</h3>
+
+<p>Now let&rsquo;s take a look at some of the most common validators that you might want to use. All of the validators returns a boolean value, so if the data is valid it returns <code>true</code>, and if it&rsquo;s not then it returns <code>false</code>. To validate a data, you first call the validator. Some validators allows you to specify the format in which the data should be and some does not. In cases that it allows you, simply pass in the format as the argument for that validator. Next, call the <code>validate</code> method and pass in the data that you want to validate.</p>
+
+<h4>Dates</h4>
+
+<p>To validate dates, you use the <code>date</code> validator. This accepts the date format as its argument. If you do not specify one, the default date format of <code>Y-m-d</code> is used.</p>
+
+<p><code>php
+&lt;?php
+$is_datevalid = v::date()-&gt;validate('2015-02-30'); //true
+$is_datevalid = v::date('m-d-Y')-&gt;validate('2015-02-30'); //false
+?&gt;
+</code></p>
+
+<p>If you haven&rsquo;t noticed yet, one thing to note about date validation, is that it returns <code>true</code> even for a day that shouldn&rsquo;t exist in a specific month. In the example above, the month february shouldn&rsquo;t have a 30th day. If you use 32 or 33 for the day, it works fine since most of months have only 31 days.</p>
+
+<h4>Country Code</h4>
+
+<p>Validating country codes can be done by using the <code>countryCode</code> validator. On my testing, its only able to validate 2-character ISO country codes.</p>
+
+<p><code>php
+&lt;?php
+$is_validcountrycode = v::countryCode()-&gt;validate('PH'); //true
+$is_validcountrycode = v::countryCode()-&gt;validate('PHL'); //false
+?&gt;
+</code></p>
+
+<h4>Between</h4>
+
+<p>The <code>between</code> validator allows you to validate if a specific value is between 2 values. It can validate strings, numbers and dates.</p>
+
+<p>```php
+&lt;?php
+$is_between = v::string()&ndash;>between(&lsquo;a&rsquo;, &lsquo;z&rsquo;)&ndash;>validate(&rsquo;d'); //true
+$is_between = v::string()&ndash;>between(&lsquo;a&rsquo;, &lsquo;c&rsquo;)&ndash;>validate(&rsquo;d'); //false</p>
+
+<p>$is_between = v::int()&ndash;>between(50, 90)&ndash;>validate(20); //false
+$is_between = v::int()&ndash;>between(30, 60)&ndash;>validate(31); //true</p>
+
+<p>$is_between = v::date()&ndash;>between(&lsquo;2015-03-25&rsquo;, &lsquo;2015-04-30&rsquo;)&ndash;>validate(&lsquo;2015-03-28&rsquo;); //true
+$is_between = v::date()&ndash;>between(&lsquo;2015-07-12&rsquo;, &lsquo;2015-10-30&rsquo;)&ndash;>validate(&lsquo;2015-03-01&rsquo;); //false
+?>
+```</p>
+
+<h4>Length</h4>
+
+<p>To validate if a string or array matches a specific length between a minimum and a maximum value, you can use the <code>length</code> validator. You can specify either of the minimum and maximum values if you don&rsquo;t want to be specific.</p>
+
+<p>```php
+&lt;?php
+$is_length = v::string()&ndash;>length(10, 20)&ndash;>validate(&lsquo;my-username&rsquo;); //true
+$is_length = v::string()&ndash;>length(10, 20)&ndash;>validate(&lsquo;my&rsquo;); //false</p>
+
+<p>$is_length = v::arr()&ndash;>length(5, null)&ndash;>validate(array(&lsquo;abc&rsquo;, &lsquo;def&rsquo;, &lsquo;ghi&rsquo;)); //false
+$is_length = v::arr()&ndash;>length(null, 3)&ndash;>validate(array(&lsquo;abc&rsquo;, &lsquo;def&rsquo;, &lsquo;ghi&rsquo;)); //true
+?>
+```</p>
+
+<h4>Min and Max</h4>
+
+<p>The <code>min</code> and <code>max</code> validators allows you to check if an integer or date value is within the minimum or maximum value that you specify.</p>
+
+<p>```php
+&lt;?php
+$is_min = v::int()&ndash;>min(100)&ndash;>validate(25); //false
+$is_min = v::int()&ndash;>min(1)&ndash;>validate(2); //true</p>
+
+<p>$is_max = v::date()&ndash;>max(&lsquo;2015-07-27&rsquo;)&ndash;>validate(&lsquo;2015-03-12&rsquo;); //true
+$is_max = v::date()&ndash;>max(&lsquo;2015-06-13&rsquo;)&ndash;>validate(&lsquo;2015-08-29&rsquo;); //false
+?>
+```</p>
+
+<h4>Numbers</h4>
+
+<p>You can validate number values using the <code>numeric</code>, <code>digit</code>, and <code>int</code> validators. <code>numeric</code> is the generic number validator, it can accept integer, double or float values and even negative numbers. <code>digit</code> accepts whitespaces between integer values but it doesn&rsquo;t accept float or double values. <code>int</code> accepts only integer values.</p>
+
+<p>```php
+&lt;?php
+$is_numeric = v::numeric()&ndash;>validate(&lsquo;55&rsquo;); //true
+$is_numeric = v::numeric()&ndash;>validate(&lsquo;99.9&rsquo;); //true</p>
+
+<p>$is_numeric = v::digit()&ndash;>validate(&lsquo;45 3 330&rsquo;); //true
+$is_numeric = v::digit()&ndash;>validate(&lsquo;7.9&rsquo;); //false</p>
+
+<p>$is_int = v::int()&ndash;>validate(&lsquo;8.2&rsquo;); //false
+$is_int = v::int()&ndash;>validate(&lsquo;709&rsquo;); //true
+?>
+```</p>
+
+<h4>Domain</h4>
+
+<p>Domain names can be validated using the <code>domain</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_domain = v::domain()-&gt;validate('github.com'); //true
+$is_domain = v::domain()-&gt;validate('google.com.ph'); //true
+?&gt;
+</code></p>
+
+<h4>Bank</h4>
+
+<p>Bank information can also be validated. Currently, you can only validate bank accounts and bank identifier codes for Germany. And you have to install the bav Composer package to do that:</p>
+
+<p><code>
+composer require malkusch/bav
+</code></p>
+
+<p>Here are a few examples:</p>
+
+<p>```php
+&lt;?php
+$is_bankaccount = v::bankAccount(&ldquo;de&rdquo;, &ldquo;70169464&rdquo;)&ndash;>validate(&ldquo;1112&rdquo;); //true
+$is_bankaccount = v::bankAccount(&ldquo;de&rdquo;, &ldquo;70169464&rdquo;)&ndash;>validate(&ldquo;1234&rdquo;); //false</p>
+
+<p>$is_bankaccount = v::bic(&ldquo;de&rdquo;)&ndash;>validate(&ldquo;VZVDDED1XXX&rdquo;); //true
+$is_bankaccount = v::bic(&ldquo;de&rdquo;)&ndash;>validate(&ldquo;VZVDDED1&rdquo;); //true
+?>
+```</p>
+
+<h4>Alpha</h4>
+
+<p>If you want to restrict a string to only have letters, you can use the <code>apha</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_alpha = v::alpha()-&gt;validate('abc 123'); //false
+$is_alpha = v::alpha()-&gt;validate('abc def'); //true
+?&gt;
+</code></p>
+
+<h4>Alnum</h4>
+
+<p>You can validate alphanumeric characters (numbers and letters) using the <code>alnum</code> validator. You can group it</p>
+
+<p><code>php
+&lt;?php
+$is_alnum = v::alnum()-&gt;validate('batman 123'); //true
+$is_alnum = v::alnum()-&gt;lowercase()-&gt;validate('batman 123'); //true
+$is_alnum = v::alnum()-&gt;uppercase()-&gt;validate('batman 123'); //false
+$is_alnum = v::alnum()-&gt;notEmpty()-&gt;validate('batman 123'); //true
+?&gt;
+</code></p>
+
+<h4>Email</h4>
+
+<p>Email addresses are validated using the <code>email</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_email = v::email()-&gt;validate('not'); //false
+$is_email = v::email()-&gt;validate('email@gmail.com'); //true
+?&gt;
+</code></p>
+
+<h4>Phone</h4>
+
+<p>Phone numbers that have 7, 10 or 11 digits in them can be validated.</p>
+
+<p><code>php
+&lt;?php
+$is_phone = v::phone()-&gt;validate('(072) 242 8084'); //true
+$is_phone = v::phone()-&gt;validate('+639111111111'); //true
+?&gt;
+</code></p>
+
+<h4>Required</h4>
+
+<p>To set a specific data as required, you use the <code>notEmpty</code> validator.</p>
+
+<p><code>php
+&lt;?php
+$is_required = v::isNotEmpty()-&gt;validate(''); //false
+$is_required = v::isNotEmpty()-&gt;validate('im not empty'); //true
+?&gt;
+</code></p>
+
+<h4>Chaining</h4>
+
+<p>As you have seen earlier, you can combine different validators together. Here are a few examples:</p>
+
+<p><code>php
+&lt;?php
+$is_alnum = v::alnum()-&gt;notEmpty()-&gt;validate('superman 456'); //true
+$is_alnum = v::email()-&gt;notEmpty()-&gt;lowercase()-&gt;validate('superman456@gmail.com'); //true
+?&gt;
+</code></p>
+
+<h4>Validating an Array of Data</h4>
+
+<p>To validate an array of data or a form, you need to setup the rules for each field and add them in an array. You then loop through each item in the array and validate them one by one. In the example below, the <code>check</code> method is used instead of the <code>validate</code> method. This is because the <code>validate</code> method only returns a boolean value and not the actual error message. While the <code>check</code> method returns an exception which you can then get by calling the <code>getMainMessage</code> method in the exception that was returned. Lastly, use <code>break</code> to break the execution of the <code>foreach</code> loop.</p>
+
+<p>```php
+&lt;?php
+$rules = array(</p>
+
+<pre><code>'username' =&gt; v::string()-&gt;lowercase()-&gt;length(10, 20)-&gt;notEmpty()-&gt;setName('username'),
+'email' =&gt; v::email()-&gt;notEmpty()-&gt;setName('email'),
+'phone_number' =&gt; v::phone()-&gt;notEmpty()-&gt;setName('phone number')
+</code></pre>
+
+<p>);</p>
+
+<p>$data = array(</p>
+
+<pre><code>'username' =&gt; 'wernancheta', 
+'email' =&gt; 'myemail@gmail.com',
+'phone_number' =&gt; '111'
+</code></pre>
+
+<p>);</p>
+
+<p>foreach($data as $key => $value){</p>
+
+<pre><code>try{
+    $rules[$key]-&gt;check($value);
+} catch (\InvalidArgumentException $e) {
+    echo $e-&gt;getMainMessage();  
+    break;  
+}
+</code></pre>
+
+<p>}
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use the Respect Validation library for PHP. Be sure to check out the <a href="http://respect.li/Validation">official docs</a> if you want to learn more. If you&rsquo;re using Laravel, you might want to check out this article on Sitepoint: <a href="http://www.sitepoint.com/validating-your-data-with-respect-validation/">Validating your data with Respect Validation</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Generating Fake Data in PHP with Faker]]></title>
@@ -768,172 +1026,6 @@ file_put_contents('logos/' . $company . '.png' , $contents);
 ```</p>
 
 <p>The code above gets the contents returned from the clearbit logo URL and then saves it to the <code>logos</code> directory in the server.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Working with Dates and Times in PHP with Carbon]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon/"/>
-    <updated>2015-10-31T17:32:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/10/31/working-with-dates-and-times-in-php-with-carbon</id>
-    <content type="html"><![CDATA[<p>When writing PHP applications there&rsquo;s often a need for working with dates and times. In this tutorial, I&rsquo;ll be walking you through Carbon, a simple PHP API extension for the DateTime class. It basically makes working with dates and times a lot more easier. I&rsquo;ve personally used this library on my <a href="https://github.com/anchetaWern/ahead">Ahead</a> project, a Laravel app for scheduling posts to social media sites like Facebook, Twitter and LinkedIn.</p>
-
-<h3>Installation</h3>
-
-<p>To install Carbon, you need to use <a href="https://getcomposer.org/">Composer</a>.</p>
-
-<p><code>
-composer require nesbot/carbon
-</code></p>
-
-<h3>Usage</h3>
-
-<p>Include the vendor autoload in your file and then use the <code>Carbon</code> class in the <code>Carbon</code> namespace.</p>
-
-<p>```php
-&lt;?php
-require_once &lsquo;vendor/autoload.php&rsquo;;</p>
-
-<p>use Carbon\Carbon;
-?>
-```</p>
-
-<h4>Getting the Current Date and Time</h4>
-
-<p>You can get the current date and time using the <code>now</code> method. If you do not specify an argument, it uses the default timezone from your PHP config.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::now(); //2015-07-26 20:21:20
-?&gt;
-</code></p>
-
-<p>If you want to use a different timezone, you can pass a <a href="http://php.net/manual/en/timezones.php">valid timezone</a> as the argument.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::now('Asia/Manila'); //2015-07-26 20:21:20
-?&gt;
-</code></p>
-
-<p>Aside from the <code>now</code> method, there&rsquo;s also <code>today</code>, which returns the start of today&rsquo;s date, <code>yesterday</code>, which returns the start of the date yesterday, and <code>tomorrow</code>, which returns the start of the date tomorrow.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::today()-&gt;toDateTimeString(); //2015-07-26 00:00:00
-echo Carbon::yesterday()-&gt;toDateTimeString(); //2015-07-25 00:00:00
-echo Carbon::tomorrow()-&gt;toDateTimeString(); //2015-07-27 00:00:00
-?&gt;
-</code></p>
-
-<h4>Converting to String</h4>
-
-<p>By default, methods in Carbon returns a datetime object. Though its an object, you can directly output it using <code>echo</code> because of the <code>__toString</code> magic method. But if you want to convert it to a string, you can use the <code>toDateString</code> or <code>toDateTimeString</code> methods.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::now()-&gt;toDateString(); //2015-07-26
-echo Carbon::now()-&gt;toDateTimeString(); //2015-07-26 20:22:50
-?&gt;
-</code></p>
-
-<h4>Parsing Dates</h4>
-
-<p>You can also parse dates in all sorts of formats using the <code>parse</code> method.</p>
-
-<p>```php
-&lt;?php
-echo Carbon::parse(&lsquo;2015/03/30&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:00:00
-echo Carbon::parse(&lsquo;2015-03-30&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:00:00
-echo Carbon::parse(&lsquo;2015-03-30 00:10:25&rsquo;)&ndash;>toDateTimeString(); //2015-03-30 00:10:25</p>
-
-<p>echo Carbon::parse(&lsquo;today&rsquo;)&ndash;>toDateTimeString(); //2015-07-26 00:00:00
-echo Carbon::parse(&lsquo;yesterday&rsquo;)&ndash;>toDateTimeString(); //2015-07-25 00:00:00
-echo Carbon::parse(&lsquo;tomorrow&rsquo;)&ndash;>toDateTimeString(); //2015-07-27 00:00:00
-echo Carbon::parse(&lsquo;2 days ago&rsquo;)&ndash;>toDateTimeString(); //2015-07-24 20:49:53
-echo Carbon::parse(&lsquo;+3 days&rsquo;)&ndash;>toDateTimeString(); //2015-07-29 20:49:53
-echo Carbon::parse(&lsquo;+2 weeks&rsquo;)&ndash;>toDateTimeString(); //2015-08-09 20:49:53
-echo Carbon::parse(&lsquo;+4 months&rsquo;)&ndash;>toDateTimeString(); //2015-11-26 20:49:53
-echo Carbon::parse(&lsquo;-1 year&rsquo;)&ndash;>toDateTimeString(); //2014-07-26 20:49:53
-echo Carbon::parse(&lsquo;next wednesday&rsquo;)&ndash;>toDateTimeString(); //2015-07-29 00:00:00
-echo Carbon::parse(&lsquo;last friday&rsquo;)&ndash;>toDateTimeString(); //2015-07-24 00:00:00
-?>
-```</p>
-
-<h4>Constructing Dates</h4>
-
-<p>You can also construct dates by using individual parts such as the year month and day.</p>
-
-<p>```php
-&lt;?php
-$year = &lsquo;2015&rsquo;;
-$month = &lsquo;04&rsquo;;
-$day = &lsquo;12&rsquo;;</p>
-
-<p>echo Carbon::createFromDate($year, $month, $day); //2015-04-12 20:55:59</p>
-
-<p>$hour = &lsquo;02&rsquo;;
-$minute = &lsquo;15&rsquo;:
-$second = &lsquo;30&rsquo;;</p>
-
-<p>echo Carbon::create($year, $month, $day, $hour, $minute, $second); //2015-04-12 02:15:30
-?>
-```</p>
-
-<p>Optionally, you can pass in any valid timezone as the last argument for the <code>create</code> and <code>createFromDate</code> methods.</p>
-
-<h4>Manipulating Dates</h4>
-
-<p>Manipulating dates can be done by using <code>add</code> (to add) or <code>sub</code> (to subtract) followed by the unit of time you want to add or subtract. For example, you want to add a specific number of days to the specific date, you use the <code>addDays</code> method. There&rsquo;s also the <code>modify</code> method which allows you to pass in the modification that you want. It takes the format of <code>+</code> or <code>-</code> followed by the unit value and the unit. So if you want to add a year to the current date, you use <code>+1 year</code>. Check out the examples below to have an idea what else you can do.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::now()-&gt;addDays(25); //2015-08-20 21:10:00
-echo Carbon::now()-&gt;addWeeks(3); //2015-08-16 21:10:00
-echo Carbon::now()-&gt;addHours(25); //2015-07-27 22:10:00
-echo Carbon::now()-&gt;subHours(2); //2015-07-26 19:10:00
-echo Carbon::now()-&gt;addHours(2)-&gt;addMinutes(12); //2015-07-26 23:22:00
-echo Carbon::now()-&gt;modify('+15 days'); //2015-08-10 21:10:00
-echo Carbon::now()-&gt;modify('-2 days'); //2015-07-24 21:10:00
-?&gt;
-</code></p>
-
-<p>Commonly in PHP apps are international. This means that you need to work with different timezones. Here&rsquo;s how to convert from one timezone to another.</p>
-
-<p><code>php
-&lt;?php
-echo Carbon::now()-&gt;setTimezone('America/Los_Angeles'); //2015-07-26 06:23:48
-?&gt;
-</code></p>
-
-<h4>Comparing Dates</h4>
-
-<p>You can use the following methods to compare dates in Carbon.</p>
-
-<ul>
-<li><code>min</code> &ndash; returns the smaller date.</li>
-<li><code>max</code> &ndash; returns the larger date.</li>
-<li><code>eq</code> &ndash; check if two dates are the same.</li>
-<li><code>gt</code> &ndash; check if the first date is greater than the second date.</li>
-<li><code>lt</code> &ndash; check if the first date is less than the second date.</li>
-<li><code>gte</code> &ndash; check if the first date is greater than or equal to the second date.</li>
-<li><code>lte</code> &ndash; check if the first date is lesser than or equal to the second date.</li>
-</ul>
-
-
-<p>Other helpful methods include <code>isWeekDay</code>, <code>isWeekend</code>, <code>isYesterday</code>, <code>isFuture</code> and <code>isPast</code>.</p>
-
-<h4>Laravel Integration</h4>
-
-<p>If you&rsquo;re on Laravel, you can just add an alias for the Carbon library in the <code>aliases</code> in the <code>app/config/app.php</code>.</p>
-
-<p><code>
-'Carbon' =&gt; 'Carbon\Carbon'
-</code></p>
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with the Carbon library in PHP. Carbon is a really nice and easy way to work with dates in PHP. Be sure to check out the <a href="http://carbon.nesbot.com/docs/">official docs</a> to learn more about it.</p>
 ]]></content>
   </entry>
   

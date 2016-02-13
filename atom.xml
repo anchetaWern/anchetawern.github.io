@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-02-03T16:49:38+08:00</updated>
+  <updated>2016-02-13T14:25:28+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,366 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Validating Data with Respect Validation]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation/"/>
+    <updated>2016-02-13T07:44:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/13/validating-data-with-respect-validation</id>
+    <content type="html"><![CDATA[<p>Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good thing there&rsquo;s not a shortage of data validation libraries available for PHP. And most frameworks (if not all) have it as part of their core functionalities. In this tutorial, I&rsquo;ll be walking you through using the Respect Validation library for PHP. It&rsquo;s one of the most complete validation libraries that I&rsquo;ve seen. It can validate a whole range of data types such as numbers, strings, arrays, objects, date, banking data, phone numbers, emails and others.</p>
+
+<h3>Installation</h3>
+
+<p>You can install the library through Composer.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require respect/validation</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once that&rsquo;s done, include the vendor autoload file and give an alias to the Validation class. This allows you to use the alias instead of the actual class name.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Respect\Validation\Validator</span> <span class="k">as</span> <span class="nx">v</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Validating Data</h3>
+
+<p>Now let&rsquo;s take a look at some of the most common validators that you might want to use. All of the validators returns a boolean value, so if the data is valid it returns <code>true</code>, and if it&rsquo;s not then it returns <code>false</code>. To validate a data, you first call the validator. Some validators allows you to specify the format in which the data should be and some does not. In cases that it allows you, simply pass in the format as the argument for that validator. Next, call the <code>validate</code> method and pass in the data that you want to validate.</p>
+
+<h4>Dates</h4>
+
+<p>To validate dates, you use the <code>date</code> validator. This accepts the date format as its argument. If you do not specify one, the default date format of <code>Y-m-d</code> is used.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_datevalid</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-02-30&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_datevalid</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">(</span><span class="s1">&#39;m-d-Y&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-02-30&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you haven&rsquo;t noticed yet, one thing to note about date validation, is that it returns <code>true</code> even for a day that shouldn&rsquo;t exist in a specific month. In the example above, the month february shouldn&rsquo;t have a 30th day. If you use 32 or 33 for the day, it works fine since most of months have only 31 days.</p>
+
+<h4>Country Code</h4>
+
+<p>Validating country codes can be done by using the <code>countryCode</code> validator. On my testing, its only able to validate 2-character ISO country codes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_validcountrycode</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">countryCode</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;PH&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_validcountrycode</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">countryCode</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;PHL&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Between</h4>
+
+<p>The <code>between</code> validator allows you to validate if a specific value is between 2 values. It can validate strings, numbers and dates.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">31</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;2015-03-25&#39;</span><span class="p">,</span> <span class="s1">&#39;2015-04-30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-28&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_between</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">between</span><span class="p">(</span><span class="s1">&#39;2015-07-12&#39;</span><span class="p">,</span> <span class="s1">&#39;2015-10-30&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-01&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Length</h4>
+
+<p>To validate if a string or array matches a specific length between a minimum and a maximum value, you can use the <code>length</code> validator. You can specify either of the minimum and maximum values if you don&rsquo;t want to be specific.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;my-username&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;my&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">arr</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">null</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">,</span> <span class="s1">&#39;ghi&#39;</span><span class="p">));</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_length</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">arr</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">,</span> <span class="s1">&#39;ghi&#39;</span><span class="p">));</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Min and Max</h4>
+
+<p>The <code>min</code> and <code>max</code> validators allows you to check if an integer or date value is within the minimum or maximum value that you specify.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_min</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span> <span class="c1">//false </span>
+</span><span class='line'><span class="nv">$is_min</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_max</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">max</span><span class="p">(</span><span class="s1">&#39;2015-07-27&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-03-12&#39;</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'><span class="nv">$is_max</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">date</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">max</span><span class="p">(</span><span class="s1">&#39;2015-06-13&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;2015-08-29&#39;</span><span class="p">);</span> <span class="c1">//false </span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Numbers</h4>
+
+<p>You can validate number values using the <code>numeric</code>, <code>digit</code>, and <code>int</code> validators. <code>numeric</code> is the generic number validator, it can accept integer, double or float values and even negative numbers. <code>digit</code> accepts whitespaces between integer values but it doesn&rsquo;t accept float or double values. <code>int</code> accepts only integer values.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">numeric</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;55&#39;</span><span class="p">);</span> <span class="c1">//true </span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">numeric</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;99.9&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">digit</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;45 3 330&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_numeric</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">digit</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;7.9&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_int</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;8.2&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_int</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">int</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;709&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Domain</h4>
+
+<p>Domain names can be validated using the <code>domain</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_domain</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">domain</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;github.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_domain</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">domain</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;google.com.ph&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Bank</h4>
+
+<p>Bank information can also be validated. Currently, you can only validate bank accounts and bank identifier codes for Germany. And you have to install the bav Composer package to do that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">composer require malkusch/bav</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are a few examples:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bankAccount</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;70169464&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;1112&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bankAccount</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;70169464&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bic</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;VZVDDED1XXX&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_bankaccount</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">bic</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s2">&quot;VZVDDED1&quot;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Alpha</h4>
+
+<p>If you want to restrict a string to only have letters, you can use the <code>apha</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alpha</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alpha</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;abc 123&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_alpha</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alpha</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;abc def&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Alnum</h4>
+
+<p>You can validate alphanumeric characters (numbers and letters) using the <code>alnum</code> validator. You can group it</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">uppercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;batman 123&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Email</h4>
+
+<p>Email addresses are validated using the <code>email</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_email</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;not&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_email</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;email@gmail.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Phone</h4>
+
+<p>Phone numbers that have 7, 10 or 11 digits in them can be validated.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_phone</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;(072) 242 8084&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_phone</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;+639111111111&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Required</h4>
+
+<p>To set a specific data as required, you use the <code>notEmpty</code> validator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_required</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">isNotEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span> <span class="c1">//false</span>
+</span><span class='line'><span class="nv">$is_required</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">isNotEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;im not empty&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Chaining</h4>
+
+<p>As you have seen earlier, you can combine different validators together. Here are a few examples:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">alnum</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;superman 456&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="nv">$is_alnum</span> <span class="o">=</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">(</span><span class="s1">&#39;superman456@gmail.com&#39;</span><span class="p">);</span> <span class="c1">//true</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Validating an Array of Data</h4>
+
+<p>To validate an array of data or a form, you need to setup the rules for each field and add them in an array. You then loop through each item in the array and validate them one by one. In the example below, the <code>check</code> method is used instead of the <code>validate</code> method. This is because the <code>validate</code> method only returns a boolean value and not the actual error message. While the <code>check</code> method returns an exception which you can then get by calling the <code>getMainMessage</code> method in the exception that was returned. Lastly, use <code>break</code> to break the execution of the <code>foreach</code> loop.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$rules</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">string</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">lowercase</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;email&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">email</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="s1">&#39;phone_number&#39;</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="o">::</span><span class="na">phone</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">notEmpty</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;phone number&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;wernancheta&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;email&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;myemail@gmail.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;phone_number&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;111&#39;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span><span class="p">(</span><span class="nv">$data</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span><span class="p">{</span>
+</span><span class='line'>        <span class="nv">$rules</span><span class="p">[</span><span class="nv">$key</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">check</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">\InvalidArgumentException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMainMessage</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use the Respect Validation library for PHP. Be sure to check out the <a href="http://respect.li/Validation">official docs</a> if you want to learn more. If you&rsquo;re using Laravel, you might want to check out this article on Sitepoint: <a href="http://www.sitepoint.com/validating-your-data-with-respect-validation/">Validating your data with Respect Validation</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Why I Love Web Development]]></title>
@@ -3970,64 +4330,6 @@ You then call the <code>execute</code> method to actually execute the query. Thi
 <p><img src="http://wern-ancheta.com/images/posts/phpsh/db.png" alt="db" /></p>
 
 <p>That&rsquo;s it for this quick-tip. I hope I&rsquo;ve encouraged you to use phpsh on your projects.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Introduction to Absentist]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist/"/>
-    <updated>2015-09-27T19:18:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/09/27/introduction-to-absentist</id>
-    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been working on a few projects that will ease up all the housekeeping work that I need to do as a teacher. Things like checking the attendance of students and checking the works of students.</p>
-
-<p>When I started working as a teacher, I used a spreadsheet to monitor attendance. There&rsquo;s a column for the name of the student and a column for meeting days. That&rsquo;s about 36 columns for the laboratory, where I meet them 2 times per week. And then 18 columns for the lecture, where I meet them once per week. What I do is to put an <em>A</em> in the cell where the student and the day intersects if the student is absent. And when a student accumulates 2 of those <em>A&rsquo;s</em> in the laboratory, then they&rsquo;re ripe for dropping. And for the lecture, they only need one. When I say drop, it means dropping the class card of the student to the Student Affairs Office. I won&rsquo;t dive in too much with the details but this process is implemented so the students wouldn&rsquo;t want to be absent too often. Because its really a pain to claim class cards.</p>
-
-<p>Going back to my old process in monitoring attendance, here&rsquo;s what the spreadsheet that I used for monitoring looks like:</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/attendance.png" alt="attendance spreadsheet" /></p>
-
-<p>Well, guess what. This quickly turned into a headache. Because there&rsquo;s no way to monitor which students are currently dropped, which one&rsquo;s are ripe for dropping and which one&rsquo;s has already returned their class cards to me.</p>
-
-<p>As a programmer, I always want to make my work easy. Make the computer do most of the work as much as possible. So I decided to work on this project which I now call as Absentist. It&rsquo;s an attendance monitoring app which is custom built for my current needs. The way it works is simple. First, the teacher creates a class and adds the students. This part asks for the details such as the name of the class, some additional details that the teacher wants to enter, the number of absences needed before dropping the class card, the meeting days, then the start time and end time for each meeting day. Since the school already has a system for accessing class details. All I needed to do was to export it to a spreadsheet and then copy-paste it to a textarea. Then in the back-end, I simply parsed the pasted data so I can extract the ID Number, First Name, Last Name, Middle Initial and the gender of the student.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/newclass.png" alt="new class" /></p>
-
-<p>Once a class has been created, it is listed in the classes page. This page has the links for updating a class, viewing students that are ripe for dropping and students that are already dropped.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/classes.png" alt="new class" /></p>
-
-<p>Here&rsquo;s what the interface for dropping looks like:</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/todrop.png" alt="to drop" /></p>
-
-<p>From here, the teacher can do two things: first is to mark the class card as dropped. This should be done once all the class cards has been dropped. Currently there&rsquo;s no button for dropping everything with a single click but this would do for now. There should only be a few clicks needed. Next is the absences link, this shows all the days that the student was absent.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/absences.png" alt="absences" /></p>
-
-<p>Next is the page for viewing class card that has already been dropped. From here, the teacher can click on the <em>claim</em> button to mark that the student has returned their class card. When this button is clicked, the absences counter for that student goes back to 0.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/dropped.png" alt="dropped" /></p>
-
-<p>But how is the attendance actually updated you ask? It is through the attendance page. This uses the days and time that has been entered on the class settings. When the attendance page is accessed in a time between the start time and end time that was entered and the day matches. Then it will automatically show a list of students in the class. From there, the teacher can call on the students one by one. If a student is absent but is not excused then the absent button beside that student is clicked. If excused then the excused button is clicked. The only difference between the 2 is that excused absences aren&rsquo;t counted as an actual absence. Its just there for the sake of recording.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/update-attendance.png" alt="update attendance" /></p>
-
-<p>Once the roll call is done, the teacher can then filter the list to only show the students who are absent or excused. This is useful for verifying if all the students in the list are really absent or excused. If not then the absent or excused button is clicked again to remove the student from the list. Once that&rsquo;s done, the <em>update attendance</em> button is clicked to commit the changes to the database. This increments the absences counter for the student if they are absent. Or marks the student to be dropped if the absences counter becomes equal to that of what was added to the class settings.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/absentist/show-absent.png" alt="update attendance" /></p>
-
-<h3>Future Plans</h3>
-
-<p>Future plans for this project includes the following:</p>
-
-<ul>
-<li>Adding students one at a time. This would be useful for when a student comes in late or for instances where there&rsquo;s no available spreadsheet export for student data.</li>
-<li>Different start and end times for each meeting day.</li>
-<li>User Documentation</li>
-</ul>
-
-
-<p>That&rsquo;s it! If you want to use this project or contribute to it, you can <a href="https://github.com/anchetaWern/absentist">download it on Github</a>.</p>
 ]]></content>
   </entry>
   
