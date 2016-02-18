@@ -4,7 +4,7 @@
   <title><![CDATA[Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-02-13T14:25:28+08:00</updated>
+  <updated>2016-02-18T15:09:04+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,160 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using the Intervention Image Library in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/18/using-the-intervention-image-library-in-php/"/>
+    <updated>2016-02-18T14:04:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/18/using-the-intervention-image-library-in-php</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how to manipulate images in PHP using the <a href="http://image.intervention.io/">Intervention Image library</a>. In the PHP applications that I write, I primarily use intervention image for resizing images into smaller one&rsquo;s. But aside from that, there are other things that this library can do.</p>
+
+<h3>Installation and Setup</h3>
+
+<p>To use intervention image, you need to have ImageMagick installed. In Ubuntu, you can do that by executing the following command from your terminal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install imagemagick</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On your working directory, execute the following to install Intervention Image.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require intervention/image</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This command uses Composer. If you don&rsquo;t have it already, check out the <a href="https://getcomposer.org/download/">downloads page</a> and install it on your system.</p>
+
+<p>Create a new PHP file and name it <code>tester.php</code>. This will be the file that you&rsquo;re going to use for the rest of this tutorial.</p>
+
+<p>To use the library, require the autoload file in the vendor directory. This allows you to include the Intervention Image library into your current file. You can then give an alias to the <code>ImageManagerStatic</code> class and use it for manipulating images.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Intervention\Image\ImageManagerStatic</span> <span class="k">as</span> <span class="nx">Image</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create Image Instance</h3>
+
+<p>The first thing that you need to do when working with this library is to create an instance of the image from source. This is like saving a copy of the image into memory so that it can be easily manipulated. Any changes made to the image are only in memory until you choose to commit it to the filesystem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span> <span class="o">=</span> <span class="nx">Image</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;images/a.jpg&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resizing Images</h3>
+
+<p>You can resize images by calling the <code>resize</code> method in the image instance that you&rsquo;ve created. In the example below, the image is resized to exactly 50x50 pixels. It doesn&rsquo;t matter if the image is distorted in the process. So if you have an image which is 300x600 (where 300 is the width and 600 is the height), the height will have to get squashed. This results in a sandwich-like image.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">resize</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you don&rsquo;t want that to happen, you need to utilize aspect ratio. This allows you to supply only either the width or the height. In the example below, the width is optional and the height is 50. This resizes the image to have a height of 50 and the width can have any value as long as the aspect ratio is the same.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">resize</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$constraint</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$constraint</span><span class="o">-&gt;</span><span class="na">aspectRatio</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Adjusting Brightness, Contrast and Opacity</h3>
+
+<p>To adjust the brightness of an image, you can use values between 100 and -100. 100 being the brightess and -100 being the darkest. So you&rsquo;ll only really see a white image if you supply 100 as the value and a black image if the value is -100. Positive values are used to bring the brightness up and negative to bring it down. In the example below, the brightness is adjusted to 25% of the default brightness of the image.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">brightness</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To adjust the contrast, yup you guessed it right!, use the the <code>contrast</code> method. Just like the <code>brightness</code> method this accepts values between 100 and -100.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">contrast</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To adjust the opacity, supply a value between 0 and 100 to the <code>opacity</code> method. With <code>100</code> being the full opacity and <code>0</code> being the full transparency. Note that adjusting the opacity of an image takes a bit of time. On my testing, it took a bit longer for it to finish than the other operations I&rsquo;ve used so far.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">opacity</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cropping</h3>
+
+<p>Cropping images can be done by calling the <code>crop</code> method. This accepts 2 required arguments and 2 optional. The first and second arguments are the width and height of the area to be cropped. And the optional third and fourth arguments are the X and Y axis of the starting points of the crop area. If you do not supply those values, Intervention Image is going to assume that you want to crop at the very center of the image moving outward. That&rsquo;s what the example below does.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">crop</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re planning to implement a cropping functionality in your PHP application, Intervention Image can&rsquo;t do it alone. It has to have a client-side component that allows the user to visually crop the image. For that there&rsquo;s a jQuery plugin called <a href="http://fengyuanchen.github.io/cropper/">cropper</a>. I haven&rsquo;t personally used it but the demo shows that the X and Y coordinates and the width and height can be determined using this library. So all you have to do is pass in those values to the server side and let Intervention Image do its thing.</p>
+
+<h3>Saving Images</h3>
+
+<p>Finally, you can commit the changes that you&rsquo;ve made to the filesystem by using the <code>save</code> method. You don&rsquo;t need to supply any arguments to it if you want to replace the original image. If you do not want that, then you can supply the path to the file where you want to save it. If you have a keen eye, you might have noticed that the original image was a <code>.jpg</code> image, and now its being saved as a <code>.png</code> image. Well that&rsquo;s acceptable, Intervention Image automatically converts the image type for you. Lastly, the quality of the image can also be modified by passing in a second argument which has a value between 0 and 100. 100 being the same quality of the original image. In the example below, the quality is adjusted to 50% of the original one.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span> <span class="c1">//replace the original image</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;images/b.png&#39;</span><span class="p">);</span> <span class="c1">//save to another file</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;images/b.png&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span> <span class="c1">//adjust quality of image</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to manipulate images in your PHP applications using the Intervention Image. As always, you have barely scratched the surface with this tutorial. There&rsquo;s much more things that you can do with this library. I recommend you to check out the <a href="http://image.intervention.io/">official website</a> to learn more about it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Validating Data with Respect Validation]]></title>
@@ -4212,124 +4366,6 @@ You then call the <code>execute</code> method to actually execute the query. Thi
 <h3>Conclusion</h3>
 
 <p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to use the PDO extension in PHP. Note that it&rsquo;s not only the MySQL database that PDO supports. It also supports other databases such as CUBRID, PostgreSQL, SQLite and many others.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Quick Tip: Introduction to phpsh]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/10/03/quick-tip-introduction-to-phpsh/"/>
-    <updated>2015-10-03T11:12:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/10/03/quick-tip-introduction-to-phpsh</id>
-    <content type="html"><![CDATA[<p>In this quick-tip I&rsquo;ll introduce you to a tool called <a href="http://www.phpsh.org/">phpsh</a>. This project has been created for quite some time now. It was created at Facebook but is no longer actively being developed. But this shouldn&rsquo;t stop you from using it. It&rsquo;s a really important tool to have especially when you want to quickly test a PHP script. PHPsh is an interactive shell for PHP. It&rsquo;s features include the following:</p>
-
-<ul>
-<li>readline history</li>
-<li>tab completion</li>
-<li>quick access to documentation</li>
-</ul>
-
-
-<p>You can download it directly from <a href="http://github.com/facebook/phpsh/zipball/master">this link</a>.</p>
-
-<p>Once you&rsquo;re done downloading phpsh, extract the zip file and navigate to the extracted folder. Then execute the following commands to install it in your system.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>python setup.py build
-</span><span class='line'>sudo python setup.py install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, you can now open any terminal window and execute <code>phpsh</code> to start using it.</p>
-
-<p>To get documentation regarding a specific function, use the <code>d</code> command followed by the name of the function you want to look up. Here are a few examples.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>d echo
-</span><span class='line'>d array_push
-</span><span class='line'>d array_filter</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will then output the documentation.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># echo
-</span><span class='line'>
-</span><span class='line'>(PHP 4, PHP 5)
-</span><span class='line'>
-</span><span class='line'>echo -- Output one or more strings
-</span><span class='line'>
-</span><span class='line'>### Description
-</span><span class='line'>
-</span><span class='line'>void echo ( string $arg1 [, string $... ] )
-</span><span class='line'>
-</span><span class='line'>Outputs all parameters. 
-</span><span class='line'>
-</span><span class='line'>echo() is not actually a function (it is a language construct), so you are not required to use parentheses with it. echo() (unlike some other language constructs) does not behave like a function, so it cannot always be used in the context of a function. Additionally, if you want to pass more than one parameter to echo(), the parameters must not be enclosed within parentheses. 
-</span><span class='line'>
-</span><span class='line'>echo() also has a shortcut syntax, where you can immediately follow the opening tag with an equals sign. This short syntax only works with the [short_open_tag][1] configuration setting enabled. 
-</span><span class='line'>
-</span><span class='line'>` I have &lt;?=$foo?&gt; foo. `
-</span><span class='line'>
-</span><span class='line'>### Parameters
-</span><span class='line'>
-</span><span class='line'>arg1     
-</span><span class='line'>
-</span><span class='line'>The parameter to output. 
-</span><span class='line'>
-</span><span class='line'>...     
-</span><span class='line'>
-</span><span class='line'>### Return Values
-</span><span class='line'>
-</span><span class='line'>No value is returned. 
-</span><span class='line'>
-</span><span class='line'>### 
-</span><span class='line'>
-</span><span class='line'>   [1]: #ini.short-open-tag</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Aside from directly accessing the docs, you can also write and execute any PHP code that you wish to test. Here&rsquo;s a screenshot of me declaring an array and then looping through it.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/phpsh/php-sh.png" alt="phpsh" /></p>
-
-<p>You can also connect to a database and perform operations on it.</p>
-
-<p><img src="http://wern-ancheta.com/images/posts/phpsh/db.png" alt="db" /></p>
-
-<p>That&rsquo;s it for this quick-tip. I hope I&rsquo;ve encouraged you to use phpsh on your projects.</p>
 ]]></content>
   </entry>
   

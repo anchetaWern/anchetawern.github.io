@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-02-13T14:25:28+08:00</updated>
+  <updated>2016-02-18T15:09:04+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,130 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using the Intervention Image Library in PHP]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/18/using-the-intervention-image-library-in-php/"/>
+    <updated>2016-02-18T14:04:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/18/using-the-intervention-image-library-in-php</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how to manipulate images in PHP using the <a href="http://image.intervention.io/">Intervention Image library</a>. In the PHP applications that I write, I primarily use intervention image for resizing images into smaller one&rsquo;s. But aside from that, there are other things that this library can do.</p>
+
+<h3>Installation and Setup</h3>
+
+<p>To use intervention image, you need to have ImageMagick installed. In Ubuntu, you can do that by executing the following command from your terminal:</p>
+
+<p><code>
+sudo apt-get install imagemagick
+</code></p>
+
+<p>On your working directory, execute the following to install Intervention Image.</p>
+
+<p><code>
+composer require intervention/image
+</code></p>
+
+<p>This command uses Composer. If you don&rsquo;t have it already, check out the <a href="https://getcomposer.org/download/">downloads page</a> and install it on your system.</p>
+
+<p>Create a new PHP file and name it <code>tester.php</code>. This will be the file that you&rsquo;re going to use for the rest of this tutorial.</p>
+
+<p>To use the library, require the autoload file in the vendor directory. This allows you to include the Intervention Image library into your current file. You can then give an alias to the <code>ImageManagerStatic</code> class and use it for manipulating images.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Intervention\Image\ImageManagerStatic as Image;
+?>
+```</p>
+
+<h3>Create Image Instance</h3>
+
+<p>The first thing that you need to do when working with this library is to create an instance of the image from source. This is like saving a copy of the image into memory so that it can be easily manipulated. Any changes made to the image are only in memory until you choose to commit it to the filesystem.</p>
+
+<p><code>php
+&lt;?php
+$img = Image::make('images/a.jpg');
+?&gt;
+</code></p>
+
+<h3>Resizing Images</h3>
+
+<p>You can resize images by calling the <code>resize</code> method in the image instance that you&rsquo;ve created. In the example below, the image is resized to exactly 50x50 pixels. It doesn&rsquo;t matter if the image is distorted in the process. So if you have an image which is 300x600 (where 300 is the width and 600 is the height), the height will have to get squashed. This results in a sandwich-like image.</p>
+
+<p><code>php
+&lt;?php
+$img-&gt;resize(50, 50);
+?&gt;
+</code></p>
+
+<p>If you don&rsquo;t want that to happen, you need to utilize aspect ratio. This allows you to supply only either the width or the height. In the example below, the width is optional and the height is 50. This resizes the image to have a height of 50 and the width can have any value as long as the aspect ratio is the same.</p>
+
+<p>```php
+&lt;?php
+$img->resize(null, 50, function ($constraint) {</p>
+
+<pre><code>$constraint-&gt;aspectRatio();
+</code></pre>
+
+<p>});
+?>
+```</p>
+
+<h3>Adjusting Brightness, Contrast and Opacity</h3>
+
+<p>To adjust the brightness of an image, you can use values between 100 and -100. 100 being the brightess and -100 being the darkest. So you&rsquo;ll only really see a white image if you supply 100 as the value and a black image if the value is -100. Positive values are used to bring the brightness up and negative to bring it down. In the example below, the brightness is adjusted to 25% of the default brightness of the image.</p>
+
+<p><code>php
+&lt;?php
+$img-&gt;brightness(25);
+?&gt;
+</code></p>
+
+<p>To adjust the contrast, yup you guessed it right!, use the the <code>contrast</code> method. Just like the <code>brightness</code> method this accepts values between 100 and -100.</p>
+
+<p><code>php
+&lt;?php
+$img-&gt;contrast(25);
+?&gt;
+</code></p>
+
+<p>To adjust the opacity, supply a value between 0 and 100 to the <code>opacity</code> method. With <code>100</code> being the full opacity and <code>0</code> being the full transparency. Note that adjusting the opacity of an image takes a bit of time. On my testing, it took a bit longer for it to finish than the other operations I&rsquo;ve used so far.</p>
+
+<p><code>php
+&lt;?php
+$img-&gt;opacity(25);
+?&gt;
+</code></p>
+
+<h3>Cropping</h3>
+
+<p>Cropping images can be done by calling the <code>crop</code> method. This accepts 2 required arguments and 2 optional. The first and second arguments are the width and height of the area to be cropped. And the optional third and fourth arguments are the X and Y axis of the starting points of the crop area. If you do not supply those values, Intervention Image is going to assume that you want to crop at the very center of the image moving outward. That&rsquo;s what the example below does.</p>
+
+<p><code>
+&lt;?php
+$img-&gt;crop(100, 100);
+?&gt;
+</code></p>
+
+<p>If you&rsquo;re planning to implement a cropping functionality in your PHP application, Intervention Image can&rsquo;t do it alone. It has to have a client-side component that allows the user to visually crop the image. For that there&rsquo;s a jQuery plugin called <a href="http://fengyuanchen.github.io/cropper/">cropper</a>. I haven&rsquo;t personally used it but the demo shows that the X and Y coordinates and the width and height can be determined using this library. So all you have to do is pass in those values to the server side and let Intervention Image do its thing.</p>
+
+<h3>Saving Images</h3>
+
+<p>Finally, you can commit the changes that you&rsquo;ve made to the filesystem by using the <code>save</code> method. You don&rsquo;t need to supply any arguments to it if you want to replace the original image. If you do not want that, then you can supply the path to the file where you want to save it. If you have a keen eye, you might have noticed that the original image was a <code>.jpg</code> image, and now its being saved as a <code>.png</code> image. Well that&rsquo;s acceptable, Intervention Image automatically converts the image type for you. Lastly, the quality of the image can also be modified by passing in a second argument which has a value between 0 and 100. 100 being the same quality of the original image. In the example below, the quality is adjusted to 50% of the original one.</p>
+
+<p><code>php
+&lt;?php
+$img-&gt;save(); //replace the original image
+$img-&gt;save('images/b.png'); //save to another file
+$img-&gt;save('images/b.png', 50); //adjust quality of image
+?&gt;
+</code></p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to manipulate images in your PHP applications using the Intervention Image. As always, you have barely scratched the surface with this tutorial. There&rsquo;s much more things that you can do with this library. I recommend you to check out the <a href="http://image.intervention.io/">official website</a> to learn more about it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Validating Data with Respect Validation]]></title>
@@ -959,73 +1083,6 @@ echo $gen-&gt;generate(60); // soviet!Retain8skinny&amp;spoil
 <h3>Conclusion</h3>
 
 <p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to secure passwords in PHP using the <a href="https://github.com/ircmaxell/password_compat">Password Compat</a>, <a href="https://github.com/hautelook/phpass">phpass</a>, <a href="https://github.com/ircmaxell/PHP-PasswordLib">PHP Password Lib</a>, <a href="https://github.com/bjeavons/zxcvbn-php">zxcvbn</a> and <a href="https://github.com/timoh6/GenPhrase">GenPhrase</a> libraries.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to Get the Logo of Any Company]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company/"/>
-    <updated>2015-11-28T12:17:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/11/28/how-to-get-the-logo-of-any-company</id>
-    <content type="html"><![CDATA[<p>In one of my previous projects called <a href="/projects/stockswitch/">StockSwitch</a>, I had the need to fetch and utilize the logo of companies that are included in the NYSE, NASDAQ, and AMEX. In this article, I&rsquo;ll be showing you how you can get the logo for any company so that you can use it in your projects.</p>
-
-<p>The best way to get the logo of any company is via Clearbit&rsquo;s logo API. All you have to do is replace the value of <code>{DOMAIN-NAME}</code> with the domain name used by the company that you want.</p>
-
-<p><code>
-https://logo.clearbit.com/{DOMAIN-NAME}
-</code></p>
-
-<p>For example, you want to utilize Google&rsquo;s logo in your project. Simply create a new image tag and link to <code>logo.clearbit.com</code> followed by the domain name.</p>
-
-<p><code>html
-&lt;img src="https://logo.clearbit.com/google.com"&gt;
-</code></p>
-
-<p>You can also pass in the following optional parameters.</p>
-
-<ul>
-<li>size &ndash; the size in pixels of the logo. The highest value I found to be valid is 800px. And the lowest is 5px.</li>
-<li>format &ndash; you can pass either <code>png</code> or <code>jpg</code>.</li>
-<li>greyscale &ndash; pass in a value of <code>true</code> if you want the logo to be in greyscale.</li>
-</ul>
-
-
-<p>For example, you want the image to be in 50px and the format is png.</p>
-
-<p><code>html
-&lt;img src="https://logo.clearbit.com/google.com?size=50&amp;format=png"&gt;
-</code></p>
-
-<p>You can also save it on your own server so you don&rsquo;t use Clearbit&rsquo;s resources every time the company logos are requested. Here&rsquo;s a sample code on how you might do it in php.</p>
-
-<p>```php
-&lt;?php
-$companies = array(</p>
-
-<pre><code>'facebook.com',
-'google.com',
-'oracle.com',
-'amazon.com',
-'ebay.com',
-'uber.com',
-'twitter.com',
-'github.com'
-</code></pre>
-
-<p>);</p>
-
-<p>foreach($companies as $company){</p>
-
-<pre><code>$url = "https://logo.clearbit.com/{$company}?size=150&amp;format=png";
-$contents = file_get_contents($url);
-file_put_contents('logos/' . $company . '.png' , $contents);
-</code></pre>
-
-<p>}
-?>
-```</p>
-
-<p>The code above gets the contents returned from the clearbit logo URL and then saves it to the <code>logos</code> directory in the server.</p>
 ]]></content>
   </entry>
   

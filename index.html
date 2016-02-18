@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="Data validation is an absolute need for every PHP application. This protects your app from security breaches caused by malicious user input. Good &hellip;">
+  <meta name="description" content="In this tutorial I&rsquo;ll be showing you how to manipulate images in PHP using the Intervention Image library. In the PHP applications that I write &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,189 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/18/using-the-intervention-image-library-in-php/">Using the Intervention Image Library in PHP</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-18T14:04:00+08:00" pubdate data-updated="true">Feb 18<span>th</span>, 2016</time>
+        
+         | <a href="/blog/2016/02/18/using-the-intervention-image-library-in-php/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this tutorial I&rsquo;ll be showing you how to manipulate images in PHP using the <a href="http://image.intervention.io/">Intervention Image library</a>. In the PHP applications that I write, I primarily use intervention image for resizing images into smaller one&rsquo;s. But aside from that, there are other things that this library can do.</p>
+
+<h3>Installation and Setup</h3>
+
+<p>To use intervention image, you need to have ImageMagick installed. In Ubuntu, you can do that by executing the following command from your terminal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install imagemagick</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On your working directory, execute the following to install Intervention Image.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require intervention/image</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This command uses Composer. If you don&rsquo;t have it already, check out the <a href="https://getcomposer.org/download/">downloads page</a> and install it on your system.</p>
+
+<p>Create a new PHP file and name it <code>tester.php</code>. This will be the file that you&rsquo;re going to use for the rest of this tutorial.</p>
+
+<p>To use the library, require the autoload file in the vendor directory. This allows you to include the Intervention Image library into your current file. You can then give an alias to the <code>ImageManagerStatic</code> class and use it for manipulating images.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Intervention\Image\ImageManagerStatic</span> <span class="k">as</span> <span class="nx">Image</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create Image Instance</h3>
+
+<p>The first thing that you need to do when working with this library is to create an instance of the image from source. This is like saving a copy of the image into memory so that it can be easily manipulated. Any changes made to the image are only in memory until you choose to commit it to the filesystem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span> <span class="o">=</span> <span class="nx">Image</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;images/a.jpg&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Resizing Images</h3>
+
+<p>You can resize images by calling the <code>resize</code> method in the image instance that you&rsquo;ve created. In the example below, the image is resized to exactly 50x50 pixels. It doesn&rsquo;t matter if the image is distorted in the process. So if you have an image which is 300x600 (where 300 is the width and 600 is the height), the height will have to get squashed. This results in a sandwich-like image.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">resize</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you don&rsquo;t want that to happen, you need to utilize aspect ratio. This allows you to supply only either the width or the height. In the example below, the width is optional and the height is 50. This resizes the image to have a height of 50 and the width can have any value as long as the aspect ratio is the same.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">resize</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$constraint</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$constraint</span><span class="o">-&gt;</span><span class="na">aspectRatio</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Adjusting Brightness, Contrast and Opacity</h3>
+
+<p>To adjust the brightness of an image, you can use values between 100 and -100. 100 being the brightess and -100 being the darkest. So you&rsquo;ll only really see a white image if you supply 100 as the value and a black image if the value is -100. Positive values are used to bring the brightness up and negative to bring it down. In the example below, the brightness is adjusted to 25% of the default brightness of the image.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">brightness</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To adjust the contrast, yup you guessed it right!, use the the <code>contrast</code> method. Just like the <code>brightness</code> method this accepts values between 100 and -100.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">contrast</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To adjust the opacity, supply a value between 0 and 100 to the <code>opacity</code> method. With <code>100</code> being the full opacity and <code>0</code> being the full transparency. Note that adjusting the opacity of an image takes a bit of time. On my testing, it took a bit longer for it to finish than the other operations I&rsquo;ve used so far.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">opacity</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cropping</h3>
+
+<p>Cropping images can be done by calling the <code>crop</code> method. This accepts 2 required arguments and 2 optional. The first and second arguments are the width and height of the area to be cropped. And the optional third and fourth arguments are the X and Y axis of the starting points of the crop area. If you do not supply those values, Intervention Image is going to assume that you want to crop at the very center of the image moving outward. That&rsquo;s what the example below does.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">crop</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you&rsquo;re planning to implement a cropping functionality in your PHP application, Intervention Image can&rsquo;t do it alone. It has to have a client-side component that allows the user to visually crop the image. For that there&rsquo;s a jQuery plugin called <a href="http://fengyuanchen.github.io/cropper/">cropper</a>. I haven&rsquo;t personally used it but the demo shows that the X and Y coordinates and the width and height can be determined using this library. So all you have to do is pass in those values to the server side and let Intervention Image do its thing.</p>
+
+<h3>Saving Images</h3>
+
+<p>Finally, you can commit the changes that you&rsquo;ve made to the filesystem by using the <code>save</code> method. You don&rsquo;t need to supply any arguments to it if you want to replace the original image. If you do not want that, then you can supply the path to the file where you want to save it. If you have a keen eye, you might have noticed that the original image was a <code>.jpg</code> image, and now its being saved as a <code>.png</code> image. Well that&rsquo;s acceptable, Intervention Image automatically converts the image type for you. Lastly, the quality of the image can also be modified by passing in a second argument which has a value between 0 and 100. 100 being the same quality of the original image. In the example below, the quality is adjusted to 50% of the original one.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span> <span class="c1">//replace the original image</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;images/b.png&#39;</span><span class="p">);</span> <span class="c1">//save to another file</span>
+</span><span class='line'><span class="nv">$img</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="s1">&#39;images/b.png&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span> <span class="c1">//adjust quality of image</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to manipulate images in your PHP applications using the Intervention Image. As always, you have barely scratched the surface with this tutorial. There&rsquo;s much more things that you can do with this library. I recommend you to check out the <a href="http://image.intervention.io/">official website</a> to learn more about it.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3232,328 +3415,6 @@ And lastly use a continuous integration server such as Jenkins to automatically 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/11/securing-passwords-in-php/">Securing Passwords in PHP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-11T12:35:00+08:00" pubdate data-updated="true">Dec 11<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/12/11/securing-passwords-in-php/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this tutorial we&rsquo;re going to take a look at some of the libraries that allows us secure passwords in PHP.</p>
-
-<h3>Password Compat</h3>
-
-<p>The first library that we&rsquo;re going to look at is Password Compat. You can install it through <a href="https://getcomposer.org/">Composer</a> by using the following command.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>composer require ircmaxell/password-compat</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once it&rsquo;s done installing, you can the include the vendor autoload file so you can use its functions.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>password_hash</code> function is used to hash passwords. It accepts the password that you want to hash as its first argument and the algorithm to be used for password hashing as its second. In the example below, <code>PASSWORD_DEFAULT</code> is used. This allows you to use the most secure algorithm that&rsquo;s currently available to PHP. At the time of writing of this article, the most secure algorithm that&rsquo;s available to PHP is bcrypt. So that&rsquo;s the one that&rsquo;s being used when you specify <code>PASSWORD_DEFAULT</code> as the second argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;mypassword&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$hash</span> <span class="o">=</span> <span class="nx">password_hash</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nx">PASSWORD_DEFAULT</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>There&rsquo;s also an optional third argument which allows you to change the CPU <code>cost</code> of hashing the password. By default the <code>cost</code> is 10. So if you have a less powerful server you can change it to something lower. The <code>cost</code> can have a value between 4 and 31.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$hash</span> <span class="o">=</span> <span class="nx">password_hash</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nx">PASSWORD_DEFAULT</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;cost&#39;</span> <span class="o">=&gt;</span> <span class="mi">7</span><span class="p">));</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then store the hash in your database.</p>
-
-<p>To validate if a password matches the hash stored in the database, use the <code>password_verify</code> method. This accepts the password as the first argument and the hash as the second. So in your application you might have a query to select the user based on its email or username and then you use the hash that was returned for the second argument.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nx">password_verify</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span><span class="p">)){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;valid&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;invalid&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>PHPAss</h3>
-
-<p>PHPAss is one of the older password hashing libraries that are available for PHP. Nevertheless it doesn&rsquo;t make it less secure than any of the password securing methods in this article. It uses the blowfish algorithm to hash passwords.</p>
-
-<p>Execute the following to install PHPAss.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">composer require hautelook/phpass</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After including the vendor autoload file, set your current file to use the <code>PasswordHash</code> class in the <code>Hautelook</code> namespace.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">Hautelook\Phpass\PasswordHash</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Create a new password hasher instance. This accepts 2 required arguments. First is the base-2 logarithm of the iteration count used for password stretching. The second a boolean value for setting if the password will use portable hashes. The values that I&rsquo;ve set below are the default one&rsquo;s. Those will do for most use cases.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$passwordHasher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PasswordHash</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then call the <code>HashPassword</code> method to actually hash the password. This hash should then be stored into the database.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;mypassword&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$hash</span> <span class="o">=</span> <span class="nv">$passwordHasher</span><span class="o">-&gt;</span><span class="na">HashPassword</span><span class="p">(</span><span class="nv">$password</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can check if a password is valid by using the <code>CheckPassword</code> method. This accepts the password as its first argument and the hash that came from the database as the second.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$passwordMatch</span> <span class="o">=</span> <span class="nv">$passwordHasher</span><span class="o">-&gt;</span><span class="na">CheckPassword</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$passwordMatch</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;valid&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;invalid&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>PHP Password Lib</h3>
-
-<p>PHP Password Lib is one of those libraries that isn&rsquo;t really recommended for production use. As mentioned in their <a href="https://github.com/ircmaxell/PHP-PasswordLib">Github page</a> itself, it&rsquo;s currently in beta and should be used at your own risk.</p>
-
-<p>In order to install PHP Password Lib, you first have to add a <code>minimum-stability</code> option and set it to <code>dev</code>. Also set <code>prefer-stable</code> to <code>true</code> so that composer will default to installing the stable versions of the other libraries that you&rsquo;re installing via composer.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">&quot;minimum-stability&quot;: &quot;dev&quot;,</span>
-</span><span class='line'><span class="x">&quot;prefer-stable&quot;: true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Can&rsquo;t really find the library in <a href="https://packagist.org">Packagist</a> so you need to add the following to your <code>composer.json</code> file directly.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">&quot;PasswordLib/PasswordLib&quot;: &quot;*&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once that&rsquo;s done, execute <code>composer update</code> to update the dependencies.</p>
-
-<p>To use the library, create a new instance of the <code>PasswordLib</code> class and then use it to call the <code>createPasswordHash</code> method to hash a password.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;mypassword&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$lib</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PasswordLib\PasswordLib</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$hash</span> <span class="o">=</span> <span class="nv">$lib</span><span class="o">-&gt;</span><span class="na">createPasswordHash</span><span class="p">(</span><span class="nv">$password</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Just like the previous libraries it also comes with its own verify function.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$is_valid</span> <span class="o">=</span> <span class="nv">$lib</span><span class="o">-&gt;</span><span class="na">verifyPasswordHash</span><span class="p">(</span><span class="nv">$password</span><span class="p">,</span> <span class="nv">$hash</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$is_valid</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;yep&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;nope&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Aside from the generating and verifying hashes, it also allows you to generate random tokens. A sample use case would be when users request for their password to be reset. That&rsquo;s commonly done by sending an email to the user. That email contains a link with a query parameter on it which has a random string as its value. That string is the token. Which is used for fetching the password reset request that was saved in the database.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$token</span> <span class="o">=</span> <span class="nv">$lib</span><span class="o">-&gt;</span><span class="na">getRandomToken</span><span class="p">(</span><span class="mi">35</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$token</span><span class="p">;</span> <span class="c1">// Mpe/H3oLamOqEV4uxTwu.fuhKpb5p/u4BMu</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>zxcvbn-php</h3>
-
-<p>zxcvbn-php is a library for estimating password strength.</p>
-
-<p>You can install it by executing the following command.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">composer require bjeavons/zxcvbn-php</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To use the library, make use of the <code>ZxcvbnPhp\Zxcvbn</code> namespace.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">use</span> <span class="nx">ZxcvbnPhp\Zxcvbn</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can then determine the password score by calling the <code>passwordStrength</code> method.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$zxcvbn</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Zxcvbn</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;mypassword&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$strength</span> <span class="o">=</span> <span class="nv">$zxcvbn</span><span class="o">-&gt;</span><span class="na">passwordStrength</span><span class="p">(</span><span class="nv">$password</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$strength</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Based on my testing, it returns 0 if the password is not secure or easy to crack. And return 4 if it is secure. I haven&rsquo;t found any values between those and there&rsquo;s nothing higher than 4 so I assume it can only return a score of either 4 or 0. The result contains other data as well. Things like the entropy, calc_time and crack_time.</p>
-
-<h3>GenPhrase</h3>
-
-<p>Lastly, we&rsquo;re going to take a look at GenPhrase. This library allows us to generate secure passphrases in PHP.</p>
-
-<p>To install GenPhrase, execute the following on your terminal.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">composer require genphrase/genphrase</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>One note about the installation though. It&rsquo;s also mentioned in their <a href="https://github.com/timoh6/GenPhrase">official Github project page</a>. It mentioned that GenPhrase should be obtained only via secure connection using Github. This is because Composer is susceptible to man-in-the-middle attacks. If you&rsquo;re just testing, it&rsquo;s fine to install this library via composer. But if you&rsquo;re following this tutorial to implement this library on a production server then think again. You&rsquo;ve been warned.</p>
-
-<p>To use GenPhrase, create a new instance of the <code>Password</code> class under the <code>GenPhrase</code> namespace. Then call the <code>generate</code> method to generate the random passphrase.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$gen</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GenPhrase\Password</span><span class="p">();</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$gen</span><span class="o">-&gt;</span><span class="na">generate</span><span class="p">();</span> <span class="c1">// Slum treble Boost rack</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can also pass the <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory">entropy</a>) as an argument. By default the value is 50. But you can have a value between 26 and 120.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$gen</span><span class="o">-&gt;</span><span class="na">generate</span><span class="p">(</span><span class="mi">60</span><span class="p">);</span> <span class="c1">// soviet!Retain8skinny&amp;spoil</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Conclusion</h3>
-
-<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to secure passwords in PHP using the <a href="https://github.com/ircmaxell/password_compat">Password Compat</a>, <a href="https://github.com/hautelook/phpass">phpass</a>, <a href="https://github.com/ircmaxell/PHP-PasswordLib">PHP Password Lib</a>, <a href="https://github.com/bjeavons/zxcvbn-php">zxcvbn</a> and <a href="https://github.com/timoh6/GenPhrase">GenPhrase</a> libraries.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -3569,6 +3430,10 @@ And lastly use a continuous integration server such as Jenkins to automatically 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/02/18/using-the-intervention-image-library-in-php/">Using the Intervention Image Library in PHP</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/13/validating-data-with-respect-validation/">Validating Data with Respect Validation</a>
       </li>
     
@@ -3582,10 +3447,6 @@ And lastly use a continuous integration server such as Jenkins to automatically 
     
       <li class="post">
         <a href="/blog/2016/01/20/making-http-requests-with-guzzle/">Making HTTP Requests with Guzzle</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/15/stalking-the-programmer-way-with-clearbits-person-api/">Stalking the Programmer Way with Clearbit&#8217;s Person API</a>
       </li>
     
   </ul>
