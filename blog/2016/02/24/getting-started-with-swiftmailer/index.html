@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Started with Swiftmailer - Wern Ancheta</title>
+  <meta name="author" content="Wern Ancheta">
+
+  
+  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through how to use Swift Mailer in your PHP applications. Swift Mailer, as the name suggests is a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Wern Ancheta" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/javascripts/libs/fancybox/source/jquery.fancybox.css">
+
+<script src="/javascripts/contact.js"></script>
+
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wern Ancheta</a></h1>
+  
+    <h2>Adventures in Web Development.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wern-ancheta.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/projects">Projects</a></li>
+  <li><a href="/aboutme">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Swiftmailer</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-24T20:14:00+08:00" pubdate data-updated="true">Feb 24<span>th</span>, 2016</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this tutorial I&rsquo;m going to walk you through how to use Swift Mailer in your PHP applications. Swift Mailer, as the name suggests is a library for sending emails in PHP.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Swiftmailer through Composer by executing the following command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require swiftmailer/swiftmailer</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To start sending emails you first have to create a new instance of the <code>Swift_SmtpTransport</code> class. This accepts the host as its first argument and the port as its second. You can then set your username and password by calling the <code>setUsername</code> and <code>setPassword</code> methods. So for example, you want to use your mandrill for sending emails, you can use the following. Just replace the username and password to that of your mandrill account.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 587)
+</span><span class='line'>  -&gt;setUsername('your-mandrill-username')
+</span><span class='line'>  -&gt;setPassword('your-mandrill-password');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, create a new Swift mailer instance and passing in the transport object as the argument. You can use this later on to send messages.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mailer = Swift_Mailer::newInstance($transport);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can create a new message by creating a new instance of <code>Swift_Message</code> class. From there, call the <code>setSubject</code>, <code>setBody</code>, <code>setFrom</code> and <code>setTo</code> methods to add the details of the email.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$message = Swift_Message::newInstance()
+</span><span class='line'>  -&gt;setSubject('YOUR-SUBJECT')
+</span><span class='line'>  -&gt;setBody('BODY-OF-YOUR-MESSAGE')
+</span><span class='line'>  -&gt;setFrom(array('YOUR-EMAIL@HOST.COM' =&gt; 'YOUR-USER-NAME'))
+</span><span class='line'>  -&gt;setTo(array('EMAIL-TO@HOST.COM' =&gt; 'NAME-TO@HOST.COM'));</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Optionally, you can set an alternative body:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$message-&gt;addPart('YOUR-ALTERNATIVE-BODY', 'text/html');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also attach a file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$message-&gt;attach(Swift_Attachment::fromPath('/path/to/file.pdf'));</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to send to multiple clients, then you can pass in additional items to the <code>setTo</code> method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$message-&gt;setTo(array('EMAIL-TO@HOST.COM' =&gt; 'NAME-TO@HOST.COM', 'ANOTHER-EMAIL@HOST.COM' =&gt; 'ANOTHER-NAME@HOST.COM'));</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, you can send the message by calling the <code>send</code> method in the mailer instance that you have created earlier. Pass in the message as its argument.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>try {
+</span><span class='line'>    $response = $mailer-&gt;send($message);
+</span><span class='line'>}catch (Exception $e){
+</span><span class='line'>    echo 'error occured while trying to send your message';
+</span><span class='line'>    echo $e-&gt;getMessage();
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>send</code> method will return <code>1</code> as its response if the message was sent successfully. If not then it will return an error, that&rsquo;s why you need to wrap it in a <code>try catch</code> block.</p>
+
+<p>If you&rsquo;re using Laravel, SwiftMailer is already added as a dependency by default. All you have to do is update the mail configuration file. If you&rsquo;re using another framework, you can just follow the examples here.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use SwiftMailer on your php applications. If you want to learn more, be sure to check out the <a href="http://swiftmailer.org/docs/introduction.html">official docs</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wern Ancheta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-24T20:14:00+08:00" pubdate data-updated="true">Feb 24<span>th</span>, 2016</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mail/'>mail</a>, <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/swiftmailer/'>swiftmailer</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer/" data-via="wern_ancheta" data-counturl="http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/02/18/using-the-intervention-image-library-in-php/" title="Previous Post: Using the Intervention Image Library in PHP">&laquo; Using the Intervention Image Library in PHP</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/02/24/getting-started-with-swiftmailer/">Getting Started with Swiftmailer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/18/using-the-intervention-image-library-in-php/">Using the Intervention Image Library in PHP</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/13/validating-data-with-respect-validation/">Validating Data with Respect Validation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/03/why-i-love-web-development/">Why I Love Web Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/28/generating-fake-data-in-php-with-faker/">Generating Fake Data in PHP with Faker</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anchetawern">@anchetawern</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anchetawern',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>On Delicious</h1>
+  <div id="delicious"></div>
+  <script type="text/javascript" src="http://feeds.delicious.com/v2/json/wernancheta?count=3&amp;sort=date&amp;callback=renderDeliciousLinks"></script>
+  <p><a href="http://delicious.com/wernancheta">My Delicious Bookmarks &raquo;</a></p>
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/104518132178203766400?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Wern Ancheta -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="donate">
+	<a href="https://flattr.com/submit/auto?user_id=wernancheta&url=http%3A%2F%2Fwern-ancheta.com" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Flattr this blog" title="Flattr this blog" border="0"></a>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wernancheta';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer/';
+        var disqus_url = 'http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="/javascripts/csshttprequest.min.js"></script>
+<script>
+if($('.entry-title').length == 1){
+	var entry_title = $('.entry-title').text();
+	CSSHttpRequest.get(
+	    "http://phpdev-wern.rhcloud.com/crossdomain/counter.php?title=" + entry_title,
+	    function(response){
+	  		console.log('updated');  	
+	    }
+	);
+}
+</script>
+</body>
+</html>

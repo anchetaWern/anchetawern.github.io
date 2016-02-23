@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mail | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/mail/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2016-02-24T06:55:53+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Started with Swiftmailer]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer/"/>
+    <updated>2016-02-24T20:14:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/02/24/getting-started-with-swiftmailer</id>
+    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;m going to walk you through how to use Swift Mailer in your PHP applications. Swift Mailer, as the name suggests is a library for sending emails in PHP.</p>
+
+<h3>Installation</h3>
+
+<p>You can install Swiftmailer through Composer by executing the following command.</p>
+
+<p><code>
+composer require swiftmailer/swiftmailer
+</code></p>
+
+<h3>Usage</h3>
+
+<p>To start sending emails you first have to create a new instance of the <code>Swift_SmtpTransport</code> class. This accepts the host as its first argument and the port as its second. You can then set your username and password by calling the <code>setUsername</code> and <code>setPassword</code> methods. So for example, you want to use your mandrill for sending emails, you can use the following. Just replace the username and password to that of your mandrill account.</p>
+
+<p><code>
+$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 587)
+  -&gt;setUsername('your-mandrill-username')
+  -&gt;setPassword('your-mandrill-password');
+</code></p>
+
+<p>Next, create a new Swift mailer instance and passing in the transport object as the argument. You can use this later on to send messages.</p>
+
+<p><code>
+$mailer = Swift_Mailer::newInstance($transport);
+</code></p>
+
+<p>You can create a new message by creating a new instance of <code>Swift_Message</code> class. From there, call the <code>setSubject</code>, <code>setBody</code>, <code>setFrom</code> and <code>setTo</code> methods to add the details of the email.</p>
+
+<p><code>
+$message = Swift_Message::newInstance()
+  -&gt;setSubject('YOUR-SUBJECT')
+  -&gt;setBody('BODY-OF-YOUR-MESSAGE')
+  -&gt;setFrom(array('YOUR-EMAIL@HOST.COM' =&gt; 'YOUR-USER-NAME'))
+  -&gt;setTo(array('EMAIL-TO@HOST.COM' =&gt; 'NAME-TO@HOST.COM'));
+</code></p>
+
+<p>Optionally, you can set an alternative body:</p>
+
+<p><code>
+$message-&gt;addPart('YOUR-ALTERNATIVE-BODY', 'text/html');
+</code></p>
+
+<p>You can also attach a file:</p>
+
+<p><code>
+$message-&gt;attach(Swift_Attachment::fromPath('/path/to/file.pdf'));
+</code></p>
+
+<p>If you want to send to multiple clients, then you can pass in additional items to the <code>setTo</code> method:</p>
+
+<p><code>
+$message-&gt;setTo(array('EMAIL-TO@HOST.COM' =&gt; 'NAME-TO@HOST.COM', 'ANOTHER-EMAIL@HOST.COM' =&gt; 'ANOTHER-NAME@HOST.COM'));
+</code></p>
+
+<p>Finally, you can send the message by calling the <code>send</code> method in the mailer instance that you have created earlier. Pass in the message as its argument.</p>
+
+<p>```
+try {</p>
+
+<pre><code>$response = $mailer-&gt;send($message);
+</code></pre>
+
+<p>}catch (Exception $e){</p>
+
+<pre><code>echo 'error occured while trying to send your message';
+echo $e-&gt;getMessage();
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>The <code>send</code> method will return <code>1</code> as its response if the message was sent successfully. If not then it will return an error, that&rsquo;s why you need to wrap it in a <code>try catch</code> block.</p>
+
+<p>If you&rsquo;re using Laravel, SwiftMailer is already added as a dependency by default. All you have to do is update the mail configuration file. If you&rsquo;re using another framework, you can just follow the examples here.</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s it! In this tutorial you&rsquo;ve learned how to use SwiftMailer on your php applications. If you want to learn more, be sure to check out the <a href="http://swiftmailer.org/docs/introduction.html">official docs</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>
