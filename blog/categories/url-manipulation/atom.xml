@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: url-manipulation | Wern Ancheta]]></title>
+  <link href="http://wern-ancheta.com/blog/categories/url-manipulation/atom.xml" rel="self"/>
+  <link href="http://wern-ancheta.com/"/>
+  <updated>2016-03-03T06:56:45+08:00</updated>
+  <id>http://wern-ancheta.com/</id>
+  <author>
+    <name><![CDATA[Wern Ancheta]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[URL Manipulation with Purl]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/03/03/url-manipulation-with-purl/"/>
+    <updated>2016-03-03T07:15:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/03/03/url-manipulation-with-purl</id>
+    <content type="html"><![CDATA[<p>In PHP projects, there&rsquo;s often a need to construct URL&rsquo;s to be used for making requests to API&rsquo;s. Normally we would concatenate the different pieces of the URL together in order to make up a complete URL where the request is made. In this tutorial, I&rsquo;ll be talking about Purl. This library reduces the need for concatenation. With this library, you can manipulate a specific URL anyway you want. You can do things like parsing the URL so you can get it&rsquo;s individual parts such as the scheme, port, path, query parameters and even fragments. These parts can then be modified any way you want.</p>
+
+<h3>Installation</h3>
+
+<p>You can use <a href="https://getcomposer.org/">Composer</a> to install Purl.</p>
+
+<p><code>
+composer require jwage/purl
+</code></p>
+
+<h3>Usage</h3>
+
+<p>To use Purl, you have to include the vendor autoload file and then use the <code>Url</code> class in the <code>Purl</code> namespace. Optionally, you can give it an alias so you only have to use it instead of the namespace + class syntax.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Purl\Url as purl;
+?>
+```</p>
+
+<h4>Getting a URL</h4>
+
+<p>To use Purl, create a new instance of it using the alias you&rsquo;ve assigned earlier and then pass in the URL that you want to manipulate. In order to get the modified URL back, call the <code>getUrl</code> method.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com');
+echo $url-&gt;getUrl(); //http://wern-ancheta.com
+?&gt;
+</code></p>
+
+<p>In the above code, the URL wasn&rsquo;t really manipulated yet so it will return the same thing that you passed.</p>
+
+<h4>Getting Parts of the URL</h4>
+
+<p>You can use any of the following properties to extract different parts of the URL. Note that the subdomain in this specific URL will return an empty string since there&rsquo;s no subdomain. If the URL was <code>http://blog.wern-ancheta.com</code> then the value for subdomain will be <code>blog</code>. Another thing to note is the <code>canonical</code> property. This returns everything in the URL except the scheme and the fragment. Also the <code>publicSuffix</code> is the first value, followed by the <code>registerableDomain</code>. So instead of <code>wern-ancheta.com</code>, you will see <code>com.wern-ancheta</code>. Lastly, the <code>port</code> is an empty string since it wasn&rsquo;t explicitly specified in the URL. By default, website uses port 80 and it doesn&rsquo;t need to be explicitly specified.</p>
+
+<p>```php
+&lt;?php
+$url = new purl(&lsquo;<a href="http://wern-ancheta.com/some/path?query=some_query&amp;another=query#fragment">http://wern-ancheta.com/some/path?query=some_query&amp;another=query#fragment</a>&rsquo;);</p>
+
+<p>echo $url->scheme; // http
+echo $url->port; // empty string
+echo $url->publicSuffix; // com
+echo $url->registerableDomain; // wern-ancheta.com
+echo $url->subdomain; // empty string
+echo $url->canonical; // com.wern-ancheta/some/path?query=some_query&amp;another=query
+echo $url->path; // /some/path
+echo $url->query; // query=some_query&amp;another=query
+echo $url->fragment; // fragment
+?>
+```</p>
+
+<h4>Setting Parts of the URL</h4>
+
+<p>If you want to set the different parts of the URL, you have to use the static method <code>parse</code> and then pass in the URL you want to manipulate. This allows you to chain the <code>set</code> methods. If you initialize a new instance of the <code>purl</code> class instead, you will get an error.</p>
+
+<p>```php
+&lt;?php
+$url = purl::parse(&lsquo;<a href="http://wern-ancheta.com">http://wern-ancheta.com</a>&rsquo;)</p>
+
+<pre><code>-&gt;set('scheme', 'https')
+-&gt;set('port', '1122')
+-&gt;set('user', 'wern')
+-&gt;set('pass', 'ancheta')
+-&gt;set('path', 'some/path')
+-&gt;set('query', 'query1=value1&amp;query2=value2')
+-&gt;set('fragment', 'my-fragment');
+</code></pre>
+
+<p>echo $url->getUrl(); // <a href="https://wern:ancheta@wern-ancheta.com:1122/some/path?query1=value1&amp;query2=value2#my-fragment">https://wern:ancheta@wern-ancheta.com:1122/some/path?query1=value1&amp;query2=value2#my-fragment</a>
+?>
+```</p>
+
+<p>If you want to individually add paths to the URL, you have to initialize a new instance of the <code>purl</code> class.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com');
+$url-&gt;path-&gt;add('my')-&gt;add('awesome')-&gt;add('page');
+echo $url-&gt;getUrl(); //http://wern-ancheta.com/my/awesome/page
+?&gt;
+</code></p>
+
+<p>If you need to individually set the query parameters, you can use teh <code>setData</code> method. This allows you to pass in an associative array with its key being the query and the value being the value for that query.</p>
+
+<p>```php
+&lt;?php
+$url = new purl(&lsquo;<a href="http://wern-ancheta.com">http://wern-ancheta.com</a>&rsquo;);
+$url->query->setData(array(</p>
+
+<pre><code>'query1' =&gt; 'value1',
+'query2' =&gt; 'value2'
+</code></pre>
+
+<p>));
+echo $url->getUrl(); //<a href="http://wern-ancheta.com/?query1=value1&amp;query2=value2">http://wern-ancheta.com/?query1=value1&amp;query2=value2</a>
+?>
+```</p>
+
+<p>If it&rsquo;s the other way around, and you want to extract the query parameters from a specific URL. Here&rsquo;s the way you do it.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com?query1=value1&amp;query2=value2');
+print_r($url-&gt;query-&gt;getData()); // Array ( [query1] =&gt; value1 [query2] =&gt; value2 )
+?&gt;
+</code></p>
+
+<h4>Extracting URL&rsquo;s</h4>
+
+<p>One bonus feature of this library is that it allows you to extract URL&rsquo;s in a specific string of text. Call the static <code>extract</code> method to use this. You can then extract each individual URL by using the key.</p>
+
+<p><code>php
+&lt;?php
+$str = "Hey I'm a string with url's in it http://google.com and another one http://github.com";
+$urls = purl::extract($str);
+echo $urls[0] . "&lt;br&gt;";
+echo $urls[1];
+?&gt;
+</code></p>
+
+<p>Note that each extracted URL&rsquo;s are Purl URL instances of their own. So you can actually extract or manipulate individual parts as well.</p>
+
+<p>```php
+&lt;?php
+echo $urls[0]&ndash;>registerableDomain; //google.com</p>
+
+<p>$urls[0]&ndash;>path->add(&lsquo;my&rsquo;)&ndash;>add(&lsquo;awesome&rsquo;)&ndash;>add(&lsquo;path&rsquo;);
+echo $urls[0]&ndash;>getUrl(); //<a href="http://google.com/my/awesome/path">http://google.com/my/awesome/path</a>
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned about Purl, a URL manipulation library for PHP. For more information, check out their official <a href="https://github.com/jwage/purl">Github project page</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

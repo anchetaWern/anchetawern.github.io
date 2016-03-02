@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Wern Ancheta]]></title>
   <link href="http://wern-ancheta.com/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://wern-ancheta.com/"/>
-  <updated>2016-02-24T06:55:53+08:00</updated>
+  <updated>2016-03-03T06:56:45+08:00</updated>
   <id>http://wern-ancheta.com/</id>
   <author>
     <name><![CDATA[Wern Ancheta]]></name>
@@ -12,6 +12,152 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[URL Manipulation with Purl]]></title>
+    <link href="http://wern-ancheta.com/blog/2016/03/03/url-manipulation-with-purl/"/>
+    <updated>2016-03-03T07:15:00+08:00</updated>
+    <id>http://wern-ancheta.com/blog/2016/03/03/url-manipulation-with-purl</id>
+    <content type="html"><![CDATA[<p>In PHP projects, there&rsquo;s often a need to construct URL&rsquo;s to be used for making requests to API&rsquo;s. Normally we would concatenate the different pieces of the URL together in order to make up a complete URL where the request is made. In this tutorial, I&rsquo;ll be talking about Purl. This library reduces the need for concatenation. With this library, you can manipulate a specific URL anyway you want. You can do things like parsing the URL so you can get it&rsquo;s individual parts such as the scheme, port, path, query parameters and even fragments. These parts can then be modified any way you want.</p>
+
+<h3>Installation</h3>
+
+<p>You can use <a href="https://getcomposer.org/">Composer</a> to install Purl.</p>
+
+<p><code>
+composer require jwage/purl
+</code></p>
+
+<h3>Usage</h3>
+
+<p>To use Purl, you have to include the vendor autoload file and then use the <code>Url</code> class in the <code>Purl</code> namespace. Optionally, you can give it an alias so you only have to use it instead of the namespace + class syntax.</p>
+
+<p>```php
+&lt;?php
+require_once &lsquo;vendor/autoload.php&rsquo;;</p>
+
+<p>use Purl\Url as purl;
+?>
+```</p>
+
+<h4>Getting a URL</h4>
+
+<p>To use Purl, create a new instance of it using the alias you&rsquo;ve assigned earlier and then pass in the URL that you want to manipulate. In order to get the modified URL back, call the <code>getUrl</code> method.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com');
+echo $url-&gt;getUrl(); //http://wern-ancheta.com
+?&gt;
+</code></p>
+
+<p>In the above code, the URL wasn&rsquo;t really manipulated yet so it will return the same thing that you passed.</p>
+
+<h4>Getting Parts of the URL</h4>
+
+<p>You can use any of the following properties to extract different parts of the URL. Note that the subdomain in this specific URL will return an empty string since there&rsquo;s no subdomain. If the URL was <code>http://blog.wern-ancheta.com</code> then the value for subdomain will be <code>blog</code>. Another thing to note is the <code>canonical</code> property. This returns everything in the URL except the scheme and the fragment. Also the <code>publicSuffix</code> is the first value, followed by the <code>registerableDomain</code>. So instead of <code>wern-ancheta.com</code>, you will see <code>com.wern-ancheta</code>. Lastly, the <code>port</code> is an empty string since it wasn&rsquo;t explicitly specified in the URL. By default, website uses port 80 and it doesn&rsquo;t need to be explicitly specified.</p>
+
+<p>```php
+&lt;?php
+$url = new purl(&lsquo;<a href="http://wern-ancheta.com/some/path?query=some_query&amp;another=query#fragment">http://wern-ancheta.com/some/path?query=some_query&amp;another=query#fragment</a>&rsquo;);</p>
+
+<p>echo $url->scheme; // http
+echo $url->port; // empty string
+echo $url->publicSuffix; // com
+echo $url->registerableDomain; // wern-ancheta.com
+echo $url->subdomain; // empty string
+echo $url->canonical; // com.wern-ancheta/some/path?query=some_query&amp;another=query
+echo $url->path; // /some/path
+echo $url->query; // query=some_query&amp;another=query
+echo $url->fragment; // fragment
+?>
+```</p>
+
+<h4>Setting Parts of the URL</h4>
+
+<p>If you want to set the different parts of the URL, you have to use the static method <code>parse</code> and then pass in the URL you want to manipulate. This allows you to chain the <code>set</code> methods. If you initialize a new instance of the <code>purl</code> class instead, you will get an error.</p>
+
+<p>```php
+&lt;?php
+$url = purl::parse(&lsquo;<a href="http://wern-ancheta.com">http://wern-ancheta.com</a>&rsquo;)</p>
+
+<pre><code>-&gt;set('scheme', 'https')
+-&gt;set('port', '1122')
+-&gt;set('user', 'wern')
+-&gt;set('pass', 'ancheta')
+-&gt;set('path', 'some/path')
+-&gt;set('query', 'query1=value1&amp;query2=value2')
+-&gt;set('fragment', 'my-fragment');
+</code></pre>
+
+<p>echo $url->getUrl(); // <a href="https://wern:ancheta@wern-ancheta.com:1122/some/path?query1=value1&amp;query2=value2#my-fragment">https://wern:ancheta@wern-ancheta.com:1122/some/path?query1=value1&amp;query2=value2#my-fragment</a>
+?>
+```</p>
+
+<p>If you want to individually add paths to the URL, you have to initialize a new instance of the <code>purl</code> class.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com');
+$url-&gt;path-&gt;add('my')-&gt;add('awesome')-&gt;add('page');
+echo $url-&gt;getUrl(); //http://wern-ancheta.com/my/awesome/page
+?&gt;
+</code></p>
+
+<p>If you need to individually set the query parameters, you can use teh <code>setData</code> method. This allows you to pass in an associative array with its key being the query and the value being the value for that query.</p>
+
+<p>```php
+&lt;?php
+$url = new purl(&lsquo;<a href="http://wern-ancheta.com">http://wern-ancheta.com</a>&rsquo;);
+$url->query->setData(array(</p>
+
+<pre><code>'query1' =&gt; 'value1',
+'query2' =&gt; 'value2'
+</code></pre>
+
+<p>));
+echo $url->getUrl(); //<a href="http://wern-ancheta.com/?query1=value1&amp;query2=value2">http://wern-ancheta.com/?query1=value1&amp;query2=value2</a>
+?>
+```</p>
+
+<p>If it&rsquo;s the other way around, and you want to extract the query parameters from a specific URL. Here&rsquo;s the way you do it.</p>
+
+<p><code>php
+&lt;?php
+$url = new purl('http://wern-ancheta.com?query1=value1&amp;query2=value2');
+print_r($url-&gt;query-&gt;getData()); // Array ( [query1] =&gt; value1 [query2] =&gt; value2 )
+?&gt;
+</code></p>
+
+<h4>Extracting URL&rsquo;s</h4>
+
+<p>One bonus feature of this library is that it allows you to extract URL&rsquo;s in a specific string of text. Call the static <code>extract</code> method to use this. You can then extract each individual URL by using the key.</p>
+
+<p><code>php
+&lt;?php
+$str = "Hey I'm a string with url's in it http://google.com and another one http://github.com";
+$urls = purl::extract($str);
+echo $urls[0] . "&lt;br&gt;";
+echo $urls[1];
+?&gt;
+</code></p>
+
+<p>Note that each extracted URL&rsquo;s are Purl URL instances of their own. So you can actually extract or manipulate individual parts as well.</p>
+
+<p>```php
+&lt;?php
+echo $urls[0]&ndash;>registerableDomain; //google.com</p>
+
+<p>$urls[0]&ndash;>path->add(&lsquo;my&rsquo;)&ndash;>add(&lsquo;awesome&rsquo;)&ndash;>add(&lsquo;path&rsquo;);
+echo $urls[0]&ndash;>getUrl(); //<a href="http://google.com/my/awesome/path">http://google.com/my/awesome/path</a>
+?>
+```</p>
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned about Purl, a URL manipulation library for PHP. For more information, check out their official <a href="https://github.com/jwage/purl">Github project page</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting Started with Swiftmailer]]></title>
@@ -679,260 +825,6 @@ $faker-&gt;pokemon; //marowak
 <h3>Conclusion</h3>
 
 <p>That&rsquo;s it! In this tutorial, you&rsquo;ve learned how to work with the Faker library to generate fake and random data for testing your PHP applications. Check out the <a href="https://github.com/fzaninotto/Faker">official github page</a> for more information regarding its usage.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Getting Information About Any Company with Clearbit's Company API]]></title>
-    <link href="http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api/"/>
-    <updated>2015-12-19T13:41:00+08:00</updated>
-    <id>http://wern-ancheta.com/blog/2015/12/19/getting-information-about-any-company-with-clearbits-company-api</id>
-    <content type="html"><![CDATA[<p>In this tutorial I&rsquo;ll be showing you how you can get information from any company using the Clearbit Company API.</p>
-
-<p>Start by signing up for an account on the Clearbit website. An API key will be assigned to your account after signing up. This allows you to make a request to their API.</p>
-
-<p>Next, install Guzzle on your working directory. Guzzle is an HTTP library for PHP. It is used to easily make requests to any API.</p>
-
-<p><code>
-composer require guzzlehttp/guzzle:~6.0
-</code></p>
-
-<p>Include the vendor autoload file on your file and create a new Guzzle client with the following base uri: <code>https://company.clearbit.com/</code>.</p>
-
-<p>```php
-&lt;?php
-require_once &lsquo;vendor/autoload.php&rsquo;;</p>
-
-<p>$client = new GuzzleHttp\Client(array(&lsquo;base_uri&rsquo; => &lsquo;<a href="https://company.clearbit.com/">https://company.clearbit.com/</a>&rsquo;));
-?>
-```</p>
-
-<p>To use the API, make a <code>get</code> request to the <code>v1/companies/domain/</code> endpoint followed by the domain name of the company that you want. Pass in the <code>auth</code> as an option. This allows you to specify the API key which you got from Clearbit.</p>
-
-<p>```php
-&lt;?php
-$response = $client->get(&lsquo;v1/companies/domain/google.com&rsquo;, array(</p>
-
-<pre><code>'auth' =&gt; array('YOUR-CLEARBIT-API-KEY', '')
-</code></pre>
-
-<p>));
-?>
-```</p>
-
-<p>You can then get the response body by calling the <code>getBody</code> method in the response. In the example below, the response is converted to an array using the <code>json_decode</code> method.</p>
-
-<p>```php
-&lt;?php
-$data = json_decode($response->getBody(), true);
-?></p>
-
-<pre>
-<?php print_r($data); ?>
-</pre>
-
-
-<p>```</p>
-
-<p>The output will look something like the following.</p>
-
-<p>```</p>
-
-<pre><code>Array
-</code></pre>
-
-<p>(</p>
-
-<pre><code>[id] =&gt; 1d396c21-e421-4dd9-988e-55a8200c6e10
-[name] =&gt; Google
-[legalName] =&gt; Google Inc
-[domain] =&gt; google.com
-[domainAliases] =&gt; Array
-    (
-        [0] =&gt; covet.com
-        [1] =&gt; appspotchat.com
-        [2] =&gt; ggh-uae.com
-        [3] =&gt; remail.com
-        [4] =&gt; orkut.com
-        [5] =&gt; goolge.com
-        [6] =&gt; picasa.com
-        [7] =&gt; blogspot.ru
-        [8] =&gt; sparkbuy.com
-        [9] =&gt; pushlife.com
-        [10] =&gt; greenparrotpictures.com
-        [11] =&gt; phonetic-arts.com
-        [12] =&gt; omnisio.com
-        [13] =&gt; googlecloud.com
-        [14] =&gt; weardrobe.com
-        [15] =&gt; ojos-inc.com
-        [16] =&gt; akwan.com.br
-        [17] =&gt; appliedsemantics.com
-        [18] =&gt; gemail.com.br
-        [19] =&gt; wosix.com
-        [20] =&gt; firstinwireless.com
-        [21] =&gt; cloudmarket.me
-        [22] =&gt; riya.com
-        [23] =&gt; teronamanagement.com
-        [24] =&gt; sxz.co
-        [25] =&gt; womenfitnessinsider.com
-        [26] =&gt; webtocracy.org
-        [27] =&gt; webtocracy.com
-        [28] =&gt; webtocracy.net
-        [29] =&gt; superapple.org
-        [30] =&gt; storktechnology.com
-        [31] =&gt; sourful.com
-        [32] =&gt; snapchatdeals.com
-        [33] =&gt; quarterthree.com
-        [34] =&gt; puwak.com
-        [35] =&gt; nudevilla.com
-        [36] =&gt; nemzis.com
-        [37] =&gt; ryanstull.com
-        [38] =&gt; mckayfamily.org
-        [39] =&gt; marksearle.net
-        [40] =&gt; opentolink.com
-        [41] =&gt; lewispi.com
-        [42] =&gt; levkova.com
-        [43] =&gt; katenka.net
-        [44] =&gt; imize.net
-        [45] =&gt; google.us
-        [46] =&gt; com.google
-        [47] =&gt; gogle.com
-        [48] =&gt; oingo.com
-        [49] =&gt; googlesyndication.com
-        [50] =&gt; ggoogle.com
-        [51] =&gt; google.io
-        [52] =&gt; blogspot.ae
-        [53] =&gt; gogole.com
-        [54] =&gt; hijab.pw
-        [55] =&gt; industrial-perception.com
-        [56] =&gt; googlr.com
-        [57] =&gt; googleadservices.com
-        [58] =&gt; talkbin.com
-        [59] =&gt; picnik.com
-        [60] =&gt; postrank.com
-        [61] =&gt; appjet.com
-        [62] =&gt; google.co
-        [63] =&gt; zabrinalee.com
-        [64] =&gt; blu-ray.us
-        [65] =&gt; picasa.net
-        [66] =&gt; googleproductforums.com
-        [67] =&gt; googlelabs.com
-        [68] =&gt; googlee.com
-        [69] =&gt; gooogle.com
-        [70] =&gt; diychef.com
-        [71] =&gt; googl.com
-        [72] =&gt; gmail.co
-        [73] =&gt; blogger.ch
-        [74] =&gt; mozingo.me
-        [75] =&gt; orkut.org
-        [76] =&gt; lifescapeinc.com
-        [77] =&gt; firehunt.com
-        [78] =&gt; google.info
-        [79] =&gt; veremey.net
-        [80] =&gt; docverse.com
-    )
-
-[url] =&gt; http://google.com
-[site] =&gt; Array
-    (
-        [url] =&gt; http://google.com
-        [title] =&gt; Google
-        [h1] =&gt; 
-        [metaDescription] =&gt; Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.
-        [metaAuthor] =&gt; 
-    )
-
-[category] =&gt; Array
-    (
-        [sector] =&gt; Consumer Discretionary
-        [industryGroup] =&gt; Media
-        [industry] =&gt; Media
-        [subIndustry] =&gt; Publishing
-    )
-
-[tags] =&gt; Array
-    (
-    )
-
-[description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
-[location] =&gt; 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-[geo] =&gt; Array
-    (
-        [streetNumber] =&gt; 1600
-        [streetName] =&gt; Amphitheatre Parkway
-        [subPremise] =&gt; 
-        [city] =&gt; Mountain View
-        [state] =&gt; California
-        [country] =&gt; United States
-        [postalCode] =&gt; 94043
-        [lat] =&gt; 37.4224206
-        [lng] =&gt; -122.0843021
-    )
-
-[logo] =&gt; https://logo.clearbit.com/google.com
-[facebook] =&gt; Array
-    (
-        [handle] =&gt; google
-        [likes] =&gt; 
-    )
-
-[linkedin] =&gt; Array
-    (
-        [handle] =&gt; company/google
-    )
-
-[twitter] =&gt; Array
-    (
-        [handle] =&gt; google
-        [id] =&gt; 20536157
-        [bio] =&gt; News and updates from Google
-        [followers] =&gt; 11873983
-        [following] =&gt; 448
-        [location] =&gt; Mountain View, CA
-        [site] =&gt; http://t.co/twxHxOtTvy
-        [avatar] =&gt; https://pbs.twimg.com/profile_images/522909800191901697/FHCGSQg0_normal.png
-    )
-
-[angellist] =&gt; Array
-    (
-        [id] =&gt; 32203
-        [handle] =&gt; google
-        [description] =&gt; Google’s mission is to organize the world’s information and make it universally accessible and useful.
-        [followers] =&gt; 7097
-        [blogUrl] =&gt; http://googleblog.blogspot.com/
-    )
-
-[crunchbase] =&gt; Array
-    (
-        [handle] =&gt; google
-    )
-
-[emailProvider] =&gt; 
-[type] =&gt; public
-[ticker] =&gt; 
-[phone] =&gt; +1 650-253-0000
-[metrics] =&gt; Array
-    (
-        [alexaUsRank] =&gt; 1
-        [alexaGlobalRank] =&gt; 1
-        [googleRank] =&gt; 9
-        [employees] =&gt; 10000
-        [marketCap] =&gt; 
-        [raised] =&gt; 1700000000
-    )
-
-[tech] =&gt; Array
-    (
-        [0] =&gt; google_analytics
-        [1] =&gt; double_click
-        [2] =&gt; google_adwords
-        [3] =&gt; doubleclick
-        [4] =&gt; google_apps
-    )
-</code></pre>
-
-<p>)
-```</p>
 ]]></content>
   </entry>
   

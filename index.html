@@ -9,7 +9,7 @@
   <meta name="author" content="Wern Ancheta">
 
   
-  <meta name="description" content="In this tutorial I&rsquo;m going to walk you through how to use Swift Mailer in your PHP applications. Swift Mailer, as the name suggests is a &hellip;">
+  <meta name="description" content="In PHP projects, there&rsquo;s often a need to construct URL&rsquo;s to be used for making requests to API&rsquo;s. Normally we would concatenate the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,239 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/03/url-manipulation-with-purl/">URL Manipulation With Purl</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-03-03T07:15:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2016</time>
+        
+         | <a href="/blog/2016/03/03/url-manipulation-with-purl/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In PHP projects, there&rsquo;s often a need to construct URL&rsquo;s to be used for making requests to API&rsquo;s. Normally we would concatenate the different pieces of the URL together in order to make up a complete URL where the request is made. In this tutorial, I&rsquo;ll be talking about Purl. This library reduces the need for concatenation. With this library, you can manipulate a specific URL anyway you want. You can do things like parsing the URL so you can get it&rsquo;s individual parts such as the scheme, port, path, query parameters and even fragments. These parts can then be modified any way you want.</p>
+
+<h3>Installation</h3>
+
+<p>You can use <a href="https://getcomposer.org/">Composer</a> to install Purl.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>composer require jwage/purl</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<p>To use Purl, you have to include the vendor autoload file and then use the <code>Url</code> class in the <code>Purl</code> namespace. Optionally, you can give it an alias so you only have to use it instead of the namespace + class syntax.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">Purl\Url</span> <span class="k">as</span> <span class="nx">purl</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Getting a URL</h4>
+
+<p>To use Purl, create a new instance of it using the alias you&rsquo;ve assigned earlier and then pass in the URL that you want to manipulate. In order to get the modified URL back, call the <code>getUrl</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">purl</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">getUrl</span><span class="p">();</span> <span class="c1">//http://wern-ancheta.com</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above code, the URL wasn&rsquo;t really manipulated yet so it will return the same thing that you passed.</p>
+
+<h4>Getting Parts of the URL</h4>
+
+<p>You can use any of the following properties to extract different parts of the URL. Note that the subdomain in this specific URL will return an empty string since there&rsquo;s no subdomain. If the URL was <code>http://blog.wern-ancheta.com</code> then the value for subdomain will be <code>blog</code>. Another thing to note is the <code>canonical</code> property. This returns everything in the URL except the scheme and the fragment. Also the <code>publicSuffix</code> is the first value, followed by the <code>registerableDomain</code>. So instead of <code>wern-ancheta.com</code>, you will see <code>com.wern-ancheta</code>. Lastly, the <code>port</code> is an empty string since it wasn&rsquo;t explicitly specified in the URL. By default, website uses port 80 and it doesn&rsquo;t need to be explicitly specified.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">purl</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com/some/path?query=some_query&amp;another=query#fragment&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">scheme</span><span class="p">;</span> <span class="c1">// http</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">port</span><span class="p">;</span> <span class="c1">// empty string</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">publicSuffix</span><span class="p">;</span> <span class="c1">// com</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">registerableDomain</span><span class="p">;</span> <span class="c1">// wern-ancheta.com</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">subdomain</span><span class="p">;</span> <span class="c1">// empty string</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">canonical</span><span class="p">;</span> <span class="c1">// com.wern-ancheta/some/path?query=some_query&amp;another=query</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">path</span><span class="p">;</span> <span class="c1">// /some/path</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">;</span> <span class="c1">// query=some_query&amp;another=query</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">fragment</span><span class="p">;</span> <span class="c1">// fragment</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Setting Parts of the URL</h4>
+
+<p>If you want to set the different parts of the URL, you have to use the static method <code>parse</code> and then pass in the URL you want to manipulate. This allows you to chain the <code>set</code> methods. If you initialize a new instance of the <code>purl</code> class instead, you will get an error.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="nx">purl</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;scheme&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;1122&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;wern&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;pass&#39;</span><span class="p">,</span> <span class="s1">&#39;ancheta&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;some/path&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;query&#39;</span><span class="p">,</span> <span class="s1">&#39;query1=value1&amp;query2=value2&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;fragment&#39;</span><span class="p">,</span> <span class="s1">&#39;my-fragment&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">getUrl</span><span class="p">();</span> <span class="c1">// https://wern:ancheta@wern-ancheta.com:1122/some/path?query1=value1&amp;query2=value2#my-fragment</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to individually add paths to the URL, you have to initialize a new instance of the <code>purl</code> class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">purl</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$url</span><span class="o">-&gt;</span><span class="na">path</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;my&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;awesome&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">getUrl</span><span class="p">();</span> <span class="c1">//http://wern-ancheta.com/my/awesome/page</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you need to individually set the query parameters, you can use teh <code>setData</code> method. This allows you to pass in an associative array with its key being the query and the value being the value for that query.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">purl</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$url</span><span class="o">-&gt;</span><span class="na">query</span><span class="o">-&gt;</span><span class="na">setData</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;query1&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;query2&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;value2&#39;</span>
+</span><span class='line'><span class="p">));</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$url</span><span class="o">-&gt;</span><span class="na">getUrl</span><span class="p">();</span> <span class="c1">//http://wern-ancheta.com/?query1=value1&amp;query2=value2</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If it&rsquo;s the other way around, and you want to extract the query parameters from a specific URL. Here&rsquo;s the way you do it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">purl</span><span class="p">(</span><span class="s1">&#39;http://wern-ancheta.com?query1=value1&amp;query2=value2&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$url</span><span class="o">-&gt;</span><span class="na">query</span><span class="o">-&gt;</span><span class="na">getData</span><span class="p">());</span> <span class="c1">// Array ( [query1] =&gt; value1 [query2] =&gt; value2 )</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Extracting URL&rsquo;s</h4>
+
+<p>One bonus feature of this library is that it allows you to extract URL&rsquo;s in a specific string of text. Call the static <code>extract</code> method to use this. You can then extract each individual URL by using the key.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$str</span> <span class="o">=</span> <span class="s2">&quot;Hey I&#39;m a string with url&#39;s in it http://google.com and another one http://github.com&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$urls</span> <span class="o">=</span> <span class="nx">purl</span><span class="o">::</span><span class="na">extract</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">.</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$urls</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that each extracted URL&rsquo;s are Purl URL instances of their own. So you can actually extract or manipulate individual parts as well.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">registerableDomain</span><span class="p">;</span> <span class="c1">//google.com</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">path</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;my&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;awesome&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">getUrl</span><span class="p">();</span> <span class="c1">//http://google.com/my/awesome/path</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>In this tutorial, you&rsquo;ve learned about Purl, a URL manipulation library for PHP. For more information, check out their official <a href="https://github.com/jwage/purl">Github project page</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3004,60 +3237,6 @@ And lastly use a continuous integration server such as Jenkins to automatically 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/29/2015-year-end-review/">Year-end Review</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-29T12:14:00+08:00" pubdate data-updated="true">Dec 29<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/12/29/2015-year-end-review/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A year is coming to an end again. And with lots of free time during the holidays I figured it would be nice to reflect on the previous year. So in this post I&rsquo;ll be sharing some of the things that happened in 2015.</p>
-
-<h3>Career</h3>
-
-<p>As you might already know I&rsquo;m a developer. So I develop websites and apps for a living. I mainly do home-based work since I graduated from college. Mainly because of its convenience and for personal reasons. You get to work from home and earn money how cool is that? But recently its no longer that fun. Payments get delayed. And projects are no longer that interesting. I basically stopped doing it around October of this year. Good thing I got hired as an author for Tutsplus&#8217; Mobile channel. And I still write for Sitepoint. So I currently write articles for those two awesome websites full-time.</p>
-
-<p>Around July this year I got a message from my college instructor asking if I want to teach. I said yes. And so from August until December I taught at the college where I graduated from. It&rsquo;s only part-time during the afternoon so I still got to write full-time. From my 4 months of experience I can say that I really enjoyed teaching. Being able to share what you know and helping your students get better, it&rsquo;s one of the most rewarding feelings ever.</p>
-
-<p>Since teaching in college requires someone to have a master&rsquo;s degree in their field. I had to take up Master&rsquo;s in Information Technology. Good thing the school is only walking distance from my home so it&rsquo;s very accessible. And classes are only on saturdays. So I&rsquo;m still able to do what I like doing the most: coding.</p>
-
-<h4>Projects</h4>
-
-<p>This career section wouldn&rsquo;t be complete without me talking about projects. If you look at my <a href="https://github.com/anchetaWern">Github profile</a> there are lots of new additions to the list of repos this year. This is mainly because I always write tutorials on making apps with different web technologies. Sitepoint and Tutsplus requires those apps to be in a Github repo. That&rsquo;s why my Github has got a bunch of those apps. Another reason for the repo population growth is free time. I already mentioned that I currently write full-time. But I don&rsquo;t necessarily have a boss. So I still got to choose whether to write for a certain day or work with another thing. Some days I choose to work on my personal projects. The common theme for my personal projects is usually to solve some problems that I&rsquo;m having. Mainly automation stuff so I don&rsquo;t have to do a lot of things manually. My part-time teaching job has particularly lots of problems that needs solving. This includes: <a href="/blog/2015/09/27/introduction-to-absentist/">attendance tracking</a>, managing of files submitted by students, <a href="/blog/2015/10/25/introduction-to-shotgun/">checking of student activities</a>, <a href="/blog/2015/11/03/introduction-to-grade-viewer/">showing grades to the students</a>.</p>
-
-<h3>Health</h3>
-
-<p>Developers are mainly sedentary animals. That&rsquo;s why there&rsquo;s a need to make an effort to thwart the effects of sitting in front of the computer all day long. As for me what I did was to use a standing desk. And jog first thing in the morning.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -3073,6 +3252,10 @@ And lastly use a continuous integration server such as Jenkins to automatically 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/03/03/url-manipulation-with-purl/">URL Manipulation with Purl</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/24/getting-started-with-swiftmailer/">Getting Started with Swiftmailer</a>
       </li>
     
@@ -3086,10 +3269,6 @@ And lastly use a continuous integration server such as Jenkins to automatically 
     
       <li class="post">
         <a href="/blog/2016/02/03/why-i-love-web-development/">Why I Love Web Development</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/28/generating-fake-data-in-php-with-faker/">Generating Fake Data in PHP with Faker</a>
       </li>
     
   </ul>
